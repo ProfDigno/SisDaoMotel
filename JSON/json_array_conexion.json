@@ -1,0 +1,32 @@
+{
+	"DIGNO-LENOVO-A12":[
+		{
+			"nombre":"MI-COMPU",
+			"localhost":"localhost",
+			"port":"5432",
+			"basedato":"bddaomotel_2",
+			"usuario":"postgres",
+			"password":"4650586"
+            "direc_dump":"C:\\Program Files\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
+            "direc_backup":"backup\\",
+            "nombre_backup":"bdrestaurante_",
+			"limite_dia_eliminar":"3",
+            "crear_backup":"NO"
+		}
+	],
+	"94-C6-91-AA-DE-93":[
+		{
+			"nombre":"QCHURRON",
+			"localhost":"localhost",
+			"port":"5432",
+			"basedato":"bdqchurron_2",
+			"usuario":"postgres",
+			"password":"4650586"
+            "direc_dump":"C:\\Program Files (x86)\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
+            "direc_backup":"backup\\",
+            "nombre_backup":"bdqchurron_",
+			"limite_dia_eliminar":"3",
+            "crear_backup":"SI"
+		}
+	]
+}
