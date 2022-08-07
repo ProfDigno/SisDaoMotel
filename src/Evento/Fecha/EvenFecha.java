@@ -5,13 +5,16 @@
  */
 package Evento.Fecha;
 
+import java.awt.Color;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.sql.Date;
+import java.util.SimpleTimeZone;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 
 /**
@@ -83,6 +86,42 @@ public class EvenFecha {
         return dateSql;
     }
 
+    public java.sql.Time getTime_sistema() {
+        java.sql.Time time = new java.sql.Time(0L);
+        time.setTime(new java.util.Date().getTime());
+        return time;
+    }
+
+    public java.sql.Time getTime_sistema_cargado(String timeStr) {
+        java.sql.Time sqlTime1 = null;
+        try {
+            sqlTime1 = java.sql.Time.valueOf(timeStr);
+            System.out.println("SqlTime1: " + sqlTime1);
+        } catch (Exception e) {
+            String mensaje = "EL FORMATO DE LA HORA NO ES CORRECTA\n FORMATO: HH:mm:ss \n" + e;
+            JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
+            sqlTime1 = getTime_sistema();
+        }
+        return sqlTime1;
+    }
+    public boolean getboolean_time_correcto(JFormattedTextField txtcampo) {
+        boolean corrento=false;
+        java.sql.Time sqlTime1 = null;
+        try {
+            String timeStr=txtcampo.getText();
+            sqlTime1 = java.sql.Time.valueOf(timeStr);
+            System.out.println("SqlTime1: " + sqlTime1);
+            txtcampo.setBackground(Color.WHITE);
+            corrento=false;
+        } catch (Exception e) {
+            String mensaje = "EL FORMATO DE LA HORA NO ES CORRECTA\n FORMATO: HH:mm:ss \n" + e;
+            JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtcampo.setBackground(Color.ORANGE);
+            txtcampo.grabFocus();
+            corrento=true;
+        }
+        return corrento;
+    }
     public String getString_formato_fecha() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
@@ -107,22 +146,25 @@ public class EvenFecha {
         int min = Integer.parseInt(sdf_min.format(utilDate));
         SimpleDateFormat sdf_seg = new SimpleDateFormat("ss");
         int seg = Integer.parseInt(sdf_seg.format(utilDate));
-        int resul=((hora*3600)+(min*60)+seg);
+        int resul = ((hora * 3600) + (min * 60) + seg);
         return resul;
     }
+
     public int getInt_diferencia_en_segundo(int tiempo_sql) {
-        int resul=getInt_segundos_ahora()-tiempo_sql;
+        int resul = getInt_segundos_ahora() - tiempo_sql;
         return resul;
     }
-    public String getString_convertir_segundo_hora(int num){
-        int hor,min,seg;
-        hor=num/3600;
-        min=(num-(3600*hor))/60;
-        seg=num-((hor*3600)+(min*60));
-        String horaformada=hor+"h "+min+"m "+seg+"s";
+
+    public String getString_convertir_segundo_hora(int num) {
+        int hor, min, seg;
+        hor = num / 3600;
+        min = (num - (3600 * hor)) / 60;
+        seg = num - ((hor * 3600) + (min * 60));
+        String horaformada = hor + "h " + min + "m " + seg + "s";
         System.out.println(horaformada);
         return horaformada;
     }
+
     public String getString_fecha_dia1() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
@@ -166,7 +208,8 @@ public class EvenFecha {
         java.sql.Timestamp ts = new java.sql.Timestamp(timeNow);
         return ts;
     }
- public void cargar_combobox_intervalo_fecha(JComboBox combo) {
+
+    public void cargar_combobox_intervalo_fecha(JComboBox combo) {
         combo.removeAllItems();
         String fechas[] = {"HOY", "AYER",
             "ESTA SEMANA", "SEMANA  ANTERIOR",
@@ -252,6 +295,6 @@ public class EvenFecha {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         int month = cal.get(Calendar.MONTH);
-        return month+1;
+        return month + 1;
     }
 }

@@ -5,6 +5,7 @@
 package Evento.Mensaje;
 
 //import Formulario.Version.ClaDirectorio;
+import Evento.Fecha.EvenFecha;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
@@ -20,7 +21,7 @@ import javax.swing.JOptionPane;
  * @author Digno Tala
  */
 public class EvenMensajeJoptionpane {
-
+    private EvenFecha evefec=new EvenFecha();
     public static boolean activar_print_serial = true;
     private static int cant_error = 0;
     Icon iconoGuardar;
@@ -182,7 +183,7 @@ public class EvenMensajeJoptionpane {
 
     public void Imprimir_serial_sql(String sql, String titulo) {
         String saltolinea = "\n";
-        String linea = "----------------------------------" + titulo + "-------------------------------------";
+        String linea = "----------------------------------" + titulo+"/"+evefec.getString_formato_hora() + "-------------------------------------";
         System.out.println(linea + saltolinea + sql + saltolinea + linea);
     }
 

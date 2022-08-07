@@ -8,6 +8,7 @@ package Evento.JTextField;
 import Evento.Fecha.EvenFecha;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -48,7 +49,17 @@ public class EvenJTextField {
             return false;
         }
     }
-
+    public boolean getBoo_JFormatted_vacio(JFormattedTextField txtcampo, String mensaje) {
+        if (txtcampo.getText().trim().length() == 0) {
+            JOptionPane.showMessageDialog(txtcampo, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtcampo.setBackground(Color.ORANGE);
+            txtcampo.grabFocus();
+            return true;
+        } else {
+            txtcampo.setBackground(Color.WHITE);
+            return false;
+        }
+    }
     public boolean getBoo_JPasswordField_vacio(JPasswordField txtcampo, String mensaje) {
         if (txtcampo.getText().trim().length() == 0) {
             JOptionPane.showMessageDialog(txtcampo, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -74,6 +85,13 @@ public class EvenJTextField {
     }
 
     public void saltar_campo_enter(KeyEvent evt, JTextField txtcampo1, JTextField txtcampo2) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtcampo1.setBackground(Color.WHITE);
+            txtcampo2.setBackground(Color.YELLOW);
+            txtcampo2.grabFocus();
+        }
+    }
+    public void saltar_campo_enter_JFormatted(KeyEvent evt, JFormattedTextField txtcampo1, JFormattedTextField txtcampo2) {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             txtcampo1.setBackground(Color.WHITE);
             txtcampo2.setBackground(Color.YELLOW);
@@ -170,6 +188,16 @@ public class EvenJTextField {
         }
         return Ipagado;
     }
+    public double getDouble_format_nro_entero(JFormattedTextField txtmonto) {
+        double Ipagado = 0;
+        String pago_remplaso = "";
+        if (txtmonto.getText().trim().length() > 0) {
+            String Spagado = txtmonto.getText();
+            pago_remplaso = Spagado.replace(".", "");
+            Ipagado = Double.parseDouble(pago_remplaso);
+        }
+        return Ipagado;
+    }
     public double getDouble_format_nro_entero(JTextField txtmonto) {
         double Ipagado = 0;
         if (txtmonto.getText().trim().length() > 0) {
@@ -188,5 +216,37 @@ public class EvenJTextField {
             Ipagado = Double.parseDouble(Spagado);
         }
         return Ipagado;
+    }
+    public void setSubtotal_suma_cantidad_flecha(KeyEvent evt, JTextField txtcantidad, JTextField txtprecio,JTextField txtsubtotal){
+        int cantidad=1;
+        int precio=0;
+        int subtotal=0;
+        if(txtcantidad.getText().trim().length()==0){
+            txtcantidad.setText("1");
+        }
+        if(txtprecio.getText().trim().length()==0){
+            txtprecio.setText("1");
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            cantidad=Integer.parseInt(txtcantidad.getText());
+            precio=Integer.parseInt(txtprecio.getText());
+            if(cantidad<=1){
+                cantidad=1;
+            }else{
+                cantidad--;
+            }
+            subtotal=cantidad*precio;
+            txtcantidad.setText(String.valueOf(cantidad));
+            txtsubtotal.setText(String.valueOf(subtotal));
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_UP) {
+            cantidad=Integer.parseInt(txtcantidad.getText());
+            precio=Integer.parseInt(txtprecio.getText());
+            cantidad++;
+            subtotal=cantidad*precio;
+            txtcantidad.setText(String.valueOf(cantidad));
+            txtsubtotal.setText(String.valueOf(subtotal));
+        }
+        
     }
 }

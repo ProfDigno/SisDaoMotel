@@ -21,6 +21,10 @@ public class EvenEstado {
     private static String mone_USD;//Dolar
     private static String mone_BRL;//R$
     private static String mone_ARS;//peso
+    private static String tipo_hab_estandar;
+    private static String tipo_hab_vip;
+    private static String tipo_hab_luxury;
+    private static String tipo_hab_penthouse;
 
     public EvenEstado() {
         setEst_Anulado("ANULADO");
@@ -34,6 +38,42 @@ public class EvenEstado {
         setMone_USD("Dolar");
         setMone_BRL("R$");
         setMone_ARS("peso");
+        setTipo_hab_estandar("ESTANDAR");
+        setTipo_hab_vip("VIP");
+        setTipo_hab_luxury("LUXURY");
+        setTipo_hab_penthouse("PENTHOUSE");
+    }
+
+    public static String getTipo_hab_estandar() {
+        return tipo_hab_estandar;
+    }
+
+    public static void setTipo_hab_estandar(String tipo_hab_estandar) {
+        EvenEstado.tipo_hab_estandar = tipo_hab_estandar;
+    }
+
+    public static String getTipo_hab_vip() {
+        return tipo_hab_vip;
+    }
+
+    public static void setTipo_hab_vip(String tipo_hab_vip) {
+        EvenEstado.tipo_hab_vip = tipo_hab_vip;
+    }
+
+    public static String getTipo_hab_luxury() {
+        return tipo_hab_luxury;
+    }
+
+    public static void setTipo_hab_luxury(String tipo_hab_luxury) {
+        EvenEstado.tipo_hab_luxury = tipo_hab_luxury;
+    }
+
+    public static String getTipo_hab_penthouse() {
+        return tipo_hab_penthouse;
+    }
+
+    public static void setTipo_hab_penthouse(String tipo_hab_penthouse) {
+        EvenEstado.tipo_hab_penthouse = tipo_hab_penthouse;
     }
 
     public static String getMone_PYG() {

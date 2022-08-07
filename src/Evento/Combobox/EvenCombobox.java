@@ -61,7 +61,9 @@ public class EvenCombobox {
     } 
     public int getInt_seleccionar_COMBOBOX(Connection conn,JComboBox cmbnom,String id,String nombre,String tabla) {
         int getcampo=0;
-            String titulo="getInt_seleccionar_JLista";
+        String titulo="getInt_seleccionar_JLista";
+        if(cmbnom.getItemCount()>0){
+            
             String select=cmbnom.getSelectedItem().toString();
             String sql = "SELECT * FROM "+tabla+" where concat("+nombre+",'-(',"+id+",')')='"+select+"';";
             try {
@@ -72,6 +74,7 @@ public class EvenCombobox {
             } catch (Exception e) {
                 evmen.mensaje_error(e, sql, titulo);
             }
+        }
         return getcampo;
     }
     public boolean getBoo_JCombobox_seleccionar(JComboBox cmbnom, String mensaje) {
