@@ -1,0 +1,35 @@
+                                        
+ =========PANKY=========                
+ 0992-555666                            
+ km8 cde                                
+ COD. VENTA:188                         
+ FEC INICIO:2022-08-26 00:03            
+ FEC FIN:2022-08-26 10:55               
+ HABITACION:17                          
+ TIEMPO OCUPA:10:51:56                  
+ USUARIO:PROGRAMADOR ADMIN              
+ #=============================#        
+ CANT-DESCEIPCION-PRECIO-TOTAL          
+ BRAHAMA LATA 350ML                     
+    3 X     6,000 =      18,000         
+ FANTA NARANJA 500ML                    
+    2 X     10,000 =     20,000         
+ CONTROL FINISSIMO                      
+    1 X     10,000 =     10,000         
+ BRAHAMA LATA 350ML                     
+    3 X     6,000 =      18,000         
+ #=============================#        
+ TIPO : POR HORA                        
+ MONTO MINIMO:           70,000         
+ MONTO ADICIONAL:        200,000        
+ MONTO CONSUMO:          66,000         
+ MONTO DESCUENTO:        0              
+ MONTO ADELANTO:         0              
+ TOTAL PAGAR:            336,000        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        

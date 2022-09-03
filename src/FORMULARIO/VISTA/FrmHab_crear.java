@@ -9,7 +9,6 @@ import BASEDATO.LOCAL.ConnPostgres;
 import ESTADOS.EvenEstado;
 import Evento.Combobox.EvenCombobox;
 import Evento.Fecha.EvenFecha;
-//import Evento.Color.cla_color_palete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
@@ -31,12 +30,15 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
     private EvenFecha evefec=new EvenFecha();
+    private ClaVarBuscar vbus = new ClaVarBuscar();
+    private EvenJTextField evejtf = new EvenJTextField();
+    private EvenEstado eveest = new EvenEstado();
+    private EvenCombobox evecmb=new EvenCombobox();
+    Connection conn = ConnPostgres.getConnPosgres();
     private habitacion_dato ENThd=new habitacion_dato();
     private DAO_habitacion_dato DAOhd=new DAO_habitacion_dato();
     private BO_habitacion_dato BOhd=new BO_habitacion_dato();
     private habitacion_recepcion_temp ENThrt=new habitacion_recepcion_temp();
-//    private DAO_habitacion_recepcion_temp DAOhrt=new DAO_habitacion_recepcion_temp();
-//    private BO_habitacion_recepcion_temp BOhrt=new BO_habitacion_recepcion_temp();
     private habitacion_costo ENThc=new habitacion_costo();
     private DAO_habitacion_costo DAOhc=new DAO_habitacion_costo();
     private habitacion_item_sensor_gpio ENTigpio=new habitacion_item_sensor_gpio();
@@ -54,11 +56,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private producto_habitacion_patrimonio ENTphp=new producto_habitacion_patrimonio();
     private DAO_producto_habitacion_patrimonio DAOphp=new DAO_producto_habitacion_patrimonio();
     private BO_producto_habitacion_patrimonio BOphp=new BO_producto_habitacion_patrimonio();
-    private ClaVarBuscar vbus = new ClaVarBuscar();
-    private EvenJTextField evejtf = new EvenJTextField();
-    private EvenEstado eveest = new EvenEstado();
-    private EvenCombobox evecmb=new EvenCombobox();
-    Connection conn = ConnPostgres.getConnPosgres();
+    private habitacion_estado_gpio_temp ENThegt=new habitacion_estado_gpio_temp();
+    private DAO_habitacion_estado_gpio_temp DAOhegt=new DAO_habitacion_estado_gpio_temp();
+    private BO_habitacion_estado_gpio_temp BOhegt=new BO_habitacion_estado_gpio_temp();
     private String nombreTabla_pri="CREAR HABITACION"; 
     private String nombreTabla_sec="FILTRO"; 
     private String creado_por="digno";
@@ -194,6 +194,11 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENThrt.setC35hs_dormir_ingreso_inicio(ENThc.getC14hs_dormir_ingreso_inicio());
         ENThrt.setC36hs_dormir_ingreso_final(ENThc.getC15hs_dormir_ingreso_final());
         ENThrt.setC37hs_dormir_salida_final(ENThc.getC16hs_dormir_salida_final());
+        ENThrt.setC38puerta_cliente(true);
+        ENThrt.setC39puerta_limpieza(true);
+        ENThrt.setC40tipo_habitacion(tipo_habitacion);
+        ENThrt.setC41monto_adelanto(0);
+        ENThrt.setC42idhabitacion_dato(fk_idhabitacion_dato);
     }
     private void boton_guardar_hab_dato() {
         if (validar_guardar_hab_dato()) {
@@ -287,6 +292,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENTigpio.setC6fk_idhabitacion_dato(fk_idhabitacion_dato);
         ENTigpio.setC7fk_idhabitacion_sensor(fk_idhabitacion_sensor_gpio);
         ENTigpio.setC8fk_idhabitacion_mini_pc(fk_idhabitacion_mini_pc);
+    }
+    private void cargar_dato_recepcion_temp(){
+        
     }
     private void boton_guardar_gpio(){
         if(validar_guardar_gpio()){
@@ -684,7 +692,6 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         tbltabla_pri = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         txtbuscar = new javax.swing.JTextField();
-        jPanel4 = new javax.swing.JPanel();
 
         setClosable(true);
         setIconifiable(true);
@@ -1255,9 +1262,11 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                     .addComponent(cmbsensor_gpio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnnuevo_habitacion_sensor_gpio, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(24, 24, 24)
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btneliminar_gpio, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btnguardar_gpio, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnguardar_gpio, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))))
             .addGroup(javax.swing.GroupLayout.Alignment.CENTER, jPanel12Layout.createSequentialGroup()
                 .addGap(44, 44, 44)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2049,19 +2058,6 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
 
         jTab_principal.addTab("SECUNDARIO", jPanel2);
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1131, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 531, Short.MAX_VALUE)
-        );
-
-        jTab_principal.addTab("tab3", jPanel4);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -2436,7 +2432,6 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;

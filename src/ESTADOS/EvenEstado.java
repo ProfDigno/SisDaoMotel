@@ -12,6 +12,17 @@ package ESTADOS;
 public class EvenEstado {
     private static String est_Emitido;
     private static String est_Anulado;
+    private static String est_Pagado;
+    private static String est_Cargado;
+    private static String est_Libre = "LIBRE";
+    private static String est_Ocupado = "OCUPADO";
+    private static String est_Sucio = "SUCIO";
+    private static String est_Limpiando = "LIMPIANDO";
+    private static String est_Terminar = "TERMINADO";
+    private static String est_Cancelado = "CANCELADO";
+    private static String est_Desocupado = "DESOCUPADO";
+    private static String est_Adelanto = "ADELANTO";
+    private static String est_Cerrado = "CERRADO";
     private static String cond_Contado;
     private static String cond_Credito;
     private static String forPago_Efectivo;
@@ -29,6 +40,17 @@ public class EvenEstado {
     public EvenEstado() {
         setEst_Anulado("ANULADO");
         setEst_Emitido("EMITIDO");
+        setEst_Libre("LIBRE");
+        setEst_Ocupado("OCUPADO");
+        setEst_Sucio("SUCIO");
+        setEst_Limpiando("LIMPIANDO");
+        setEst_Terminar("TERMINADO");
+        setEst_Cancelado("CANCELADO");
+        setEst_Desocupado("DESOCUPADO");
+        setEst_Adelanto("ADELANTO");
+        setEst_Cerrado("CERRADO");
+        setEst_Pagado("PAGADO");
+        setEst_Cargado("CARGADO");
         setCond_Contado("CONTADO");
         setCond_Credito("CREDITO");
         setForPago_Efectivo("EFECTIVO");
@@ -42,6 +64,38 @@ public class EvenEstado {
         setTipo_hab_vip("VIP");
         setTipo_hab_luxury("LUXURY");
         setTipo_hab_penthouse("PENTHOUSE");
+    }
+
+    public static String getEst_Cargado() {
+        return est_Cargado;
+    }
+
+    public static void setEst_Cargado(String est_Cargado) {
+        EvenEstado.est_Cargado = est_Cargado;
+    }
+
+    public static String getEst_Pagado() {
+        return est_Pagado;
+    }
+
+    public static void setEst_Pagado(String est_Pagado) {
+        EvenEstado.est_Pagado = est_Pagado;
+    }
+
+    public static String getEst_Cerrado() {
+        return est_Cerrado;
+    }
+
+    public static void setEst_Cerrado(String est_Cerrado) {
+        EvenEstado.est_Cerrado = est_Cerrado;
+    }
+
+    public static String getEst_Adelanto() {
+        return est_Adelanto;
+    }
+
+    public static void setEst_Adelanto(String est_Adelanto) {
+        EvenEstado.est_Adelanto = est_Adelanto;
     }
 
     public static String getTipo_hab_estandar() {
@@ -162,6 +216,62 @@ public class EvenEstado {
 
     public static void setCond_Credito(String cond_Credito) {
         EvenEstado.cond_Credito = cond_Credito;
+    }
+
+    public static String getEst_Libre() {
+        return est_Libre;
+    }
+
+    public static void setEst_Libre(String est_Libre) {
+        EvenEstado.est_Libre = est_Libre;
+    }
+
+    public static String getEst_Ocupado() {
+        return est_Ocupado;
+    }
+
+    public static void setEst_Ocupado(String est_Ocupado) {
+        EvenEstado.est_Ocupado = est_Ocupado;
+    }
+
+    public static String getEst_Sucio() {
+        return est_Sucio;
+    }
+
+    public static void setEst_Sucio(String est_Sucio) {
+        EvenEstado.est_Sucio = est_Sucio;
+    }
+
+    public static String getEst_Limpiando() {
+        return est_Limpiando;
+    }
+
+    public static void setEst_Limpiando(String est_Limpiando) {
+        EvenEstado.est_Limpiando = est_Limpiando;
+    }
+
+    public static String getEst_Terminar() {
+        return est_Terminar;
+    }
+
+    public static void setEst_Terminar(String est_Terminar) {
+        EvenEstado.est_Terminar = est_Terminar;
+    }
+
+    public static String getEst_Cancelado() {
+        return est_Cancelado;
+    }
+
+    public static void setEst_Cancelado(String est_Cancelado) {
+        EvenEstado.est_Cancelado = est_Cancelado;
+    }
+
+    public static String getEst_Desocupado() {
+        return est_Desocupado;
+    }
+
+    public static void setEst_Desocupado(String est_Desocupado) {
+        EvenEstado.est_Desocupado = est_Desocupado;
     }
     
 }

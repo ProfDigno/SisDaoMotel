@@ -39,6 +39,11 @@ private int C34minuto_cancelar;
 private String C35hs_dormir_ingreso_inicio;
 private String C36hs_dormir_ingreso_final;
 private String C37hs_dormir_salida_final;
+private boolean C38puerta_cliente;
+private boolean C39puerta_limpieza;
+private String C40tipo_habitacion;
+private double C41monto_adelanto;
+private int C42idhabitacion_dato;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -281,6 +286,47 @@ private static String nom_idtabla;
 	public void setC37hs_dormir_salida_final(String C37hs_dormir_salida_final){
 		this.C37hs_dormir_salida_final = C37hs_dormir_salida_final;
 	}
+
+    public boolean getC38puerta_cliente() {
+        return C38puerta_cliente;
+    }
+
+    public void setC38puerta_cliente(boolean C38puerta_cliente) {
+        this.C38puerta_cliente = C38puerta_cliente;
+    }
+
+    public boolean getC39puerta_limpieza() {
+        return C39puerta_limpieza;
+    }
+
+    public void setC39puerta_limpieza(boolean C39puerta_limpieza) {
+        this.C39puerta_limpieza = C39puerta_limpieza;
+    }
+
+    public String getC40tipo_habitacion() {
+        return C40tipo_habitacion;
+    }
+
+    public void setC40tipo_habitacion(String C40tipo_habitacion) {
+        this.C40tipo_habitacion = C40tipo_habitacion;
+    }
+
+    public double getC41monto_adelanto() {
+        return C41monto_adelanto;
+    }
+
+    public void setC41monto_adelanto(double C41monto_adelanto) {
+        this.C41monto_adelanto = C41monto_adelanto;
+    }
+
+    public int getC42idhabitacion_dato() {
+        return C42idhabitacion_dato;
+    }
+
+    public void setC42idhabitacion_dato(int C42idhabitacion_dato) {
+        this.C42idhabitacion_dato = C42idhabitacion_dato;
+    }
+        
 	public String toString() {
 		return "habitacion_recepcion_temp(" + ",idhabitacion_recepcion_temp=" + C1idhabitacion_recepcion_temp + " ,idhabitacion_recepcion_actual=" + C2idhabitacion_recepcion_actual + " ,fecha_creado=" + C3fecha_creado + " ,creado_por=" + C4creado_por + " ,nro_habitacion=" + C5nro_habitacion + " ,descripcion_habitacion=" + C6descripcion_habitacion + " ,estado=" + C7estado + " ,fec_libre_inicio=" + C8fec_libre_inicio + " ,fec_libre_fin=" + C9fec_libre_fin + " ,fec_ocupado_inicio=" + C10fec_ocupado_inicio + " ,fec_ocupado_fin=" + C11fec_ocupado_fin + " ,fec_sucio_inicio=" + C12fec_sucio_inicio + " ,fec_sucio_fin=" + C13fec_sucio_fin + " ,fec_limpieza_inicio=" + C14fec_limpieza_inicio + " ,fec_limpieza_fin=" + C15fec_limpieza_fin + " ,fec_mante_inicio=" + C16fec_mante_inicio + " ,fec_mante_fin=" + C17fec_mante_fin + " ,es_libre=" + C18es_libre + " ,es_ocupado=" + C19es_ocupado + " ,es_sucio=" + C20es_sucio + " ,es_limpieza=" + C21es_limpieza + " ,es_mante=" + C22es_mante + " ,es_cancelado=" + C23es_cancelado + " ,es_por_hora=" + C24es_por_hora + " ,es_por_dormir=" + C25es_por_dormir + " ,monto_por_hora_minimo=" + C26monto_por_hora_minimo + " ,monto_por_hora_adicional=" + C27monto_por_hora_adicional + " ,monto_por_dormir_minimo=" + C28monto_por_dormir_minimo + " ,monto_por_dormir_adicional=" + C29monto_por_dormir_adicional + " ,monto_consumision=" + C30monto_consumision + " ,monto_descuento=" + C31monto_descuento + " ,minuto_minimo=" + C32minuto_minimo + " ,minuto_adicional=" + C33minuto_adicional + " ,minuto_cancelar=" + C34minuto_cancelar + " ,hs_dormir_ingreso_inicio=" + C35hs_dormir_ingreso_inicio + " ,hs_dormir_ingreso_final=" + C36hs_dormir_ingreso_final + " ,hs_dormir_salida_final=" + C37hs_dormir_salida_final + " )";
 	}

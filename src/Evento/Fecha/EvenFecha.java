@@ -12,6 +12,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.sql.Date;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.SimpleTimeZone;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -25,8 +27,9 @@ public class EvenFecha {
 
     String formato_fecha = "yyyy-MM-dd";
     String fecha_dia1 = "yyyy-MM-01";
-    String formato_fechaHora = "yyyy-MM-dd HH:mm";
-    private String formato_hora = "HH:mm:ss";
+    String formato_fechaHora = "yyyy-MM-dd HH:mm:ss";
+    private String formato_hora_min_seg = "HH:mm:ss";
+    private String formato_hora_min = "HH:mm";
 
     public String getString_validar_fecha(String fechaStr) {
         String Sfecha = "";
@@ -70,7 +73,20 @@ public class EvenFecha {
         }
         return dateSql;
     }
+    public java.sql.Date getDate_fecha_hora_cargado(String fechaStr) {
+        java.sql.Date dateSql = null;
+        java.util.Date dateUtil = new java.util.Date();
+        try {
+            SimpleDateFormat formato = new SimpleDateFormat(formato_fechaHora);
+            dateUtil = formato.parse(fechaStr);
+            dateSql = new java.sql.Date(dateUtil.getTime());
+        } catch (Exception e) {
+            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: AñO-MES-DIA\n" + e;
+            JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
 
+        }
+        return dateSql;
+    }
     public java.sql.Timestamp getTimestamp_fecha_cargado(String fechaStr) {
         java.sql.Timestamp dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
@@ -79,7 +95,9 @@ public class EvenFecha {
             dateUtil = formato.parse(fechaStr);
             dateSql = new java.sql.Timestamp(dateUtil.getTime());
         } catch (Exception e) {
-            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: AñO-MES-DIA HORA:MINUTO\n" + e;
+            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: AñO-MES-DIA HORA:MINUTO\n" + e
+                    + "\nFormato Ingresado:" + fechaStr
+                    + "\nFormato requerido:" + formato_fechaHora;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             dateSql = getTimestamp_sistema();
         }
@@ -96,7 +114,7 @@ public class EvenFecha {
         java.sql.Time sqlTime1 = null;
         try {
             sqlTime1 = java.sql.Time.valueOf(timeStr);
-            System.out.println("SqlTime1: " + sqlTime1);
+//            System.out.println("SqlTime1: " + sqlTime1);
         } catch (Exception e) {
             String mensaje = "EL FORMATO DE LA HORA NO ES CORRECTA\n FORMATO: HH:mm:ss \n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -104,24 +122,26 @@ public class EvenFecha {
         }
         return sqlTime1;
     }
+
     public boolean getboolean_time_correcto(JFormattedTextField txtcampo) {
-        boolean corrento=false;
+        boolean corrento = false;
         java.sql.Time sqlTime1 = null;
         try {
-            String timeStr=txtcampo.getText();
+            String timeStr = txtcampo.getText();
             sqlTime1 = java.sql.Time.valueOf(timeStr);
             System.out.println("SqlTime1: " + sqlTime1);
             txtcampo.setBackground(Color.WHITE);
-            corrento=false;
+            corrento = false;
         } catch (Exception e) {
             String mensaje = "EL FORMATO DE LA HORA NO ES CORRECTA\n FORMATO: HH:mm:ss \n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             txtcampo.setBackground(Color.ORANGE);
             txtcampo.grabFocus();
-            corrento=true;
+            corrento = true;
         }
         return corrento;
     }
+
     public String getString_formato_fecha() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
@@ -133,7 +153,7 @@ public class EvenFecha {
     public String getString_formato_hora() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(formato_hora);
+        SimpleDateFormat sdf = new SimpleDateFormat(formato_hora_min);
         Sfecha = String.valueOf(sdf.format(date));
         return Sfecha;
     }
@@ -161,7 +181,7 @@ public class EvenFecha {
         min = (num - (3600 * hor)) / 60;
         seg = num - ((hor * 3600) + (min * 60));
         String horaformada = hor + "h " + min + "m " + seg + "s";
-        System.out.println(horaformada);
+//        System.out.println(horaformada);
         return horaformada;
     }
 
@@ -181,13 +201,21 @@ public class EvenFecha {
         return Sfecha;
     }
 
+    public String getString_formato_hora_min_seg() {
+        String Sfecha;
+        java.util.Date date = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(formato_hora_min_seg);
+        Sfecha = String.valueOf(sdf.format(date));
+        return Sfecha;
+    }
+
     public java.util.Date getDate_sistema() {
         java.util.Date fechaDate;
         try {
             fechaDate = new java.util.Date();
             return fechaDate;
         } catch (Exception e) {
-            System.out.println("" + e);
+            System.out.println("getDate_sistema:" + e);
             return null;
         }
     }
@@ -296,5 +324,21 @@ public class EvenFecha {
         cal.setTime(date);
         int month = cal.get(Calendar.MONTH);
         return month + 1;
+    }
+
+    public String getString_tiempo_transcurrido(String fecha_hora_ingreso) {
+        String tiempo_transcurrido = "";
+        try {
+            long lantes = getDate_fecha_hora_cargado(fecha_hora_ingreso).getTime();
+            long lahora = getDate_sistema().getTime();
+            long diferencia = (lahora - lantes);
+            long diferenciaseg=diferencia/(1000);
+//            System.out.println("lantes:"+lantes+"\tlahora:"+lahora+"\tdiferencia:"+diferenciaseg);
+            tiempo_transcurrido=getString_convertir_segundo_hora((int)diferenciaseg);
+        } catch (Exception e) {
+            System.out.println("getString_tiempo_transcurrido:" + e);
+            tiempo_transcurrido="error:"+e;
+        }
+        return tiempo_transcurrido;
     }
 }

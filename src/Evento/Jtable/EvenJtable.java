@@ -166,7 +166,6 @@ public class EvenJtable {
 //            return false;
 //        }
 //    }
-
     public void mostrar_JTabbedPane(JTabbedPane jtabee, int panel) {
         jtabee.setSelectedIndex(panel);
     }
@@ -242,7 +241,13 @@ public class EvenJtable {
         }
         return false;
     }
-
+     public boolean getBoolean_select_tabla_mensaje(JTable tabla,String mensaje) {
+        if (tabla.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(tabla,mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
     public boolean getBoolean_validar_cant_cargado(JTable tabla) {
         int row = tabla.getRowCount();
         System.out.println("cantidad fila=" + row);
@@ -326,7 +331,7 @@ public class EvenJtable {
         }
     }
 
-    public void calcular_subtotal(JTable tblitem, DefaultTableModel Detabla, int col_cantidad, int col_precio, int col_subtotal) {
+    public void calcular_subtotal(JTable tblitem, DefaultTableModel Detabla, int col_cantidad, int col_precio, int col_subtotal, boolean conformato) {
         double Doitem_subtotal = 0;
         if (tblitem.getRowCount() > 0) {
             for (int row = 0; row < tblitem.getRowCount(); row++) {
@@ -335,15 +340,31 @@ public class EvenJtable {
                 String Sitem_precio = (tblitem.getModel().getValueAt(row, col_precio).toString());
                 double Doitem_precio = Double.parseDouble(Sitem_precio);
                 Doitem_subtotal = Doitem_precio * Doitem_cantidad;
-                Detabla.setValueAt(Doitem_subtotal, row, col_subtotal);
+                if (conformato) {
+                    String for_Ipagado = String.format("%1$,.0f", Doitem_subtotal);
+                    Detabla.setValueAt(for_Ipagado, row, col_subtotal);
+                } else {
+                    Detabla.setValueAt(Doitem_subtotal, row, col_subtotal);
+                }
             }
         }
     }
-    public void alinear_derecha_columna(JTable tabla, int columna){
-        String titulo="alinear_derecha_columna";
+
+    public void alinear_derecha_columna(JTable tabla, int columna) {
+        String titulo = "alinear_derecha_columna";
         try {
             DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
             cellRenderer.setHorizontalAlignment(JLabel.RIGHT);
+            tabla.getColumnModel().getColumn(columna).setCellRenderer(cellRenderer);
+        } catch (Exception e) {
+            evmen.mensaje_error(e, titulo);
+        }
+    }
+    public void alinear_centro_columna(JTable tabla, int columna) {
+        String titulo = "alinear_centro_columna";
+        try {
+            DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+            cellRenderer.setHorizontalAlignment(JLabel.CENTER);
             tabla.getColumnModel().getColumn(columna).setCellRenderer(cellRenderer);
         } catch (Exception e) {
             evmen.mensaje_error(e, titulo);
@@ -361,14 +382,16 @@ public class EvenJtable {
             evmen.mensaje_error(e, tutulo);
         }
     }
-    public void seleccionar_tabla_flecha_abajo(KeyEvent evt,JTable tabla){
+
+    public void seleccionar_tabla_flecha_abajo(KeyEvent evt, JTable tabla) {
         if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
             tabla.requestFocus();
             tabla.changeSelection(0, 0, false, false);
         }
     }
-    public void seleccionar_tabla_primera_fila(JTable tabla){
-        if (tabla.getRowCount()>0) {
+
+    public void seleccionar_tabla_primera_fila(JTable tabla) {
+        if (tabla.getRowCount() > 0) {
             tabla.requestFocus();
             tabla.changeSelection(0, 0, false, false);
         }

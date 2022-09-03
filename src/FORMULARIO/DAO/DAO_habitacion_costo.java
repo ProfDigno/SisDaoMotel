@@ -124,4 +124,27 @@ public class DAO_habitacion_costo {
         int Ancho[] = {10, 40, 40, 10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
+    public void actualizar_tabla_habitacion_costo_por_hab(Connection conn, JTable tbltabla,int idhabitacion_costo){
+        String sql = "select hd.idhabitacion_dato as idhd,hd.nro_habitacion as nro_hab,hd.tipo_habitacion,hd.estado_actual as estado,\n"
+            + "TRIM(to_char(hc.monto_por_hora_minimo,'999G999G999')) as hs_mini,"
+            + "TRIM(to_char(hc.monto_por_hora_adicional,'999G999G999')) as hs_add,\n"
+            + "TRIM(to_char(hc.monto_por_dormir_minimo,'999G999G999')) as dor_mini,"
+            + "TRIM(to_char(hc.monto_por_dormir_adicional,'999G999G999')) as dor_add,\n"
+            + "hc.minuto_minimo as min_mini,hc.minuto_adicional as min_add,hc.minuto_cancelar as min_cancel,\n"
+            + "hd.activo \n"
+            + "from habitacion_dato hd,habitacion_costo hc\n"
+            + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo\n"
+            + "and hc.idhabitacion_costo="+idhabitacion_costo
+            + " order by hd.nro_habitacion desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_habitacion_dato(tbltabla);
+    }
+    public void ancho_tabla_habitacion_dato(JTable tbltabla) {
+        int Ancho[] = {4, 4,8,8, 8,8, 8,8, 7,7,7,5};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.alinear_derecha_columna(tbltabla, 5);
+        evejt.alinear_derecha_columna(tbltabla, 6);
+        evejt.alinear_derecha_columna(tbltabla, 7);
+    }
 }

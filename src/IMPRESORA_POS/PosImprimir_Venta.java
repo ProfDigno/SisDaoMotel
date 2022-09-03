@@ -31,119 +31,151 @@ public class PosImprimir_Venta {
 
     EvenConexion eveconn = new EvenConexion();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
-//    private static json_config config=new json_config();
-//    private empresa ENTemp = new empresa();
-//    private DAO_empresa DAOemp = new DAO_empresa();
     ClaImpresoraPos pos = new ClaImpresoraPos();
-    private static json_array_imprimir_pos jsprint=new json_array_imprimir_pos();
-    private static String v1_idventa = "0";
-    private static String v2_fecha = "0";
-    private static String v3_cliente = "0";
-    private static String v4_telefono = "0";
-    private static String v5_direccion = "0";
-    private static String v6_v_efectivo = "0";
-    private static String v7_observacion = "0";
-    private static String v8_monto_delivery = "0";
-    private static String v9_VENTA = "0";
-    private static String v8_tipo_entrega = "local";
-    private static String v10_usuario = "user";
-    private static String v11_forma_pago = "pago";
-    private static String v12_v_tarjeta = "0";
-    private static String tk_nombre_empresa;
-    private static String tk_telefono_empresa;
-    private static String tk_direccion_empresa;
-    private static String tk_ruta_archivo = "ticket_venta.txt";
+    private static json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
+
+//    private static String v10_usuario = "user";
+    private static String tk_ruta_archivo = "ticket_ocupa.txt";
     private static String[] iv1_cantidad = new String[200];
     private static String[] iv2_precio = new String[200];
-    private static int[] iv2_precio_int = new int[200];
+//    private static int[] iv2_precio_int = new int[200];
     private static String[] iv3_total = new String[200];
     private static String[] iv4_descripcion = new String[200];
     private static FileInputStream inputStream = null;
-    private static int tk_iv_fila;
-    private String nombre_ticket = "ticket_venta";
-    private static int tk_iv_sum_fila;
+    private static int tk_iv_fila=0;
+    private String nombre_ticket = "ticket Ocupacion";
+//    private static int tk_iv_sum_fila;
+    private static String tk_nombre_empresa = "PANKY";
+    private static String tk_telefono_empresa = "0992-555666";
+    private static String tk_direccion_empresa = "km8 cde";
+    private static String v1_idv = "0";
+    private static String v2_fec_ini = "0";
+    private static String v3_fec_fin = "0";
+    private static String v4_habitacion;
+    private static String v5_tiempo;
+    private static String v6_tipo;
+    private static String v7_m_minimo;
+    private static String v8_cant_add;
+    private static String v9_m_adicional;
+    private static String v10_m_consumo;
+    private static String v11_m_descuento;
+    private static String v12_m_adelanto;
+    private static String v13_m_pagar;
+    private static boolean es_consumo;
+    private static String v14_usuario;
+
     private void cargar_datos_venta(Connection conn, int idventa) {
         String titulo = "cargar_datos_venta";
-        String sql = "select v.idventa,v.tipo_entrega,to_char(v.fecha_inicio,'yyyy-MM-dd HH24:MI') as fecha,\n"
-                + "(c.idcliente||'-'||c.nombre) as cliente,\n"
-                + "c.telefono,c.direccion,\n"
-                + "TRIM(to_char(v.monto_venta_efectivo,'999G999G999')) as v_efectivo,\n"
-                + "TRIM(to_char(v.monto_venta_tarjeta,'999G999G999')) as v_tarjeta,\n"
-                + "TRIM(to_char(v.monto_delivery,'999G999G999')) as monto_delivery,\n"
-                + "TRIM(to_char(((v.monto_venta_efectivo+v.monto_venta_tarjeta)-v.monto_delivery),'999G999G999')) as venta,\n"
-                + "v.observacion,iv.cantidad,iv.descripcion,\n"
-                + "TRIM(to_char(iv.precio_venta,'999G999G999')) as precio,iv.precio_venta as precioint,\n"
-                + "TRIM(to_char((iv.cantidad*iv.precio_venta),'999G999G999'))  as total,u.nombre as usuario,v.forma_pago \n"
-                + "from venta v,cliente c,item_venta iv,usuario u\n"
-                + "where v.fk_idcliente=c.idcliente\n"
-                + "and v.idventa=iv.fk_idventa\n "
-                + "and v.fk_idusuario=u.idusuario\n "
-                + "and iv.tipo!='D'\n"
-                + "and  v.idventa=" + idventa
-                + " order by iv.iditem_venta asc";
+        String sql = "select v.idventa as idv,\n"
+                + "TRIM(to_char(hr.fec_ocupado_inicio ,'yyyy-MM-dd HH24:MI')) as fec_ini,\n"
+                + "TRIM(to_char(hr.fec_ocupado_fin,'yyyy-MM-dd HH24:MI')) as fec_fin,\n"
+                + "hr.nro_habitacion as habitacion,\n"
+                + "TRIM(to_char((hr.fec_ocupado_fin-hr.fec_ocupado_inicio), 'HH24:MI:ss')) as tiempo,\n"
+                + "case when hr.es_por_hora=true then 'POR HORA'\n"
+                + "     when hr.es_por_dormir=true then 'DORMIR'\n"
+                + "     else 'sin-tipo' end as tipo,\n"
+                + "TRIM(to_char(v.monto_minimo,'999G999G999')) as m_minimo,\n"
+                + "v.cant_adicional as cant_add,\n"
+                + "TRIM(to_char(v.monto_adicional,'999G999G999')) as m_adicional,\n"
+                + "TRIM(to_char(v.monto_consumo,'999G999G999')) as m_consumo,\n"
+                + "TRIM(to_char(v.monto_descuento,'999G999G999')) as m_descuento,\n"
+                + "TRIM(to_char(v.monto_adelanto,'999G999G999')) as m_adelanto,\n"
+                + "TRIM(to_char(((v.monto_minimo+v.monto_adicional+v.monto_consumo)-"
+                + "(v.monto_descuento+v.monto_adelanto)),'999G999G999')) as m_pagar,\n"
+                + "case when v.monto_consumo>0 then true else false end as es_consumo,"
+                + "u.nombre as usuario\n"
+                + "from venta v,habitacion_recepcion hr,usuario u  \n"
+                + "where v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
+                + "and v.fk_idusuario=u.idusuario \n"
+                + "and v.idventa=" + idventa;
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
-            tk_iv_fila = 0;
-            tk_iv_sum_fila=0;
-            while (rs.next()) {
-                v1_idventa = rs.getString("idventa");
-                v2_fecha = rs.getString("fecha");
-                v3_cliente = rs.getString("cliente");
-                v4_telefono = rs.getString("telefono");
-                v5_direccion = rs.getString("direccion");
-                v6_v_efectivo = rs.getString("v_efectivo");
-                v7_observacion = rs.getString("observacion");
-                v8_monto_delivery = rs.getString("monto_delivery");
-                v8_tipo_entrega = rs.getString("tipo_entrega");
-                v9_VENTA = rs.getString("venta");
-                v10_usuario = rs.getString("usuario");
-                v11_forma_pago = rs.getString("forma_pago");
-                 v12_v_tarjeta = rs.getString("v_tarjeta");
-                iv1_cantidad[tk_iv_fila] = rs.getString("cantidad");
-                iv2_precio[tk_iv_fila] = rs.getString("precio");
-                iv3_total[tk_iv_fila] = rs.getString("total");
-                iv4_descripcion[tk_iv_fila] = rs.getString("descripcion");
-                iv2_precio_int[tk_iv_fila] = rs.getInt("precioint");
-                if(iv2_precio_int[tk_iv_fila]!=0){
-                    tk_iv_sum_fila++;
-                }
-                tk_iv_fila++;
+            if (rs.next()) {
+                v1_idv = rs.getString("idv");
+                v2_fec_ini = rs.getString("fec_ini");
+                v3_fec_fin = rs.getString("fec_fin");
+                v4_habitacion = rs.getString("habitacion");
+                v5_tiempo = rs.getString("tiempo");
+                v6_tipo = rs.getString("tipo");
+                v7_m_minimo = rs.getString("m_minimo");
+                v8_cant_add = rs.getString("cant_add");
+                v9_m_adicional = rs.getString("m_adicional");
+                v10_m_consumo = rs.getString("m_consumo");
+                es_consumo = rs.getBoolean("es_consumo");
+                v11_m_descuento = rs.getString("m_descuento");
+                v12_m_adelanto = rs.getString("m_adelanto");
+                v13_m_pagar = rs.getString("m_pagar");
+                v14_usuario = rs.getString("usuario");
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
         }
     }
 
+    private void cargar_datos_venta_item(Connection conn, int idventa) {
+        if (es_consumo) {
+            String titulo = "cargar_datos_venta_item";
+            String sql = "select vi.descripcion as descripcion,\n"
+                    + "vi.cantidad as cant,\n"
+                    + "TRIM(to_char(vi.precio_venta,'999G999G999')) as pventa,\n"
+                    + "TRIM(to_char((vi.cantidad * vi.precio_venta),'999G999G999')) as subtotal\n"
+                    + "from venta_item vi where vi.fk_idventa=" + idventa;
+            try {
+                ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+                tk_iv_fila = 0;
+                while (rs.next()) {
+                    iv4_descripcion[tk_iv_fila] = rs.getString("descripcion");
+                    iv1_cantidad[tk_iv_fila] = rs.getString("cant");
+                    iv2_precio[tk_iv_fila] = rs.getString("pventa");
+                    iv3_total[tk_iv_fila] = rs.getString("subtotal");
+                    tk_iv_fila++;
+                }
+            } catch (Exception e) {
+                evemen.mensaje_error(e, sql, titulo);
+            }
+        }else{
+            tk_iv_fila = 0;
+        }
+    }
+
     private String cargar_datos_para_mensaje_textarea() {
+        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila*2);
         String mensaje_impresora = "";
         String saltolinea = "\n";
         String tabular = "\t";
+        String separador="==========================================";
         mensaje_impresora = mensaje_impresora + "===============" + tk_nombre_empresa + "================" + saltolinea;
-        mensaje_impresora = mensaje_impresora + tk_telefono_empresa +  saltolinea;
+        mensaje_impresora = mensaje_impresora + tk_telefono_empresa + saltolinea;
         mensaje_impresora = mensaje_impresora + tk_direccion_empresa + saltolinea;
-
-        mensaje_impresora = mensaje_impresora + "VENTA:" + v1_idventa + saltolinea;
-        mensaje_impresora = mensaje_impresora + "FEC: " + v2_fecha + saltolinea;
-        mensaje_impresora = mensaje_impresora + "USUARIO:" + v10_usuario + saltolinea;
-        mensaje_impresora = mensaje_impresora + "CLI: " + v3_cliente + saltolinea;
-        mensaje_impresora = mensaje_impresora + "TEL: " + v4_telefono + saltolinea;
-        mensaje_impresora = mensaje_impresora + "DIR: " + v5_direccion + saltolinea;
-        mensaje_impresora = mensaje_impresora + "==========================================" + saltolinea;
-        for (int i = 0; i < tk_iv_fila; i++) {
-            mensaje_impresora = mensaje_impresora + iv4_descripcion[i] + saltolinea;
-            if (iv2_precio_int[i] != 0) {
-                String item = iv1_cantidad[i] + tabular + iv2_precio[i] + tabular + iv3_total[i] + saltolinea;
-                mensaje_impresora = mensaje_impresora + item;
+        mensaje_impresora = mensaje_impresora + "CODIGO VENTA:" + v1_idv + saltolinea;
+        mensaje_impresora = mensaje_impresora + "FEC-INICIO: " + v2_fec_ini + saltolinea;
+        mensaje_impresora = mensaje_impresora + "FEC-FIN: " + v3_fec_fin + saltolinea;
+        mensaje_impresora = mensaje_impresora + "HAB: " + v4_habitacion + " TIEMPO:" + v5_tiempo + saltolinea;
+        mensaje_impresora = mensaje_impresora + "TIPO: " + v6_tipo + saltolinea;
+        mensaje_impresora = mensaje_impresora + "USUARIO:" + v14_usuario + saltolinea;
+        mensaje_impresora = mensaje_impresora + "TOTAL FILA:" + totalfila + saltolinea;
+        if (es_consumo) {
+            mensaje_impresora = mensaje_impresora + separador + saltolinea;
+            for (int i = 0; i < tk_iv_fila; i++) {
+                mensaje_impresora = mensaje_impresora + iv4_descripcion[i] + saltolinea;
+                    String item = iv1_cantidad[i] + tabular + iv2_precio[i] + tabular + iv3_total[i] + saltolinea;
+                    mensaje_impresora = mensaje_impresora + item;
             }
         }
-        mensaje_impresora = mensaje_impresora + "==========================================" + saltolinea;
-        mensaje_impresora = mensaje_impresora + "ENTREGA:" + v8_tipo_entrega + saltolinea;
-        mensaje_impresora = mensaje_impresora + "PAGO: " + v11_forma_pago + saltolinea;
-        mensaje_impresora = mensaje_impresora + "OBS: " + v7_observacion + saltolinea;
-        mensaje_impresora = mensaje_impresora + "VENTA :" + tabular + tabular + v9_VENTA + saltolinea;
-        mensaje_impresora = mensaje_impresora + "DELIVERY :" + tabular + tabular + v8_monto_delivery + saltolinea;
-        mensaje_impresora = mensaje_impresora + "TOTAL EFECTIVO:" + tabular + tabular + v6_v_efectivo + saltolinea;
-        mensaje_impresora = mensaje_impresora + "TOTAL TARJETA:" + tabular + tabular + v12_v_tarjeta + saltolinea;
+        mensaje_impresora = mensaje_impresora + separador + saltolinea;
+        mensaje_impresora = mensaje_impresora + "MONTO MINIMO: " + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular +v7_m_minimo + saltolinea;
+        mensaje_impresora = mensaje_impresora + "MONTO ADICIONAL: " + saltolinea;
+        mensaje_impresora = mensaje_impresora  +tabular + tabular + v9_m_adicional + saltolinea;
+        mensaje_impresora = mensaje_impresora + "MONTO CONSUMO: " + saltolinea;
+        mensaje_impresora = mensaje_impresora  + tabular + tabular +v10_m_consumo + saltolinea;
+        mensaje_impresora = mensaje_impresora + "MONTO DESCUENTO: " + saltolinea;
+        mensaje_impresora = mensaje_impresora  + tabular + tabular +v11_m_descuento + saltolinea;
+        mensaje_impresora = mensaje_impresora + "MONTO ADELANTO: " + saltolinea;
+        mensaje_impresora = mensaje_impresora  + tabular + tabular +v12_m_adelanto + saltolinea;
+        mensaje_impresora = mensaje_impresora + separador + saltolinea;
+        mensaje_impresora = mensaje_impresora + "TOTAL PAGAR : " + saltolinea;
+        mensaje_impresora = mensaje_impresora  + tabular + tabular + v13_m_pagar + saltolinea;
         return mensaje_impresora;
     }
 
@@ -154,41 +186,42 @@ public class PosImprimir_Venta {
         e.setNumber(101.85);
         //Definir el tamanho del papel 
         int tempfila = 0;
-        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila + tk_iv_sum_fila);
+        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila*2);
         printer.setOutSize(totalfila, totalColumna);
-        printer.printTextWrap(1 + tempfila, 1, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_cabezera()+ tk_nombre_empresa + jsprint.getLinea_cabezera());
+        printer.printTextWrap(1 + tempfila, 1, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_cabezera() + tk_nombre_empresa + jsprint.getLinea_cabezera());
         printer.printTextWrap(2 + tempfila, 2, jsprint.getSep_inicio(), totalColumna, tk_telefono_empresa);
         printer.printTextWrap(3 + tempfila, 3, jsprint.getSep_inicio(), totalColumna, tk_direccion_empresa);
-        printer.printTextWrap(4 + tempfila, 4, jsprint.getSep_inicio(), totalColumna, "VENTA:" + v1_idventa);
-        printer.printTextWrap(4 + tempfila, 4, jsprint.getSep_fecha(), totalColumna, "FEC:" + v2_fecha);
-        printer.printTextWrap(5 + tempfila, 5,jsprint.getSep_inicio(), totalColumna, "USUARIO:" + v10_usuario);
-        printer.printTextWrap(6 + tempfila, 6, jsprint.getSep_inicio(), totalColumna, "CLI: " + v3_cliente);
-        printer.printTextWrap(7 + tempfila, 7, jsprint.getSep_inicio(), totalColumna, "TEL: " + v4_telefono);
-        printer.printTextWrap(8 + tempfila, 8, jsprint.getSep_inicio(), totalColumna, "DIR: " + v5_direccion);
-        printer.printTextWrap(9 + tempfila, 9, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
-        for (int i = 0; i < tk_iv_fila; i++) {
-                printer.printTextWrap(10 + tempfila, 10, jsprint.getSep_inicio(),jsprint.getTt_text_descrip(), iv4_descripcion[i]);
-            if (iv2_precio_int[i] != 0) {
-                printer.printTextWrap(11 + tempfila, 11, jsprint.getSep_item_cant(), totalColumna, iv1_cantidad[i] + " X");
-                printer.printTextWrap(11 + tempfila, 11, jsprint.getSep_item_precio(), totalColumna, iv2_precio[i] + " =");
-                printer.printTextWrap(11 + tempfila, 11, jsprint.getSep_item_subtotal(), totalColumna, iv3_total[i]);
-                tempfila = tempfila + 2;
-            } else {
-                tempfila = tempfila + 1;
+        printer.printTextWrap(4 + tempfila, 4, jsprint.getSep_inicio(), totalColumna, "COD. VENTA:" + v1_idv);
+        printer.printTextWrap(5 + tempfila, 5, jsprint.getSep_inicio(), totalColumna, "FEC INICIO:" + v2_fec_ini);
+        printer.printTextWrap(6 + tempfila, 6, jsprint.getSep_inicio(), totalColumna, "FEC FIN:" + v3_fec_fin);
+        printer.printTextWrap(7 + tempfila, 7, jsprint.getSep_inicio(), totalColumna, "HABITACION:" + v4_habitacion);
+        printer.printTextWrap(8 + tempfila, 8, jsprint.getSep_inicio(), totalColumna, "TIEMPO OCUPA:" + v5_tiempo);
+        printer.printTextWrap(9 + tempfila, 9, jsprint.getSep_inicio(), totalColumna, "USUARIO:" + v14_usuario);
+        printer.printTextWrap(10 + tempfila, 10, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
+        printer.printTextWrap(11 + tempfila, 11, jsprint.getSep_inicio(), totalColumna, "CANT-DESCEIPCION-PRECIO-TOTAL");
+        if (es_consumo) {
+            for (int i = 0; i < tk_iv_fila; i++) {
+                printer.printTextWrap(12 + tempfila, 12, jsprint.getSep_inicio(), jsprint.getTt_text_descrip(), iv4_descripcion[i]);
+                    printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_cant(), totalColumna, iv1_cantidad[i] + " X");
+                    printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_precio(), totalColumna, iv2_precio[i] + " =");
+                    printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_subtotal(), totalColumna, iv3_total[i]);
+                    tempfila = tempfila + 2;
             }
         }
-        printer.printTextWrap(12 + tempfila, 12, jsprint.getSep_inicio(), totalColumna,jsprint.getLinea_separador());
-        printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_inicio(), totalColumna, "ENTREGA: " + v8_tipo_entrega);
-        printer.printTextWrap(14 + tempfila, 14, jsprint.getSep_inicio(), totalColumna, "PAGO: " + v11_forma_pago);
-        printer.printTextWrap(15 + tempfila, 15, jsprint.getSep_inicio(), totalColumna, "OBS: " + v7_observacion);
-        printer.printTextWrap(16 + tempfila, 16, jsprint.getSep_inicio(), totalColumna, "VENTA:");
-        printer.printTextWrap(16 + tempfila, 16, jsprint.getSep_total_gral(), totalColumna, v9_VENTA);
-        printer.printTextWrap(17 + tempfila, 17, jsprint.getSep_inicio(), totalColumna, "DELIVERY:");
-        printer.printTextWrap(17 + tempfila, 17, jsprint.getSep_total_gral(), totalColumna, v8_monto_delivery);
-        printer.printTextWrap(18 + tempfila, 18, jsprint.getSep_inicio(), totalColumna, "TOTAL EFECTIVO:");
-        printer.printTextWrap(18 + tempfila, 18, jsprint.getSep_total_gral(), totalColumna, v6_v_efectivo);
-        printer.printTextWrap(19 + tempfila, 19, jsprint.getSep_inicio(), totalColumna, "TOTAL TARJETA:");
-        printer.printTextWrap(19 + tempfila, 19, jsprint.getSep_total_gral(), totalColumna, v12_v_tarjeta);
+        printer.printTextWrap(12 + tempfila, 12, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
+        printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_inicio(), totalColumna, "TIPO : " + v6_tipo);
+        printer.printTextWrap(14 + tempfila, 14, jsprint.getSep_inicio(), totalColumna, "MONTO MINIMO:");
+        printer.printTextWrap(14 + tempfila, 14, jsprint.getSep_total_gral(), totalColumna, v7_m_minimo);
+        printer.printTextWrap(15 + tempfila, 15, jsprint.getSep_inicio(), totalColumna, "MONTO ADICIONAL:");
+        printer.printTextWrap(15 + tempfila, 15, jsprint.getSep_total_gral(), totalColumna, v9_m_adicional);
+        printer.printTextWrap(16 + tempfila, 16, jsprint.getSep_inicio(), totalColumna, "MONTO CONSUMO:");
+        printer.printTextWrap(16 + tempfila, 16, jsprint.getSep_total_gral(), totalColumna, v10_m_consumo);
+        printer.printTextWrap(17 + tempfila, 17, jsprint.getSep_inicio(), totalColumna, "MONTO DESCUENTO:");
+        printer.printTextWrap(17 + tempfila, 17, jsprint.getSep_total_gral(), totalColumna, v11_m_descuento);
+        printer.printTextWrap(18 + tempfila, 18, jsprint.getSep_inicio(), totalColumna, "MONTO ADELANTO:");
+        printer.printTextWrap(18 + tempfila, 18, jsprint.getSep_total_gral(), totalColumna, v12_m_adelanto);
+        printer.printTextWrap(19 + tempfila, 19, jsprint.getSep_inicio(), totalColumna, "TOTAL PAGAR:");
+        printer.printTextWrap(19 + tempfila, 19, jsprint.getSep_total_gral(), totalColumna, v13_m_pagar);
         printer.toFile(tk_ruta_archivo);
         try {
             inputStream = new FileInputStream(tk_ruta_archivo);
@@ -202,7 +235,7 @@ public class PosImprimir_Venta {
 
     }
 
-    void crear_archivo_enviar_impresora() {
+    private void crear_archivo_enviar_impresora() {
         String titulo = "crear_archivo_enviar_impresora";
         try {
             crear_archivo_texto_impresion();
@@ -214,7 +247,7 @@ public class PosImprimir_Venta {
     }
 
     private void crear_mensaje_textarea_y_confirmar() {
-        JTextArea ta = new JTextArea(20, 30);
+        JTextArea ta = new JTextArea(30, 30);
         ta.setText(cargar_datos_para_mensaje_textarea());
         System.out.println(cargar_datos_para_mensaje_textarea());
         Object[] opciones = {"IMPRIMIR", "CANCELAR"};
@@ -228,14 +261,7 @@ public class PosImprimir_Venta {
 
     public void boton_imprimir_pos_VENTA(Connection conn, int idventa) {
         cargar_datos_venta(conn, idventa);
-//        DAOemp.cargar_empresa(conn, ENTemp,1);
-//        tk_nombre_empresa=ENTemp.getC4razon_social();
-//        tk_telefono_empresa=ENTemp.getC8celular();
-//        tk_direccion_empresa=ENTemp.getC7direccion();
-        if (tk_iv_fila > 0) {
-            crear_mensaje_textarea_y_confirmar();
-        } else {
-            JOptionPane.showMessageDialog(null, "NO SE ENCONTRO DATOS PARA ESTA COMPRA");
-        }
+        cargar_datos_venta_item(conn, idventa);
+        crear_mensaje_textarea_y_confirmar();
     }
 }

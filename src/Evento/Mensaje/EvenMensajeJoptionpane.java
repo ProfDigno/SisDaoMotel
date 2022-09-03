@@ -82,7 +82,22 @@ public class EvenMensajeJoptionpane {
         }
         return mensajeok;
     }
-
+    public int getInt_MensajeGeneral_informacion_3btn(String mensaje, String titulo, String boton1, String boton2, String boton3) {
+        JOptionPane jOptionPane = new JOptionPane();
+        jOptionPane.setBackground(Color.RED);
+        jOptionPane.setOpaque(true);
+        Object[] opciones = {boton1, boton2,boton3};
+        int mensajeok;
+        int eleccion = jOptionPane.showOptionDialog(null, mensaje, titulo,
+                jOptionPane.YES_NO_OPTION,
+                jOptionPane.INFORMATION_MESSAGE, null, opciones, boton1);
+//        if (eleccion == jOptionPane.YES_OPTION) {
+//            mensajeok = true;
+//        } else {
+//            mensajeok = false;
+//        }
+        return eleccion;
+    }
     public boolean MensajeGeneral_warning(String mensaje, String titulo, String boton1, String boton2) {
         JOptionPane jOptionPane = new JOptionPane();
         Object[] opciones = {boton1, boton2};

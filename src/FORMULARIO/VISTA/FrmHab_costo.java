@@ -125,8 +125,8 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
     }
 
     private void seleccionar_tabla() {
-        int id = eveJtab.getInt_select_id(tbltabla_pri);
-        DAOhc.cargar_habitacion_costo(conn, ENThc, id);
+        int idhabitacion_costo = eveJtab.getInt_select_id(tbltabla_pri);
+        DAOhc.cargar_habitacion_costo(conn, ENThc, idhabitacion_costo);
         txtid.setText(String.valueOf(ENThc.getC1idhabitacion_costo()));
         titulo_formulario(ENThc.getC2fecha_creado(), ENThc.getC3creado_por());
         jCactivo.setSelected(ENThc.getC4activo());
@@ -142,6 +142,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jFdormir_ingreso_inicio.setText(ENThc.getC14hs_dormir_ingreso_inicio());
         jFdormir_ingreso_final.setText(ENThc.getC15hs_dormir_ingreso_final());
         jFdormir_salida_final.setText(ENThc.getC16hs_dormir_salida_final());
+        DAOhc.actualizar_tabla_habitacion_costo_por_hab(conn, tbltabla_sec, idhabitacion_costo);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }

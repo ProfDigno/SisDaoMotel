@@ -20,10 +20,54 @@ public class DAO_habitacion_recepcion_temp {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "HABITACION_RECEPCION_TEMP GUARDADO CORRECTAMENTE";
     private String mensaje_update = "HABITACION_RECEPCION_TEMP MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO habitacion_recepcion_temp(idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,nro_habitacion,descripcion_habitacion,estado,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumision,monto_descuento,minuto_minimo,minuto_adicional,minuto_cancelar,hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE habitacion_recepcion_temp SET idhabitacion_recepcion_actual=?,fecha_creado=?,creado_por=?,nro_habitacion=?,descripcion_habitacion=?,estado=?,fec_libre_inicio=?,fec_libre_fin=?,fec_ocupado_inicio=?,fec_ocupado_fin=?,fec_sucio_inicio=?,fec_sucio_fin=?,fec_limpieza_inicio=?,fec_limpieza_fin=?,fec_mante_inicio=?,fec_mante_fin=?,es_libre=?,es_ocupado=?,es_sucio=?,es_limpieza=?,es_mante=?,es_cancelado=?,es_por_hora=?,es_por_dormir=?,monto_por_hora_minimo=?,monto_por_hora_adicional=?,monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,monto_consumision=?,monto_descuento=?,minuto_minimo=?,minuto_adicional=?,minuto_cancelar=?,hs_dormir_ingreso_inicio=?,hs_dormir_ingreso_final=?,hs_dormir_salida_final=? WHERE idhabitacion_recepcion_temp=?;";
+    private String sql_insert = "INSERT INTO habitacion_recepcion_temp"
+            + "(idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,"
+            + "nro_habitacion,descripcion_habitacion,estado,"
+            + "fec_libre_inicio,fec_libre_fin,"
+            + "fec_ocupado_inicio,fec_ocupado_fin,"
+            + "fec_sucio_inicio,fec_sucio_fin,"
+            + "fec_limpieza_inicio,fec_limpieza_fin,"
+            + "fec_mante_inicio,fec_mante_fin,"
+            + "es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,"
+            + "monto_por_hora_minimo,monto_por_hora_adicional,"
+            + "monto_por_dormir_minimo,monto_por_dormir_adicional,"
+            + "monto_consumision,monto_descuento,"
+            + "minuto_minimo,minuto_adicional,minuto_cancelar,"
+            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,"
+            + "puerta_cliente,puerta_limpieza,tipo_habitacion,monto_adelanto,idhabitacion_dato) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE habitacion_recepcion_temp "
+            + "SET idhabitacion_recepcion_actual=?,fecha_creado=?,creado_por=?,"
+            + "nro_habitacion=?,descripcion_habitacion=?,estado=?,"
+            + "fec_libre_inicio=?,fec_libre_fin=?,"
+            + "fec_ocupado_inicio=?,fec_ocupado_fin=?,"
+            + "fec_sucio_inicio=?,fec_sucio_fin=?,"
+            + "fec_limpieza_inicio=?,fec_limpieza_fin=?,"
+            + "fec_mante_inicio=?,fec_mante_fin=?,"
+            + "es_libre=?,es_ocupado=?,es_sucio=?,es_limpieza=?,es_mante=?,es_cancelado=?,es_por_hora=?,es_por_dormir=?,"
+            + "monto_por_hora_minimo=?,monto_por_hora_adicional=?,"
+            + "monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,"
+            + "monto_consumision=?,monto_descuento=?,"
+            + "minuto_minimo=?,minuto_adicional=?,minuto_cancelar=?,"
+            + "hs_dormir_ingreso_inicio=?,hs_dormir_ingreso_final=?,hs_dormir_salida_final=?,"
+            + "puerta_cliente=?,puerta_limpieza=?,tipo_habitacion=?,monto_adelanto=?,idhabitacion_dato=? "
+            + "WHERE nro_habitacion=?;";
     private String sql_select = "SELECT idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,nro_habitacion,descripcion_habitacion,estado,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumision,monto_descuento,minuto_minimo,minuto_adicional,minuto_cancelar,hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final FROM habitacion_recepcion_temp order by 1 desc;";
-    private String sql_cargar = "SELECT idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,nro_habitacion,descripcion_habitacion,estado,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumision,monto_descuento,minuto_minimo,minuto_adicional,minuto_cancelar,hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final FROM habitacion_recepcion_temp WHERE idhabitacion_recepcion_temp=";
+    private String sql_cargar = "SELECT idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,"
+            + "nro_habitacion,descripcion_habitacion,estado,"
+            + "fec_libre_inicio,fec_libre_fin,"
+            + "fec_ocupado_inicio,fec_ocupado_fin,"
+            + "fec_sucio_inicio,fec_sucio_fin,"
+            + "fec_limpieza_inicio,fec_limpieza_fin,"
+            + "fec_mante_inicio,fec_mante_fin,"
+            + "es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,"
+            + "monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,"
+            + "monto_consumision,monto_descuento,"
+            + "minuto_minimo,minuto_adicional,minuto_cancelar,"
+            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,"
+            + "puerta_cliente,puerta_limpieza,tipo_habitacion,"
+            + "monto_adelanto,idhabitacion_dato "
+            + "FROM habitacion_recepcion_temp WHERE idhabitacion_dato=";
     private String sql_update_dato = "UPDATE habitacion_recepcion_temp "
             + "SET "
             + "descripcion_habitacion=?,"
@@ -36,7 +80,9 @@ public class DAO_habitacion_recepcion_temp {
             + "minuto_cancelar=?,"
             + "hs_dormir_ingreso_inicio=?,"
             + "hs_dormir_ingreso_final=?,"
-            + "hs_dormir_salida_final=? "
+            + "hs_dormir_salida_final=?,"
+            + "tipo_habitacion=?,"
+            + "idhabitacion_dato=? "
             + "WHERE nro_habitacion=?;";
 
     public void insertar_habitacion_recepcion_temp(Connection conn, habitacion_recepcion_temp harete) {
@@ -82,6 +128,11 @@ public class DAO_habitacion_recepcion_temp {
             pst.setTime(35, evefec.getTime_sistema_cargado(harete.getC35hs_dormir_ingreso_inicio()));
             pst.setTime(36, evefec.getTime_sistema_cargado(harete.getC36hs_dormir_ingreso_final()));
             pst.setTime(37, evefec.getTime_sistema_cargado(harete.getC37hs_dormir_salida_final()));
+            pst.setBoolean(38, harete.getC38puerta_cliente());
+            pst.setBoolean(39, harete.getC39puerta_limpieza());
+            pst.setString(40, harete.getC40tipo_habitacion());
+            pst.setDouble(41, harete.getC41monto_adelanto());
+            pst.setInt(42, harete.getC42idhabitacion_dato());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + harete.toString(), titulo);
@@ -97,21 +148,21 @@ public class DAO_habitacion_recepcion_temp {
         try {
             pst = conn.prepareStatement(sql_update);
             pst.setInt(1, harete.getC2idhabitacion_recepcion_actual());
-            pst.setTimestamp(2, evefec.getTimestamp_sistema());
+            pst.setTimestamp(2, evefec.getTimestamp_fecha_cargado(harete.getC3fecha_creado()));
             pst.setString(3, harete.getC4creado_por());
             pst.setInt(4, harete.getC5nro_habitacion());
             pst.setString(5, harete.getC6descripcion_habitacion());
             pst.setString(6, harete.getC7estado());
-            pst.setTimestamp(7, evefec.getTimestamp_sistema());
-            pst.setTimestamp(8, evefec.getTimestamp_sistema());
-            pst.setTimestamp(9, evefec.getTimestamp_sistema());
-            pst.setTimestamp(10, evefec.getTimestamp_sistema());
-            pst.setTimestamp(11, evefec.getTimestamp_sistema());
-            pst.setTimestamp(12, evefec.getTimestamp_sistema());
-            pst.setTimestamp(13, evefec.getTimestamp_sistema());
-            pst.setTimestamp(14, evefec.getTimestamp_sistema());
-            pst.setTimestamp(15, evefec.getTimestamp_sistema());
-            pst.setTimestamp(16, evefec.getTimestamp_sistema());
+            pst.setTimestamp(7, evefec.getTimestamp_fecha_cargado(harete.getC8fec_libre_inicio()));
+            pst.setTimestamp(8, evefec.getTimestamp_fecha_cargado(harete.getC9fec_libre_fin()));
+            pst.setTimestamp(9, evefec.getTimestamp_fecha_cargado(harete.getC10fec_ocupado_inicio()));
+            pst.setTimestamp(10, evefec.getTimestamp_fecha_cargado(harete.getC11fec_ocupado_fin()));
+            pst.setTimestamp(11, evefec.getTimestamp_fecha_cargado(harete.getC12fec_sucio_inicio()));
+            pst.setTimestamp(12, evefec.getTimestamp_fecha_cargado(harete.getC13fec_sucio_fin()));
+            pst.setTimestamp(13, evefec.getTimestamp_fecha_cargado(harete.getC14fec_limpieza_inicio()));
+            pst.setTimestamp(14, evefec.getTimestamp_fecha_cargado(harete.getC15fec_limpieza_fin()));
+            pst.setTimestamp(15, evefec.getTimestamp_fecha_cargado(harete.getC16fec_mante_inicio()));
+            pst.setTimestamp(16, evefec.getTimestamp_fecha_cargado(harete.getC17fec_mante_fin()));
             pst.setBoolean(17, harete.getC18es_libre());
             pst.setBoolean(18, harete.getC19es_ocupado());
             pst.setBoolean(19, harete.getC20es_sucio());
@@ -129,32 +180,32 @@ public class DAO_habitacion_recepcion_temp {
             pst.setInt(31, harete.getC32minuto_minimo());
             pst.setInt(32, harete.getC33minuto_adicional());
             pst.setInt(33, harete.getC34minuto_cancelar());
-            pst.setTime(34, evefec.getTime_sistema());
-            pst.setTime(35, evefec.getTime_sistema());
-            pst.setTime(36, evefec.getTime_sistema());
-            pst.setInt(37, harete.getC1idhabitacion_recepcion_temp());
+            pst.setTime(34, evefec.getTime_sistema_cargado(harete.getC35hs_dormir_ingreso_inicio()));
+            pst.setTime(35, evefec.getTime_sistema_cargado(harete.getC36hs_dormir_ingreso_final()));
+            pst.setTime(36, evefec.getTime_sistema_cargado(harete.getC37hs_dormir_salida_final()));
+            pst.setBoolean(37, harete.getC38puerta_cliente());
+            pst.setBoolean(38, harete.getC39puerta_limpieza());
+            pst.setString(39, harete.getC40tipo_habitacion());
+            pst.setDouble(40, harete.getC41monto_adelanto());
+            pst.setInt(41, harete.getC42idhabitacion_dato());
+            pst.setInt(42, harete.getC5nro_habitacion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + harete.toString(), titulo);
-            evemen.modificado_correcto(mensaje_update, true);
+            evemen.modificado_correcto(mensaje_update, false);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_update + "\n" + harete.toString(), titulo);
         }
     }
+
     public void update_habitacion_recepcion_temp_dato(Connection conn, habitacion_recepcion_temp harete) {
         /**
-         * + "descripcion_habitacion=?,"
-            + "monto_por_hora_minimo=?,"
-            + "monto_por_hora_adicional=?,"
-            + "monto_por_dormir_minimo=?,"
-            + "monto_por_dormir_adicional=?,"
-            + "minuto_minimo=?,"
-            + "minuto_adicional=?,"
-            + "minuto_cancelar=?,"
-            + "hs_dormir_ingreso_inicio=?,"
-            + "hs_dormir_ingreso_final=?,"
-            + "hs_dormir_salida_final=? "
-            + "WHERE nro_habitacion=?;";
+         * + "descripcion_habitacion=?," + "monto_por_hora_minimo=?," +
+         * "monto_por_hora_adicional=?," + "monto_por_dormir_minimo=?," +
+         * "monto_por_dormir_adicional=?," + "minuto_minimo=?," +
+         * "minuto_adicional=?," + "minuto_cancelar=?," +
+         * "hs_dormir_ingreso_inicio=?," + "hs_dormir_ingreso_final=?," +
+         * "hs_dormir_salida_final=? " + "WHERE nro_habitacion=?;";
          */
         String titulo = "update_habitacion_recepcion_temp_dato";
         PreparedStatement pst = null;
@@ -171,7 +222,9 @@ public class DAO_habitacion_recepcion_temp {
             pst.setTime(9, evefec.getTime_sistema_cargado(harete.getC35hs_dormir_ingreso_inicio()));
             pst.setTime(10, evefec.getTime_sistema_cargado(harete.getC36hs_dormir_ingreso_final()));
             pst.setTime(11, evefec.getTime_sistema_cargado(harete.getC37hs_dormir_salida_final()));
-            pst.setInt(12, harete.getC5nro_habitacion());
+            pst.setString(12, harete.getC40tipo_habitacion());
+            pst.setInt(13, harete.getC42idhabitacion_dato());
+            pst.setInt(14, harete.getC5nro_habitacion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update_dato + "\n" + harete.toString(), titulo);
@@ -180,10 +233,11 @@ public class DAO_habitacion_recepcion_temp {
             evemen.mensaje_error(e, sql_update_dato + "\n" + harete.toString(), titulo);
         }
     }
-    public void cargar_habitacion_recepcion_temp(Connection conn, habitacion_recepcion_temp harete, int idhabitacion_recepcion_temp) {
+
+    public void cargar_habitacion_recepcion_temp(Connection conn, habitacion_recepcion_temp harete, int idhabitacion_dato) {
         String titulo = "Cargar_habitacion_recepcion_temp";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + idhabitacion_recepcion_temp, titulo);
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + idhabitacion_dato, titulo);
             if (rs.next()) {
                 harete.setC1idhabitacion_recepcion_temp(rs.getInt(1));
                 harete.setC2idhabitacion_recepcion_actual(rs.getInt(2));
@@ -222,6 +276,11 @@ public class DAO_habitacion_recepcion_temp {
                 harete.setC35hs_dormir_ingreso_inicio(rs.getString(35));
                 harete.setC36hs_dormir_ingreso_final(rs.getString(36));
                 harete.setC37hs_dormir_salida_final(rs.getString(37));
+                harete.setC38puerta_cliente(rs.getBoolean(38));
+                harete.setC39puerta_limpieza(rs.getBoolean(39));
+                harete.setC40tipo_habitacion(rs.getString(40));
+                harete.setC41monto_adelanto(rs.getDouble(41));
+                harete.setC42idhabitacion_dato(rs.getInt(42));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + harete.toString(), titulo);
             }
         } catch (Exception e) {
@@ -237,5 +296,61 @@ public class DAO_habitacion_recepcion_temp {
     public void ancho_tabla_habitacion_recepcion_temp(JTable tbltabla) {
         int Ancho[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void update_habitacion_recepcion_temp_ocupar(Connection conn, habitacion_recepcion_temp harete) {
+        String titulo = "update_habitacion_recepcion_temp_ocupar";
+        PreparedStatement pst = null;
+        String sql = "update habitacion_recepcion_temp set "
+                + "fec_libre_fin=current_timestamp,"
+                + "fec_ocupado_inicio=current_timestamp,"
+                + "es_ocupado=true,"
+                + "es_por_hora=true,"
+                + "es_por_dormir=false,"
+                + "monto_consumision=0,"
+                + "monto_descuento=0,"
+                + "monto_adelanto=0,"
+                + "estado=?,"
+                + "idhabitacion_recepcion_actual=? "
+                + "where nro_habitacion=?;";
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, harete.getC7estado());
+            pst.setInt(2, harete.getC2idhabitacion_recepcion_actual());
+            pst.setInt(3, harete.getC5nro_habitacion());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql + "\n" + harete.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, false);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql + "\n" + harete.toString(), titulo);
+        }
+    }
+
+    public void actualizar_estado_puerta_cliente_limpieza(Connection conn, int sensor_puerta_cliente, int sensor_puerta_limpieza) {
+        String sql = "update habitacion_recepcion_temp  set puerta_cliente=(select ig.alto_bajo \n"
+                + "from habitacion_item_sensor_gpio ig,habitacion_dato hd  \n"
+                + "where ig.fk_idhabitacion_sensor=? \n"
+                + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
+                + "and hd.nro_habitacion=habitacion_recepcion_temp.nro_habitacion),\n"
+                + "puerta_limpieza=(select ig.alto_bajo \n"
+                + "from habitacion_item_sensor_gpio ig,habitacion_dato hd  \n"
+                + "where ig.fk_idhabitacion_sensor=? \n"
+                + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
+                + "and hd.nro_habitacion=habitacion_recepcion_temp.nro_habitacion);";
+//        eveconn.SQL_execute_libre_sin_print(conn, sql);
+        String titulo = "actualizar_estado_puerta_cliente_limpieza";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, sensor_puerta_cliente);
+            pst.setInt(2, sensor_puerta_limpieza);
+            pst.execute();
+            pst.close();
+//            evemen.Imprimir_serial_sql(sql + "\n" , titulo);
+//            evemen.modificado_correcto(mensaje_update, false);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql + "\n" , titulo);
+        }
     }
 }

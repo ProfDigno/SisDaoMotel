@@ -7,21 +7,26 @@ private String C2fecha_creado;
 private String C3creado_por;
 private String C4cerrado_por;
 private boolean C5es_cerrado;
-private double C6monto_venta;
-private double C7monto_gasto;
-private double C8monto_compra;
-private double C9monto_apertura;
-private double C10monto_vale;
-private double C11monto_cierre;
-private double C12monto_liquidacion;
-private String C13estado;
-private String C14descripcion;
-private int C15fk_idgasto;
-private int C16fk_idcompra;
-private int C17fk_idventa;
-private int C18fk_idusuario;
-private int C19fk_idrh_vale;
-private int C20fk_idrh_liquidacion;
+private double C6monto_apertura_caja;
+private double C7monto_cierre_caja;
+private double C8monto_ocupa_minimo;
+private double C9monto_ocupa_adicional;
+private double C10monto_ocupa_consumo;
+private double C11monto_ocupa_descuento;
+private double C12monto_ocupa_adelanto;
+private double C13monto_gasto;
+private double C14monto_compra;
+private double C15monto_vale;
+private double C16monto_liquidacion;
+private String C17estado;
+private String C18descripcion;
+private int C19fk_idgasto;
+private int C20fk_idcompra;
+private int C21fk_idventa;
+private int C22fk_idusuario;
+private int C23fk_idrh_vale;
+private int C24fk_idrh_liquidacion;
+private double C25monto_solo_adelanto;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -72,97 +77,130 @@ private static String nom_idtabla;
 	public void setC5es_cerrado(boolean C5es_cerrado){
 		this.C5es_cerrado = C5es_cerrado;
 	}
-	public double getC6monto_venta(){
-		return C6monto_venta;
+	public double getC6monto_apertura_caja(){
+		return C6monto_apertura_caja;
 	}
-	public void setC6monto_venta(double C6monto_venta){
-		this.C6monto_venta = C6monto_venta;
+	public void setC6monto_apertura_caja(double C6monto_apertura_caja){
+		this.C6monto_apertura_caja = C6monto_apertura_caja;
 	}
-	public double getC7monto_gasto(){
-		return C7monto_gasto;
+	public double getC7monto_cierre_caja(){
+		return C7monto_cierre_caja;
 	}
-	public void setC7monto_gasto(double C7monto_gasto){
-		this.C7monto_gasto = C7monto_gasto;
+	public void setC7monto_cierre_caja(double C7monto_cierre_caja){
+		this.C7monto_cierre_caja = C7monto_cierre_caja;
 	}
-	public double getC8monto_compra(){
-		return C8monto_compra;
+	public double getC8monto_ocupa_minimo(){
+		return C8monto_ocupa_minimo;
 	}
-	public void setC8monto_compra(double C8monto_compra){
-		this.C8monto_compra = C8monto_compra;
+	public void setC8monto_ocupa_minimo(double C8monto_ocupa_minimo){
+		this.C8monto_ocupa_minimo = C8monto_ocupa_minimo;
 	}
-	public double getC9monto_apertura(){
-		return C9monto_apertura;
+	public double getC9monto_ocupa_adicional(){
+		return C9monto_ocupa_adicional;
 	}
-	public void setC9monto_apertura(double C9monto_apertura){
-		this.C9monto_apertura = C9monto_apertura;
+	public void setC9monto_ocupa_adicional(double C9monto_ocupa_adicional){
+		this.C9monto_ocupa_adicional = C9monto_ocupa_adicional;
 	}
-	public double getC10monto_vale(){
-		return C10monto_vale;
+	public double getC10monto_ocupa_consumo(){
+		return C10monto_ocupa_consumo;
 	}
-	public void setC10monto_vale(double C10monto_vale){
-		this.C10monto_vale = C10monto_vale;
+	public void setC10monto_ocupa_consumo(double C10monto_ocupa_consumo){
+		this.C10monto_ocupa_consumo = C10monto_ocupa_consumo;
 	}
-	public double getC11monto_cierre(){
-		return C11monto_cierre;
+	public double getC11monto_ocupa_descuento(){
+		return C11monto_ocupa_descuento;
 	}
-	public void setC11monto_cierre(double C11monto_cierre){
-		this.C11monto_cierre = C11monto_cierre;
+	public void setC11monto_ocupa_descuento(double C11monto_ocupa_descuento){
+		this.C11monto_ocupa_descuento = C11monto_ocupa_descuento;
 	}
-	public double getC12monto_liquidacion(){
-		return C12monto_liquidacion;
+	public double getC12monto_ocupa_adelanto(){
+		return C12monto_ocupa_adelanto;
 	}
-	public void setC12monto_liquidacion(double C12monto_liquidacion){
-		this.C12monto_liquidacion = C12monto_liquidacion;
+	public void setC12monto_ocupa_adelanto(double C12monto_ocupa_adelanto){
+		this.C12monto_ocupa_adelanto = C12monto_ocupa_adelanto;
 	}
-	public String getC13estado(){
-		return C13estado;
+	public double getC13monto_gasto(){
+		return C13monto_gasto;
 	}
-	public void setC13estado(String C13estado){
-		this.C13estado = C13estado;
+	public void setC13monto_gasto(double C13monto_gasto){
+		this.C13monto_gasto = C13monto_gasto;
 	}
-	public String getC14descripcion(){
-		return C14descripcion;
+	public double getC14monto_compra(){
+		return C14monto_compra;
 	}
-	public void setC14descripcion(String C14descripcion){
-		this.C14descripcion = C14descripcion;
+	public void setC14monto_compra(double C14monto_compra){
+		this.C14monto_compra = C14monto_compra;
 	}
-	public int getC15fk_idgasto(){
-		return C15fk_idgasto;
+	public double getC15monto_vale(){
+		return C15monto_vale;
 	}
-	public void setC15fk_idgasto(int C15fk_idgasto){
-		this.C15fk_idgasto = C15fk_idgasto;
+	public void setC15monto_vale(double C15monto_vale){
+		this.C15monto_vale = C15monto_vale;
 	}
-	public int getC16fk_idcompra(){
-		return C16fk_idcompra;
+	public double getC16monto_liquidacion(){
+		return C16monto_liquidacion;
 	}
-	public void setC16fk_idcompra(int C16fk_idcompra){
-		this.C16fk_idcompra = C16fk_idcompra;
+	public void setC16monto_liquidacion(double C16monto_liquidacion){
+		this.C16monto_liquidacion = C16monto_liquidacion;
 	}
-	public int getC17fk_idventa(){
-		return C17fk_idventa;
+	public String getC17estado(){
+		return C17estado;
 	}
-	public void setC17fk_idventa(int C17fk_idventa){
-		this.C17fk_idventa = C17fk_idventa;
+	public void setC17estado(String C17estado){
+		this.C17estado = C17estado;
 	}
-	public int getC18fk_idusuario(){
-		return C18fk_idusuario;
+	public String getC18descripcion(){
+		return C18descripcion;
 	}
-	public void setC18fk_idusuario(int C18fk_idusuario){
-		this.C18fk_idusuario = C18fk_idusuario;
+	public void setC18descripcion(String C18descripcion){
+		this.C18descripcion = C18descripcion;
 	}
-	public int getC19fk_idrh_vale(){
-		return C19fk_idrh_vale;
+	public int getC19fk_idgasto(){
+		return C19fk_idgasto;
 	}
-	public void setC19fk_idrh_vale(int C19fk_idrh_vale){
-		this.C19fk_idrh_vale = C19fk_idrh_vale;
+	public void setC19fk_idgasto(int C19fk_idgasto){
+		this.C19fk_idgasto = C19fk_idgasto;
 	}
-	public int getC20fk_idrh_liquidacion(){
-		return C20fk_idrh_liquidacion;
+	public int getC20fk_idcompra(){
+		return C20fk_idcompra;
 	}
-	public void setC20fk_idrh_liquidacion(int C20fk_idrh_liquidacion){
-		this.C20fk_idrh_liquidacion = C20fk_idrh_liquidacion;
+	public void setC20fk_idcompra(int C20fk_idcompra){
+		this.C20fk_idcompra = C20fk_idcompra;
 	}
+	public int getC21fk_idventa(){
+		return C21fk_idventa;
+	}
+	public void setC21fk_idventa(int C21fk_idventa){
+		this.C21fk_idventa = C21fk_idventa;
+	}
+	public int getC22fk_idusuario(){
+		return C22fk_idusuario;
+	}
+	public void setC22fk_idusuario(int C22fk_idusuario){
+		this.C22fk_idusuario = C22fk_idusuario;
+	}
+	public int getC23fk_idrh_vale(){
+		return C23fk_idrh_vale;
+	}
+	public void setC23fk_idrh_vale(int C23fk_idrh_vale){
+		this.C23fk_idrh_vale = C23fk_idrh_vale;
+	}
+	public int getC24fk_idrh_liquidacion(){
+		return C24fk_idrh_liquidacion;
+	}
+	public void setC24fk_idrh_liquidacion(int C24fk_idrh_liquidacion){
+		this.C24fk_idrh_liquidacion = C24fk_idrh_liquidacion;
+	}
+
+    public double getC25monto_solo_adelanto() {
+        return C25monto_solo_adelanto;
+    }
+
+    public void setC25monto_solo_adelanto(double C25monto_solo_adelanto) {
+        this.C25monto_solo_adelanto = C25monto_solo_adelanto;
+    }
+        
 	public String toString() {
-		return "caja_cierre_detalle(" + ",idcaja_cierre_detalle=" + C1idcaja_cierre_detalle + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,cerrado_por=" + C4cerrado_por + " ,es_cerrado=" + C5es_cerrado + " ,monto_venta=" + C6monto_venta + " ,monto_gasto=" + C7monto_gasto + " ,monto_compra=" + C8monto_compra + " ,monto_apertura=" + C9monto_apertura + " ,monto_vale=" + C10monto_vale + " ,monto_cierre=" + C11monto_cierre + " ,monto_liquidacion=" + C12monto_liquidacion + " ,estado=" + C13estado + " ,descripcion=" + C14descripcion + " ,fk_idgasto=" + C15fk_idgasto + " ,fk_idcompra=" + C16fk_idcompra + " ,fk_idventa=" + C17fk_idventa + " ,fk_idusuario=" + C18fk_idusuario + " ,fk_idrh_vale=" + C19fk_idrh_vale + " ,fk_idrh_liquidacion=" + C20fk_idrh_liquidacion + " )";
+		return "caja_cierre_detalle(" + ",idcaja_cierre_detalle=" + C1idcaja_cierre_detalle + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,cerrado_por=" + C4cerrado_por + " ,es_cerrado=" + C5es_cerrado + " ,monto_apertura_caja=" + C6monto_apertura_caja + " ,monto_cierre_caja=" + C7monto_cierre_caja + " ,monto_ocupa_minimo=" + C8monto_ocupa_minimo + " ,monto_ocupa_adicional=" + C9monto_ocupa_adicional + " ,monto_ocupa_consumo=" + C10monto_ocupa_consumo + " ,monto_ocupa_descuento=" + C11monto_ocupa_descuento + " ,monto_ocupa_adelanto=" + C12monto_ocupa_adelanto + " ,monto_gasto=" + C13monto_gasto + " ,monto_compra=" + C14monto_compra + " ,monto_vale=" + C15monto_vale + " ,monto_liquidacion=" + C16monto_liquidacion + " ,estado=" + C17estado + " ,descripcion=" + C18descripcion + " ,fk_idgasto=" + C19fk_idgasto + " ,fk_idcompra=" + C20fk_idcompra + " ,fk_idventa=" + C21fk_idventa + " ,fk_idusuario=" + C22fk_idusuario + " ,fk_idrh_vale=" + C23fk_idrh_vale + " ,fk_idrh_liquidacion=" + C24fk_idrh_liquidacion + " )";
 	}
 }

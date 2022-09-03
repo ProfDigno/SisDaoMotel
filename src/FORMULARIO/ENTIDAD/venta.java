@@ -13,12 +13,14 @@ private String C8motivo_anulacion;
 private String C9motivo_mudar_habitacion;
 private double C10monto_minimo;
 private double C11monto_adicional;
-private double C12monto_consumo;
-private double C13monto_total;
-private double C14monto_pagado;
-private int C15fk_idhabitacion_recepcion;
-private int C16fk_idpersona;
-private int C17fk_idusuario;
+private double C12cant_adicional;
+private double C13monto_consumo;
+private double C14monto_insumo;
+private double C15monto_descuento;
+private double C16monto_adelanto;
+private int C17fk_idhabitacion_recepcion;
+private int C18fk_idpersona;
+private int C19fk_idusuario;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -105,43 +107,55 @@ private static String nom_idtabla;
 	public void setC11monto_adicional(double C11monto_adicional){
 		this.C11monto_adicional = C11monto_adicional;
 	}
-	public double getC12monto_consumo(){
-		return C12monto_consumo;
+	public double getC12cant_adicional(){
+		return C12cant_adicional;
 	}
-	public void setC12monto_consumo(double C12monto_consumo){
-		this.C12monto_consumo = C12monto_consumo;
+	public void setC12cant_adicional(double C12cant_adicional){
+		this.C12cant_adicional = C12cant_adicional;
 	}
-	public double getC13monto_total(){
-		return C13monto_total;
+	public double getC13monto_consumo(){
+		return C13monto_consumo;
 	}
-	public void setC13monto_total(double C13monto_total){
-		this.C13monto_total = C13monto_total;
+	public void setC13monto_consumo(double C13monto_consumo){
+		this.C13monto_consumo = C13monto_consumo;
 	}
-	public double getC14monto_pagado(){
-		return C14monto_pagado;
+	public double getC14monto_insumo(){
+		return C14monto_insumo;
 	}
-	public void setC14monto_pagado(double C14monto_pagado){
-		this.C14monto_pagado = C14monto_pagado;
+	public void setC14monto_insumo(double C14monto_insumo){
+		this.C14monto_insumo = C14monto_insumo;
 	}
-	public int getC15fk_idhabitacion_recepcion(){
-		return C15fk_idhabitacion_recepcion;
+	public double getC15monto_descuento(){
+		return C15monto_descuento;
 	}
-	public void setC15fk_idhabitacion_recepcion(int C15fk_idhabitacion_recepcion){
-		this.C15fk_idhabitacion_recepcion = C15fk_idhabitacion_recepcion;
+	public void setC15monto_descuento(double C15monto_descuento){
+		this.C15monto_descuento = C15monto_descuento;
 	}
-	public int getC16fk_idpersona(){
-		return C16fk_idpersona;
+	public double getC16monto_adelanto(){
+		return C16monto_adelanto;
 	}
-	public void setC16fk_idpersona(int C16fk_idpersona){
-		this.C16fk_idpersona = C16fk_idpersona;
+	public void setC16monto_adelanto(double C16monto_adelanto){
+		this.C16monto_adelanto = C16monto_adelanto;
 	}
-	public int getC17fk_idusuario(){
-		return C17fk_idusuario;
+	public int getC17fk_idhabitacion_recepcion(){
+		return C17fk_idhabitacion_recepcion;
 	}
-	public void setC17fk_idusuario(int C17fk_idusuario){
-		this.C17fk_idusuario = C17fk_idusuario;
+	public void setC17fk_idhabitacion_recepcion(int C17fk_idhabitacion_recepcion){
+		this.C17fk_idhabitacion_recepcion = C17fk_idhabitacion_recepcion;
+	}
+	public int getC18fk_idpersona(){
+		return C18fk_idpersona;
+	}
+	public void setC18fk_idpersona(int C18fk_idpersona){
+		this.C18fk_idpersona = C18fk_idpersona;
+	}
+	public int getC19fk_idusuario(){
+		return C19fk_idusuario;
+	}
+	public void setC19fk_idusuario(int C19fk_idusuario){
+		this.C19fk_idusuario = C19fk_idusuario;
 	}
 	public String toString() {
-		return "venta(" + ",idventa=" + C1idventa + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,monto_letra=" + C4monto_letra + " ,estado=" + C5estado + " ,observacion=" + C6observacion + " ,tipo_persona=" + C7tipo_persona + " ,motivo_anulacion=" + C8motivo_anulacion + " ,motivo_mudar_habitacion=" + C9motivo_mudar_habitacion + " ,monto_minimo=" + C10monto_minimo + " ,monto_adicional=" + C11monto_adicional + " ,monto_consumo=" + C12monto_consumo + " ,monto_total=" + C13monto_total + " ,monto_pagado=" + C14monto_pagado + " ,fk_idhabitacion_recepcion=" + C15fk_idhabitacion_recepcion + " ,fk_idpersona=" + C16fk_idpersona + " ,fk_idusuario=" + C17fk_idusuario + " )";
+		return "venta(" + ",idventa=" + C1idventa + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,monto_letra=" + C4monto_letra + " ,estado=" + C5estado + " ,observacion=" + C6observacion + " ,tipo_persona=" + C7tipo_persona + " ,motivo_anulacion=" + C8motivo_anulacion + " ,motivo_mudar_habitacion=" + C9motivo_mudar_habitacion + " ,monto_minimo=" + C10monto_minimo + " ,monto_adicional=" + C11monto_adicional + " ,cant_adicional=" + C12cant_adicional + " ,monto_consumo=" + C13monto_consumo + " ,monto_insumo=" + C14monto_insumo + " ,monto_descuento=" + C15monto_descuento + " ,monto_adelanto=" + C16monto_adelanto + " ,fk_idhabitacion_recepcion=" + C17fk_idhabitacion_recepcion + " ,fk_idpersona=" + C18fk_idpersona + " ,fk_idusuario=" + C19fk_idusuario + " )";
 	}
 }

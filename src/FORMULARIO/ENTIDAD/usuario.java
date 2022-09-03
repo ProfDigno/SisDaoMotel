@@ -8,10 +8,13 @@ private String C3creado_por;
 private String C4nombre;
 private String C5usuario;
 private String C6password;
-private int C7fk_idusuario_rol;
-private int C8fk_idpersona;
+private boolean C7activo;
+private int C8fk_idusuario_rol;
+private int C9fk_idpersona;
 private static String nom_tabla;
 private static String nom_idtabla;
+private static int global_idusuario;
+private static String global_nombre;
 //---------------TABLA-ID---------------
 	public usuario() {
 		setTb_usuario("usuario");
@@ -66,19 +69,42 @@ private static String nom_idtabla;
 	public void setC6password(String C6password){
 		this.C6password = C6password;
 	}
-	public int getC7fk_idusuario_rol(){
-		return C7fk_idusuario_rol;
+	public boolean getC7activo(){
+		return C7activo;
 	}
-	public void setC7fk_idusuario_rol(int C7fk_idusuario_rol){
-		this.C7fk_idusuario_rol = C7fk_idusuario_rol;
+	public void setC7activo(boolean C7activo){
+		this.C7activo = C7activo;
 	}
-	public int getC8fk_idpersona(){
-		return C8fk_idpersona;
+	public int getC8fk_idusuario_rol(){
+		return C8fk_idusuario_rol;
 	}
-	public void setC8fk_idpersona(int C8fk_idpersona){
-		this.C8fk_idpersona = C8fk_idpersona;
+	public void setC8fk_idusuario_rol(int C8fk_idusuario_rol){
+		this.C8fk_idusuario_rol = C8fk_idusuario_rol;
 	}
+	public int getC9fk_idpersona(){
+		return C9fk_idpersona;
+	}
+	public void setC9fk_idpersona(int C9fk_idpersona){
+		this.C9fk_idpersona = C9fk_idpersona;
+	}
+
+    public static int getGlobal_idusuario() {
+        return global_idusuario;
+    }
+
+    public static void setGlobal_idusuario(int global_idusuario) {
+        usuario.global_idusuario = global_idusuario;
+    }
+
+    public static String getGlobal_nombre() {
+        return global_nombre;
+    }
+
+    public static void setGlobal_nombre(String global_nombre) {
+        usuario.global_nombre = global_nombre;
+    }
+        
 	public String toString() {
-		return "usuario(" + ",idusuario=" + C1idusuario + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,nombre=" + C4nombre + " ,usuario=" + C5usuario + " ,password=" + C6password + " ,fk_idusuario_rol=" + C7fk_idusuario_rol + " ,fk_idpersona=" + C8fk_idpersona + " )";
+		return "usuario(" + ",idusuario=" + C1idusuario + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,nombre=" + C4nombre + " ,usuario=" + C5usuario + " ,password=" + C6password + " ,activo=" + C7activo + " ,fk_idusuario_rol=" + C8fk_idusuario_rol + " ,fk_idpersona=" + C9fk_idpersona + " )";
 	}
 }

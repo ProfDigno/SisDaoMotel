@@ -69,6 +69,17 @@ public class EvenConexion {
         }
         return rs;
     }
+    public ResultSet getResulsetSQL_sinprint(Connection conn,String sql,String titulo) {
+        ResultSet rs = null;
+        try {
+            PreparedStatement pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+//            evmen.Imprimir_serial_sql(sql, titulo);
+        } catch (Exception e) {
+            evmen.Imprimir_serial_sql_error(e, sql, titulo);
+        }
+        return rs;
+    }
     public String getString_contar_conexiones(Connection conn){
         //SELECT pg_terminate_backend(pid) FROM pg_stat_activity
         String titulo="getString_contar_conexiones";
@@ -221,10 +232,22 @@ public class EvenConexion {
     public void SQL_execute_libre(Connection conn, String sql){
         String titulo="SQL_execute_libre";
         try {
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.execute();
+//            conn.commit();
+            evmen.Imprimir_serial_sql(sql, titulo);
+        } catch (Exception e) {
+            evmen.Imprimir_serial_sql_error(e, sql, titulo);
+        }
+    }
+    public void SQL_execute_libre_sin_print(Connection conn, String sql){
+        String titulo="SQL_execute_libre";
+        try {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.execute();
             conn.commit();
-            evmen.Imprimir_serial_sql(sql, titulo);
+//            evmen.Imprimir_serial_sql(sql, titulo);
         } catch (Exception e) {
             evmen.Imprimir_serial_sql_error(e, sql, titulo);
         }

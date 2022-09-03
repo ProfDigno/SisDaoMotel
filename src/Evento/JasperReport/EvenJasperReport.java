@@ -47,6 +47,24 @@ public class EvenJasperReport {
         }
         
    } 
+//    public void imprimirjasper(Connection conexion,String sql,String titulonota,String direccion){
+//        String titulo="imprimirjasper";
+//        try{
+//            JasperDesign jasperDesign = JRXmlLoader.load(direccion);
+//            JRDesignQuery newQuery = new JRDesignQuery();
+//            newQuery.setText(sql);
+//            jasperDesign.setQuery(newQuery);
+//            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+//            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null,conexion);           
+//            JasperViewer jviewer = new JasperViewer(jasperPrint,false);
+//            jviewer.setTitle(titulonota);
+//            jviewer.setVisible(true); 
+//            evemen.Imprimir_serial_sql(sql, titulo);
+//        }catch(Exception e){
+//            evemen.Imprimir_serial_sql_error(e, sql, titulo);
+//        }
+//        
+//   } 
     public void imprimirjasper_tamano(Connection conexion,String sql,String titulonota,String direccion,int PageHeight){
         String titulo="imprimirjasper";
         try{

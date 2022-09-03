@@ -7,6 +7,7 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.LOCAL.ConnPostgres;
 import Config_JSON.json_array_conexion;
+import Config_JSON.json_array_imprimir_pos;
 import Evento.Jframe.EvenJFRAME;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.sql.Connection;
@@ -22,10 +23,16 @@ public class FrmMenu extends javax.swing.JFrame {
     ConnPostgres conPs = new ConnPostgres();
     EvenJFRAME evetbl = new EvenJFRAME();
     json_array_conexion jscon=new json_array_conexion();
+    json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
     private void abrir_formulario() {
         conPs.ConnectDBpostgres(conn,false);
         conn = conPs.getConnPosgres();
+        jsprint.cargar_jsom_imprimir_pos();
+        bloqueo_inicio();
         titulo_sistema(this);
+    }
+    private void bloqueo_inicio(){
+        barra_menu_principal.setEnabled(false);
     }
     private void titulo_sistema(JFrame frame) {
         frame.setExtendedState(MAXIMIZED_BOTH);
@@ -50,11 +57,8 @@ public class FrmMenu extends javax.swing.JFrame {
         escritorio = new javax.swing.JDesktopPane();
         btnproducto = new javax.swing.JButton();
         btncrear_habitacion = new javax.swing.JButton();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        btnventa = new javax.swing.JButton();
+        barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -67,8 +71,22 @@ public class FrmMenu extends javax.swing.JFrame {
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenu6 = new javax.swing.JMenu();
+        jMenuItem12 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem13 = new javax.swing.JMenuItem();
+        jMenu7 = new javax.swing.JMenu();
+        jMenuItem14 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         btnproducto.setText("PRODUCTO");
         btnproducto.addActionListener(new java.awt.event.ActionListener() {
@@ -84,47 +102,40 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
 
+        btnventa.setText("OCUPACION");
+        btnventa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnventaActionPerformed(evt);
+            }
+        });
+
         escritorio.setLayer(btnproducto, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(btncrear_habitacion, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(btnventa, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(btnproducto)
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addComponent(btncrear_habitacion)
-                .addContainerGap(705, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnproducto)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnventa)
+                .addContainerGap(627, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnproducto)
-                    .addComponent(btncrear_habitacion))
+                    .addComponent(btncrear_habitacion)
+                    .addComponent(btnventa)
+                    .addComponent(btnproducto))
                 .addContainerGap(464, Short.MAX_VALUE))
         );
-
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("GASTO");
-
-        jMenuItem1.setText("NUEVO GASTO");
-        jMenu2.add(jMenuItem1);
-
-        jMenuItem2.setText("TIPO GASTO");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem2);
-
-        jMenuBar1.add(jMenu2);
 
         jMenu3.setText("HABITACION");
 
@@ -172,7 +183,7 @@ public class FrmMenu extends javax.swing.JFrame {
 
         jMenu3.add(jMenu4);
 
-        jMenuBar1.add(jMenu3);
+        barra_menu_principal.add(jMenu3);
 
         jMenu5.setText("PRODUCTO");
 
@@ -208,9 +219,60 @@ public class FrmMenu extends javax.swing.JFrame {
         });
         jMenu5.add(jMenuItem11);
 
-        jMenuBar1.add(jMenu5);
+        barra_menu_principal.add(jMenu5);
 
-        setJMenuBar(jMenuBar1);
+        jMenu6.setText("USUARIO");
+
+        jMenuItem12.setText("CREAR USUARIO");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem12);
+
+        barra_menu_principal.add(jMenu6);
+
+        jMenu2.setText("GASTO");
+
+        jMenuItem1.setText("NUEVO GASTO");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
+        jMenuItem2.setText("TIPO GASTO");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem2);
+
+        barra_menu_principal.add(jMenu2);
+
+        jMenu1.setText("OCUPACION");
+
+        jMenuItem13.setText("ABRIR OCUPACION");
+        jMenu1.add(jMenuItem13);
+
+        barra_menu_principal.add(jMenu1);
+
+        jMenu7.setText("CAJA");
+
+        jMenuItem14.setText("CERRAR CAJA");
+        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem14ActionPerformed(evt);
+            }
+        });
+        jMenu7.add(jMenuItem14);
+
+        barra_menu_principal.add(jMenu7);
+
+        setJMenuBar(barra_menu_principal);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -286,6 +348,32 @@ public class FrmMenu extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmHab_crear());
     }//GEN-LAST:event_btncrear_habitacionActionPerformed
 
+    private void btnventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnventaActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmVenta());
+    }//GEN-LAST:event_btnventaActionPerformed
+
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmUsuario_crear());
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        JDiaLogin log = new JDiaLogin(this, true);
+        log.setVisible(true);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmCaja_Detalle());
+    }//GEN-LAST:event_jMenuItem14ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmGasto());
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -322,18 +410,24 @@ public class FrmMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JMenuBar barra_menu_principal;
     private javax.swing.JButton btncrear_habitacion;
     private javax.swing.JButton btnproducto;
+    private javax.swing.JButton btnventa;
     public static javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
-    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenu6;
+    private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem13;
+    private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

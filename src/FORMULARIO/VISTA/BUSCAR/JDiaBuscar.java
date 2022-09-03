@@ -10,6 +10,7 @@ import BASEDATO.LOCAL.ConnPostgres;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
+import FORMULARIO.VISTA.FrmGasto;
 import FORMULARIO.VISTA.FrmHab_crear;
 import FORMULARIO.VISTA.FrmProd_dato;
 import java.awt.event.KeyEvent;
@@ -90,7 +91,7 @@ public class JDiaBuscar extends javax.swing.JDialog {
                     + "and p.fk_idproducto_unidad=pu.idproducto_unidad\n"
                     + "and p.fk_idproducto_marca=pm.idproducto_marca\n"
                     + "and p.nombre ilike'%" + buscar + "%' "
-//                    + "and p.es_insumo=true\n"
+                    //                    + "and p.es_insumo=true\n"
                     + "order by 3 desc;";
         }
         if (vbus.getTipo_tabla() == 6) {
@@ -107,13 +108,21 @@ public class JDiaBuscar extends javax.swing.JDialog {
                     + "and p.es_patrimonio=true\n"
                     + "order by 3 desc;";
         }
+        if (vbus.getTipo_tabla() == 7) {
+            cant_columna = 2;
+            sql = "select gt.idgasto_tipo as idgt,gt.nombre as tipo \n"
+                    + "from gasto_tipo gt\n"
+                    + "where gt.activo=true\n"
+                    + "and gt.nombre ilike'%" + buscar + "%' \n"
+                    + "order by gt.nombre desc;";
+        }
         if (cant_columna == 2) {
             int Ancho[] = {20, 80};
             eveconn.Select_cargar_jtable(conn, sql, tblbuscar);
             eveJtab.setAnchoColumnaJtable(tblbuscar, Ancho);
         }
         if (cant_columna == 6) {
-            int Ancho[] = {5,10,40,20,10,5};
+            int Ancho[] = {5, 10, 40, 20, 10, 5};
             eveconn.Select_cargar_jtable(conn, sql, tblbuscar);
             eveJtab.setAnchoColumnaJtable(tblbuscar, Ancho);
         }
@@ -123,15 +132,15 @@ public class JDiaBuscar extends javax.swing.JDialog {
         int id = 0;
         String nombre = "sin";
         String codbarra = "sin";
-        String precio="0";
+        String precio = "0";
         try {
-            
+
             if (vbus.getTipo_tabla() == 4 || vbus.getTipo_tabla() == 5 || vbus.getTipo_tabla() == 6) {
                 id = eveJtab.getInt_select_id(tblbuscar);
                 codbarra = eveJtab.getString_select(tblbuscar, 1);
                 nombre = eveJtab.getString_select(tblbuscar, 2);
                 precio = eveJtab.getString_select(tblbuscar, 4);
-            }else{
+            } else {
                 id = eveJtab.getInt_select_id(tblbuscar);
                 nombre = eveJtab.getString_select(tblbuscar, 1);
             }
@@ -172,6 +181,10 @@ public class JDiaBuscar extends javax.swing.JDialog {
                 FrmHab_crear.txtprod_precio_patrimonio.setText(precio);
                 FrmHab_crear.txtprod_cant_patrimonio.setText("1");
                 FrmHab_crear.txtprod_subtotal_patrimonio.setText(precio);
+            }
+            if (vbus.getTipo_tabla() == 7) {
+                FrmGasto.txtgasto_tipo.setText(nombre);
+                FrmGasto.setFk_idgasto_tipo(id);
             }
         }
     }

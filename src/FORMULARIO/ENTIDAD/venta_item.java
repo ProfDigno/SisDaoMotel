@@ -14,10 +14,16 @@ private int C9fk_idventa;
 private int C10fk_idproducto;
 private static String nom_tabla;
 private static String nom_idtabla;
+private static String tipo_temporal;
+//private static String tipo_cargado;
+private static String tipo_terminado;
 //---------------TABLA-ID---------------
 	public venta_item() {
 		setTb_venta_item("venta_item");
 		setId_idventa_item("idventa_item");
+                setTipo_temporal("TEMP");
+//                setTipo_cargado("CARGADO");
+                setTipo_terminado("TERMINADO");
 	}
 	public static String getTb_venta_item(){
 		return nom_tabla;
@@ -92,6 +98,31 @@ private static String nom_idtabla;
 	public void setC10fk_idproducto(int C10fk_idproducto){
 		this.C10fk_idproducto = C10fk_idproducto;
 	}
+
+    public static String getTipo_temporal() {
+        return tipo_temporal;
+    }
+
+    public static void setTipo_temporal(String tipo_tempotal) {
+        venta_item.tipo_temporal = tipo_tempotal;
+    }
+
+//    public static String getTipo_cargado() {
+//        return tipo_cargado;
+//    }
+//
+//    public static void setTipo_cargado(String tipo_cargado) {
+//        venta_item.tipo_cargado = tipo_cargado;
+//    }
+
+    public static String getTipo_terminado() {
+        return tipo_terminado;
+    }
+
+    public static void setTipo_terminado(String tipo_terminado) {
+        venta_item.tipo_terminado = tipo_terminado;
+    }
+        
 	public String toString() {
 		return "venta_item(" + ",idventa_item=" + C1idventa_item + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,tipo_item=" + C4tipo_item + " ,descripcion=" + C5descripcion + " ,cantidad=" + C6cantidad + " ,precio_venta=" + C7precio_venta + " ,precio_compra=" + C8precio_compra + " ,fk_idventa=" + C9fk_idventa + " ,fk_idproducto=" + C10fk_idproducto + " )";
 	}
