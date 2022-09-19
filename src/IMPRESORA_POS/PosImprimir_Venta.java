@@ -42,7 +42,7 @@ public class PosImprimir_Venta {
     private static String[] iv3_total = new String[200];
     private static String[] iv4_descripcion = new String[200];
     private static FileInputStream inputStream = null;
-    private static int tk_iv_fila=0;
+    private static int tk_iv_fila = 0;
     private String nombre_ticket = "ticket Ocupacion";
 //    private static int tk_iv_sum_fila;
     private static String tk_nombre_empresa = "PANKY";
@@ -133,17 +133,17 @@ public class PosImprimir_Venta {
             } catch (Exception e) {
                 evemen.mensaje_error(e, sql, titulo);
             }
-        }else{
+        } else {
             tk_iv_fila = 0;
         }
     }
 
     private String cargar_datos_para_mensaje_textarea() {
-        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila*2);
+        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila * 2);
         String mensaje_impresora = "";
         String saltolinea = "\n";
         String tabular = "\t";
-        String separador="==========================================";
+        String separador = "==========================================";
         mensaje_impresora = mensaje_impresora + "===============" + tk_nombre_empresa + "================" + saltolinea;
         mensaje_impresora = mensaje_impresora + tk_telefono_empresa + saltolinea;
         mensaje_impresora = mensaje_impresora + tk_direccion_empresa + saltolinea;
@@ -158,24 +158,24 @@ public class PosImprimir_Venta {
             mensaje_impresora = mensaje_impresora + separador + saltolinea;
             for (int i = 0; i < tk_iv_fila; i++) {
                 mensaje_impresora = mensaje_impresora + iv4_descripcion[i] + saltolinea;
-                    String item = iv1_cantidad[i] + tabular + iv2_precio[i] + tabular + iv3_total[i] + saltolinea;
-                    mensaje_impresora = mensaje_impresora + item;
+                String item = iv1_cantidad[i] + tabular + iv2_precio[i] + tabular + iv3_total[i] + saltolinea;
+                mensaje_impresora = mensaje_impresora + item;
             }
         }
         mensaje_impresora = mensaje_impresora + separador + saltolinea;
         mensaje_impresora = mensaje_impresora + "MONTO MINIMO: " + saltolinea;
-        mensaje_impresora = mensaje_impresora + tabular + tabular +v7_m_minimo + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + v7_m_minimo + saltolinea;
         mensaje_impresora = mensaje_impresora + "MONTO ADICIONAL: " + saltolinea;
-        mensaje_impresora = mensaje_impresora  +tabular + tabular + v9_m_adicional + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + v9_m_adicional + saltolinea;
         mensaje_impresora = mensaje_impresora + "MONTO CONSUMO: " + saltolinea;
-        mensaje_impresora = mensaje_impresora  + tabular + tabular +v10_m_consumo + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + v10_m_consumo + saltolinea;
         mensaje_impresora = mensaje_impresora + "MONTO DESCUENTO: " + saltolinea;
-        mensaje_impresora = mensaje_impresora  + tabular + tabular +v11_m_descuento + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + v11_m_descuento + saltolinea;
         mensaje_impresora = mensaje_impresora + "MONTO ADELANTO: " + saltolinea;
-        mensaje_impresora = mensaje_impresora  + tabular + tabular +v12_m_adelanto + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + v12_m_adelanto + saltolinea;
         mensaje_impresora = mensaje_impresora + separador + saltolinea;
         mensaje_impresora = mensaje_impresora + "TOTAL PAGAR : " + saltolinea;
-        mensaje_impresora = mensaje_impresora  + tabular + tabular + v13_m_pagar + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + v13_m_pagar + saltolinea;
         return mensaje_impresora;
     }
 
@@ -186,7 +186,7 @@ public class PosImprimir_Venta {
         e.setNumber(101.85);
         //Definir el tamanho del papel 
         int tempfila = 0;
-        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila*2);
+        int totalfila = jsprint.getTt_fila_ven() + (tk_iv_fila * 2);
         printer.setOutSize(totalfila, totalColumna);
         printer.printTextWrap(1 + tempfila, 1, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_cabezera() + tk_nombre_empresa + jsprint.getLinea_cabezera());
         printer.printTextWrap(2 + tempfila, 2, jsprint.getSep_inicio(), totalColumna, tk_telefono_empresa);
@@ -198,15 +198,16 @@ public class PosImprimir_Venta {
         printer.printTextWrap(8 + tempfila, 8, jsprint.getSep_inicio(), totalColumna, "TIEMPO OCUPA:" + v5_tiempo);
         printer.printTextWrap(9 + tempfila, 9, jsprint.getSep_inicio(), totalColumna, "USUARIO:" + v14_usuario);
         printer.printTextWrap(10 + tempfila, 10, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
-        printer.printTextWrap(11 + tempfila, 11, jsprint.getSep_inicio(), totalColumna, "CANT-DESCEIPCION-PRECIO-TOTAL");
+        printer.printTextWrap(11 + tempfila, 11, jsprint.getSep_inicio(), totalColumna, "CANT-DESCRIPCION-PRECIO-TOTAL");
         if (es_consumo) {
             for (int i = 0; i < tk_iv_fila; i++) {
                 printer.printTextWrap(12 + tempfila, 12, jsprint.getSep_inicio(), jsprint.getTt_text_descrip(), iv4_descripcion[i]);
-                    printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_cant(), totalColumna, iv1_cantidad[i] + " X");
-                    printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_precio(), totalColumna, iv2_precio[i] + " =");
-                    printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_subtotal(), totalColumna, iv3_total[i]);
-                    tempfila = tempfila + 2;
+                printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_cant(), totalColumna, iv1_cantidad[i] + " X");
+                printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_precio(), totalColumna, iv2_precio[i] + " =");
+                printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_item_subtotal(), totalColumna, iv3_total[i]);
+                tempfila = tempfila + 2;
             }
+            tk_iv_fila=0;
         }
         printer.printTextWrap(12 + tempfila, 12, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
         printer.printTextWrap(13 + tempfila, 13, jsprint.getSep_inicio(), totalColumna, "TIPO : " + v6_tipo);
@@ -236,13 +237,17 @@ public class PosImprimir_Venta {
     }
 
     private void crear_archivo_enviar_impresora() {
-        String titulo = "crear_archivo_enviar_impresora";
-        try {
-            crear_archivo_texto_impresion();
-            pos.setInputStream(inputStream);
-            pos.imprimir_ticket_Pos();
-        } catch (Exception e) {
-            evemen.mensaje_error(e, titulo);
+        if (jsprint.isError_carga_json()) {
+            String titulo = "crear_archivo_enviar_impresora";
+            try {
+                crear_archivo_texto_impresion();
+                pos.setInputStream(inputStream);
+                pos.imprimir_ticket_Pos();
+            } catch (Exception e) {
+                evemen.mensaje_error(e, titulo);
+            }
+        } else {
+            jsprint.cargar_jsom_imprimir_pos();
         }
     }
 

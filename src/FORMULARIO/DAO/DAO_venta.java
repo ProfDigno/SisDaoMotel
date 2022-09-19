@@ -48,7 +48,8 @@ public class DAO_venta {
             + "TRIM(to_char(((v.monto_minimo+v.monto_adicional+v.monto_consumo)-(v.monto_descuento+v.monto_adelanto)),'999G999G999')) as total,\n"
             + "v.estado, \n"
             + "u.nombre as usuario,\n"
-            + "((v.monto_minimo+v.monto_adicional+v.monto_consumo)-(v.monto_descuento+v.monto_adelanto)) as itotal\n"
+            + "((v.monto_minimo+v.monto_adicional+v.monto_consumo)-(v.monto_descuento+v.monto_adelanto)) as itotal,"
+            + "v.fk_idhabitacion_recepcion,v.motivo_mudar_habitacion,v.motivo_anulacion \n"
             + "from venta v,habitacion_recepcion hr,usuario u,habitacion_dato hd  \n"
             + "where v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
             + "and hr.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
@@ -104,7 +105,7 @@ public class DAO_venta {
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update);
-            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(ve.getC2fecha_creado()));
+            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(ve.getC2fecha_creado(),"ve.getC2fecha_creado()"));
             pst.setString(2, ve.getC3creado_por());
             pst.setString(3, ve.getC4monto_letra());
             pst.setString(4, ve.getC5estado());
@@ -169,7 +170,7 @@ public class DAO_venta {
     }
 
     public void ancho_tabla_venta(JTable tbltabla) {
-        int Ancho[] = {7, 9, 9, 5, 8, 5, 5, 5, 5, 5, 5, 5, 6, 9, 14, 1};
+        int Ancho[] = {7, 9, 9, 5, 8, 5, 5, 5, 5, 5, 5, 5, 6, 9, 14, 1,1,1,1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_centro_columna(tbltabla, 1);
         evejt.alinear_centro_columna(tbltabla, 2);
@@ -185,6 +186,9 @@ public class DAO_venta {
         evejt.alinear_derecha_columna(tbltabla, 12);
         evejt.alinear_centro_columna(tbltabla, 13);
         evejt.ocultar_columna(tbltabla, 15);
+        evejt.ocultar_columna(tbltabla, 16);
+        evejt.ocultar_columna(tbltabla, 17);
+        evejt.ocultar_columna(tbltabla, 18);
     }
 
     public void terminar_venta_en_caja(Connection conn, int fk_idcaja_cierre) {
@@ -245,6 +249,7 @@ public class DAO_venta {
                 + " and ccd.fk_idventa=v.idventa \n"
                 + " and v.idventa=vi.fk_idventa \n"
                 + " and v.estado='TERMINADO'\n"
+                + " and ccd.cerrado_por='DESOCUPADO'\n"
                 + " and v.monto_consumo>0\n"
                 + " and cci.fk_idcaja_cierre="+ fk_idcaja_cierre
                 + " group by 1,2\n"

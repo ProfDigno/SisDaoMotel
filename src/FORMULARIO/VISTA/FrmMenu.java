@@ -6,6 +6,7 @@
 package FORMULARIO.VISTA;
 
 import BASEDATO.LOCAL.ConnPostgres;
+import CONFIGURACION.ComputerInfo;
 import Config_JSON.json_array_conexion;
 import Config_JSON.json_array_imprimir_pos;
 import Evento.Jframe.EvenJFRAME;
@@ -24,6 +25,7 @@ public class FrmMenu extends javax.swing.JFrame {
     EvenJFRAME evetbl = new EvenJFRAME();
     json_array_conexion jscon=new json_array_conexion();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
+    private ComputerInfo pcinfo=new ComputerInfo();
     private void abrir_formulario() {
         conPs.ConnectDBpostgres(conn,false);
         conn = conPs.getConnPosgres();
@@ -37,7 +39,7 @@ public class FrmMenu extends javax.swing.JFrame {
     private void titulo_sistema(JFrame frame) {
         frame.setExtendedState(MAXIMIZED_BOTH);
         String titulo = jscon.getNombre() 
-                + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato();
+                + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato()+" IP:"+pcinfo.getStringMiIP();
         frame.setTitle(titulo);
     }
     public FrmMenu() {
@@ -58,6 +60,7 @@ public class FrmMenu extends javax.swing.JFrame {
         btnproducto = new javax.swing.JButton();
         btncrear_habitacion = new javax.swing.JButton();
         btnventa = new javax.swing.JButton();
+        btncajacierre = new javax.swing.JButton();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -88,30 +91,51 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
 
+        btnproducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_prod_bebida.png"))); // NOI18N
         btnproducto.setText("PRODUCTO");
+        btnproducto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnproducto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnproducto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnproductoActionPerformed(evt);
             }
         });
 
+        btncrear_habitacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_conf_hab.png"))); // NOI18N
         btncrear_habitacion.setText("HABITACION");
+        btncrear_habitacion.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btncrear_habitacion.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btncrear_habitacion.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btncrear_habitacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btncrear_habitacionActionPerformed(evt);
             }
         });
 
+        btnventa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_ocupar_hab.png"))); // NOI18N
         btnventa.setText("OCUPACION");
+        btnventa.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnventa.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnventa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnventaActionPerformed(evt);
             }
         });
 
+        btncajacierre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_caja.png"))); // NOI18N
+        btncajacierre.setText("CAJA CIERRE");
+        btncajacierre.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btncajacierre.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btncajacierre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncajacierreActionPerformed(evt);
+            }
+        });
+
         escritorio.setLayer(btnproducto, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(btncrear_habitacion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(btnventa, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(btncajacierre, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
@@ -119,22 +143,26 @@ public class FrmMenu extends javax.swing.JFrame {
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btncrear_habitacion)
+                .addComponent(btncrear_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnproducto)
+                .addComponent(btnproducto, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnventa)
-                .addContainerGap(627, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btncajacierre)
+                .addContainerGap(481, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btncrear_habitacion)
-                    .addComponent(btnventa)
-                    .addComponent(btnproducto))
-                .addContainerGap(464, Short.MAX_VALUE))
+                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnproducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btncrear_habitacion)
+                        .addComponent(btncajacierre))
+                    .addComponent(btnventa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(388, Short.MAX_VALUE))
         );
 
         jMenu3.setText("HABITACION");
@@ -374,6 +402,11 @@ public class FrmMenu extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmGasto());
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void btncajacierreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncajacierreActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmCaja_Detalle());
+    }//GEN-LAST:event_btncajacierreActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -411,6 +444,7 @@ public class FrmMenu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JMenuBar barra_menu_principal;
+    private javax.swing.JButton btncajacierre;
     private javax.swing.JButton btncrear_habitacion;
     private javax.swing.JButton btnproducto;
     private javax.swing.JButton btnventa;

@@ -54,14 +54,14 @@ public class BO_habitacion_recepcion_temp {
             }
         }
     }
-    public void update_habitacion_recepcion_temp_puertas() {
+    public void update_habitacion_recepcion_temp_puertas( int sensor_puerta_cliente, int sensor_puerta_limpieza) {
             String titulo = "update_habitacion_recepcion_temp";
             Connection conn = ConnPostgres.getConnPosgres();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                DAOhrt.actualizar_estado_puerta_cliente_limpieza(conn, 2, 3);
+                DAOhrt.actualizar_estado_puerta_cliente_limpieza(conn, sensor_puerta_cliente, sensor_puerta_limpieza);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e,"error", titulo);

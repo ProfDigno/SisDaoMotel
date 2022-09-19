@@ -108,7 +108,8 @@ public class DAO_habitacion_item_sensor_gpio {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
-    public void actualizar_tabla_habitacion_item_sensor_gpio_minipc(Connection conn, JTable tbltabla, int idhabitacion_mini_pc) {
+    public void actualizar_tabla_habitacion_item_sensor_gpio_minipc(Connection conn, JTable tbltabla,String campo, int id) {
+        //pc.idhabitacion_mini_pc
         String sql_select = "select ig.idhabitacion_item_sensor_gpio as idg,pc.placa_nombre,ig.gpio,\n"
                 + "hs.nombre as sensor, hd.nro_habitacion,hd.tipo_habitacion\n"
                 + "from habitacion_item_sensor_gpio ig,habitacion_sensor hs,\n"
@@ -117,9 +118,13 @@ public class DAO_habitacion_item_sensor_gpio {
                 + "and ig.fk_idhabitacion_mini_pc=pc.idhabitacion_mini_pc\n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato\n"
                 + "and ig.activar=true\n"
-                + "and pc.idhabitacion_mini_pc="+idhabitacion_mini_pc
+                + "and "+campo+"="+id
                 + " order by ig.gpio desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
-//        ancho_tabla_habitacion_item_sensor_gpio(tbltabla);
+        ancho_tabla_habitacion_item_sensor_gpio_minipc(tbltabla);
+    }
+    public void ancho_tabla_habitacion_item_sensor_gpio_minipc(JTable tbltabla) {
+        int Ancho[] = {5, 30, 10, 15, 10, 30};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 }

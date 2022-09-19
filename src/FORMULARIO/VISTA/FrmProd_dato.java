@@ -38,6 +38,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private EvenJTextField evejtf = new EvenJTextField();
     private ClaVarBuscar vbus = new ClaVarBuscar();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     private String nombreTabla_pri = "PRODUCTO";
     private String nombreTabla_sec = "FILTROS";
     private String creado_por = "digno";
@@ -72,6 +73,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
         evetbl.centrar_formulario_internalframa(this);
+        creado_por = ENTusu.getGlobal_nombre();
         reestableser();
         DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
     }

@@ -28,12 +28,14 @@ public class FrmGasto_Tipo extends javax.swing.JInternalFrame {
     private BO_gasto_tipo BOgt=new BO_gasto_tipo();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario();
     private String nombreTabla_pri="TIPO GASTO"; 
     private String nombreTabla_sec="GASTO"; 
     private String creado_por="digno";
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);  
+        creado_por=ENTusu.getGlobal_nombre();
         reestableser();
         DAOgt.actualizar_tabla_gasto_tipo(conn, tbltabla_pri);
     }

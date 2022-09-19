@@ -5,6 +5,7 @@
  */
 package IMPRESORA_POS;
 
+import Config_JSON.json_array_imprimir_pos;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.io.FileInputStream;
 import javax.print.Doc;
@@ -23,22 +24,28 @@ import javax.swing.JOptionPane;
  * @author Digno
  */
 public class ClaImpresoraPos {
-    EvenMensajeJoptionpane evemen=new EvenMensajeJoptionpane();
+
+    EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
+
     public static FileInputStream getInputStream() {
         return inputStream;
     }
+
     public static void setInputStream(FileInputStream aInputStream) {
         inputStream = aInputStream;
     }
+
     public void imprimir_ticket_Pos() {
         try {
-           impresora_por_defecto(getInputStream());
+            impresora_por_defecto(getInputStream());
         } catch (Exception e) {
-           evemen.mensaje_error(e,"imprimir_ticket_Pos");
+            evemen.mensaje_error(e, "imprimir_ticket_Pos");
         }
     }
 
-    private static FileInputStream inputStream = null;
+private static FileInputStream inputStream = null;
+
     public static void impresora_por_defecto(FileInputStream inputStream) {
         DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
         Doc document = new SimpleDoc(inputStream, docFormat, null);
@@ -66,5 +73,18 @@ public class ClaImpresoraPos {
         DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
         Doc doc = new SimpleDoc(PARTIAL_CUT_1, flavor, null);
         job.print(doc, null);
+    }
+
+    public static String alinearDerecha(String detalle, int posicionX) {
+        String det = (detalle.trim());
+        int i = posicionX;
+        int y = i - det.length();
+
+        if (det.length() < i) {
+            for (int j = 0; j < y; j++) {
+                det = (" " + det);
+            }
+        }
+        return det;
     }
 }

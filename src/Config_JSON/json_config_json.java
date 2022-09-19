@@ -5,6 +5,7 @@
  */
 package Config_JSON;
 
+import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.awt.Desktop;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -14,9 +15,9 @@ import javax.swing.JOptionPane;
  * @author Digno
  */
 public class json_config_json {
-
+private EvenMensajeJoptionpane evemen=new EvenMensajeJoptionpane();
     public json_config_json() {
-        setPassword("4650586");
+        setPassword("MAJJJSMG");
     }
 
     public static String password;
@@ -36,6 +37,8 @@ public class json_config_json {
                 try {
                     File file = new File(ruta);
                     Desktop.getDesktop().open(file);
+                    JOptionPane.showMessageDialog(null, "EL SISTEMA SE DEBE CERRAR PARA CORREGIR EL JSON ", "CERRAR SISTEMA", JOptionPane.WARNING_MESSAGE);
+                    System.exit(0);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Error: " + e.toString(), ruta, JOptionPane.ERROR_MESSAGE);
                 }

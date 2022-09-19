@@ -27,13 +27,16 @@ public class FrmHab_sensor extends javax.swing.JInternalFrame {
     private DAO_habitacion_sensor DAOgt=new DAO_habitacion_sensor();
     private BO_habitacion_sensor BOgt=new BO_habitacion_sensor();
     private EvenJTextField evejtf = new EvenJTextField();
+    private DAO_habitacion_item_sensor_gpio DAOigpio=new DAO_habitacion_item_sensor_gpio();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     private String nombreTabla_pri="SENSOR"; 
     private String nombreTabla_sec="ITEM SENSOR"; 
     private String creado_por="digno";
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this); 
+        creado_por = ENTusu.getGlobal_nombre();
         reestableser();
         DAOgt.actualizar_tabla_habitacion_sensor(conn, tbltabla_pri);
     }
@@ -79,6 +82,7 @@ public class FrmHab_sensor extends javax.swing.JInternalFrame {
         jCdigital_salida.setSelected(ENTgt.getC6es_digital_salida());
         jCactivo.setSelected(ENTgt.getC7activo());
         titulo_formulario(ENTgt.getC2fecha_creado(), ENTgt.getC3creado_por());
+        DAOigpio.actualizar_tabla_habitacion_item_sensor_gpio_minipc(conn, tbltabla_sec, "hs.idhabitacion_sensor", id);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }

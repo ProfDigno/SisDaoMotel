@@ -87,7 +87,7 @@ public class EvenFecha {
         }
         return dateSql;
     }
-    public java.sql.Timestamp getTimestamp_fecha_cargado(String fechaStr) {
+    public java.sql.Timestamp getTimestamp_fecha_cargado(String fechaStr,String origen) {
         java.sql.Timestamp dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
         try {
@@ -97,6 +97,7 @@ public class EvenFecha {
         } catch (Exception e) {
             String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: AñO-MES-DIA HORA:MINUTO\n" + e
                     + "\nFormato Ingresado:" + fechaStr
+                    + "\nORIGEN:" + origen
                     + "\nFormato requerido:" + formato_fechaHora;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             dateSql = getTimestamp_sistema();

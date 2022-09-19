@@ -7,6 +7,8 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
+import CONFIGURACION.ComputerInfo;
+import ConnRPI.JSchExampleSSHConnection;
 import ESTADOS.EvenEstado;
 import Evento.Combobox.EvenCombobox;
 import Evento.Fecha.EvenFecha;
@@ -15,6 +17,7 @@ import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import Evento.Utilitario.EvenSonido;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
@@ -27,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -77,7 +81,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private venta_item ENTveni = new venta_item();
     private DAO_venta_item DAOveni = new DAO_venta_item();
     private BO_venta_item BOveni = new BO_venta_item();
-    usuario ENTusu = new usuario();
+    private habitacion_mini_pc ENThmp = new habitacion_mini_pc();
+    private DAO_habitacion_mini_pc DAOhmp = new DAO_habitacion_mini_pc();
+    private JSchExampleSSHConnection connRPI = new JSchExampleSSHConnection();
+    private ComputerInfo pcinfo = new ComputerInfo();
+    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     Connection conn = ConnPostgres.getConnPosgres();
     private producto ENTp = new producto();
     private DAO_producto DAOp = new DAO_producto();
@@ -157,13 +165,21 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     String usu_tabla = "usuario";
     private String suma_tiempo_titulo;
     private String motivo_anulacion;
-    private String btnlibre_html="<html><p style=\"color:green\"><font size=\"4\">LIBRE</font></p></html>";
-    private String btncancelar_html="<html><p style=\"color:purple\"><font size=\"4\">CANCELAR</font></p></html>";
-    private String btnocupar_html="<html><p style=\"color:red\"><font size=\"4\">OCUPAR</font></p></html>";
-    private String btndesocupar_html="<html><p style=\"color:green\"><font size=\"4\">DESOCUPAR</font></p></html>";
+    private String btnlibre_html = "<html><p style=\"color:green\"><font size=\"4\">LIBRE</font></p></html>";
+    private String btncancelar_html = "<html><p style=\"color:purple\"><font size=\"4\">CANCELAR</font></p></html>";
+    private String btnocupar_html = "<html><p style=\"color:red\"><font size=\"4\">OCUPAR</font></p></html>";
+    private String btndesocupar_html = "<html><p style=\"color:green\"><font size=\"4\">DESOCUPAR</font></p></html>";
+    private String motivo_mudar_habitacion;
+    private String fecha_hora_ahora;
+    private int sensor_puerta_cliente = 2;
+    private int sensor_puerta_limpieza = 3;
+    private boolean hab_ruta_sonido[];
+    private String string_ruta_sonido[];
+    private boolean no_es_sonido_ocupado;
+
     private void abrir_formulario() {
         creado_por = ENTusu.getGlobal_nombre();
-        this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por);
+        this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por + " IP:" + pcinfo.getStringMiIP());
         evetbl.centrar_formulario_internalframa(this);
         botones_categoria = new ArrayList<>();
         botones_unidad = new ArrayList<>();
@@ -206,6 +222,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         Ia_puerta_nro_habitacion = new int[cant_de_habitacion];
         Ba_puerta_cliente = new boolean[cant_de_habitacion];
         Ba_puerta_limpieza = new boolean[cant_de_habitacion];
+        hab_ruta_sonido = new boolean[cant_de_habitacion + 1];
+        string_ruta_sonido = new String[cant_de_habitacion + 1];
     }
 
     private void cargar_boton_categoria() {
@@ -486,17 +504,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
-        BOhrt.update_habitacion_recepcion_temp_puertas();
+        BOhrt.update_habitacion_recepcion_temp_puertas(sensor_puerta_cliente, sensor_puerta_limpieza);
     }
 
-    private void cargar_estados_puertas_gpio() {
+    private void cargar_estados_puertas_gpio(int sensor_puerta_cliente, int sensor_puerta_limpieza) {
         String titulo = "cargar_estados_puertas_gpio";
         String sql = "select hd.nro_habitacion,\n"
                 + "(select ig.alto_bajo from habitacion_item_sensor_gpio ig \n"
-                + "where ig.fk_idhabitacion_sensor=2 \n"
+                + "where ig.fk_idhabitacion_sensor=" + sensor_puerta_cliente + " \n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato ) as cliente,\n"
                 + "(select ig.alto_bajo from habitacion_item_sensor_gpio ig \n"
-                + "where ig.fk_idhabitacion_sensor=3 \n"
+                + "where ig.fk_idhabitacion_sensor=" + sensor_puerta_limpieza + " \n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato ) as limpieza\n"
                 + "from habitacion_dato hd \n"
                 + "order by hd.nro_habitacion asc;";
@@ -808,6 +826,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 int idhabitacion_recepcion_actual = rs.getInt("idhabitacion_recepcion_actual");
                 boolean cancelar_habitacion = rs.getBoolean("cancelar_habitacion");
                 String por_cancelar = rs.getString("por_cancelar");
+                String ruta_sonido = rs.getString("ruta_sonido");
                 String monto = "0";
                 if (habilitar_dormir) {
                     monto = tarifa_gral_dormir;
@@ -834,13 +853,32 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 Ia_monto_adelanto[fila] = monto_adelanto;
                 Ba_cancelar_habitacion[fila] = cancelar_habitacion;
                 Sa_por_cancelar[fila] = por_cancelar;
-                ejecutar_limpieza_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual,idhabitacion_dato);
-                ejecutar_libre_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual,idhabitacion_dato);
-                ejecutar_ocupar_automatico(cambiar_estado, est_nuevo, idhabitacion_dato, Inro_habitacion,idhabitacion_recepcion_actual);
+                ejecutar_limpieza_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
+                ejecutar_libre_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
+                ejecutar_ocupar_automatico(cambiar_estado, est_nuevo, idhabitacion_dato, Inro_habitacion, idhabitacion_recepcion_actual);
+                crear_sonido(ruta_sonido, Inro_habitacion);
                 fila++;
             }
         } catch (Exception e) {
             evemen.Imprimir_serial_sql_error(e, sql, titulo);
+        }
+    }
+
+    private void crear_sonido(String ruta_sonido, int nro_habitacion) {
+        if (no_es_sonido_ocupado) {
+            string_ruta_sonido[nro_habitacion] = ruta_sonido;
+            if (!ruta_sonido.equals("NO")) {
+                if (!string_ruta_sonido[nro_habitacion].equals(ruta_sonido)) {
+                    hab_ruta_sonido[nro_habitacion] = true;
+                }
+                if (hab_ruta_sonido[nro_habitacion]) {
+                    EvenSonido.reproducir_vos(ruta_sonido);
+                    string_ruta_sonido[nro_habitacion] = ruta_sonido;
+                    hab_ruta_sonido[nro_habitacion] = false;
+                }
+            } else {
+                hab_ruta_sonido[nro_habitacion] = true;
+            }
         }
     }
 
@@ -860,7 +898,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         limpiar_panel(panel_habitaciones_libre);
         for (int fila = 0; fila < cant_de_habitacion; fila++) {
             crear_unitario_boton_habitacion_mudar(Sa_tipo_habitacion[fila], Ia_nro_habitacion[fila], Sa_estado[fila],
-                    Sa_desc_estado[fila], Sa_tiempo[fila], Sa_monto[fila]);
+                    Sa_desc_estado[fila], Sa_tiempo[fila], Sa_monto[fila], Ia_idhabitacion_dato[fila]);
         }
         panel_habitaciones_libre.updateUI();
     }
@@ -925,6 +963,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/escoba.png")));
         }
         panel_habitaciones.add(boton);
+
         boton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -945,16 +984,16 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
                                 + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
                                 + "<p><font size=\"6\">--LIBERAR--</font></p>"
-                                + "</html>", "HABITACION SUCIO", btnlibre_html,btncancelar_html)) {
-                            boton_sucio_a_libre(idhabitacion_recepcion_actual,idhabitacion_dato);
+                                + "</html>", "HABITACION SUCIO", btnlibre_html, btncancelar_html)) {
+                            boton_sucio_a_libre(idhabitacion_recepcion_actual, idhabitacion_dato);
                         }
                     }
                     if (estado.equals(eveest.getEst_Limpiando())) {
                         if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
                                 + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
                                 + "<p><font size=\"6\">--LIBERAR--</font></p>"
-                                + "</html>", "HABITACION LIMPIEZA", btnlibre_html,btncancelar_html)) {
-                            boton_limpieza_a_libre(idhabitacion_recepcion_actual,idhabitacion_dato);
+                                + "</html>", "HABITACION LIMPIEZA", btnlibre_html, btncancelar_html)) {
+                            boton_limpieza_a_libre(idhabitacion_recepcion_actual, idhabitacion_dato);
                         }
                     }
                     if (estado.equals(eveest.getEst_Ocupado())) {
@@ -1005,7 +1044,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void crear_unitario_boton_habitacion_mudar(String tipo_habitacion, int nro_habitacion, String estado, String desc_estado,
-            String tiempo, String monto) {
+            String tiempo, String monto, int idhabitacion_dato) {
         String nombreboton = "<html><p><font size=\"6\">" + nro_habitacion
                 + "</font>-" + tipo_habitacion + "</p><p>" + desc_estado
                 + "</p><p><font size=\"4\">" + tiempo
@@ -1034,24 +1073,27 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 String getName = ((JButton) e.getSource()).getName();
                 System.out.println("getName:" + getName);
                 if (estado.equals(eveest.getEst_Libre())) {
-                    if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
-                            + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
-                            + "<p><font size=\"6\">--MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + "--</font></p>"
-                            + "</html>", "MUDAR HABITACION", "MUDAR", btncancelar_html)) {
-                        tiempo_boton_hab = 0;
-                        JTextArea txtacancel = new JTextArea(15, 30);
-                        txtacancel.setText("");
-                        Object[] opciones = {"MUDAR",btncancelar_html};
-                        int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(txtacancel), "MOTIVO PARA MUDAR(Obligatorio)",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE, null, opciones, "MUDAR");
-                        if (eleccion == JOptionPane.YES_OPTION) {
-                            if (txtacancel.getText().trim().length() > 0) {
-                                motivo_anulacion = txtacancel.getText().toUpperCase();
-                                limpiar_habitacion_select();
-                            } else {
-                                JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE MUDAR INTENTE DE NUEVO",
-                                        "ERROR MUDANZA", JOptionPane.ERROR_MESSAGE);
+                    if (validar_habitacion_select()) {
+                        if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                                + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
+                                + "<p><font size=\"6\">--MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + "--</font></p>"
+                                + "</html>", "MUDAR HABITACION", "MUDAR", btncancelar_html)) {
+                            tiempo_boton_hab = 0;
+                            JTextArea txtacancel = new JTextArea(15, 30);
+                            txtacancel.setText("MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion);
+                            Object[] opciones = {"MUDAR", btncancelar_html};
+                            int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(txtacancel), "MOTIVO PARA MUDAR(Obligatorio)",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE, null, opciones, "MUDAR");
+                            if (eleccion == JOptionPane.YES_OPTION) {
+                                if (txtacancel.getText().trim().length() > 0) {
+                                    motivo_mudar_habitacion = txtacancel.getText().toUpperCase();
+                                    ejecutar_mudar_habitacion(idhabitacion_dato, nro_habitacion);
+                                    limpiar_habitacion_select();
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE MUDAR INTENTE DE NUEVO",
+                                            "ERROR MUDANZA", JOptionPane.ERROR_MESSAGE);
+                                }
                             }
                         }
                     }
@@ -1075,7 +1117,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     public void limpiar_cargar_tabla_venta_item(Connection conn, JTable tbltabla, int fk_idventa) {
-//        String dato[] = {"id", "descripcion", "precio", "C", "total", "Opventa", "Opcompra", "Otipo", "Ototal"};
         eveJtab.limpiar_tabla_datos(model_itemf);
         String titulo = "limpiar_cargar_tabla_venta_item";
         String sql = "SELECT fk_idproducto as id,descripcion,"
@@ -1120,17 +1161,25 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     class clasetiempo extends TimerTask {
+
+        private int segundo_conn_rpi;
+
         public void run() {
             segundo_tiempo++;
+            segundo_conn_rpi++;
             int tab_select = jTab_principal.getSelectedIndex();
+            fecha_hora_ahora = evefec.getString_formato_fecha_hora();
+            txttiempo_ahora.setText(fecha_hora_ahora);
             if (segundo_tiempo == 1) {
-                cargar_estados_puertas_gpio();
+                cargar_estados_puertas_gpio(sensor_puerta_cliente, sensor_puerta_limpieza);
                 actualizar_estado_puerta_cliente_limpieza();
+                no_es_sonido_ocupado = true;
                 cargar_sql_habitacion_recepcion_temp();
             }
             if (segundo_tiempo == 2) {
                 if (tab_select == 0) {
                     cargar_array_habitacion_datos();
+                    
                 }
                 if (tab_select == 4) {
                     cargar_array_habitacion_datos_mudar();
@@ -1138,7 +1187,44 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 cargar_array_habitacion_puertas();
                 segundo_tiempo = 0;
             }
+            if(segundo_conn_rpi>30){
+                boton_raspberry_ultima_conexion();
+                segundo_conn_rpi=0;
+            }
             mostrar_boton_hab(tab_select);
+        }
+    }
+
+    private void boton_raspberry_ultima_conexion() {
+        String titulo = "boton_raspberry_ultima_conexion";
+        String sql = "select idhabitacion_mini_pc, \n"
+                + "case when (((extract(epoch from (current_timestamp-ult_conexion)))>(0)) \n"
+                + "and ((extract(epoch from (current_timestamp-ult_conexion)))<(70)))  \n"
+                + "then true else false end as est_boton\n"
+                + " from habitacion_mini_pc order by idhabitacion_mini_pc asc;";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            while (rs.next()) {
+                int idhabitacion_mini_pc = rs.getInt("idhabitacion_mini_pc");
+                boolean est_boton = rs.getBoolean("est_boton");
+                color_boton_rpi(idhabitacion_mini_pc, 2, est_boton, btnrpi_1);
+                color_boton_rpi(idhabitacion_mini_pc, 3, est_boton, btnrpi_2);
+                color_boton_rpi(idhabitacion_mini_pc, 4, est_boton, btnrpi_3);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+
+    private void color_boton_rpi(int idhabitacion_mini_pc, int select, boolean est_boton, JButton btnrpi) {
+        if (idhabitacion_mini_pc == select) {
+            if (est_boton) {
+                btnrpi.setBackground(Color.white);
+                btnrpi.setForeground(Color.black);
+            } else {
+                btnrpi.setBackground(Color.red);
+                btnrpi.setForeground(Color.white);
+            }
         }
     }
 
@@ -1275,6 +1361,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThr.setC3creado_por(creado_por);
         ENThr.setC4estado(eveest.getEst_Ocupado());
         ENThr.setC5nro_habitacion(nro_habitacion);
+        ENThr.setC8fec_ocupado_inicio(evefec.getString_formato_fecha_hora());
         ENThr.setC16es_libre(false);
         ENThr.setC17es_ocupado(true);
         ENThr.setC18es_sucio(false);
@@ -1317,19 +1404,28 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTven.setC19fk_idusuario(fk_idusuario);
     }
 
-    private void cargar_dato_hab_temp_ocupar(int nro_habitacion, int fk_idhabitacion_recepcion) {
+    private void cargar_dato_hab_temp_ocupar(int nro_habitacion, int fk_idhabitacion_recepcion, int idhabitacion_dato) {
         ENThrt.setC7estado(eveest.getEst_Ocupado());
         ENThrt.setC2idhabitacion_recepcion_actual(fk_idhabitacion_recepcion);
         ENThrt.setC5nro_habitacion(nro_habitacion);
+        ENThrt.setC10fec_ocupado_inicio(evefec.getString_formato_fecha_hora());
+        ENThrt.setC19es_ocupado(true);
+        ENThrt.setC24es_por_hora(true);
+        ENThrt.setC25es_por_dormir(false);
+        ENThrt.setC30monto_consumision(0);
+        ENThrt.setC31monto_descuento(0);
+        ENThrt.setC41monto_adelanto(0);
+        ENThrt.setC42idhabitacion_dato(idhabitacion_dato);
+//        System.err.println("cargar_dato_hab_temp_ocupar:"+ENThrt.toString());
     }
 
-    private void boton_libre_a_ocupar( int nro_habitacion,int idhabitacion_dato) {
+    private void boton_libre_a_ocupar(int nro_habitacion, int idhabitacion_dato) {
         DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
         monto_minimo = ENThrt.getC26monto_por_hora_minimo();
         int idhabitacion_recepcion = (eveconn.getInt_ultimoID_mas_uno(conn, ENThr.getTb_habitacion_recepcion(), ENThr.getId_idhabitacion_recepcion()));
         cargar_dato_venta_ocupar(idhabitacion_recepcion);
         cargar_dato_habitacion_recepcion_ocupar(nro_habitacion, idhabitacion_dato);
-        cargar_dato_hab_temp_ocupar(nro_habitacion, idhabitacion_recepcion);
+        cargar_dato_hab_temp_ocupar(nro_habitacion, idhabitacion_recepcion, idhabitacion_dato);
         BOven.insertar_venta(ENTven, ENThr, ENThrt);
     }
 
@@ -1386,6 +1482,213 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_consumo.setValue(0);
     }
 
+    private void ejecutar_mudar_habitacion(int idhabitacion_dato, int nro_habitacion) {
+        String titulo = "ejecutar_mudar_habitacion";
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            //#####MUDAR_SALIR#######
+            cargar_dato_venta_desocupar_MUDAR_SALIR(fk_idhabitacion_recepcion_actual_select);
+            cargar_dato_habitacion_recepcion_desocupar_MUDAR_SALIR(fk_idhabitacion_recepcion_actual_select);
+            cargar_dato_hab_temp_sucio_MUDAR_SALIR(fk_idhabitacion_dato_select);
+            cargar_dato_caja_detalle_desocupar_MUDAR_SALIR(fk_idhabitacion_recepcion_actual_select);
+            BOven.update_venta_sin_commit(conn, ENTven, ENThr, ENThrt, ENTccd, true, false, true);
+            //#####OCUPAR-ENTRAR#######
+            DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
+            monto_minimo = ENThrt.getC26monto_por_hora_minimo();
+            int idhabitacion_recepcion = (eveconn.getInt_ultimoID_mas_uno(conn, ENThr.getTb_habitacion_recepcion(), ENThr.getId_idhabitacion_recepcion()));
+            int idventa = (eveconn.getInt_ultimoID_max(conn, ENTven.getTb_venta(), ENTven.getId_idventa()));
+            cargar_dato_venta_ocupar_MUDAR_ENTRAR(idhabitacion_recepcion);
+            cargar_dato_habitacion_recepcion_ocupar_MUDAR_ENTRAR(nro_habitacion, idhabitacion_dato);
+            cargar_dato_hab_temp_ocupar_MUDAR_ENTRAR(nro_habitacion, idhabitacion_recepcion, idhabitacion_dato);
+            cargar_dato_caja_detalle_ADELANTO_MUDAR(idhabitacion_recepcion, nro_habitacion, idventa);
+            BOven.insertar_venta_sin_commit(conn, ENTven, ENThr, ENThrt, ENTccd);
+            int idventa2 = (eveconn.getInt_ultimoID_max(conn, ENTven.getTb_venta(), ENTven.getId_idventa()));
+            ENTven.setC1idventa(idventa2);
+            ENTven.setC3creado_por(creado_por);
+            BOveni.insertar_venta_item_sin_commit(conn, ENTveni, ENTven, tblitem_producto, true);
+            conn.commit();
+        } catch (SQLException e) {
+            evemen.mensaje_error(e, ENTven.toString(), titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evemen.Imprimir_serial_sql_error(e1, ENTven.toString(), titulo);
+            }
+        }
+    }
+
+    private void cargar_dato_caja_detalle_ADELANTO_MUDAR(int idhabitacion_recepcion, int nro_habitacion, int idventa) {
+        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_venta(conn, idventa);
+        if (idcaja_cierre_detalle > 0) {
+            ENTccd.setC1idcaja_cierre_detalle(idcaja_cierre_detalle);
+            DAOccd.cargar_caja_cierre_detalle(conn, ENTccd, idcaja_cierre_detalle);
+            String descripcion = idhabitacion_recepcion + "-(" + eveest.getEst_Adelanto() + ")-HAB: " + nro_habitacion
+                    + ", TIEMPO:(" + tiempo_select + ") MUDADO: " + motivo_mudar_habitacion;
+            ENTccd.setC3creado_por(creado_por);
+            ENTccd.setC4cerrado_por(eveest.getEst_Adelanto());
+            ENTccd.setC5es_cerrado(false);
+            ENTccd.setC6monto_apertura_caja(0);
+            ENTccd.setC7monto_cierre_caja(0);
+            ENTccd.setC8monto_ocupa_minimo(0);
+            ENTccd.setC9monto_ocupa_adicional(0);
+            ENTccd.setC10monto_ocupa_consumo(0);
+            ENTccd.setC11monto_ocupa_descuento(0);
+            ENTccd.setC12monto_ocupa_adelanto(0);
+            ENTccd.setC13monto_gasto(0);
+            ENTccd.setC14monto_compra(0);
+            ENTccd.setC15monto_vale(0);
+            ENTccd.setC16monto_liquidacion(0);
+            ENTccd.setC17estado(eveest.getEst_Emitido());
+            ENTccd.setC18descripcion(descripcion);
+            ENTccd.setC19fk_idgasto(0);
+            ENTccd.setC20fk_idcompra(0);
+            ENTccd.setC21fk_idventa(idventa);
+            ENTccd.setC22fk_idusuario(fk_idusuario);
+            ENTccd.setC23fk_idrh_vale(0);
+            ENTccd.setC24fk_idrh_liquidacion(0);
+            ENTccd.setC25monto_solo_adelanto(monto_adelanto);
+        }
+    }
+
+    private void cargar_dato_hab_temp_ocupar_MUDAR_ENTRAR(int nro_habitacion, int fk_idhabitacion_recepcion, int idhabitacion_dato) {
+        ENThrt.setC7estado(eveest.getEst_Ocupado());
+        ENThrt.setC2idhabitacion_recepcion_actual(fk_idhabitacion_recepcion);
+        ENThrt.setC10fec_ocupado_inicio(fecha_ingreso_select + " " + hora_ingreso_select);
+        ENThrt.setC19es_ocupado(true);
+        ENThrt.setC24es_por_hora(true);
+        ENThrt.setC25es_por_dormir(false);
+        ENThrt.setC5nro_habitacion(nro_habitacion);
+        ENThrt.setC30monto_consumision(monto_consumo);
+        ENThrt.setC31monto_descuento(monto_descuento);
+        ENThrt.setC41monto_adelanto(monto_adelanto);
+        ENThrt.setC42idhabitacion_dato(idhabitacion_dato);
+    }
+
+    private void cargar_dato_habitacion_recepcion_ocupar_MUDAR_ENTRAR(int nro_habitacion, int idhabitacion_dato) {
+        ENThr.setC3creado_por(creado_por);
+        ENThr.setC4estado(eveest.getEst_Ocupado());
+        ENThr.setC5nro_habitacion(nro_habitacion);
+        ENThr.setC8fec_ocupado_inicio(evefec.getString_formato_fecha_hora());
+        ENThr.setC16es_libre(false);
+        ENThr.setC17es_ocupado(true);
+        ENThr.setC18es_sucio(false);
+        ENThr.setC19es_limpieza(false);
+        ENThr.setC20es_mante(false);
+        ENThr.setC21es_cancelado(false);
+        ENThr.setC22es_por_hora(true);
+        ENThr.setC23es_por_dormir(false);
+        ENThr.setC24es_boton_actual(true);
+        ENThr.setC25es_pagado(false);
+        ENThr.setC26es_terminado(false);
+        ENThr.setC27monto_por_hora_minimo(monto_por_hora_minimo);
+        ENThr.setC28monto_por_hora_adicional(monto_por_hora_adicional);
+        ENThr.setC29monto_por_dormir_minimo(monto_por_dormir_minimo);
+        ENThr.setC30monto_por_dormir_adicional(monto_por_dormir_adicional);
+        ENThr.setC31monto_consumo(monto_consumo);
+        ENThr.setC32monto_descuento(monto_descuento);
+        ENThr.setC33monto_adelanto(monto_adelanto);
+        ENThr.setC34cant_adicional(cant_adicional);
+        ENThr.setC35fk_idhabitacion_dato(idhabitacion_dato);
+    }
+
+    private void cargar_dato_venta_ocupar_MUDAR_ENTRAR(int fk_idhabitacion_recepcion) {
+        ENTven.setC3creado_por(creado_por);
+        ENTven.setC4monto_letra("cero");
+        ENTven.setC5estado(eveest.getEst_Ocupado());
+        ENTven.setC6observacion("ninguna");
+        ENTven.setC7tipo_persona("cliente");
+        ENTven.setC8motivo_anulacion(motivo_anulacion);
+        ENTven.setC9motivo_mudar_habitacion(motivo_mudar_habitacion);
+        ENTven.setC10monto_minimo(monto_minimo);
+        ENTven.setC11monto_adicional(monto_adicional_total);
+        ENTven.setC12cant_adicional(cant_adicional);
+        ENTven.setC13monto_consumo(monto_consumo);
+        ENTven.setC14monto_insumo(0);
+        ENTven.setC15monto_descuento(monto_descuento);
+        ENTven.setC16monto_adelanto(monto_adelanto);
+        ENTven.setC17fk_idhabitacion_recepcion(fk_idhabitacion_recepcion);
+        ENTven.setC18fk_idpersona(0);
+        ENTven.setC19fk_idusuario(fk_idusuario);
+    }
+
+    private void cargar_dato_caja_detalle_desocupar_MUDAR_SALIR(int idhabitacion_recepcion_actual) {
+        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_venta(conn, fk_idventa);
+        if (idcaja_cierre_detalle > 0) {
+            ENTccd.setC1idcaja_cierre_detalle(idcaja_cierre_detalle);
+            DAOccd.cargar_caja_cierre_detalle(conn, ENTccd, idcaja_cierre_detalle);
+            String descripcion = idhabitacion_recepcion_actual + "-(" + eveest.getEst_Mudar() + ")-HAB: " + nro_habitacion_select + ", TIEMPO:(" + tiempo_select + ")";
+            ENTccd.setC3creado_por(creado_por);
+            ENTccd.setC4cerrado_por(eveest.getEst_Mudar());
+            ENTccd.setC5es_cerrado(false);
+            ENTccd.setC6monto_apertura_caja(0);
+            ENTccd.setC7monto_cierre_caja(0);
+            ENTccd.setC8monto_ocupa_minimo(0);
+            ENTccd.setC9monto_ocupa_adicional(0);
+            ENTccd.setC10monto_ocupa_consumo(0);
+            ENTccd.setC11monto_ocupa_descuento(0);
+            ENTccd.setC12monto_ocupa_adelanto(0);
+            ENTccd.setC13monto_gasto(0);
+            ENTccd.setC14monto_compra(0);
+            ENTccd.setC15monto_vale(0);
+            ENTccd.setC16monto_liquidacion(0);
+            ENTccd.setC17estado(eveest.getEst_Mudar());
+            ENTccd.setC18descripcion(descripcion);
+            ENTccd.setC19fk_idgasto(0);
+            ENTccd.setC20fk_idcompra(0);
+            ENTccd.setC21fk_idventa(fk_idventa);
+            ENTccd.setC22fk_idusuario(fk_idusuario);
+            ENTccd.setC23fk_idrh_vale(0);
+            ENTccd.setC24fk_idrh_liquidacion(0);
+            ENTccd.setC25monto_solo_adelanto(0);
+        }
+    }
+
+    private void cargar_dato_hab_temp_sucio_MUDAR_SALIR(int idhabitacion_dato) {
+        DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
+        ENThrt.setC7estado(eveest.getEst_Sucio());
+        ENThrt.setC11fec_ocupado_fin(evefec.getString_formato_fecha_hora());
+        ENThrt.setC12fec_sucio_inicio(evefec.getString_formato_fecha_hora());
+        ENThrt.setC20es_sucio(true);
+    }
+
+    private void cargar_dato_habitacion_recepcion_desocupar_MUDAR_SALIR(int idhabitacion_recepcion_actual) {
+        DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
+        ENThr.setC1idhabitacion_recepcion(idhabitacion_recepcion_actual);
+        ENThr.setC4estado(eveest.getEst_Mudar());
+        ENThr.setC9fec_ocupado_fin(evefec.getString_formato_fecha_hora());
+        ENThr.setC21es_cancelado(true);
+        ENThr.setC27monto_por_hora_minimo(0);
+        ENThr.setC28monto_por_hora_adicional(0);
+        ENThr.setC29monto_por_dormir_minimo(0);
+        ENThr.setC30monto_por_dormir_adicional(0);
+        ENThr.setC31monto_consumo(0);
+        ENThr.setC32monto_descuento(0);
+        ENThr.setC33monto_adelanto(0);
+        ENThr.setC34cant_adicional(0);
+    }
+
+    private void cargar_dato_venta_desocupar_MUDAR_SALIR(int idhabitacion_recepcion_actual) {
+        DAOven.cargar_venta(conn, ENTven, idhabitacion_recepcion_actual);
+        ENTven.setC4monto_letra("cero");
+        ENTven.setC5estado(eveest.getEst_Mudar());
+        ENTven.setC6observacion("ninguna");
+        ENTven.setC7tipo_persona("cliente");
+        ENTven.setC8motivo_anulacion(motivo_anulacion);
+        ENTven.setC9motivo_mudar_habitacion(motivo_mudar_habitacion);
+        ENTven.setC10monto_minimo(0);
+        ENTven.setC11monto_adicional(0);
+        ENTven.setC12cant_adicional(0);
+        ENTven.setC13monto_consumo(0);
+        ENTven.setC14monto_insumo(0);
+        ENTven.setC15monto_descuento(0);
+        ENTven.setC16monto_adelanto(0);
+        ENTven.setC17fk_idhabitacion_recepcion(idhabitacion_recepcion_actual);
+        ENTven.setC18fk_idpersona(0);
+        ENTven.setC19fk_idusuario(fk_idusuario);
+    }
+
     private void boton_desocupar_pagar() {
         if (validar_habitacion_select()) {
             tiempo_boton_hab = 0;
@@ -1433,6 +1736,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 if (eleccion == 1) {
                     posv.boton_imprimir_pos_VENTA(conn, fk_idventa);
                 }
+                no_es_sonido_ocupado = false;
                 cargar_sql_habitacion_recepcion_temp();
                 cargar_array_habitacion_datos();
                 limpiar_habitacion_select();
@@ -1442,7 +1746,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_dato_caja_detalle_DESOCUPAR() {
-        String descripcion = fk_idhabitacion_recepcion_actual_select + "-(" + eveest.getEst_Pagado() + ")-HAB: " + nro_habitacion_select + ", TIEMPO:(" + tiempo_select + ")";
+        String descripcion = fk_idhabitacion_recepcion_actual_select + "-(" + eveest.getEst_Pagado() + ")-HAB: " + nro_habitacion_select + ",T:(" + tiempo_select + ")";
         ENTccd.setC3creado_por(creado_por);
         ENTccd.setC4cerrado_por(eveest.getEst_Desocupado());
         ENTccd.setC5es_cerrado(false);
@@ -1469,7 +1773,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_dato_caja_detalle_ADELANTO() {
-        String descripcion = fk_idhabitacion_recepcion_actual_select + "-(" + eveest.getEst_Adelanto() + ")-HAB: " + nro_habitacion_select + ", TIEMPO:(" + tiempo_select + ")";
+        String descripcion = fk_idhabitacion_recepcion_actual_select + "-(" + eveest.getEst_Adelanto() + ")-HAB: " + nro_habitacion_select + ",T:(" + tiempo_select + ")";
         ENTccd.setC3creado_por(creado_por);
         ENTccd.setC4cerrado_por(eveest.getEst_Adelanto());
         ENTccd.setC5es_cerrado(false);
@@ -1500,11 +1804,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             tiempo_boton_hab = 0;
             ENTven.setC1idventa(fk_idventa);
             ENTven.setC3creado_por(creado_por);
-            BOveni.insertar_venta_item(ENTveni, ENTven, tblitem_producto);
+            BOveni.insertar_venta_item(ENTveni, ENTven, tblitem_producto, false);
             JOptionPane.showMessageDialog(null, "CONSUMO CARGADO CORRECTAMENTE");
             DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
             limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
-            update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select,fk_idhabitacion_dato_select);
+            update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
             BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
             calculo_monto_pagar();
             eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
@@ -1531,7 +1835,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThrt.setC18es_libre(true);
     }
 
-    private void boton_sucio_a_libre(int idhabitacion_recepcion_actual,int idhabitacion_dato) {
+    private void boton_sucio_a_libre(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         cargar_dato_habitacion_recepcion_sucio_a_libre(idhabitacion_recepcion_actual);
         cargar_dato_hab_temp_sucio_a_libre(idhabitacion_dato);
         BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
@@ -1557,13 +1861,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThrt.setC18es_libre(true);
     }
 
-    private void boton_limpieza_a_libre(int idhabitacion_recepcion_actual,int idhabitacion_dato) {
+    private void boton_limpieza_a_libre(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         cargar_dato_habitacion_recepcion_limpieza_a_libre(idhabitacion_recepcion_actual);
         cargar_dato_hab_temp_limpieza_a_libre(idhabitacion_dato);
         BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
     }
 
-    private void update_carga_monto_adicional(int idhabitacion_recepcion_actual,int idhabitacion_dato) {
+    private void update_carga_monto_adicional(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         DAOven.cargar_venta(conn, ENTven, idhabitacion_recepcion_actual);
         ENTven.setC10monto_minimo(monto_minimo);
         ENTven.setC11monto_adicional(monto_adicional_total);
@@ -1582,7 +1886,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThrt.setC41monto_adelanto(monto_adelanto);
     }
 
-    private void update_cambio_tipo_ocupacion(int idhabitacion_recepcion_actual,int idhabitacion_dato) {
+    private void update_cambio_tipo_ocupacion(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         DAOven.cargar_venta(conn, ENTven, idhabitacion_recepcion_actual);
         if (jRpor_dormir.isSelected()) {
             monto_adicional = monto_por_dormir_adicional;
@@ -1602,7 +1906,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
         ENThr.setC22es_por_hora(jRpor_hora.isSelected());
         ENThr.setC23es_por_dormir(jRpor_dormir.isSelected());
-        DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt,idhabitacion_dato);
+        DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
         ENThrt.setC24es_por_hora(jRpor_hora.isSelected());
         ENThrt.setC25es_por_dormir(jRpor_dormir.isSelected());
         BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
@@ -1613,7 +1917,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             if (jRpor_dormir.isSelected()) {
                 if (permitir_dormir_select) {
                     if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION", "TIPO DE OCUPACION", "ACEPTAR", "CANCELAR")) {
-                        update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select,fk_idhabitacion_dato_select);
+                        update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                         limpiar_habitacion_select();
                     }
                 } else {
@@ -1623,7 +1927,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
             } else {
                 if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION", "TIPO DE OCUPACION", "ACEPTAR", "CANCELAR")) {
-                    update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select,fk_idhabitacion_dato_select);
+                    update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                     limpiar_habitacion_select();
                 }
                 lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_reloj.png")));
@@ -1649,7 +1953,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             tiempo_boton_hab = 0;
             monto_descuento = Double.parseDouble(txtmonto_descontar.getText());
             if (monto_descuento > 0) {
-                update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select,fk_idhabitacion_dato_select);
+                update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                 BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
                 JOptionPane.showMessageDialog(null, "DESCUENTO CARGADO CORRECTAMENTE");
                 calculo_monto_pagar();
@@ -1663,7 +1967,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             monto_adelanto = Double.parseDouble(txtmonto_adelanto.getText());
             if (monto_adelanto > 0) {
                 if (evemen.MensajeGeneral_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
-                    update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select,fk_idhabitacion_dato_select);
+                    update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                     cargar_dato_caja_detalle_ADELANTO();
                     BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
                     JOptionPane.showMessageDialog(null, "ADELANTO CARGADO CORRECTAMENTE");
@@ -1692,7 +1996,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThrt.setC21es_limpieza(true);
     }
 
-    private void ejecutar_limpieza_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_recepcion_actual,int idhabitacion_dato) {
+    private void ejecutar_limpieza_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Limpiando())) {
             cargar_dato_habitacion_recepcion_limpieza_auto(idhabitacion_recepcion_actual);
             cargar_dato_hab_temp_limpieza_auto(idhabitacion_dato);
@@ -1719,7 +2023,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThrt.setC2idhabitacion_recepcion_actual(0);
     }
 
-    private void ejecutar_libre_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_recepcion_actual,int idhabitacion_dato) {
+    private void ejecutar_libre_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Libre())) {
             cargar_dato_habitacion_recepcion_libre_auto(idhabitacion_recepcion_actual);
             cargar_dato_hab_temp_libre_auto(idhabitacion_dato);
@@ -1727,7 +2031,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    private void ejecutar_ocupar_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_dato, int nro_habitacion,int idhabitacion_recepcion_actual) {
+    private void ejecutar_ocupar_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_dato, int nro_habitacion, int idhabitacion_recepcion_actual) {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Ocupado())) {
             boton_libre_a_ocupar(nro_habitacion, idhabitacion_dato);
         }
@@ -1801,7 +2105,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    private void ejecutar_ocupado_a_libre_CANCELAR(int idhabitacion_recepcion_actual, int fk_idventa,int idhabitacion_dato) {
+    private void ejecutar_ocupado_a_libre_CANCELAR(int idhabitacion_recepcion_actual, int fk_idventa, int idhabitacion_dato) {
         cargar_dato_venta_ocupado_a_libre_CANCELAR(idhabitacion_recepcion_actual);
         cargar_dato_habitacion_recepcion_ocupado_a_libre_CANCELAR(idhabitacion_recepcion_actual);
         cargar_dato_hab_temp_ocupado_a_libre_CANCELAR(idhabitacion_dato);
@@ -1823,7 +2127,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 if (eleccion == JOptionPane.YES_OPTION) {
                     if (txtacancel.getText().trim().length() > 0) {
                         motivo_anulacion = txtacancel.getText().toUpperCase();
-                        ejecutar_ocupado_a_libre_CANCELAR(fk_idhabitacion_recepcion_actual_select, fk_idventa,fk_idhabitacion_dato_select);
+                        ejecutar_ocupado_a_libre_CANCELAR(fk_idhabitacion_recepcion_actual_select, fk_idventa, fk_idhabitacion_dato_select);
                         limpiar_habitacion_select();
                     } else {
                         JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE CANCELAR INTENTE DE NUEVO",
@@ -1854,10 +2158,21 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void seleccionar_venta() {
         if (tblfiltro_venta.getSelectedRow() >= 0) {
             String estado = eveJtab.getString_select(tblfiltro_venta, 13);
+            String motivo_mudar = eveJtab.getString_select(tblfiltro_venta, 17);
+            String motivo_anular = eveJtab.getString_select(tblfiltro_venta, 18);
             if (estado.equals(eveest.getEst_Ocupado()) || estado.equals(eveest.getEst_Cancelado())) {
                 btnimprimir_ticket.setEnabled(false);
             } else {
                 btnimprimir_ticket.setEnabled(true);
+            }
+            txtmotivo_mudar_cancelar.setVisible(false);
+            if (estado.equals(eveest.getEst_Mudar())) {
+                txtmotivo_mudar_cancelar.setVisible(true);
+                txtmotivo_mudar_cancelar.setText(motivo_mudar);
+            }
+            if (estado.equals(eveest.getEst_Cancelado())) {
+                txtmotivo_mudar_cancelar.setVisible(true);
+                txtmotivo_mudar_cancelar.setText(motivo_anular);
             }
         }
     }
@@ -1944,7 +2259,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 DAOveni.eliminar_venta_item(conn, ENTveni);
                 DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
                 limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
-                update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select,fk_idhabitacion_dato_select);
+                update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                 BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
                 calculo_monto_pagar();
             }
@@ -2010,6 +2325,47 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
+    private void boton_comando_raspberry(int idhabitacion_mini_pc) {
+        DAOhmp.cargar_habitacion_mini_pc(conn, ENThmp, idhabitacion_mini_pc);
+        String comando_enviar = "";
+        boolean enviar_ssh = false;
+        boolean con_retorno = false;
+        int largo = 30;
+        int ancho = 30;
+        Object[] botones = {"INFORMACION", "MODELO", "REINICIAR", "CANCELAR"};
+        int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UN COMANDO PARA LA RASPBERRY:\n" + ENThmp.getC4placa_nombre(),
+                "ENVIAR COMANDO",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, botones, "INFORMACION");
+        if (eleccion_comando == 0) {
+            comando_enviar = "pinout";
+            con_retorno = true;
+            enviar_ssh = true;
+            largo = 35;
+        }
+        if (eleccion_comando == 1) {
+            comando_enviar = "cat /proc/device-tree/model";
+            con_retorno = true;
+            enviar_ssh = true;
+            largo = 15;
+        }
+        if (eleccion_comando == 2) {
+            comando_enviar = "sudo reboot -h now";
+            con_retorno = false;
+            enviar_ssh = true;
+            largo = 15;
+        }
+        if (enviar_ssh) {
+            String mensaje = connRPI.getStringEnviar_ssh_raspberry(ENThmp.getC5placa_ip(), ENThmp.getC7ssh_usuario(), ENThmp.getC8ssh_password(), comando_enviar, con_retorno);
+            JTextArea txtacancel = new JTextArea(largo, ancho);
+            txtacancel.setText(mensaje);
+            Object[] opciones = {"ACEPTAR", "CANCELAR"};
+            int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(txtacancel), "INFORMACION RASPBERRY",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, opciones, "ACEPTAR");
+        }
+    }
+
     public FrmVenta() {
         initComponents();
         abrir_formulario();
@@ -2029,6 +2385,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jPanel5 = new javax.swing.JPanel();
         panel_puerta = new javax.swing.JPanel();
         panel_habitaciones = new javax.swing.JPanel();
+        txttiempo_ahora = new javax.swing.JTextField();
+        btnrpi_1 = new javax.swing.JButton();
+        btnrpi_2 = new javax.swing.JButton();
+        btnrpi_3 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         txtnro_hab_grande = new javax.swing.JTextField();
         lblicono_tipo = new javax.swing.JLabel();
@@ -2125,6 +2485,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jCest_desocupado = new javax.swing.JCheckBox();
         jFtotal_filtro = new javax.swing.JFormattedTextField();
         txtcant_venta = new javax.swing.JTextField();
+        txtmotivo_mudar_cancelar = new javax.swing.JTextField();
         jPanel14 = new javax.swing.JPanel();
         panel_habitaciones_libre = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
@@ -2166,6 +2527,32 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         panel_habitaciones.setBorder(javax.swing.BorderFactory.createTitledBorder("HABITACIONES"));
         panel_habitaciones.setLayout(new java.awt.GridLayout(0, 5));
 
+        txttiempo_ahora.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txttiempo_ahora.setForeground(new java.awt.Color(255, 0, 0));
+        txttiempo_ahora.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txttiempo_ahora.setText("jTextField3");
+
+        btnrpi_1.setText("RPI - 1");
+        btnrpi_1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrpi_1ActionPerformed(evt);
+            }
+        });
+
+        btnrpi_2.setText("RPI - 2");
+        btnrpi_2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrpi_2ActionPerformed(evt);
+            }
+        });
+
+        btnrpi_3.setText("RPI - 3");
+        btnrpi_3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrpi_3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -2174,8 +2561,19 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panel_habitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 1085, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(panel_habitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 1085, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnrpi_1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnrpi_2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnrpi_3)
+                        .addGap(209, 209, 209))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2185,7 +2583,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 592, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(panel_habitaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(29, 29, 29)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnrpi_1)
+                            .addComponent(btnrpi_2)
+                            .addComponent(btnrpi_3))
+                        .addGap(3, 3, 3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -2631,6 +3035,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnadelanto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/32_pago.png"))); // NOI18N
         btnadelanto.setText("ADELANTO");
         btnadelanto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2657,6 +3062,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnmudar_habitacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/32_mudar.png"))); // NOI18N
         btnmudar_habitacion.setText("MUDAR");
         btnmudar_habitacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2699,7 +3105,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addGap(10, 10, 10)
                         .addComponent(btnadelanto)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnmudar_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)))
+                        .addComponent(btnmudar_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -2765,9 +3171,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             .addComponent(btncancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(14, 14, 14)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(btnmudar_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnadelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnadelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnmudar_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(13, 13, 13))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(561, 561, 561)
@@ -3219,6 +3625,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txtcant_venta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtcant_venta.setBorder(javax.swing.BorderFactory.createTitledBorder("CANT"));
 
+        txtmotivo_mudar_cancelar.setText("jTextField3");
+
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
@@ -3249,8 +3657,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             .addGroup(jPanel12Layout.createSequentialGroup()
                                 .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnvertodoventa)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnvertodoventa)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtmotivo_mudar_cancelar)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtcant_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -3278,7 +3688,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnvertodoventa)))
+                            .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnvertodoventa)
+                                .addComponent(txtmotivo_mudar_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel12Layout.createSequentialGroup()
                         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3596,6 +4008,21 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_mudar();
     }//GEN-LAST:event_btnmudar_habitacionActionPerformed
 
+    private void btnrpi_1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrpi_1ActionPerformed
+        // TODO add your handling code here:
+        boton_comando_raspberry(2);
+    }//GEN-LAST:event_btnrpi_1ActionPerformed
+
+    private void btnrpi_2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrpi_2ActionPerformed
+        // TODO add your handling code here:
+        boton_comando_raspberry(3);
+    }//GEN-LAST:event_btnrpi_2ActionPerformed
+
+    private void btnrpi_3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrpi_3ActionPerformed
+        // TODO add your handling code here:
+        boton_comando_raspberry(4);
+    }//GEN-LAST:event_btnrpi_3ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnadelanto;
@@ -3614,6 +4041,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton btneliminar_item;
     private javax.swing.JButton btnimprimir_ticket;
     private javax.swing.JButton btnmudar_habitacion;
+    private javax.swing.JButton btnrpi_1;
+    private javax.swing.JButton btnrpi_2;
+    private javax.swing.JButton btnrpi_3;
     private javax.swing.JButton btnsalir_ocupacion;
     private javax.swing.JButton btnvertodoventa;
     private javax.swing.JComboBox<String> cmbfecha_venta;
@@ -3699,9 +4129,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtminuto_cancelar;
     private javax.swing.JTextField txtmonto_adelanto;
     private javax.swing.JTextField txtmonto_descontar;
+    private javax.swing.JTextField txtmotivo_mudar_cancelar;
     private javax.swing.JTextField txtnro_hab_grande;
     private javax.swing.JTextField txtnro_hab_grande_salir;
     private javax.swing.JTextField txtrecepcion_actual;
+    private javax.swing.JTextField txttiempo_ahora;
     private javax.swing.JTextField txttiempo_transcurrido;
     private javax.swing.JTextField txttiempo_transcurrido_salir;
     private javax.swing.JTextField txttipo_habitacion;

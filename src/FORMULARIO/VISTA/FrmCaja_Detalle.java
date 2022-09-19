@@ -17,9 +17,11 @@ import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
+import IMPRESORA_POS.PosImprimir_CierreCajaDetalle;
 import IMPRESORA_POS.PosImprimir_Venta;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 /**
@@ -45,6 +47,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private EvenEstado eveest = new EvenEstado();
     private PosImprimir_Venta posv = new PosImprimir_Venta();
+    private PosImprimir_CierreCajaDetalle poscd = new PosImprimir_CierreCajaDetalle();
     usuario ENTusu = new usuario();
     Connection conn = ConnPostgres.getConnPosgres();
     private String nombreTabla = "CAJA CIERRE";
@@ -155,7 +158,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
             DAOven.actualizar_tabla_venta_desde_caja_cierre(conn, tblventa, idcaja_cierre);
             DAOven.actualizar_tabla_venta_item_desde_caja_cierre(conn, tblventa_consumo, idcaja_cierre);
-            double total_consumo=eveJtab.getDouble_sumar_tabla(tblventa_consumo,5);
+            double total_consumo = eveJtab.getDouble_sumar_tabla(tblventa_consumo, 5);
             jFtotal_consumo.setValue(total_consumo);
         }
     }
@@ -163,7 +166,21 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private void boton_imprimir_caja_cierre() {
         if (eveJtab.getBoolean_select_tabla_mensaje(tblresumen_caja_cierre, "SELECCIONAR LA TABLA CAJA CIERRE")) {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
-            DAOcc.imprimir_caja_cierre_jasper(conn, idcaja_cierre);
+            Object[] botones = {"TICKET RESUMEN", "TICKET DETALLE", "REPORTE A4", "CANCELAR"};
+            int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UN PARA IMPRIMIR ",
+                    "CIERRE CAJA",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, botones, "TICKET DETALLE");
+            if (eleccion_comando == 0) {
+                poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre,false);
+            }
+            if (eleccion_comando == 1) {
+                poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre,true);
+            }
+            if (eleccion_comando == 2) {
+                DAOcc.imprimir_caja_cierre_jasper(conn, idcaja_cierre);
+            }
+
         }
     }
 

@@ -10,6 +10,7 @@ private String C5placa_ip;
 private String C6placa_ubicacion;
 private String C7ssh_usuario;
 private String C8ssh_password;
+private String C9ult_conexion;
 private static String nom_tabla;
 private static String nom_idtabla;
 
@@ -79,6 +80,15 @@ private static String nom_idtabla;
 	public void setC8ssh_password(String C8ssh_password){
 		this.C8ssh_password = C8ssh_password;
 	}
+
+    public String getC9ult_conexion() {
+        return C9ult_conexion;
+    }
+
+    public void setC9ult_conexion(String C9ult_conexion) {
+        this.C9ult_conexion = C9ult_conexion;
+    }
+        
 	public String toString() {
 		return "habitacion_mini_pc(" + ",idhabitacion_mini_pc=" + C1idhabitacion_mini_pc + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,placa_nombre=" + C4placa_nombre + " ,placa_ip=" + C5placa_ip + " ,placa_ubicacion=" + C6placa_ubicacion + " ,ssh_usuario=" + C7ssh_usuario + " ,ssh_password=" + C8ssh_password + " )";
 	}

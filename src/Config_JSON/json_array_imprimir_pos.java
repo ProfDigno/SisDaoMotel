@@ -62,6 +62,7 @@ public class json_array_imprimir_pos {
     private static int tt_text_descrip;
     private static boolean print_comanda;
     private static boolean print_insumo;
+    private static boolean error_carga_json;
     public void cargar_jsom_imprimir_pos() {
 //         MacAddress_maquina=pcinf.getMacAddress();
         nombre_computador=pcinf.getNombrePC();
@@ -144,18 +145,28 @@ public class json_array_imprimir_pos {
                 setPrint_insumo(false);
             }
             System.out.println("json imprimir pos:" + jsonObject);
+            setError_carga_json(true);
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
-            if(evemen.MensajeGeneral_warning("DESEA ABRIR EL ARCHIVO PARA CAMBIAR EL MAC PARA ESTE EQUIPO","ABRIR JSON","ABRIR","CANCELAR")){
+            if(evemen.MensajeGeneral_warning("DESEA ABRIR EL ARCHIVO PARA CAMBIAR EL NOMBRE PARA ESTE EQUIPO","ABRIR JSON","ABRIR","CANCELAR")){
                 abrir_este_json_array_imprimir_pos();
             }
+            setError_carga_json(false);
         } finally {
 
         }
     }
     public void abrir_este_json_array_imprimir_pos(){
         jsoncf.abrirArchivo(ruta_json);
+    }
+
+    public static boolean isError_carga_json() {
+        return error_carga_json;
+    }
+
+    public static void setError_carga_json(boolean error_carga_json) {
+        json_array_imprimir_pos.error_carga_json = error_carga_json;
     }
 
     public static String getLinea_separador() {

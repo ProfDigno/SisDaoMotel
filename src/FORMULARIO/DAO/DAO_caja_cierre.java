@@ -34,8 +34,8 @@ public class DAO_caja_cierre {
             pst.setInt(1, caci.getC1idcaja_cierre());
             pst.setTimestamp(2, evefec.getTimestamp_sistema());
             pst.setString(3, caci.getC3creado_por());
-            pst.setTimestamp(4, evefec.getTimestamp_fecha_cargado(caci.getC4fecha_inicio()));
-            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(caci.getC5fecha_fin()));
+            pst.setTimestamp(4, evefec.getTimestamp_fecha_cargado(caci.getC4fecha_inicio(),"caci.getC4fecha_inicio()"));
+            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(caci.getC5fecha_fin(),"caci.getC5fecha_fin()"));
             pst.setString(6, caci.getC6estado());
             pst.setInt(7, caci.getC7fk_idusuario());
             pst.execute();

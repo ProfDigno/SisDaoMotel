@@ -31,13 +31,15 @@ public class FrmHab_miniPc extends javax.swing.JInternalFrame {
     private BO_habitacion_item_sensor_gpio BOigpio=new BO_habitacion_item_sensor_gpio();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     private String nombreTabla_pri="MINI PC"; 
     private String nombreTabla_sec="ITEM"; 
     private String creado_por="digno";
     
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);  
+        creado_por = ENTusu.getGlobal_nombre();
         reestableser();
         DAOgt.actualizar_tabla_habitacion_mini_pc(conn, tbltabla_pri);
     }
@@ -96,7 +98,7 @@ public class FrmHab_miniPc extends javax.swing.JInternalFrame {
         txtplaca_ubicacion.setText(ENTgt.getC6placa_ubicacion());
         txtssh_user.setText(ENTgt.getC7ssh_usuario());
         txtssh_pass.setText(ENTgt.getC8ssh_password());
-        DAOigpio.actualizar_tabla_habitacion_item_sensor_gpio_minipc(conn, tbltabla_sec, idhabitacion_mini_pc);
+        DAOigpio.actualizar_tabla_habitacion_item_sensor_gpio_minipc(conn, tbltabla_sec,"pc.idhabitacion_mini_pc", idhabitacion_mini_pc);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }

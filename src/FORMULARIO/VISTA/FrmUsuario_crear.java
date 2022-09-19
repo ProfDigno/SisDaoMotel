@@ -28,6 +28,7 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
     private BO_usuario BOgt=new BO_usuario();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     private String nombreTabla_pri="CREAR USUARIO"; 
     private String nombreTabla_sec="CAJA"; 
     private String creado_por="digno";
@@ -35,7 +36,8 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
     int fk_idpersona=0;
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);
+        creado_por = ENTusu.getGlobal_nombre();        
         reestableser();
         DAOgt.actualizar_tabla_usuario(conn, tbltabla_pri);
     }

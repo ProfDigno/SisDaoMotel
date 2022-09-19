@@ -35,6 +35,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private EvenEstado eveest = new EvenEstado();
     private EvenCombobox evecmb=new EvenCombobox();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario();
     private habitacion_dato ENThd=new habitacion_dato();
     private DAO_habitacion_dato DAOhd=new DAO_habitacion_dato();
     private BO_habitacion_dato BOhd=new BO_habitacion_dato();
@@ -90,6 +91,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
         evetbl.centrar_formulario_internalframa(this); 
+        creado_por = ENTusu.getGlobal_nombre();
         carcar_combobox();
         reestableser_hab_dato();
         DAOhd.actualizar_tabla_habitacion_dato(conn, tbltabla_pri);

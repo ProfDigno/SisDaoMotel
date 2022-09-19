@@ -34,13 +34,15 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
     private EvenEstado eveest = new EvenEstado();
     private EvenFecha evefec=new EvenFecha();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario();
     private String nombreTabla_pri="COSTO"; 
     private String nombreTabla_sec="HABITACION"; 
     private String creado_por="digno";
     private String nivel_lujo;
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);    
+        creado_por = ENTusu.getGlobal_nombre();
         reestableser();
         DAOhc.actualizar_tabla_habitacion_costo(conn, tbltabla_pri);
     }

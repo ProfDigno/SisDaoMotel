@@ -65,8 +65,22 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="panel_puerta" min="-2" pref="155" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="panel_habitaciones" min="-2" pref="1085" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="panel_habitaciones" min="-2" pref="1085" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="txttiempo_ahora" min="-2" pref="161" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="btnrpi_1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnrpi_2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnrpi_3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="209" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -78,7 +92,14 @@
                           <Component id="panel_puerta" alignment="1" min="-2" pref="592" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="panel_habitaciones" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="txttiempo_ahora" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                                  <Component id="btnrpi_1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnrpi_2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnrpi_3" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -115,6 +136,42 @@
                 <Property name="rows" type="int" value="0"/>
               </Layout>
             </Container>
+            <Component class="javax.swing.JTextField" name="txttiempo_ahora">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="14" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="0" green="0" red="ff" type="rgb"/>
+                </Property>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="jTextField3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnrpi_1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="RPI - 1"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnrpi_1ActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnrpi_2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="RPI - 2"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnrpi_2ActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnrpi_3">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="RPI - 3"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnrpi_3ActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -157,7 +214,7 @@
                                   <Component id="jPanel6" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <Component id="txtmonto_descontar" min="-2" pref="177" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                               <Component id="btndescontar" min="-2" max="-2" attributes="0"/>
@@ -166,10 +223,10 @@
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                               <Component id="btnadelanto" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnmudar_habitacion" pref="157" max="32767" attributes="0"/>
+                              <Component id="btnmudar_habitacion" pref="121" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -257,9 +314,9 @@
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="btnmudar_habitacion" alignment="2" max="32767" attributes="0"/>
-                          <Component id="btnadelanto" alignment="2" min="-2" pref="38" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btnadelanto" alignment="3" min="-2" pref="38" max="-2" attributes="0"/>
+                          <Component id="btnmudar_habitacion" alignment="3" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                   </Group>
@@ -1125,6 +1182,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="btnadelanto">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/iconos/MENU/32_pago.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="ADELANTO"/>
               </Properties>
               <Events>
@@ -1166,6 +1226,9 @@
             </Component>
             <Component class="javax.swing.JButton" name="btnmudar_habitacion">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/iconos/MENU/32_mudar.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="MUDAR"/>
               </Properties>
               <Events>
@@ -1769,9 +1832,11 @@
                                       <Component id="btnimprimir_ticket" min="-2" pref="56" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btnvertodoventa" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="txtmotivo_mudar_cancelar" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="txtcant_venta" min="-2" pref="73" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jFtotal_filtro" min="-2" pref="224" max="-2" attributes="0"/>
@@ -1804,7 +1869,10 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="btnimprimir_ticket" min="-2" pref="35" max="-2" attributes="0"/>
-                                  <Component id="btnvertodoventa" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="btnvertodoventa" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="txtmotivo_mudar_cancelar" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
@@ -2008,6 +2076,11 @@
                     <TitledBorder title="CANT"/>
                   </Border>
                 </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtmotivo_mudar_cancelar">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="jTextField3"/>
               </Properties>
             </Component>
           </SubComponents>

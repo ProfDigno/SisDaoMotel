@@ -33,6 +33,7 @@ public class FrmHab_arduino extends javax.swing.JInternalFrame {
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenCombobox evecmb=new EvenCombobox();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario();
     private String nombreTabla_pri="ARDUINO"; 
     private String nombreTabla_sec="ITEM PINO"; 
     private String creado_por="digno";
@@ -44,6 +45,7 @@ public class FrmHab_arduino extends javax.swing.JInternalFrame {
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
         evetbl.centrar_formulario_internalframa(this);  
+        creado_por=ENTusu.getGlobal_nombre();
         evecmb.cargarCombobox(conn, cmbmini_pc, mini_pc_id,mini_pc_nombre, mini_pc_tabla,mini_pc_where);
         reestableser();
         DAOgt.actualizar_tabla_habitacion_arduino(conn, tbltabla_pri);

@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -180,4 +181,20 @@ public class ComputerInfo {
 ////        System.out.println(ComputerInfo.getIpAddrAndName());
 ////        System.out.println(ComputerInfo.getNombrePC());
 //    }
+//    static private final Logger LOGGER = Logger.getLogger("mx.com.hash.checkip.CheckIP");
+
+    String obtenerIP() throws UnknownHostException {
+        InetAddress ip = InetAddress.getLocalHost();
+        return ip.getHostAddress();
+    }
+    public String getStringMiIP(){
+        String miIP="0.0.0.0";
+        try {
+            System.out.println("La IP de su compuradora es " + obtenerIP());
+            miIP=obtenerIP();
+        } catch (Exception e) {
+            System.out.println("getStringMiIP:"+e);
+        }
+        return miIP;
+    }
 }

@@ -53,8 +53,7 @@ public class DAO_venta_item {
             evemen.mensaje_error(e, sql_insert + "\n" + veit.toString(), titulo);
         }
     }
-    public void insertar_item_venta_de_tabla(Connection conn, JTable tblitem_producto,venta_item item, venta ven) {
-        //String dato[] = {"id", "descripcion", "precio", "C", "total", "Opventa", "Opcompra", "Otipo", "Ototal"};
+    public void insertar_item_venta_de_tabla(Connection conn, JTable tblitem_producto,venta_item item, venta ven,boolean es_mudar) {
         for (int row = 0; row < tblitem_producto.getRowCount(); row++) {
             String idproducto = ((tblitem_producto.getModel().getValueAt(row, 0).toString()));
             String descripcion = ((tblitem_producto.getModel().getValueAt(row, 1).toString()));
@@ -70,7 +69,7 @@ public class DAO_venta_item {
                 item.setC8precio_compra(Double.parseDouble(precio_compra));
                 item.setC9fk_idventa(ven.getC1idventa());
                 item.setC10fk_idproducto(Integer.parseInt(idproducto));
-                if(tipo.equals(item.getTipo_temporal())){
+                if(tipo.equals(item.getTipo_temporal()) || es_mudar){
                     item.setC4tipo_item(eveest.getEst_Cargado());
                     insertar_venta_item(conn, item);
                 }

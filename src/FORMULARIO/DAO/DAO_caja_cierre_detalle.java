@@ -29,7 +29,7 @@ public class DAO_caja_cierre_detalle {
             + "estado,descripcion,"
             + "fk_idgasto,fk_idcompra,fk_idventa,fk_idusuario,fk_idrh_vale,fk_idrh_liquidacion,monto_solo_adelanto) "
             + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE caja_cierre_detalle SET fecha_creado=?,creado_por=?,cerrado_por=?,es_cerrado=?,"
+    private String sql_update = "UPDATE caja_cierre_detalle SET creado_por=?,cerrado_por=?,es_cerrado=?,"
             + "monto_apertura_caja=?,monto_cierre_caja=?,"
             + "monto_ocupa_minimo=?,monto_ocupa_adicional=?,monto_ocupa_consumo=?,"
             + "monto_ocupa_descuento=?,monto_ocupa_adelanto=?,"
@@ -93,31 +93,31 @@ public class DAO_caja_cierre_detalle {
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update);
-            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(cacide.getC2fecha_creado()));
-            pst.setString(2, cacide.getC3creado_por());
-            pst.setString(3, cacide.getC4cerrado_por());
-            pst.setBoolean(4, cacide.getC5es_cerrado());
-            pst.setDouble(5, cacide.getC6monto_apertura_caja());
-            pst.setDouble(6, cacide.getC7monto_cierre_caja());
-            pst.setDouble(7, cacide.getC8monto_ocupa_minimo());
-            pst.setDouble(8, cacide.getC9monto_ocupa_adicional());
-            pst.setDouble(9, cacide.getC10monto_ocupa_consumo());
-            pst.setDouble(10, cacide.getC11monto_ocupa_descuento());
-            pst.setDouble(11, cacide.getC12monto_ocupa_adelanto());
-            pst.setDouble(12, cacide.getC13monto_gasto());
-            pst.setDouble(13, cacide.getC14monto_compra());
-            pst.setDouble(14, cacide.getC15monto_vale());
-            pst.setDouble(15, cacide.getC16monto_liquidacion());
-            pst.setString(16, cacide.getC17estado());
-            pst.setString(17, cacide.getC18descripcion());
-            pst.setInt(18, cacide.getC19fk_idgasto());
-            pst.setInt(19, cacide.getC20fk_idcompra());
-            pst.setInt(20, cacide.getC21fk_idventa());
-            pst.setInt(21, cacide.getC22fk_idusuario());
-            pst.setInt(22, cacide.getC23fk_idrh_vale());
-            pst.setInt(23, cacide.getC24fk_idrh_liquidacion());
-            pst.setDouble(24, cacide.getC25monto_solo_adelanto());
-            pst.setInt(25, cacide.getC1idcaja_cierre_detalle());
+//            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(cacide.getC2fecha_creado(),"cacide.getC2fecha_creado()"));
+            pst.setString(1, cacide.getC3creado_por());
+            pst.setString(2, cacide.getC4cerrado_por());
+            pst.setBoolean(3, cacide.getC5es_cerrado());
+            pst.setDouble(4, cacide.getC6monto_apertura_caja());
+            pst.setDouble(5, cacide.getC7monto_cierre_caja());
+            pst.setDouble(6, cacide.getC8monto_ocupa_minimo());
+            pst.setDouble(7, cacide.getC9monto_ocupa_adicional());
+            pst.setDouble(8, cacide.getC10monto_ocupa_consumo());
+            pst.setDouble(9, cacide.getC11monto_ocupa_descuento());
+            pst.setDouble(10, cacide.getC12monto_ocupa_adelanto());
+            pst.setDouble(11, cacide.getC13monto_gasto());
+            pst.setDouble(12, cacide.getC14monto_compra());
+            pst.setDouble(13, cacide.getC15monto_vale());
+            pst.setDouble(14, cacide.getC16monto_liquidacion());
+            pst.setString(15, cacide.getC17estado());
+            pst.setString(16, cacide.getC18descripcion());
+            pst.setInt(17, cacide.getC19fk_idgasto());
+            pst.setInt(18, cacide.getC20fk_idcompra());
+            pst.setInt(19, cacide.getC21fk_idventa());
+            pst.setInt(20, cacide.getC22fk_idusuario());
+            pst.setInt(21, cacide.getC23fk_idrh_vale());
+            pst.setInt(22, cacide.getC24fk_idrh_liquidacion());
+            pst.setDouble(23, cacide.getC25monto_solo_adelanto());
+            pst.setInt(24, cacide.getC1idcaja_cierre_detalle());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + cacide.toString(), titulo);

@@ -29,12 +29,14 @@ public class FrmProd_unidad extends javax.swing.JInternalFrame {
     private DAO_producto DAOp = new DAO_producto();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
+    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     private String nombreTabla_pri="UNIDAD"; 
     private String nombreTabla_sec="PRODUCTO"; 
     private String creado_por="digno";
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);    
+        creado_por = ENTusu.getGlobal_nombre();
         reestableser();
         DAOpu.actualizar_tabla_producto_unidad(conn, tbltabla_pri);
     }

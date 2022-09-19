@@ -20,8 +20,14 @@ public class DAO_habitacion_mini_pc {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "HABITACION_MINI_PC GUARDADO CORRECTAMENTE";
     private String mensaje_update = "HABITACION_MINI_PC MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO habitacion_mini_pc(idhabitacion_mini_pc,fecha_creado,creado_por,placa_nombre,placa_ip,placa_ubicacion,ssh_usuario,ssh_password) VALUES (?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE habitacion_mini_pc SET fecha_creado=?,creado_por=?,placa_nombre=?,placa_ip=?,placa_ubicacion=?,ssh_usuario=?,ssh_password=? WHERE idhabitacion_mini_pc=?;";
+    private String sql_insert = "INSERT INTO habitacion_mini_pc(idhabitacion_mini_pc,fecha_creado,creado_por,"
+            + "placa_nombre,placa_ip,placa_ubicacion,"
+            + "ssh_usuario,ssh_password,ult_conexion) "
+            + "VALUES (?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE habitacion_mini_pc SET fecha_creado=?,creado_por=?,"
+            + "placa_nombre=?,placa_ip=?,placa_ubicacion=?,"
+            + "ssh_usuario=?,ssh_password=?,ult_conexion=? "
+            + "WHERE idhabitacion_mini_pc=?;";
     private String sql_select = "SELECT idhabitacion_mini_pc as idpc,placa_nombre,placa_ip FROM habitacion_mini_pc order by 1 desc;";
     private String sql_cargar = "SELECT idhabitacion_mini_pc,fecha_creado,creado_por,placa_nombre,placa_ip,placa_ubicacion,ssh_usuario,ssh_password FROM habitacion_mini_pc WHERE idhabitacion_mini_pc=";
 
@@ -39,6 +45,7 @@ public class DAO_habitacion_mini_pc {
             pst.setString(6, hamipc.getC6placa_ubicacion());
             pst.setString(7, hamipc.getC7ssh_usuario());
             pst.setString(8, hamipc.getC8ssh_password());
+            pst.setTimestamp(9, evefec.getTimestamp_sistema());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + hamipc.toString(), titulo);
@@ -60,7 +67,8 @@ public class DAO_habitacion_mini_pc {
             pst.setString(5, hamipc.getC6placa_ubicacion());
             pst.setString(6, hamipc.getC7ssh_usuario());
             pst.setString(7, hamipc.getC8ssh_password());
-            pst.setInt(8, hamipc.getC1idhabitacion_mini_pc());
+            pst.setTimestamp(8, evefec.getTimestamp_sistema());
+            pst.setInt(9, hamipc.getC1idhabitacion_mini_pc());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + hamipc.toString(), titulo);

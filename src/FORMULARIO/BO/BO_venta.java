@@ -31,8 +31,8 @@ public class BO_venta {
             }
             DAOhr.insertar_habitacion_recepcion(conn, ENThr);
             DAOven.insertar_venta(conn, ve);
-            DAOhrt.update_habitacion_recepcion_temp_ocupar(conn, ENThrt);
-
+//            DAOhrt.update_habitacion_recepcion_temp_ocupar(conn, ENThrt);
+            DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, ve.toString(), titulo);
@@ -74,5 +74,34 @@ public class BO_venta {
                 evmen.Imprimir_serial_sql_error(e1, ve.toString(), titulo);
             }
         }
+    }
+
+    public void update_venta_sin_commit(Connection conn, venta ve, habitacion_recepcion ENThr, habitacion_recepcion_temp ENThrt, caja_cierre_detalle ENTccd,
+            boolean es_conventa, boolean es_caja, boolean up_caja) {
+        String titulo = "update_venta_sin_commit";
+        if (es_conventa) {
+            DAOven.update_venta(conn, ve);
+        }
+        DAOhr.update_habitacion_recepcion(conn, ENThr);
+        DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
+        if (es_caja) {
+            DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
+        }
+        if (up_caja) {
+            if (ENTccd.getC1idcaja_cierre_detalle() > 0) {
+                DAOccd.update_caja_cierre_detalle(conn, ENTccd);
+            }
+        }
+    }
+
+    public void insertar_venta_sin_commit(Connection conn, venta ve, habitacion_recepcion ENThr, habitacion_recepcion_temp ENThrt,
+           caja_cierre_detalle ENTccd ) {
+        String titulo = "insertar_venta";
+        DAOhr.insertar_habitacion_recepcion(conn, ENThr);
+        DAOven.insertar_venta(conn, ve);
+        DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
+        if (ENTccd.getC1idcaja_cierre_detalle() > 0) {
+                DAOccd.update_caja_cierre_detalle(conn, ENTccd);
+            }
     }
 }
