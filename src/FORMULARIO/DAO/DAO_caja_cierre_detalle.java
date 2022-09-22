@@ -164,7 +164,7 @@ public class DAO_caja_cierre_detalle {
         }
     }
 
-    public void actualizar_tabla_caja_cierre_detalle_ABIERTO(Connection conn, JTable tbltabla, int fk_idusuario) {
+    public void actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA(Connection conn, JTable tbltabla, int fk_idusuario) {
         String sql = "select cd.fk_idventa as idventa,\n"
                 + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
                 + "cd.descripcion as descripcion,\n"
@@ -178,13 +178,31 @@ public class DAO_caja_cierre_detalle {
                 + "cd.estado,cd.creado_por as usuario \n"
                 + "from caja_cierre_detalle cd\n"
                 + "where cd.es_cerrado=false \n"
-                //+ "and cd.estado='EMITIDO'\n"
+                + "and cd.fk_idventa>0 \n"
                 + "and cd.fk_idusuario=" + fk_idusuario
                 + " order by cd.idcaja_cierre_detalle desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre_detalle_ABIERTO(tbltabla);
     }
-
+    public void actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(Connection conn, JTable tbltabla, int fk_idusuario) {
+        String sql = "select cd.fk_idgasto as idgasto,\n"
+                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
+                + "cd.descripcion as descripcion,\n"
+                + "to_char(cd.monto_gasto,'999G999G999') as monto_gasto,\n"
+                + "cd.estado,cd.creado_por as usuario \n"
+                + "from caja_cierre_detalle cd\n"
+                + "where cd.es_cerrado=false \n"
+                + "and cd.fk_idgasto>0 \n"
+                + "and cd.fk_idusuario=" + fk_idusuario
+                + " order by cd.idcaja_cierre_detalle desc";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_caja_cierre_detalle_ABIERTO_GASTO(tbltabla);
+    }
+    public void ancho_tabla_caja_cierre_detalle_ABIERTO_GASTO(JTable tbltabla) {
+        int Ancho[] = {5,12,48, 10, 10,15};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 3);
+    }
     public void ancho_tabla_caja_cierre_detalle_ABIERTO(JTable tbltabla) {
         int Ancho[] = {5, 9, 30, 6, 6, 6, 7, 7, 7, 7, 10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
@@ -202,11 +220,11 @@ public class DAO_caja_cierre_detalle {
                 + "and fk_idusuario=" + fk_idusuario;
         eveconn.SQL_execute_libre(conn, sql);
     }
-    public int getInt_idcaja_cierre_detalle_venta(Connection conn, int fk_idventa){
-        String titulo = "getInt_idcaja_cierre_detalle_venta";
+    public int getInt_idcaja_cierre_detalle_por_otro_id(Connection conn,String idcampo, int iddato){
+        String titulo = "getInt_idcaja_cierre_detalle_por_otro_id";
         String sql="select idcaja_cierre_detalle "
                 + "from caja_cierre_detalle "
-                + "where fk_idventa="+fk_idventa;
+                + "where "+idcampo+"="+iddato;
         int idcaja_cierre_detalle_venta=0;
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);

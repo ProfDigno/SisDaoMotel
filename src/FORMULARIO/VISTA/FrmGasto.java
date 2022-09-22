@@ -5,8 +5,11 @@
  */
 package FORMULARIO.VISTA;
 
+import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import ESTADOS.EvenEstado;
+import Evento.Combobox.EvenCombobox;
+import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
@@ -26,27 +29,53 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
-    private gasto ENTgt=new gasto();
-    private DAO_gasto DAOgt=new DAO_gasto();
-    private BO_gasto BOgt=new BO_gasto();
+    private EvenConexion eveconn = new EvenConexion();
+    private gasto ENTgt = new gasto();
+    private DAO_gasto DAOgt = new DAO_gasto();
+    private BO_gasto BOgt = new BO_gasto();
+    private gasto_tipo ENTgti = new gasto_tipo();
+    private DAO_gasto_tipo DAOgti = new DAO_gasto_tipo();
+    private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
+    private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     private EvenJTextField evejtf = new EvenJTextField();
-    private EvenNumero_a_Letra nroLetra=new EvenNumero_a_Letra();
+    private EvenNumero_a_Letra nroLetra = new EvenNumero_a_Letra();
+    private EvenFecha evefec = new EvenFecha();
+    private EvenCombobox evecmb = new EvenCombobox();
     Connection conn = ConnPostgres.getConnPosgres();
     private ClaVarBuscar vbus = new ClaVarBuscar();
-    private usuario ENTusu = new usuario();
+    public usuario ENTusu = new usuario();
     private EvenEstado eveest = new EvenEstado();
-    private String nombreTabla_pri="GASTO"; 
-    private String nombreTabla_sec="CAJA GASTO"; 
-    private String creado_por="digno";
-    private int fk_idusuario=0;
+    private String nombreTabla_pri = "GASTO";
+    private String nombreTabla_sec = "CAJA GASTO";
+    private String creado_por = "digno";
+    private int fk_idusuario = 0;
     private static int fk_idgasto_tipo;
+    private int idgasto;
+    private double Dmonto_gasto;
+    String usu_id = "idusuario";
+    String usu_nombre = "nombre";
+    String usu_tabla = "usuario";
+    String usu_where = "where activo=true ";
+
     private void abrir_formulario() {
-        this.setTitle(nombreTabla_pri);
-        creado_por=ENTusu.getGlobal_nombre();
-        fk_idusuario=ENTusu.getGlobal_idusuario();
-        evetbl.centrar_formulario_internalframa(this);        
+        cargar_usuario_acceso();
+        evetbl.centrar_formulario_internalframa(this);
         reestableser();
-        DAOgt.actualizar_tabla_gasto(conn, tbltabla_pri);
+        DAOgt.actualizar_tabla_gasto(conn, tbltabla_pri, "");
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_caja_cierre);
+        cargar_usuario();
+    }
+
+    private void cargar_usuario_acceso() {
+        if (fk_idusuario != ENTusu.getGlobal_idusuario()) {
+            usuario usu = new usuario();
+            creado_por = usu.getGlobal_nombre();
+            fk_idusuario = usu.getGlobal_idusuario();
+        }
+    }
+
+    private void cargar_usuario() {
+        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
     }
 
     public static int getFk_idgasto_tipo() {
@@ -56,69 +85,120 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     public static void setFk_idgasto_tipo(int fk_idgasto_tipo) {
         FrmGasto.fk_idgasto_tipo = fk_idgasto_tipo;
     }
-    
-    private void titulo_formulario(String fecha_creado,String creado_por){
-        this.setTitle(nombreTabla_pri+" / fecha creado: "+fecha_creado+" / Creado Por: "+creado_por);
+
+    private void titulo_formulario(String fecha_creado, String creado_por) {
+        this.setTitle(nombreTabla_pri + " / fecha creado: " + fecha_creado + " / Creado Por: " + creado_por);
     }
+
     private boolean validar_guardar() {
-        if(getFk_idgasto_tipo()==0){
+        if (getFk_idgasto_tipo() == 0) {
             txtgasto_tipo.setText(null);
             if (evejtf.getBoo_JTextField_vacio(txtgasto_tipo, "DEBE CARGO CORRECTAMENTE UN TIPO")) {
-               return false;
+                return false;
             }
         }
         if (evejtf.getBoo_JTextField_vacio(txtmonto_gasto, "DEBE CARGAR UN MONTO")) {
             return false;
         }
-        if (evejtf.getBoo_JTextarea_vacio(txtadescripcion,"DEBE CARGAR UNA DESCRIPCION")) {
+        if (evejtf.getBoo_JTextarea_vacio(txtadescripcion, "DEBE CARGAR UNA DESCRIPCION")) {
             return false;
         }
         return true;
     }
-    private void cargar_dato(){
-        String monto_gasto=evejtf.getString_format_nro_entero1(txtmonto_gasto);
-        String monto_letra=nroLetra.Convertir(monto_gasto,true);
+
+    private void cargar_dato_gasto() {
+        String monto_gasto = evejtf.getString_format_nro_entero1(txtmonto_gasto);
+        String monto_letra = nroLetra.Convertir(monto_gasto, true);
+        Dmonto_gasto = Double.parseDouble(monto_gasto);
         txtmonto_letra.setText(monto_letra);
         ENTgt.setC3creado_por(creado_por);
-        ENTgt.setC4monto_gasto(Double.parseDouble(monto_gasto));
+        ENTgt.setC4monto_gasto(Dmonto_gasto);
         ENTgt.setC5monto_letra(monto_letra);
         ENTgt.setC6descripcion(txtadescripcion.getText());
         ENTgt.setC7estado(eveest.getEst_Emitido());
         ENTgt.setC8fk_idgasto_tipo(fk_idgasto_tipo);
         ENTgt.setC9fk_idusuario(fk_idusuario);
     }
+
+    private void cargar_dato_caja_detalle_GASTO() {
+        String descripcion = idgasto + "-(" + eveest.getCaja_GASTO() + ")-TIPO: " + txtgasto_tipo.getText() + ",D:(" + txtadescripcion.getText() + ")";
+        ENTccd.setC3creado_por(creado_por);
+        ENTccd.setC4cerrado_por(eveest.getCaja_GASTO());
+        ENTccd.setC5es_cerrado(false);
+        ENTccd.setC6monto_apertura_caja(0);
+        ENTccd.setC7monto_cierre_caja(0);
+        ENTccd.setC8monto_ocupa_minimo(0);
+        ENTccd.setC9monto_ocupa_adicional(0);
+        ENTccd.setC10monto_ocupa_consumo(0);
+        ENTccd.setC11monto_ocupa_descuento(0);
+        ENTccd.setC12monto_ocupa_adelanto(0);
+        ENTccd.setC13monto_gasto(Dmonto_gasto);
+        ENTccd.setC14monto_compra(0);
+        ENTccd.setC15monto_vale(0);
+        ENTccd.setC16monto_liquidacion(0);
+        ENTccd.setC17estado(eveest.getEst_Emitido());
+        ENTccd.setC18descripcion(descripcion);
+        ENTccd.setC19fk_idgasto(idgasto);
+        ENTccd.setC20fk_idcompra(0);
+        ENTccd.setC21fk_idventa(0);
+        ENTccd.setC22fk_idusuario(fk_idusuario);
+        ENTccd.setC23fk_idrh_vale(0);
+        ENTccd.setC24fk_idrh_liquidacion(0);
+        ENTccd.setC25monto_solo_adelanto(0);
+    }
+
     private void boton_guardar() {
         if (validar_guardar()) {
-            cargar_dato();
-            BOgt.insertar_gasto(ENTgt, tbltabla_pri);
+            cargar_dato_gasto();
+            cargar_dato_caja_detalle_GASTO();
+            BOgt.insertar_gasto(ENTgt, ENTccd);
             reestableser();
         }
     }
 
-    private void boton_editar() {
-        if (validar_guardar()) {
-            ENTgt.setC1idgasto(Integer.parseInt(txtid.getText()));
-            cargar_dato();
-            BOgt.update_gasto(ENTgt, tbltabla_pri);
+    private void boton_anular() {
+        if (tbltabla_pri.getSelectedRow() >= 0) {
+            int fk_idgasto = eveJtab.getInt_select_id(tbltabla_pri);
+            int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_por_otro_id(conn, "fk_idgasto", fk_idgasto);
+            DAOccd.cargar_caja_cierre_detalle(conn, ENTccd, idcaja_cierre_detalle);
+            ENTgt.setC1idgasto(fk_idgasto);
+            ENTgt.setC7estado(eveest.getEst_Anulado());
+            ENTgt.setC6descripcion(ENTgt.getC6descripcion() + " :" + eveest.getEst_Anulado());
+            ENTccd.setC1idcaja_cierre_detalle(idcaja_cierre_detalle);
+            ENTccd.setC17estado(eveest.getEst_Anulado());
+            ENTccd.setC13monto_gasto(0);
+            BOgt.update_gasto(ENTgt, ENTccd);
+            reestableser();
         }
     }
 
     private void seleccionar_tabla() {
+        cargar_usuario_acceso();
         int id = eveJtab.getInt_select_id(tbltabla_pri);
         DAOgt.cargar_gasto(conn, ENTgt, id);
         txtid.setText(String.valueOf(ENTgt.getC1idgasto()));
-//        txtgasto_tipo.setText(ENTgt.getC4nombre());
-//        jCactivo.setSelected(ENTgt.getC5activo());
+        fk_idgasto_tipo = ENTgt.getC8fk_idgasto_tipo();
+        DAOgti.cargar_gasto_tipo(conn, ENTgti, fk_idgasto_tipo);
+        txtgasto_tipo.setText(ENTgti.getC4nombre());
+        txtmonto_gasto.setText(String.valueOf((int) (ENTgt.getC4monto_gasto())));
+        evejtf.getString_format_nro_entero1(txtmonto_gasto);
+        txtmonto_letra.setText(ENTgt.getC5monto_letra());
+        txtadescripcion.setText(ENTgt.getC6descripcion());
         titulo_formulario(ENTgt.getC2fecha_creado(), ENTgt.getC3creado_por());
         btnguardar.setEnabled(false);
         btnanular.setEnabled(true);
     }
-    private void reestableser(){
-        this.setTitle(nombreTabla_pri);
+
+    private void reestableser() {
+        cargar_usuario_acceso();
+        this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por);
+//        DAOgt.actualizar_tabla_gasto(conn, tbltabla_pri,"");
+        actualizar_tabla_caja_cierre();
         jTab_principal.setTitleAt(0, nombreTabla_pri);
         jTab_principal.setTitleAt(1, nombreTabla_sec);
         setFk_idgasto_tipo(0);
-        txtid.setText(null);
+        idgasto = (eveconn.getInt_ultimoID_mas_uno(conn, ENTgt.getTb_gasto(), ENTgt.getId_idgasto()));
+        txtid.setText(String.valueOf(idgasto));
         txtgasto_tipo.setText(null);
         txtmonto_gasto.setText(null);
         txtmonto_letra.setText(null);
@@ -128,9 +208,21 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtgasto_tipo.grabFocus();
     }
 
-    private void boton_nuevo(){
+    private void actualizar_tabla_caja_cierre() {
+        int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
+        String filtro = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "g.fecha_creado");
+        if (idusuario > 0) {
+            filtro = filtro + " and g.fk_idusuario=" + idusuario;
+        }
+        DAOgt.actualizar_tabla_gasto(conn, tbltabla_pri, filtro);
+        double suma_gasto = eveJtab.getDouble_sumar_tabla(tbltabla_pri, 7);
+        jFtotal_cc_gasto.setValue(suma_gasto);
+    }
+
+    private void boton_nuevo() {
         reestableser();
     }
+
     public FrmGasto() {
         initComponents();
         abrir_formulario();
@@ -165,6 +257,11 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         tbltabla_pri = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         txtbuscar = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        cmbfecha_caja_cierre = new javax.swing.JComboBox<>();
+        cmbusuario = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
+        jFtotal_cc_gasto = new javax.swing.JFormattedTextField();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -242,6 +339,11 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         });
 
         btnnuevo_gtipo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_nuevo.png"))); // NOI18N
+        btnnuevo_gtipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnnuevo_gtipoActionPerformed(evt);
+            }
+        });
 
         btnbuscar_gtipo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
         btnbuscar_gtipo.addActionListener(new java.awt.event.ActionListener() {
@@ -319,7 +421,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtmonto_letra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo)
                     .addComponent(btnguardar)
@@ -356,26 +458,68 @@ public class FrmGasto extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel2.setText("Fecha:");
+
+        cmbfecha_caja_cierre.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbfecha_caja_cierre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbfecha_caja_cierreActionPerformed(evt);
+            }
+        });
+
+        cmbusuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbusuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbusuarioActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Usuario:");
+
+        jFtotal_cc_gasto.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL GASTO"));
+        jFtotal_cc_gasto.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_cc_gasto.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_cc_gasto.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
         panel_tablaLayout.setHorizontalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jLabel3)
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.Alignment.LEADING, 0, 159, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jFtotal_cc_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tablaLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tablaLayout.createSequentialGroup()
+                        .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jFtotal_cc_gasto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -465,7 +609,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private void btnanularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnanularActionPerformed
         // TODO add your handling code here:
-        boton_editar();
+        boton_anular();
     }//GEN-LAST:event_btnanularActionPerformed
 
     private void btnnuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnuevoActionPerformed
@@ -490,8 +634,8 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private void txtmonto_gastoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmonto_gastoKeyReleased
         // TODO add your handling code here:
-        String monto=evejtf.getString_format_nro_entero1(txtmonto_gasto);
-        String monto_letra=nroLetra.Convertir(monto,true);
+        String monto = evejtf.getString_format_nro_entero1(txtmonto_gasto);
+        String monto_letra = nroLetra.Convertir(monto, true);
         txtmonto_letra.setText(monto_letra);
     }//GEN-LAST:event_txtmonto_gastoKeyReleased
 
@@ -504,9 +648,24 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         vbus.setNombre_tabla("GATO TIPO");
         vbus.setTipo_tabla(7);
-        JDiaBuscar frm=new JDiaBuscar(null,true);
+        JDiaBuscar frm = new JDiaBuscar(null, true);
         frm.setVisible(true);
     }//GEN-LAST:event_btnbuscar_gtipoActionPerformed
+
+    private void btnnuevo_gtipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnuevo_gtipoActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmGasto_Tipo());
+    }//GEN-LAST:event_btnnuevo_gtipoActionPerformed
+
+    private void cmbfecha_caja_cierreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbfecha_caja_cierreActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_caja_cierre();
+    }//GEN-LAST:event_cmbfecha_caja_cierreActionPerformed
+
+    private void cmbusuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbusuarioActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_caja_cierre();
+    }//GEN-LAST:event_cmbusuarioActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -515,8 +674,13 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnguardar;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JButton btnnuevo_gtipo;
+    private javax.swing.JComboBox<String> cmbfecha_caja_cierre;
+    private javax.swing.JComboBox<String> cmbusuario;
+    private javax.swing.JFormattedTextField jFtotal_cc_gasto;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

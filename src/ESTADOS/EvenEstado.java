@@ -24,6 +24,7 @@ public class EvenEstado {
     private static String est_Adelanto = "ADELANTO";
     private static String est_Cerrado = "CERRADO";
     private static String est_Mudar = "MUDAR";
+    private static String caja_GASTO = "GASTO";
     private static String cond_Contado;
     private static String cond_Credito;
     private static String forPago_Efectivo;
@@ -66,6 +67,15 @@ public class EvenEstado {
         setTipo_hab_vip("VIP");
         setTipo_hab_luxury("LUXURY");
         setTipo_hab_penthouse("PENTHOUSE");
+        setCaja_GASTO("GASTO");
+    }
+
+    public static String getCaja_GASTO() {
+        return caja_GASTO;
+    }
+
+    public static void setCaja_GASTO(String caja_GASTO) {
+        EvenEstado.caja_GASTO = caja_GASTO;
     }
 
     public static String getEst_Mudar() {

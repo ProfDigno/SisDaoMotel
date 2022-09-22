@@ -213,12 +213,16 @@ public class DAO_venta {
                 + " TRIM(to_char(v.monto_consumo,'999G999G999')) as consumo,\n"
                 + " TRIM(to_char(v.monto_descuento,'999G999G999')) as descu,\n"
                 + " TRIM(to_char(v.monto_adelanto,'999G999G999')) as adelanto,\n"
-                + " TRIM(to_char(((v.monto_minimo+v.monto_adicional+v.monto_consumo)-(v.monto_descuento+v.monto_adelanto)),'999G999G999')) as total\n"
+                + " TRIM(to_char(((v.monto_minimo+v.monto_adicional+v.monto_consumo)-(v.monto_descuento+v.monto_adelanto)),'999G999G999')) as total,\n"
+                + "(v.monto_minimo) as i_minimo, \n"
+                + "(v.monto_adicional) as i_adicional, \n"
+                + "(v.monto_descuento+v.monto_adelanto) as i_descuento \n"
                 + " from venta v,habitacion_recepcion hr,habitacion_dato hd,caja_cierre_item cci,caja_cierre_detalle ccd  \n"
                 + " where v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
                 + " and hr.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
                 + " and ccd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle \n"
                 + " and ccd.fk_idventa=v.idventa \n"
+                + " and ccd.monto_ocupa_adelanto=0 \n"
                 + " and cci.fk_idcaja_cierre=" + fk_idcaja_cierre
                 + " order by v.idventa desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -226,7 +230,7 @@ public class DAO_venta {
     }
 
     public void ancho_tabla_venta_desde_caja_cierre(JTable tbltabla) {
-        int Ancho[] = {5, 13, 4, 10, 5, 6, 7, 7, 7, 7, 7, 7};
+        int Ancho[] = {5, 13, 4, 10, 5, 6, 7, 7, 7, 7, 7, 7,1,1,1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_centro_columna(tbltabla, 2);
         evejt.alinear_centro_columna(tbltabla, 3);
@@ -237,6 +241,9 @@ public class DAO_venta {
         evejt.alinear_derecha_columna(tbltabla, 9);
         evejt.alinear_derecha_columna(tbltabla, 10);
         evejt.alinear_derecha_columna(tbltabla, 11);
+        evejt.ocultar_columna(tbltabla, 12);
+        evejt.ocultar_columna(tbltabla, 13);
+        evejt.ocultar_columna(tbltabla, 14);
     }
 
     public void actualizar_tabla_venta_item_desde_caja_cierre(Connection conn, JTable tbltabla, int fk_idcaja_cierre) {

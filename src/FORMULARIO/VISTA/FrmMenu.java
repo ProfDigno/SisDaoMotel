@@ -26,6 +26,7 @@ public class FrmMenu extends javax.swing.JFrame {
     json_array_conexion jscon=new json_array_conexion();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
     private ComputerInfo pcinfo=new ComputerInfo();
+//    FrmGasto frmgasto=new FrmGasto();
     private void abrir_formulario() {
         conPs.ConnectDBpostgres(conn,false);
         conn = conPs.getConnPosgres();
@@ -42,6 +43,16 @@ public class FrmMenu extends javax.swing.JFrame {
                 + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato()+" IP:"+pcinfo.getStringMiIP();
         frame.setTitle(titulo);
     }
+    private void abrir_login(){
+        bloqueo_inicio();
+        JDiaLogin log = new JDiaLogin(this, true);
+        log.setVisible(true);
+    }
+    private void cerrar_formularios(){
+//        FrmGasto frm=new FrmGasto();
+//        FrmGasto().dispose();
+//        evetbl.cerrar_TablaJinternal(new FrmGasto());
+    }
     public FrmMenu() {
         initComponents();
         abrir_formulario();
@@ -57,10 +68,14 @@ public class FrmMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         escritorio = new javax.swing.JDesktopPane();
-        btnproducto = new javax.swing.JButton();
+        btncerrar_seccion = new javax.swing.JButton();
+        lblusuario = new javax.swing.JLabel();
+        panel_acceso_rapido = new javax.swing.JPanel();
         btncrear_habitacion = new javax.swing.JButton();
+        btnproducto = new javax.swing.JButton();
         btnventa = new javax.swing.JButton();
         btncajacierre = new javax.swing.JButton();
+        btngasto = new javax.swing.JButton();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -74,6 +89,9 @@ public class FrmMenu extends javax.swing.JFrame {
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenu8 = new javax.swing.JMenu();
+        jMenuItem15 = new javax.swing.JMenuItem();
+        jMenuItem16 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -91,15 +109,17 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
 
-        btnproducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_prod_bebida.png"))); // NOI18N
-        btnproducto.setText("PRODUCTO");
-        btnproducto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnproducto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnproducto.addActionListener(new java.awt.event.ActionListener() {
+        btncerrar_seccion.setText("CERRAR SECCION");
+        btncerrar_seccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnproductoActionPerformed(evt);
+                btncerrar_seccionActionPerformed(evt);
             }
         });
+
+        lblusuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblusuario.setText("usuario");
+
+        panel_acceso_rapido.setBorder(javax.swing.BorderFactory.createTitledBorder("ACCESO RAPIDO"));
 
         btncrear_habitacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_conf_hab.png"))); // NOI18N
         btncrear_habitacion.setText("HABITACION");
@@ -109,6 +129,16 @@ public class FrmMenu extends javax.swing.JFrame {
         btncrear_habitacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btncrear_habitacionActionPerformed(evt);
+            }
+        });
+
+        btnproducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_prod_bebida.png"))); // NOI18N
+        btnproducto.setText("PRODUCTO");
+        btnproducto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnproducto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnproducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnproductoActionPerformed(evt);
             }
         });
 
@@ -132,17 +162,21 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
 
-        escritorio.setLayer(btnproducto, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btncrear_habitacion, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btnventa, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btncajacierre, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        btngasto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/gasto.png"))); // NOI18N
+        btngasto.setText("GASTO");
+        btngasto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btngasto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btngasto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btngastoActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
-        escritorio.setLayout(escritorioLayout);
-        escritorioLayout.setHorizontalGroup(
-            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(escritorioLayout.createSequentialGroup()
-                .addContainerGap()
+        javax.swing.GroupLayout panel_acceso_rapidoLayout = new javax.swing.GroupLayout(panel_acceso_rapido);
+        panel_acceso_rapido.setLayout(panel_acceso_rapidoLayout);
+        panel_acceso_rapidoLayout.setHorizontalGroup(
+            panel_acceso_rapidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_acceso_rapidoLayout.createSequentialGroup()
                 .addComponent(btncrear_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnproducto, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -150,19 +184,46 @@ public class FrmMenu extends javax.swing.JFrame {
                 .addComponent(btnventa)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btncajacierre)
-                .addContainerGap(481, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btngasto))
         );
-        escritorioLayout.setVerticalGroup(
+        panel_acceso_rapidoLayout.setVerticalGroup(
+            panel_acceso_rapidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnproducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btncajacierre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btncrear_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnventa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btngasto, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(lblusuario, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(panel_acceso_rapido, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
+        escritorio.setLayout(escritorioLayout);
+        escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnproducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btncrear_habitacion)
-                        .addComponent(btncajacierre))
-                    .addComponent(btnventa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(388, Short.MAX_VALUE))
+                    .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(escritorioLayout.createSequentialGroup()
+                        .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblusuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(366, Short.MAX_VALUE))
+        );
+        escritorioLayout.setVerticalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(escritorioLayout.createSequentialGroup()
+                .addGap(7, 7, 7)
+                .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btncerrar_seccion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(340, Short.MAX_VALUE))
         );
 
         jMenu3.setText("HABITACION");
@@ -246,6 +307,21 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
         jMenu5.add(jMenuItem11);
+
+        jMenu8.setText("REPORTE");
+
+        jMenuItem15.setText("INVENTARIO VALORIZADO");
+        jMenuItem15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem15ActionPerformed(evt);
+            }
+        });
+        jMenu8.add(jMenuItem15);
+
+        jMenuItem16.setText("GANACIA POR PRODUCTOS");
+        jMenu8.add(jMenuItem16);
+
+        jMenu5.add(jMenu8);
 
         barra_menu_principal.add(jMenu5);
 
@@ -388,8 +464,7 @@ public class FrmMenu extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        JDiaLogin log = new JDiaLogin(this, true);
-        log.setVisible(true);
+        abrir_login();
     }//GEN-LAST:event_formWindowOpened
 
     private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
@@ -406,6 +481,22 @@ public class FrmMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmCaja_Detalle());
     }//GEN-LAST:event_btncajacierreActionPerformed
+
+    private void btngastoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btngastoActionPerformed
+        // TODO add your handling code here:
+         evetbl.abrir_TablaJinternal(new FrmGasto());
+    }//GEN-LAST:event_btngastoActionPerformed
+
+    private void btncerrar_seccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncerrar_seccionActionPerformed
+        // TODO add your handling code here:
+        cerrar_formularios();
+        abrir_login();
+    }//GEN-LAST:event_btncerrar_seccionActionPerformed
+
+    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepInventarioValorizado());
+    }//GEN-LAST:event_jMenuItem15ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -445,7 +536,9 @@ public class FrmMenu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JMenuBar barra_menu_principal;
     private javax.swing.JButton btncajacierre;
+    private javax.swing.JButton btncerrar_seccion;
     private javax.swing.JButton btncrear_habitacion;
+    private javax.swing.JButton btngasto;
     private javax.swing.JButton btnproducto;
     private javax.swing.JButton btnventa;
     public static javax.swing.JDesktopPane escritorio;
@@ -456,12 +549,15 @@ public class FrmMenu extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu7;
+    private javax.swing.JMenu jMenu8;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;
     private javax.swing.JMenuItem jMenuItem14;
+    private javax.swing.JMenuItem jMenuItem15;
+    private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
@@ -470,5 +566,7 @@ public class FrmMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
+    public static javax.swing.JLabel lblusuario;
+    public static javax.swing.JPanel panel_acceso_rapido;
     // End of variables declaration//GEN-END:variables
 }

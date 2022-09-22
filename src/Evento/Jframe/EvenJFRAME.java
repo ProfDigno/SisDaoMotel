@@ -6,6 +6,7 @@
 package Evento.Jframe;
 
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import FORMULARIO.VISTA.FrmGasto;
 import FORMULARIO.VISTA.FrmMenu;
 //import FORMULARIO.VISTA.FrmMenuRestaurante;
 import java.awt.Dimension;
@@ -26,7 +27,18 @@ public class EvenJFRAME {
         formu.setVisible(true);
         System.out.println("Abrir Jinternal: "+formu.getName());
     }
-
+    public void cerrar_TablaJinternal(JInternalFrame formu) {
+//        formu.setVisible(false);
+        try {
+//            formu.setClosed(true);
+//            FrmGasto frm
+//            FrmMenu.escritorio.remove(FrmGasto());
+        } catch (Exception e) {
+            System.out.println("ERROR: "+formu.getName()+"\n"+e);
+        }
+        
+        System.out.println("cerrar_TablaJinternal: "+formu.getName());
+    }
     public  void centrar_formulario(javax.swing.JInternalFrame frame) {
         Dimension desktopSize = FrmMenu.escritorio.getSize();
         Dimension jInternalFrameSize = frame.getSize();

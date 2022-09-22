@@ -4,9 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmMenu.java</file>
+            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/REPORTE/PRODUCTO/repInventarioValorizado.jrxml</file>
+            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmRepInventarioValorizado.java</file>
+            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmGasto.java</file>
             <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmVenta.java</file>
-            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/IMPRESORA_POS/PosImprimir_CierreCajaDetalle.java</file>
             <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmCaja_Detalle.java</file>
+            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/DAO/DAO_producto.java</file>
         </group>
     </open-files>
 </project-private>

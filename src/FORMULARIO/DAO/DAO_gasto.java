@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import ESTADOS.EvenEstado;
 import FORMULARIO.ENTIDAD.gasto;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -14,20 +15,16 @@ import javax.swing.JTable;
 public class DAO_gasto {
 
     EvenConexion eveconn = new EvenConexion();
-    EvenJtable evejt = new EvenJtable();
-    EvenJasperReport rep = new EvenJasperReport();
-    EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
-    EvenFecha evefec = new EvenFecha();
+    private EvenJtable evejt = new EvenJtable();
+    private EvenJasperReport rep = new EvenJasperReport();
+    private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private EvenFecha evefec = new EvenFecha();
+    private EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "GASTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GASTO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO gasto(idgasto,fecha_creado,creado_por,monto_gasto,monto_letra,descripcion,estado,fk_idgasto_tipo,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE gasto SET fecha_creado=?,creado_por=?,monto_gasto=?,monto_letra=?,descripcion=?,estado=?,fk_idgasto_tipo=?,fk_idusuario=? WHERE idgasto=?;";
-    private String sql_select = "select g.idgasto as idg,to_char(g.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
-            + "gt.nombre as tipo,g.descripcion,\n"
-            + "to_char(g.monto_gasto,'999G999G999') as monto,g.estado,g.creado_por  \n"
-            + "from gasto g,gasto_tipo gt\n"
-            + "where g.fk_idgasto_tipo=gt.idgasto_tipo \n"
-            + "order by g.idgasto desc;";
+    
     private String sql_cargar = "SELECT idgasto,fecha_creado,creado_por,monto_gasto,monto_letra,descripcion,estado,fk_idgasto_tipo,fk_idusuario FROM gasto WHERE idgasto=";
 
     public void insertar_gasto(Connection conn, gasto ga) {
@@ -98,14 +95,55 @@ public class DAO_gasto {
         }
     }
 
-    public void actualizar_tabla_gasto(Connection conn, JTable tbltabla) {
+    public void actualizar_tabla_gasto(Connection conn, JTable tbltabla,String filtro) {
+        String sql_select = "select g.idgasto as idg,to_char(g.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+            + "gt.nombre as tipo,g.descripcion,\n"
+            + "to_char(g.monto_gasto,'999G999G999') as monto,g.estado,g.creado_por,g.monto_gasto as i_monto_gasto  \n"
+            + "from gasto g,gasto_tipo gt\n"
+            + "where g.fk_idgasto_tipo=gt.idgasto_tipo \n"+filtro
+            + " order by g.idgasto desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_gasto(tbltabla);
     }
 
     public void ancho_tabla_gasto(JTable tbltabla) {
-        int Ancho[] = {5, 15,23,25,10, 8, 15};
+        int Ancho[] = {5, 15, 23, 22, 8, 10, 18,1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.ocultar_columna(tbltabla, 7);
+    }
+
+    public void terminar_gasto_en_caja(Connection conn, int fk_idcaja_cierre) {
+        String sql = "update gasto set estado='" + eveest.getEst_Terminar() + "' from caja_cierre_item ,caja_cierre_detalle \n"
+                + "where caja_cierre_item.fk_idcaja_cierre_detalle=caja_cierre_detalle.idcaja_cierre_detalle \n"
+                + "and caja_cierre_detalle.fk_idgasto=gasto.idgasto \n"
+                + "and gasto.estado='" + eveest.getEst_Emitido() + "'\n"
+                + "and caja_cierre_item.fk_idcaja_cierre=" + fk_idcaja_cierre;
+        eveconn.SQL_execute_libre(conn, sql);
+    }
+
+    public void actualizar_tabla_gasto_caja_cerrado(Connection conn, JTable tbltabla, int fk_idcaja_cierre) {
+        String sql = "select g.idgasto,\n"
+                + "to_char(g.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+                + "gt.nombre as tipo,\n"
+                + "g.descripcion,\n"
+                + "TRIM(to_char(g.monto_gasto,'999G999G999')) as monto,\n"
+                + "g.estado, \n"
+                + "g.creado_por,g.monto_gasto as i_monto_gasto  \n"
+                + " from gasto g,caja_cierre_item cci,caja_cierre_detalle ccd,gasto_tipo gt  \n"
+                + " where  ccd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle \n"
+                + " and ccd.fk_idgasto=g.idgasto\n"
+                + " and g.fk_idgasto_tipo=gt.idgasto_tipo\n"
+                + " and cci.fk_idcaja_cierre=" + fk_idcaja_cierre
+                + " order by g.idgasto desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_gasto_caja_cerrado(tbltabla);
+    }
+
+    public void ancho_tabla_gasto_caja_cerrado(JTable tbltabla) {
+        int Ancho[] = {5, 15, 23, 22, 8, 10, 18,1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.ocultar_columna(tbltabla, 7);
     }
 }

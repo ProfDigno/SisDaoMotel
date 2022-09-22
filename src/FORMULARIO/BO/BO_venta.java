@@ -31,7 +31,6 @@ public class BO_venta {
             }
             DAOhr.insertar_habitacion_recepcion(conn, ENThr);
             DAOven.insertar_venta(conn, ve);
-//            DAOhrt.update_habitacion_recepcion_temp_ocupar(conn, ENThrt);
             DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
             conn.commit();
         } catch (SQLException e) {

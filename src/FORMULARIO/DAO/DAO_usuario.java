@@ -111,6 +111,7 @@ public class DAO_usuario {
             if (rs.next()) {
                 usu.setGlobal_idusuario(rs.getInt("idusuario"));
                 usu.setGlobal_nombre(rs.getString("nombre"));
+                usu.setC7activo(rs.getBoolean("activo"));
                 return true;
             } else {
                 JOptionPane.showMessageDialog(null, "USUARIO O SENHA INCORRECTA", "ERROR", JOptionPane.ERROR_MESSAGE);

@@ -34,8 +34,8 @@ public class DAO_caja_cierre {
             pst.setInt(1, caci.getC1idcaja_cierre());
             pst.setTimestamp(2, evefec.getTimestamp_sistema());
             pst.setString(3, caci.getC3creado_por());
-            pst.setTimestamp(4, evefec.getTimestamp_fecha_cargado(caci.getC4fecha_inicio(),"caci.getC4fecha_inicio()"));
-            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(caci.getC5fecha_fin(),"caci.getC5fecha_fin()"));
+            pst.setTimestamp(4, evefec.getTimestamp_fecha_cargado(caci.getC4fecha_inicio(), "caci.getC4fecha_inicio()"));
+            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(caci.getC5fecha_fin(), "caci.getC5fecha_fin()"));
             pst.setString(6, caci.getC6estado());
             pst.setInt(7, caci.getC7fk_idusuario());
             pst.execute();
@@ -87,7 +87,7 @@ public class DAO_caja_cierre {
         }
     }
 
-    public void actualizar_tabla_caja_cierre(Connection conn, JTable tbltabla,String filtro) {
+    public void actualizar_tabla_caja_cierre(Connection conn, JTable tbltabla, String filtro) {
         String sql = "select cc.idcaja_cierre as idc, \n"
                 + "to_char(cc.fecha_creado,'yyyy-MM-dd HH24:MI') as fec_cierre,\n"
                 + "to_char(cc.fecha_inicio ,'yyyy-MM-dd HH24:MI') as fec_inicio,\n"
@@ -115,7 +115,7 @@ public class DAO_caja_cierre {
                 + "and cci.fk_idcaja_cierre=cc.idcaja_cierre),'999G999G999') as saldo,\n"
                 + "cc.estado,u.nombre as usuario \n"
                 + "from caja_cierre cc,usuario u \n"
-                + "where cc.fk_idusuario=u.idusuario \n"+filtro
+                + "where cc.fk_idusuario=u.idusuario \n" + filtro
                 + " order by cc.idcaja_cierre desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre(tbltabla);
@@ -154,7 +154,7 @@ public class DAO_caja_cierre {
                 + "from caja_cierre_detalle cd,caja_cierre_item cci,caja_cierre cca\n"
                 + "where  cd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle\n"
                 + "and cci.fk_idcaja_cierre=cca.idcaja_cierre \n"
-                + "and cci.fk_idcaja_cierre="+fk_idcaja_cierre
+                + "and cci.fk_idcaja_cierre=" + fk_idcaja_cierre
                 + " order by cd.idcaja_cierre_detalle desc;";
         String titulonota = "CIERRE DE CAJA";
         String direccion = "src/REPORTE/OCUPACION/repCaja_Cierre.jrxml";
@@ -194,5 +194,42 @@ public class DAO_caja_cierre {
         String titulonota = "CIERRE DE CAJA";
         String direccion = "src/REPORTE/CAJA/repCajaCierreTodo.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
+    public void exportar_excel_monto_usuario_todo_ano(Connection conn) {
+        int band_Height = 20;
+        String rutatemp = "APPSHEET/EXCEL/caja_cerrado_ano.xlsx";
+        String sql = "select cc.idcaja_cierre as idc, \n"
+                + "to_char(cc.fecha_inicio ,'yyyy-MM-dd HH24:MI') as fec_inicio,\n"
+                + "to_char(cc.fecha_fin ,'yyyy-MM-dd HH24:MI') as fec_fin,\n"
+                + "to_char(cc.fecha_fin ,'yyyy-MM-dd') as fecha_fin,\n"
+                + "(select \n"
+                + "sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as m_ingreso\n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as ingreso,\n"
+                + "(select \n"
+                + "sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso\n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as egreso,\n"
+                + "(select \n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
+                + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo\n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as saldo,\n"
+                + "cc.creado_por  as usuario \n"
+                + "from caja_cierre cc\n"
+                + "where   date_part('year',cc.fecha_fin)=date_part('year',current_date)\n"
+                + " order by cc.idcaja_cierre desc;";
+        String direccion = "src/REPORTE/APPSHEET/repCajaCerrado.jrxml";
+        String titulo = "SUMA INGRESO USUARIO TODO ANO";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 }

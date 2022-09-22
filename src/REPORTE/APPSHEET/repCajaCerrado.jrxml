@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="633" pageHeight="842" columnWidth="633" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[select cc.idcaja_cierre as idc, 
+to_char(cc.fecha_inicio ,'yyyy-MM-dd HH24:MI') as fec_inicio,
+to_char(cc.fecha_fin ,'yyyy-MM-dd HH24:MI') as fec_fin,
+to_char(cc.fecha_fin ,'yyyy-MM-dd') as fecha_fin,
+(select 
+sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as m_ingreso
+from caja_cierre_detalle cd,caja_cierre_item cci 
+where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle 
+and cd.es_cerrado=true 
+and cci.fk_idcaja_cierre=cc.idcaja_cierre) as ingreso,
+(select 
+sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso
+from caja_cierre_detalle cd,caja_cierre_item cci 
+where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle 
+and cd.es_cerrado=true 
+and cci.fk_idcaja_cierre=cc.idcaja_cierre) as egreso,
+(select 
+sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-
+(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo
+from caja_cierre_detalle cd,caja_cierre_item cci 
+where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle 
+and cd.es_cerrado=true 
+and cci.fk_idcaja_cierre=cc.idcaja_cierre) as saldo,
+cc.creado_por  as usuario 
+from caja_cierre cc
+where   date_part('year',cc.fecha_fin)=date_part('year',current_date)
+ order by cc.idcaja_cierre desc;]]>
+	</queryString>
+	<field name="idc" class="java.lang.Integer"/>
+	<field name="fec_inicio" class="java.lang.String"/>
+	<field name="fec_fin" class="java.lang.String"/>
+	<field name="fecha_fin" class="java.lang.String"/>
+	<field name="ingreso" class="java.math.BigDecimal"/>
+	<field name="egreso" class="java.math.BigDecimal"/>
+	<field name="saldo" class="java.math.BigDecimal"/>
+	<field name="usuario" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="11" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="47" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[idc]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="47" y="0" width="73" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[fec_inicio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="0" width="79" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[fec_fin]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="0" width="70" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[fecha_fin]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="0" width="73" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="342" y="0" width="69" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[egreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="411" y="0" width="66" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[saldo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="0" width="156" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[usuario]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="47" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idc}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="47" y="0" width="73" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fec_inicio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="79" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fec_fin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="199" y="0" width="70" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_fin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="269" y="0" width="73" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ingreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="342" y="0" width="69" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{egreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="411" y="0" width="66" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="477" y="0" width="156" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

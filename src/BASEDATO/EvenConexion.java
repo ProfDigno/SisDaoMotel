@@ -9,6 +9,7 @@ import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JTable;
@@ -39,7 +40,7 @@ public class EvenConexion {
                     getid=1;
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.mensaje_error(e, sql, titulo);
         }
         return getid;
@@ -53,7 +54,7 @@ public class EvenConexion {
             if(rs.next()){
                 getid=rs.getInt("getid");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.mensaje_error(e, sql, titulo);
         }
         return getid;
@@ -64,7 +65,7 @@ public class EvenConexion {
             PreparedStatement pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
             evmen.Imprimir_serial_sql(sql, titulo);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.Imprimir_serial_sql_error(e, sql, titulo);
         }
         return rs;
@@ -75,7 +76,7 @@ public class EvenConexion {
             PreparedStatement pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
 //            evmen.Imprimir_serial_sql(sql, titulo);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.Imprimir_serial_sql_error(e, sql, titulo);
         }
         return rs;
@@ -90,7 +91,7 @@ public class EvenConexion {
             if (rs.next()) {
                 cantidad = rs.getString("cantidad");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.mensaje_error(e, sql,titulo);
         }
         return cantidad;
@@ -103,7 +104,7 @@ public class EvenConexion {
             if (rs.next()) {
                 suma = rs.getDouble(1);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.mensaje_error(e, sql,titulo);
         }
         return suma;
@@ -142,7 +143,7 @@ public class EvenConexion {
                 } else {
                     jLista.setVisible(false);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 evmen.mensaje_error(e, sql, titulo);
             }
         } else {
@@ -173,7 +174,7 @@ public class EvenConexion {
                 } else {
                     jLista.setVisible(false);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 evmen.mensaje_error(e, sql, titulo);
             }
         } else {
@@ -199,7 +200,7 @@ public class EvenConexion {
                     txtbuscar.setText(rs.getString(campoNombre));
                     jLista.setVisible(false);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 evmen.mensaje_error(e, sql, titulo);
             }
         }
@@ -223,7 +224,7 @@ public class EvenConexion {
                     getcampo=rs.getInt(campoid);
                     jLista.setVisible(false);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 evmen.mensaje_error(e, sql, titulo);
             }
         }
@@ -237,7 +238,7 @@ public class EvenConexion {
             pst.execute();
 //            conn.commit();
             evmen.Imprimir_serial_sql(sql, titulo);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.Imprimir_serial_sql_error(e, sql, titulo);
         }
     }
@@ -248,7 +249,7 @@ public class EvenConexion {
             pst.execute();
             conn.commit();
 //            evmen.Imprimir_serial_sql(sql, titulo);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             evmen.Imprimir_serial_sql_error(e, sql, titulo);
         }
     }

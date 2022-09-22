@@ -8,6 +8,7 @@ package FORMULARIO.VISTA;
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.LOCAL.VariablesBD;
+import Config_JSON.json_array_conexion;
 //import Evento.Color.cla_color_palete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
@@ -33,15 +34,17 @@ public class JDiaLogin extends javax.swing.JDialog {
     private BO_usuario bo_usu = new BO_usuario();
     private DAO_usuario dao_usu = new DAO_usuario();//dao_usuario
     private EvenJTextField evejtf = new EvenJTextField();
-    private EvenMensajeJoptionpane evemsj =new EvenMensajeJoptionpane();
+    private EvenMensajeJoptionpane evemsj = new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
     private EvenConexion eveconn = new EvenConexion();
     private VariablesBD var = new VariablesBD();
+    json_array_conexion jscon = new json_array_conexion();
 
     private void abrir_formulario() {
         this.setTitle("INGRESAR USUARIO");
         habilitar_evento_menu_bloquear();
     }
+
     private boolean validar_ingreso() {
         if (evejtf.getBoo_JTextField_vacio(txtusuario, "DEBE CARGAR UN USUARIO")) {
             return false;
@@ -55,8 +58,19 @@ public class JDiaLogin extends javax.swing.JDialog {
     private void buscar_usuario() {
         if (dao_usu.getBoolean_buscar_usuario_existente(conn, ENTusu)) {
             JOptionPane.showMessageDialog(this, "BIENVENIDO\n" + ENTusu.getGlobal_nombre());
-            habilitar_evento_menu();
-            this.dispose();
+            FrmMenu.lblusuario.setText(ENTusu.getGlobal_nombre());
+            if (!ENTusu.getC7activo()) {
+                JOptionPane.showMessageDialog(this, "ESTE USUARIO NO ESTA ACTIVO", "USUARIO", JOptionPane.WARNING_MESSAGE);
+                txtusuario.setText(null);
+                jPassword.setText(null);
+                txtusuario.grabFocus();
+            } else {
+                habilitar_evento_menu();
+                this.dispose();
+                if (jscon.getCrear_backup().equals("SI")) {
+                    evetbl.abrir_TablaJinternal(new FrmCrearBackupJson());
+                }
+            }
         } else {
             txtusuario.setText(null);
             jPassword.setText(null);
@@ -72,11 +86,15 @@ public class JDiaLogin extends javax.swing.JDialog {
             buscar_usuario();
         }
     }
+
     private void habilitar_evento_menu_bloquear() {
         FrmMenu.barra_menu_principal.setVisible(false);
+        FrmMenu.panel_acceso_rapido.setVisible(false);
     }
+
     private void habilitar_evento_menu() {
         FrmMenu.barra_menu_principal.setVisible(true);
+        FrmMenu.panel_acceso_rapido.setVisible(true);
 //        FrmMenuDespacho.btnliquidacion_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
     }
 
@@ -213,7 +231,7 @@ public class JDiaLogin extends javax.swing.JDialog {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        if(evemsj.MensajeGeneral_question("DESEAS SALIR DEL SISTEMA","SALIR", "ACEPTAR", "CANCELAR")){
+        if (evemsj.MensajeGeneral_question("DESEAS SALIR DEL SISTEMA", "SALIR", "ACEPTAR", "CANCELAR")) {
             System.exit(0);
         }
     }//GEN-LAST:event_formWindowClosing

@@ -123,7 +123,7 @@ public class DAO_producto {
         }
     }
 
-    public void actualizar_tabla_producto(Connection conn, JTable tbltabla,String filtro,int orden) {
+    public void actualizar_tabla_producto(Connection conn, JTable tbltabla, String filtro, int orden) {
         String sql_select = "SELECT p.idproducto as idp,p.codigo_barra as codbarra,p.nombre as producto,\n"
                 + "pc.nombre as categoria,pu.nombre as unidad,pm.nombre as marca,\n"
                 + "TRIM(to_char(p.precio_venta,'999G999G999')) as pventa,\n"
@@ -132,17 +132,35 @@ public class DAO_producto {
                 + "FROM producto p,producto_categoria pc,producto_unidad pu,producto_marca pm\n"
                 + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"
                 + "and p.fk_idproducto_unidad=pu.idproducto_unidad\n"
-                + "and p.fk_idproducto_marca=pm.idproducto_marca\n"+filtro
-                + " order by "+orden+" asc;";
+                + "and p.fk_idproducto_marca=pm.idproducto_marca\n" + filtro
+                + " order by " + orden + " asc;";
 
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_producto(tbltabla);
     }
 
     public void ancho_tabla_producto(JTable tbltabla) {
-        int Ancho[] = {5, 15, 25,10,10,10, 8, 8, 5, 5};
+        int Ancho[] = {5, 15, 25, 10, 10, 10, 8, 8, 5, 5};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 6);
         evejt.alinear_derecha_columna(tbltabla, 7);
+    }
+
+    public void imprimir_rep_inventario_volorizado(Connection conn, String filtro) {
+        String sql = "SELECT p.idproducto as idpro,p.codigo_barra as codbarra,pc.nombre as categoria,pm.nombre as marca,\n"
+                + "(pu.nombre||'-'||p.nombre) as producto,\n"
+                + "p.precio_venta as pventa,\n"
+                + "p.precio_compra  as pcompra,\n"
+                + "p.stock_actual  as stock,\n"
+                + "(p.precio_venta*p.stock_actual) as tt_venta,\n"
+                + "(p.precio_compra*p.stock_actual) as tt_compra\n"
+                + "FROM producto p,producto_unidad pu,producto_categoria pc, producto_marca pm\n"
+                + "where p.fk_idproducto_unidad=pu.idproducto_unidad\n"
+                + "and p.fk_idproducto_categoria=pc.idproducto_categoria\n"
+                + "and p.fk_idproducto_marca=pm.idproducto_marca \n"+filtro
+                + " order by pc.nombre asc,pm.nombre asc;";
+        String titulonota = "INVENTARIO VALORIZADO";
+        String direccion = "src/REPORTE/PRODUCTO/repInventarioValorizado.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

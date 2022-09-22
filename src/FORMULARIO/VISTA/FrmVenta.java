@@ -74,6 +74,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private DAO_habitacion_recepcion DAOhr = new DAO_habitacion_recepcion();
     private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
+    private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     private PosImprimir_Venta posv = new PosImprimir_Venta();
     private venta ENTven = new venta();
     private DAO_venta DAOven = new DAO_venta();
@@ -163,6 +164,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     String usu_id = "idusuario";
     String usu_nombre = "nombre";
     String usu_tabla = "usuario";
+    String usu_where = "where activo=true ";
     private String suma_tiempo_titulo;
     private String motivo_anulacion;
     private String btnlibre_html = "<html><p style=\"color:green\"><font size=\"4\">LIBRE</font></p></html>";
@@ -178,6 +180,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private boolean no_es_sonido_ocupado;
 
     private void abrir_formulario() {
+        cargar_usuario_acceso();
         creado_por = ENTusu.getGlobal_nombre();
         this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por + " IP:" + pcinfo.getStringMiIP());
         evetbl.centrar_formulario_internalframa(this);
@@ -194,9 +197,16 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_venta);
         jbar_tiempo_minimo.setMaximum(jbar_tie_min_max);
     }
-
+    private void cargar_usuario_acceso() {
+        if (fk_idusuario != ENTusu.getGlobal_idusuario()) {
+            usuario usu = new usuario();
+            creado_por = usu.getGlobal_nombre();
+            fk_idusuario = usu.getGlobal_idusuario();
+            this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por);
+        }
+    }
     private void cargar_usuario() {
-        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, "");
+        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla,usu_where);
     }
 
     private void cargar_array_habitacion() {
@@ -1080,7 +1090,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                                 + "</html>", "MUDAR HABITACION", "MUDAR", btncancelar_html)) {
                             tiempo_boton_hab = 0;
                             JTextArea txtacancel = new JTextArea(15, 30);
-                            txtacancel.setText("MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion);
+                            int idventa = (eveconn.getInt_ultimoID_mas_uno(conn, ENTven.getTb_venta(), ENTven.getId_idventa()));
+                            String mensaje_inicio="MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion+" IDVENTA:"+idventa;
+                            txtacancel.setText(mensaje_inicio);
                             Object[] opciones = {"MUDAR", btncancelar_html};
                             int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(txtacancel), "MOTIVO PARA MUDAR(Obligatorio)",
                                     JOptionPane.YES_NO_OPTION,
@@ -1131,7 +1143,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "where fk_idventa=" + fk_idventa
                 + " order by 1 desc;";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             while (rs.next()) {
                 String Sidproducto = rs.getString("id");
                 String Sdescripcion = rs.getString("descripcion");
@@ -1179,7 +1191,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             if (segundo_tiempo == 2) {
                 if (tab_select == 0) {
                     cargar_array_habitacion_datos();
-                    
+                    cargar_usuario_acceso();
                 }
                 if (tab_select == 4) {
                     cargar_array_habitacion_datos_mudar();
@@ -1203,7 +1215,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "then true else false end as est_boton\n"
                 + " from habitacion_mini_pc order by idhabitacion_mini_pc asc;";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             while (rs.next()) {
                 int idhabitacion_mini_pc = rs.getInt("idhabitacion_mini_pc");
                 boolean est_boton = rs.getBoolean("est_boton");
@@ -1320,6 +1332,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void limpiar_habitacion_select() {
+        cargar_usuario_acceso();
         nro_habitacion_select = 0;
         motivo_anulacion = "-";
         fk_idventa = 0;
@@ -1476,6 +1489,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void reestableser_venta() {
+        cargar_usuario_acceso();
         fk_idventa = 0;
         txtidventa.setText(null);
         eveJtab.limpiar_tabla_datos(model_itemf);
@@ -1520,7 +1534,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_dato_caja_detalle_ADELANTO_MUDAR(int idhabitacion_recepcion, int nro_habitacion, int idventa) {
-        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_venta(conn, idventa);
+        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_por_otro_id(conn,"fk_idventa", idventa);
         if (idcaja_cierre_detalle > 0) {
             ENTccd.setC1idcaja_cierre_detalle(idcaja_cierre_detalle);
             DAOccd.cargar_caja_cierre_detalle(conn, ENTccd, idcaja_cierre_detalle);
@@ -1614,7 +1628,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_dato_caja_detalle_desocupar_MUDAR_SALIR(int idhabitacion_recepcion_actual) {
-        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_venta(conn, fk_idventa);
+        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_por_otro_id(conn,"fk_idventa", fk_idventa);
         if (idcaja_cierre_detalle > 0) {
             ENTccd.setC1idcaja_cierre_detalle(idcaja_cierre_detalle);
             DAOccd.cargar_caja_cierre_detalle(conn, ENTccd, idcaja_cierre_detalle);
@@ -1964,7 +1978,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_cargar_adelanto() {
         if ((validar_habitacion_select()) && txtmonto_adelanto.getText().trim().length() > 0) {
             tiempo_boton_hab = 0;
-            monto_adelanto = Double.parseDouble(txtmonto_adelanto.getText());
+            String Smonto_adelanto = evejtf.getString_format_nro_entero1(txtmonto_adelanto);
+            monto_adelanto = Double.parseDouble(Smonto_adelanto);
             if (monto_adelanto > 0) {
                 if (evemen.MensajeGeneral_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
                     update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
@@ -2079,7 +2094,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_dato_caja_detalle_CANCELAR(int fk_idventa) {
-        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_venta(conn, fk_idventa);
+        int idcaja_cierre_detalle = DAOccd.getInt_idcaja_cierre_detalle_por_otro_id(conn,"fk_idventa", fk_idventa);
         if (idcaja_cierre_detalle > 0) {
             ENTccd.setC1idcaja_cierre_detalle(idcaja_cierre_detalle);
             DAOccd.cargar_caja_cierre_detalle(conn, ENTccd, idcaja_cierre_detalle);
@@ -2187,7 +2202,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "where hd.activo=true "
                 + "order by hd.nro_habitacion asc;";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             while (rs.next()) {
                 String textboton = rs.getString("idhabitacion_dato");
                 String nameboton = rs.getString("nro_habitacion");
@@ -2227,7 +2242,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         String usuario = "";
         String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_venta, "v.fecha_creado");
         String habitacion = " and hd.idhabitacion_dato=" + fk_idhabitacion_dato_buscar;
-        String estado = filtro_estado(jCest_terminado, jCest_ocupado, jCest_cancelado, jCest_desocupado);
+        String estado = filtro_estado(jCest_terminado, jCest_ocupado, jCest_cancelado, jCest_desocupado,jCest_mudar);
         if (fk_idhabitacion_dato_buscar > 0) {
             habitacion = " and hd.idhabitacion_dato=" + fk_idhabitacion_dato_buscar;
         } else {
@@ -2266,7 +2281,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    public String filtro_estado(JCheckBox jCest_terminado, JCheckBox jCest_ocupado, JCheckBox jCest_cancelado, JCheckBox jCest_desocupado) {
+    public String filtro_estado(JCheckBox jCest_terminado, JCheckBox jCest_ocupado, 
+            JCheckBox jCest_cancelado, JCheckBox jCest_desocupado, JCheckBox jCest_mudar) {
         String estado = "";
         String sumaestado = "";
         int contestado = 0;
@@ -2314,6 +2330,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 condi = " or";
             }
             estado = condi + " v.estado='" + eveest.getEst_Cancelado() + "' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCest_mudar.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + " v.estado='" + eveest.getEst_Mudar() + "' ";
             sumaestado = sumaestado + estado;
         }
         return sumaestado + fin;
@@ -2389,6 +2416,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         btnrpi_1 = new javax.swing.JButton();
         btnrpi_2 = new javax.swing.JButton();
         btnrpi_3 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         txtnro_hab_grande = new javax.swing.JTextField();
         lblicono_tipo = new javax.swing.JLabel();
@@ -2486,6 +2514,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_filtro = new javax.swing.JFormattedTextField();
         txtcant_venta = new javax.swing.JTextField();
         txtmotivo_mudar_cancelar = new javax.swing.JTextField();
+        jCest_mudar = new javax.swing.JCheckBox();
         jPanel14 = new javax.swing.JPanel();
         panel_habitaciones_libre = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
@@ -2553,6 +2582,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton1.setText("EXPORT");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -2567,6 +2603,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnrpi_1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2588,7 +2626,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnrpi_1)
                             .addComponent(btnrpi_2)
-                            .addComponent(btnrpi_3))
+                            .addComponent(btnrpi_3)
+                            .addComponent(jButton1))
                         .addGap(3, 3, 3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -3017,6 +3056,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txtmonto_adelanto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtmonto_adelantoKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtmonto_adelantoKeyReleased(evt);
             }
         });
 
@@ -3545,7 +3587,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1232, Short.MAX_VALUE)
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3627,54 +3669,62 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
         txtmotivo_mudar_cancelar.setText("jTextField3");
 
+        jCest_mudar.setText("MUDAR");
+        jCest_mudar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCest_mudarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, 1246, Short.MAX_VALUE)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel12Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jCest_terminado)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCest_ocupado)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCest_desocupado)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCest_cancelado))
-                            .addGroup(jPanel12Layout.createSequentialGroup()
-                                .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnvertodoventa)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtmotivo_mudar_cancelar)))
+                        .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtcant_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCest_terminado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCest_ocupado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCest_desocupado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCest_cancelado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCest_mudar))
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnvertodoventa)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtmotivo_mudar_cancelar)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtcant_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel12Layout.createSequentialGroup()
+                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 22, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(4, 4, 4)
                 .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel12Layout.createSequentialGroup()
                         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3684,18 +3734,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             .addComponent(jCest_terminado)
                             .addComponent(jCest_ocupado)
                             .addComponent(jCest_cancelado)
-                            .addComponent(jCest_desocupado))
+                            .addComponent(jCest_desocupado)
+                            .addComponent(jCest_mudar))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnvertodoventa)
                                 .addComponent(txtmotivo_mudar_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtcant_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(4, 4, 4))))
+                    .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtcant_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         jTab_principal.addTab("FILTRO HABITACION ", jPanel12);
@@ -4023,6 +4072,21 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_comando_raspberry(4);
     }//GEN-LAST:event_btnrpi_3ActionPerformed
 
+    private void jCest_mudarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCest_mudarActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_venta_buscar();
+    }//GEN-LAST:event_jCest_mudarActionPerformed
+
+    private void txtmonto_adelantoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmonto_adelantoKeyReleased
+        // TODO add your handling code here:
+        evejtf.getString_format_nro_entero1(txtmonto_adelanto);
+    }//GEN-LAST:event_txtmonto_adelantoKeyReleased
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        DAOcc.exportar_excel_monto_usuario_todo_ano(conn);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnadelanto;
@@ -4049,8 +4113,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cmbfecha_venta;
     private javax.swing.JComboBox<String> cmbusuario;
     private javax.swing.ButtonGroup gru_tarifa;
+    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCest_cancelado;
     private javax.swing.JCheckBox jCest_desocupado;
+    private javax.swing.JCheckBox jCest_mudar;
     private javax.swing.JCheckBox jCest_ocupado;
     private javax.swing.JCheckBox jCest_terminado;
     private javax.swing.JFormattedTextField jFdormir_ingreso_final;
