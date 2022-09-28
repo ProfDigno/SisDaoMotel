@@ -7,6 +7,7 @@ import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Fecha.EvenFecha;
+import Evento.Jtable.EvenRender;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,6 +21,7 @@ public class DAO_venta {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
     EvenEstado eveest = new EvenEstado();
+    EvenRender everen=new EvenRender();
     private String mensaje_insert = "VENTA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "VENTA MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO venta(idventa,fecha_creado,creado_por,monto_letra,estado,observacion,tipo_persona,motivo_anulacion,motivo_mudar_habitacion,monto_minimo,monto_adicional,cant_adicional,monto_consumo,monto_insumo,monto_descuento,monto_adelanto,fk_idhabitacion_recepcion,fk_idpersona,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
@@ -167,6 +169,7 @@ public class DAO_venta {
     public void actualizar_tabla_venta(Connection conn, JTable tbltabla, String filtro, String orden) {
         eveconn.Select_cargar_jtable(conn, sql_select + filtro + orden, tbltabla);
         ancho_tabla_venta(tbltabla);
+        everen.rendertabla_estados_venta_habitacion(tbltabla, 13);
     }
 
     public void ancho_tabla_venta(JTable tbltabla) {

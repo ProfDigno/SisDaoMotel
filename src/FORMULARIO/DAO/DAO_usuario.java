@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import Evento.Combobox.EvenCombobox;
 import FORMULARIO.ENTIDAD.usuario;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -9,6 +10,7 @@ import Evento.Fecha.EvenFecha;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
@@ -18,6 +20,7 @@ public class DAO_usuario {
     EvenJtable evejt = new EvenJtable();
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private EvenCombobox evecmb = new EvenCombobox();
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "USUARIO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "USUARIO MODIFICADO CORECTAMENTE";
@@ -25,7 +28,10 @@ public class DAO_usuario {
     private String sql_update = "UPDATE usuario SET fecha_creado=?,creado_por=?,nombre=?,usuario=?,password=?,activo=?,fk_idusuario_rol=?,fk_idpersona=? WHERE idusuario=?;";
     private String sql_select = "SELECT idusuario as id,nombre,usuario,activo FROM usuario order by 1 desc;";
     private String sql_cargar = "SELECT idusuario,fecha_creado,creado_por,nombre,usuario,password,activo,fk_idusuario_rol,fk_idpersona FROM usuario WHERE idusuario=";
-
+    String usu_id = "idusuario";
+    String usu_nombre = "nombre";
+    String usu_tabla = "usuario";
+    String usu_where = "where activo=true ";
     public void insertar_usuario(Connection conn, usuario us) {
         us.setC1idusuario(eveconn.getInt_ultimoID_mas_uno(conn, us.getTb_usuario(), us.getId_idusuario()));
         String titulo = "insertar_usuario";
@@ -125,5 +131,12 @@ public class DAO_usuario {
             evemen.mensaje_error(e, sql, titulo);
             return false;
         }
+    }
+    public void cargar_usuario_combo(Connection conn,JComboBox cmbusuario) {
+        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
+    }
+    public int getInt_idusuario_combo(Connection conn,JComboBox cmbusuario){
+        int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
+        return idusuario;
     }
 }

@@ -28,7 +28,7 @@ public class DAO_venta_item {
     private String sql_update = "UPDATE venta_item SET fecha_creado=?,creado_por=?,tipo_item=?,descripcion=?,cantidad=?,precio_venta=?,precio_compra=?,fk_idventa=?,fk_idproducto=? WHERE idventa_item=?;";
     private String sql_select = "SELECT idventa_item,fecha_creado,creado_por,tipo_item,descripcion,cantidad,precio_venta,precio_compra,fk_idventa,fk_idproducto FROM venta_item order by 1 desc;";
     private String sql_cargar = "SELECT idventa_item,fecha_creado,creado_por,tipo_item,descripcion,cantidad,precio_venta,precio_compra,fk_idventa,fk_idproducto FROM venta_item WHERE idventa_item=";
-
+    private String sql_desc_stock="UPDATE producto SET stock_actual=(stock_actual-?) WHERE idproducto=?;";
     public void insertar_venta_item(Connection conn, venta_item veit) {
         veit.setC1idventa_item(eveconn.getInt_ultimoID_mas_uno(conn, veit.getTb_venta_item(), veit.getId_idventa_item()));
         String titulo = "insertar_venta_item";
@@ -53,7 +53,8 @@ public class DAO_venta_item {
             evemen.mensaje_error(e, sql_insert + "\n" + veit.toString(), titulo);
         }
     }
-    public void insertar_item_venta_de_tabla(Connection conn, JTable tblitem_producto,venta_item item, venta ven,boolean es_mudar) {
+    public void insertar_item_venta_de_tabla(Connection conn, JTable tblitem_producto,venta_item item, venta ven,
+            boolean es_mudar,boolean es_desc_stock,boolean es_agre_stock) {
         for (int row = 0; row < tblitem_producto.getRowCount(); row++) {
             String idproducto = ((tblitem_producto.getModel().getValueAt(row, 0).toString()));
             String descripcion = ((tblitem_producto.getModel().getValueAt(row, 1).toString()));
@@ -72,6 +73,9 @@ public class DAO_venta_item {
                 if(tipo.equals(item.getTipo_temporal()) || es_mudar){
                     item.setC4tipo_item(eveest.getEst_Cargado());
                     insertar_venta_item(conn, item);
+                }
+                if(es_desc_stock){
+                    update_producto_descontar_stock(conn, item);
                 }
             } catch (Exception e) {
                 evemen.mensaje_error(e, "insertar_item_venta_de_tabla");
@@ -164,6 +168,20 @@ public class DAO_venta_item {
             evemen.modificado_correcto(mensaje_update, true);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql + "\n" + veit.toString(), titulo);
+        }
+    }
+    private void update_producto_descontar_stock(Connection conn, venta_item veit) {
+        String titulo = "update_producto_descontar_stock";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_desc_stock);
+            pst.setDouble(1, veit.getC6cantidad());
+            pst.setInt(2, veit.getC10fk_idproducto());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_desc_stock + "\n" + veit.toString(), titulo);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_desc_stock + "\n" + veit.toString(), titulo);
         }
     }
 }

@@ -50,16 +50,13 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private PosImprimir_Venta posv = new PosImprimir_Venta();
     private PosImprimir_CierreCajaDetalle poscd = new PosImprimir_CierreCajaDetalle();
     usuario ENTusu = new usuario();
+    private DAO_usuario DAOusu = new DAO_usuario();
     Connection conn = ConnPostgres.getConnPosgres();
     private String nombreTabla = "CAJA CIERRE";
     int fk_idusuario = ENTusu.getGlobal_idusuario();
     private String fec_inicio;
     private String fec_final;
     private String creado_por;
-    String usu_id = "idusuario";
-    String usu_nombre = "nombre";
-    String usu_tabla = "usuario";
-    String usu_where = "where activo=true ";
     private int idcaja_cierre;
     private double suma_ingreso;
     private double suma_egreso;
@@ -72,15 +69,10 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         idcaja_cierre = (eveconn.getInt_ultimoID_mas_uno(conn, ENTcc.getTb_caja_cierre(), ENTcc.getId_idcaja_cierre()));
         fk_idusuario = ENTusu.getGlobal_idusuario();
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_caja_cierre);
-        cargar_usuario();
+        DAOusu.cargar_usuario_combo(conn, cmbusuario);
         actualizar_tabla_caja_cierre_detalle_ABIERTO();
         actualizar_tabla_caja_cierre();
     }
-
-    private void cargar_usuario() {
-        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
-    }
-
     private void actualizar_tabla_caja_cierre_detalle_ABIERTO() {
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA(conn, tblcaja_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(conn, tblgasto_abierto, fk_idusuario);
@@ -88,7 +80,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void actualizar_tabla_caja_cierre() {
-        int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
+        int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
         String filtro = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "cc.fecha_creado");
         if (idusuario > 0) {
             filtro = filtro + " and cc.fk_idusuario=" + idusuario;

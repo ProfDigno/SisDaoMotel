@@ -10,6 +10,7 @@ import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -43,7 +44,7 @@ public class EvenCombobox {
                 combo.addItem(rs.getObject("nombre")); 
             }
 //            System.out.println("---Cargade de Jcombobox sin error su sql es ---:"+sql);
-        }catch(Exception e){
+        }catch(SQLException e){
             evmen.mensaje_error(e, sql, titulo);
         }
     }  
@@ -55,7 +56,7 @@ public class EvenCombobox {
             if (rs.next()){
                 combo.setSelectedItem(rs.getString("nombre")); 
             }
-        }catch(Exception e){
+        }catch(SQLException e){
             evmen.mensaje_error(e, sql, titulo);
         }
     } 
@@ -71,7 +72,7 @@ public class EvenCombobox {
                 if (rs.next()) {
                     getcampo=rs.getInt(id);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 evmen.mensaje_error(e, sql, titulo);
             }
         }

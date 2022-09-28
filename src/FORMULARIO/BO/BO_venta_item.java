@@ -14,14 +14,14 @@ public class BO_venta_item {
     private DAO_venta_item DAOveni = new DAO_venta_item();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public void insertar_venta_item(venta_item item, venta ven, JTable tbltabla, boolean es_mudar) {
+    public void insertar_venta_item(venta_item item, venta ven, JTable tbltabla, boolean es_mudar,boolean es_desc_stock,boolean es_agre_stock) {
         String titulo = "insertar_venta_item";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            DAOveni.insertar_item_venta_de_tabla(conn, tbltabla, item, ven, es_mudar);
+            DAOveni.insertar_item_venta_de_tabla(conn, tbltabla, item, ven, es_mudar,es_desc_stock,es_agre_stock);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, item.toString(), titulo);
@@ -55,8 +55,8 @@ public class BO_venta_item {
         }
     }
 
-    public void insertar_venta_item_sin_commit(Connection conn, venta_item item, venta ven, JTable tbltabla, boolean es_mudar) {
+    public void insertar_venta_item_sin_commit(Connection conn, venta_item item, venta ven, JTable tbltabla, boolean es_mudar,boolean es_desc_stock,boolean es_agre_stock) {
         String titulo = "insertar_venta_item";
-        DAOveni.insertar_item_venta_de_tabla(conn, tbltabla, item, ven, es_mudar);
+        DAOveni.insertar_item_venta_de_tabla(conn, tbltabla, item, ven, es_mudar,es_desc_stock,es_agre_stock);
     }
 }

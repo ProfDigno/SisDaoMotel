@@ -319,6 +319,11 @@ public class FrmMenu extends javax.swing.JFrame {
         jMenu8.add(jMenuItem15);
 
         jMenuItem16.setText("GANACIA POR PRODUCTOS");
+        jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem16ActionPerformed(evt);
+            }
+        });
         jMenu8.add(jMenuItem16);
 
         jMenu5.add(jMenu8);
@@ -497,6 +502,11 @@ public class FrmMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmRepInventarioValorizado());
     }//GEN-LAST:event_jMenuItem15ActionPerformed
+
+    private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem16ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepGananciaProducto());
+    }//GEN-LAST:event_jMenuItem16ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -157,10 +157,33 @@ public class DAO_producto {
                 + "FROM producto p,producto_unidad pu,producto_categoria pc, producto_marca pm\n"
                 + "where p.fk_idproducto_unidad=pu.idproducto_unidad\n"
                 + "and p.fk_idproducto_categoria=pc.idproducto_categoria\n"
-                + "and p.fk_idproducto_marca=pm.idproducto_marca \n"+filtro
+                + "and p.fk_idproducto_marca=pm.idproducto_marca \n" + filtro
                 + " order by pc.nombre asc,pm.nombre asc;";
         String titulonota = "INVENTARIO VALORIZADO";
         String direccion = "src/REPORTE/PRODUCTO/repInventarioValorizado.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
+    public void imprimir_rep_ganancia_producto(Connection conn, String filtro,String desc_filtro) {
+        String sql = "select date(v.fecha_creado) as fecha,u.nombre as usuario,\n"
+                + "pc.nombre as categoria,pm.nombre as marca,\n"
+                + "vi.descripcion as descripcion,\n"
+                + "sum(vi.cantidad) as cant,\n"
+                + "sum(vi.cantidad*vi.precio_venta) as ttventa,\n"
+                + "sum(vi.cantidad*vi.precio_compra) as ttcompra,\n"
+                + "((sum(vi.cantidad*vi.precio_venta))-(sum(vi.cantidad*vi.precio_compra))) as ttsaldo,\n"
+                + "('"+desc_filtro+"') as filtro "
+                + "from venta v,venta_item vi,producto p, producto_categoria pc,producto_marca pm,usuario u  \n"
+                + "where v.estado='TERMINADO'\n"
+                + "and v.idventa=vi.fk_idventa \n"
+                + "and vi.fk_idproducto=p.idproducto \n"
+                + "and p.fk_idproducto_categoria=pc.idproducto_categoria \n"
+                + "and v.fk_idusuario=u.idusuario \n"
+                + "and p.fk_idproducto_marca=pm.idproducto_marca \n"+filtro
+                + " group by 1,2,3,4,5\n"
+                + "order by 1 desc,2 desc,3 desc,4 desc";
+        String titulonota = "GANANCIA PRODUCTO";
+        String direccion = "src/REPORTE/PRODUCTO/repGanaciaProducto.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }
