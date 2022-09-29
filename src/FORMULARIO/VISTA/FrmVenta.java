@@ -3511,7 +3511,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_consumo.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
 
         btncargar_consumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/32_guardar.png"))); // NOI18N
-        btncargar_consumo.setText("CARGAR CONSUMO");
+        btncargar_consumo.setText("GUARDAR");
         btncargar_consumo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btncargar_consumoActionPerformed(evt);

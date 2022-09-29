@@ -1794,7 +1794,7 @@
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                       <Image iconType="3" name="/iconos/motel/32_guardar.png"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="CARGAR CONSUMO"/>
+                    <Property name="text" type="java.lang.String" value="GUARDAR"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btncargar_consumoActionPerformed"/>
