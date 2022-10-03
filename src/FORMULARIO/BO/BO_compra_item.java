@@ -30,7 +30,7 @@ private DAO_compra_item coit_dao = new DAO_compra_item();
 		}
 	}
 	public void update_compra_item(compra_item coit, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR COMPRA_ITEM", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR COMPRA_ITEM", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_compra_item";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

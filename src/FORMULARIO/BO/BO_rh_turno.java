@@ -30,7 +30,7 @@ private DAO_rh_turno rhtu_dao = new DAO_rh_turno();
 		}
 	}
 	public void update_rh_turno(rh_turno rhtu, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR RH_TURNO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR RH_TURNO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_rh_turno";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

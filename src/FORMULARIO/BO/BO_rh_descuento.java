@@ -30,7 +30,7 @@ private DAO_rh_descuento rhde_dao = new DAO_rh_descuento();
 		}
 	}
 	public void update_rh_descuento(rh_descuento rhde, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR RH_DESCUENTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR RH_DESCUENTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_rh_descuento";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

@@ -34,7 +34,7 @@ public class BO_habitacion_costo {
     }
 
     public void update_habitacion_costo(habitacion_costo haco, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_COSTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_COSTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_habitacion_costo";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

@@ -37,7 +37,7 @@ public class BO_gasto {
     }
 
     public void update_gasto(gasto ga, caja_cierre_detalle ENTccd) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE ANULAR ESTE GASTO", "ANULAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE ANULAR ESTE GASTO", "ANULAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_gasto";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

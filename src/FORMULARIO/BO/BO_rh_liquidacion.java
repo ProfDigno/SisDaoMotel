@@ -30,7 +30,7 @@ private DAO_rh_liquidacion rhli_dao = new DAO_rh_liquidacion();
 		}
 	}
 	public void update_rh_liquidacion(rh_liquidacion rhli, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR RH_LIQUIDACION", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR RH_LIQUIDACION", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_rh_liquidacion";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

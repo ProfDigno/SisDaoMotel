@@ -30,7 +30,7 @@ private DAO_usuario_tipo_evento ustiev_dao = new DAO_usuario_tipo_evento();
 		}
 	}
 	public void update_usuario_tipo_evento(usuario_tipo_evento ustiev, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR USUARIO_TIPO_EVENTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR USUARIO_TIPO_EVENTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_usuario_tipo_evento";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

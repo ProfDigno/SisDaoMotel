@@ -30,7 +30,7 @@ private DAO_usuario us_dao = new DAO_usuario();
 		}
 	}
 	public void update_usuario(usuario us, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR USUARIO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR USUARIO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_usuario";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

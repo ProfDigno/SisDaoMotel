@@ -137,6 +137,9 @@ public class JDiaLogin extends javax.swing.JDialog {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtusuarioKeyPressed(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtusuarioKeyReleased(evt);
+            }
         });
 
         jPassword.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -144,6 +147,9 @@ public class JDiaLogin extends javax.swing.JDialog {
         jPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jPasswordKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jPasswordKeyReleased(evt);
             }
         });
 
@@ -231,10 +237,19 @@ public class JDiaLogin extends javax.swing.JDialog {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        if (evemsj.MensajeGeneral_question("DESEAS SALIR DEL SISTEMA", "SALIR", "ACEPTAR", "CANCELAR")) {
+        if (evemsj.getBooMensaje_question("DESEAS SALIR DEL SISTEMA", "SALIR", "ACEPTAR", "CANCELAR")) {
             System.exit(0);
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void txtusuarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtusuarioKeyReleased
+        // TODO add your handling code here:
+        txtusuario.setText(txtusuario.getText().toUpperCase());
+    }//GEN-LAST:event_txtusuarioKeyReleased
+
+    private void jPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPasswordKeyReleased
 
     /**
      * @param args the command line arguments

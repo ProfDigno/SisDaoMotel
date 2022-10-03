@@ -30,7 +30,7 @@ private DAO_habitacion_arduino haar_dao = new DAO_habitacion_arduino();
 		}
 	}
 	public void update_habitacion_arduino(habitacion_arduino haar, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_ARDUINO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_ARDUINO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_habitacion_arduino";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

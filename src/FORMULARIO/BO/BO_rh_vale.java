@@ -30,7 +30,7 @@ private DAO_rh_vale rhva_dao = new DAO_rh_vale();
 		}
 	}
 	public void update_rh_vale(rh_vale rhva, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR RH_VALE", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR RH_VALE", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_rh_vale";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

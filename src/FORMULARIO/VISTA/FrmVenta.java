@@ -989,7 +989,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 System.out.println("h_codigo:" + h_codigo);
                 if (true) {
                     if (estado.equals(eveest.getEst_Libre())) {
-                        if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
                                 + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
                                 + "<p><font size=\"6\">--OCUPAR--</font></p>"
                                 + "<p><font size=\"6\">--MONTO MINIMO:"+monto_por_hora_minimo+" --</font></p>"
@@ -998,7 +998,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         }
                     }
                     if (estado.equals(eveest.getEst_Sucio())) {
-                        if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
                                 + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
                                 + "<p><font size=\"6\">--LIBERAR--</font></p>"
                                 + "</html>", "HABITACION SUCIO", btnlibre_html, btncancelar_html)) {
@@ -1006,7 +1006,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         }
                     }
                     if (estado.equals(eveest.getEst_Limpiando())) {
-                        if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
                                 + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
                                 + "<p><font size=\"6\">--LIBERAR--</font></p>"
                                 + "</html>", "HABITACION LIMPIEZA", btnlibre_html, btncancelar_html)) {
@@ -1091,7 +1091,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 System.out.println("getName:" + getName);
                 if (estado.equals(eveest.getEst_Libre())) {
                     if (validar_habitacion_select()) {
-                        if (evemen.MensajeGeneral_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
                                 + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
                                 + "<p><font size=\"6\">--MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + "--</font></p>"
                                 + "</html>", "MUDAR HABITACION", "MUDAR", btncancelar_html)) {
@@ -1758,7 +1758,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     + "<p style=\"color:red\"><font size=\"4\">TOTAL A PAGAR:   </font></p>"
                     + "<p><font size=\"8\">" + Smonto_total_pagar + "</font></p>"
                     + "</html>";
-            int eleccion = evemen.getInt_MensajeGeneral_informacion_3btn(mensaje, "DESOCUPAR HABITACION ID:" + nro_habitacion_select,
+            int eleccion = evemen.getIntMensaje_informacion_3btn(mensaje, "DESOCUPAR HABITACION ID:" + nro_habitacion_select,
                     btndesocupar_html, "IMPRIMIR", btncancelar_html);
             if (eleccion == 0 || eleccion == 1) {
                 cargar_dato_venta_desocupar(fk_idhabitacion_recepcion_actual_select);
@@ -1954,7 +1954,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         if (validar_habitacion_select()) {
             if (jRpor_dormir.isSelected()) {
                 if (permitir_dormir_select) {
-                    if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION", "TIPO DE OCUPACION", "ACEPTAR", "CANCELAR")) {
+                    if (evemen.getBooMensaje_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION", "TIPO DE OCUPACION", "ACEPTAR", "CANCELAR")) {
                         update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                         limpiar_habitacion_select();
                     }
@@ -1964,7 +1964,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 }
                 lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
             } else {
-                if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION", "TIPO DE OCUPACION", "ACEPTAR", "CANCELAR")) {
+                if (evemen.getBooMensaje_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION", "TIPO DE OCUPACION", "ACEPTAR", "CANCELAR")) {
                     update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                     limpiar_habitacion_select();
                 }
@@ -2005,7 +2005,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             String Smonto_adelanto = evejtf.getString_format_nro_entero1(txtmonto_adelanto);
             monto_adelanto = Double.parseDouble(Smonto_adelanto);
             if (monto_adelanto > 0) {
-                if (evemen.MensajeGeneral_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
+                if (evemen.getBooMensaje_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
                     update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                     cargar_dato_caja_detalle_ADELANTO();
                     BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
@@ -2157,7 +2157,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_cancelar() {
         if (validar_habitacion_select()) {
             tiempo_boton_hab = 0;
-            if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE CANCELAR ESTA HABITACION", "CANCELAR Y LIBERAR", "ACEPTAR", "CANCELAR")) {
+            if (evemen.getBooMensaje_warning("ESTAS SEGURO DE CANCELAR ESTA HABITACION", "CANCELAR Y LIBERAR", "ACEPTAR", "CANCELAR")) {
                 tiempo_boton_hab = 0;
                 JTextArea txtacancel = new JTextArea(15, 30);
                 txtacancel.setText("");
@@ -2289,7 +2289,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void boton_eliminar_item_ya_creado() {
         if (tblitem_consumo_cargado.getSelectedRow() >= 0) {
-            if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE ELIMINAR ESTE ITEM", "ELIMINAR PRODUCTO", "ELIMINAR", "CANCELAR")) {
+            if (evemen.getBooMensaje_warning("ESTAS SEGURO DE ELIMINAR ESTE ITEM", "ELIMINAR PRODUCTO", "ELIMINAR", "CANCELAR")) {
                 int fk_idproducto = eveJtab.getInt_select_id(tblitem_consumo_cargado);
                 ENTveni.setC4tipo_item(eveest.getEst_Anulado());
                 ENTveni.setC6cantidad(0);

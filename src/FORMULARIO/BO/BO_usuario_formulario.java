@@ -30,7 +30,7 @@ private DAO_usuario_formulario usfo_dao = new DAO_usuario_formulario();
 		}
 	}
 	public void update_usuario_formulario(usuario_formulario usfo, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR USUARIO_FORMULARIO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR USUARIO_FORMULARIO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_usuario_formulario";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

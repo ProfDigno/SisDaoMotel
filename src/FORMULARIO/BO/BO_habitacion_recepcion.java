@@ -30,7 +30,7 @@ private DAO_habitacion_recepcion hare_dao = new DAO_habitacion_recepcion();
 		}
 	}
 	public void update_habitacion_recepcion(habitacion_recepcion hare, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_RECEPCION", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_RECEPCION", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_habitacion_recepcion";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

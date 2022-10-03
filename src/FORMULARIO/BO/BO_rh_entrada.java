@@ -30,7 +30,7 @@ private DAO_rh_entrada rhen_dao = new DAO_rh_entrada();
 		}
 	}
 	public void update_rh_entrada(rh_entrada rhen, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR RH_ENTRADA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR RH_ENTRADA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_rh_entrada";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

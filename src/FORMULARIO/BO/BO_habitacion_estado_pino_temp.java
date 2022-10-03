@@ -30,7 +30,7 @@ private DAO_habitacion_estado_pino_temp haespite_dao = new DAO_habitacion_estado
 		}
 	}
 	public void update_habitacion_estado_pino_temp(habitacion_estado_pino_temp haespite, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_ESTADO_PINO_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_ESTADO_PINO_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_habitacion_estado_pino_temp";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

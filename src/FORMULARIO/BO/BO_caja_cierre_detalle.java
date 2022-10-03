@@ -34,7 +34,7 @@ public class BO_caja_cierre_detalle {
     }
 
     public void update_caja_cierre_detalle(caja_cierre_detalle cacide, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR CAJA_CIERRE_DETALLE", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR CAJA_CIERRE_DETALLE", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_caja_cierre_detalle";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

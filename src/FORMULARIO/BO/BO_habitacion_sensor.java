@@ -30,7 +30,7 @@ private DAO_habitacion_sensor hase_dao = new DAO_habitacion_sensor();
 		}
 	}
 	public void update_habitacion_sensor(habitacion_sensor hase, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_SENSOR", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_SENSOR", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_habitacion_sensor";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

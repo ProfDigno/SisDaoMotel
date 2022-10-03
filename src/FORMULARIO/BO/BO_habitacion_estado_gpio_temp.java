@@ -30,7 +30,7 @@ private DAO_habitacion_estado_gpio_temp haesgpte_dao = new DAO_habitacion_estado
 		}
 	}
 	public void update_habitacion_estado_gpio_temp(habitacion_estado_gpio_temp haesgpte, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_ESTADO_GPIO_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_ESTADO_GPIO_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_habitacion_estado_gpio_temp";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

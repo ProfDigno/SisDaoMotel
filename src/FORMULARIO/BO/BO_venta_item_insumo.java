@@ -30,7 +30,7 @@ private DAO_venta_item_insumo veitin_dao = new DAO_venta_item_insumo();
 		}
 	}
 	public void update_venta_item_insumo(venta_item_insumo veitin, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR VENTA_ITEM_INSUMO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR VENTA_ITEM_INSUMO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_venta_item_insumo";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

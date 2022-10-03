@@ -103,8 +103,9 @@ public class DAO_compra_item {
         int Ancho[] = {11, 11, 11, 11, 11, 11, 11, 11, 11};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
-public void insertar_item_compra_de_tabla(Connection conn, JTable tblitem_producto, compra com) {
-    String titulo="insertar_item_compra_de_tabla";
+
+    public void insertar_item_compra_de_tabla(Connection conn, JTable tblitem_producto, compra com) {
+        String titulo = "insertar_item_compra_de_tabla";
         for (int row = 0; row < tblitem_producto.getRowCount(); row++) {
             String idproducto = ((tblitem_producto.getModel().getValueAt(row, 0).toString()));
             String descripcion = ((tblitem_producto.getModel().getValueAt(row, 1).toString()));
@@ -113,7 +114,7 @@ public void insertar_item_compra_de_tabla(Connection conn, JTable tblitem_produc
             String precio_compra = ((tblitem_producto.getModel().getValueAt(row, 6).toString()));
             String tipo = ((tblitem_producto.getModel().getValueAt(row, 7).toString()));
             try {
-                compra_item  item=new compra_item();
+                compra_item item = new compra_item();
                 item.setC3creado_por(com.getC3creado_por());
                 item.setC4tipo_item(tipo);
                 item.setC5descripcion(descripcion);
@@ -126,7 +127,59 @@ public void insertar_item_compra_de_tabla(Connection conn, JTable tblitem_produc
                 evemen.mensaje_error(e, titulo);
                 break;
             }
-            
+
         }
+    }
+
+    public void update_compra_item_ingresar_stock_producto(Connection conn, compra_item coit) {
+        String titulo = "update_compra_item_ingresar_stock_producto";
+        String sql = "update producto set stock_actual=(stock_actual+\n"
+                + "(select sum(ci2.cantidad) as cant from compra_item ci2 \n"
+                + "where ci2.fk_idproducto=ci1.fk_idproducto \n"
+                + "and ci2.fk_idcompra=ci1.fk_idcompra)) \n"
+                + "from compra_item ci1\n"
+                + "where producto.idproducto=ci1.fk_idproducto \n"
+                + "and ci1.fk_idcompra=?;";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, coit.getC9fk_idcompra());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql, titulo);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+
+    public void update_compra_item_tipo_item(Connection conn, compra_item coit) {
+        String titulo = "update_compra_item_ingresar_stock_producto";
+        String sql = "update compra_item  set tipo_item=? where fk_idcompra=?;";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, coit.getC4tipo_item());
+            pst.setInt(2, coit.getC9fk_idcompra());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql, titulo);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+
+    public void actualizar_tabla_compra_item_creado(Connection conn, JTable tbltabla, int fk_idcompra) {
+        String sql = "select ci.idcompra_item as idci, ci.descripcion,\n"
+                + "ci.precio_compra as pcompra,ci.cantidad as cant,\n"
+                + "(ci.precio_compra*ci.cantidad) as subtotal,ci.tipo_item  \n"
+                + "from compra_item ci where ci.fk_idcompra=" + fk_idcompra
+                + " order by 1 desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_compra_item_creado(tbltabla);
+    }
+
+    public void ancho_tabla_compra_item_creado(JTable tbltabla) {
+        int Ancho[] = {5, 45, 10, 5, 10, 15};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 }

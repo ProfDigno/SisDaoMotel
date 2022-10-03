@@ -58,7 +58,7 @@ public class json_array_formulario {
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
-            if(evemen.MensajeGeneral_warning("DESEA ABRIR EL ARCHIVO PARA CAMBIAR EL MAC PARA ESTE EQUIPO","ABRIR JSON","ABRIR","CANCELAR")){
+            if(evemen.getBooMensaje_warning("DESEA ABRIR EL ARCHIVO PARA CAMBIAR EL MAC PARA ESTE EQUIPO","ABRIR JSON","ABRIR","CANCELAR")){
                 abrir_este_json_array_formulario();
             }
         } finally {

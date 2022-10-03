@@ -30,7 +30,7 @@ private DAO_caja_cierre_item caciit_dao = new DAO_caja_cierre_item();
 		}
 	}
 	public void update_caja_cierre_item(caja_cierre_item caciit, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR CAJA_CIERRE_ITEM", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR CAJA_CIERRE_ITEM", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_caja_cierre_item";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

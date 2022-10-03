@@ -76,6 +76,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private void actualizar_tabla_caja_cierre_detalle_ABIERTO() {
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA(conn, tblcaja_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(conn, tblgasto_abierto, fk_idusuario);
+        DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_COMPRA(conn, tblcompra_abierto, fk_idusuario);
         suma_total_caja_detalle_abierto(fk_idusuario);
     }
 
@@ -97,6 +98,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 + "sum(cd.monto_ocupa_adicional) as adicional,\n"
                 + "sum(cd.monto_ocupa_consumo) as consumo,\n"
                 + "sum(cd.monto_gasto) as gasto,\n"
+                + "sum(cd.monto_compra) as compra,\n"
                 + "sum((0-(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as descuento,\n"
                 + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as ingreso, \n"
@@ -120,6 +122,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 double descuento = rs.getDouble("descuento");
                 suma_ingreso = rs.getDouble("ingreso");
                 double gasto = rs.getDouble("gasto");
+                double compra = rs.getDouble("compra");
                 suma_egreso = rs.getDouble("egreso");
                 suma_saldo = rs.getDouble("saldo");
                 jFtotal_ocupa_adelanto.setValue(adelanto);
@@ -136,6 +139,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 fec_final = rs.getString("fec_final");
                 txtfecha_final.setText(fec_final);
                 jFtotal_gasto.setValue(gasto);
+                jFtotal_compra.setValue(compra);
             }
 
         } catch (Exception e) {
@@ -155,7 +159,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                     + "<p style=\"color:red\"><font size=\"4\">SUMA SALDO:   </font></p>"
                     + "<p><font size=\"8\">" + evejtf.getString_format_nro_decimal(suma_saldo) + "</font></p>"
                     + "</html>";
-            if (evemen.MensajeGeneral_warning(mensaje,
+            if (evemen.getBooMensaje_warning(mensaje,
                     "CERRAR CAJA", "ACEPTAR", "CANCELAR")) {
                 ENTcc.setC3creado_por(creado_por);
                 ENTcc.setC4fecha_inicio(fec_inicio);
@@ -165,7 +169,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 BOcc.insertar_caja_cierre(ENTcc);
                 actualizar_tabla_caja_cierre_detalle_ABIERTO();
                 actualizar_tabla_caja_cierre();
-                if (evemen.MensajeGeneral_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
+                if (evemen.getBooMensaje_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
 //                    DAOcc.imprimir_caja_cierre_jasper(conn, ENTcc.getC1idcaja_cierre());
                     select_imprimir_caja_cierre(ENTcc.getC1idcaja_cierre());
                 }
@@ -289,6 +293,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         tblgasto_abierto = new javax.swing.JTable();
         jFtotal_gasto = new javax.swing.JFormattedTextField();
+        jPanel12 = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tblcompra_abierto = new javax.swing.JTable();
+        jFtotal_compra = new javax.swing.JFormattedTextField();
         jPanel11 = new javax.swing.JPanel();
         jFtotal_resumen_ingreso = new javax.swing.JFormattedTextField();
         jFtotal_resumen_egreso = new javax.swing.JFormattedTextField();
@@ -524,6 +533,58 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         );
 
         jTabbedPane3.addTab("GASTO", jPanel9);
+
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("CAJA COMPRA"));
+
+        tblcompra_abierto.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane7.setViewportView(tblcompra_abierto);
+
+        jFtotal_compra.setBackground(new java.awt.Color(255, 255, 102));
+        jFtotal_compra.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL COMPRA"));
+        jFtotal_compra.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_compra.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_compra.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
+        jPanel13.setLayout(jPanel13Layout);
+        jPanel13Layout.setHorizontalGroup(
+            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel13Layout.createSequentialGroup()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                .addComponent(jFtotal_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel13Layout.setVerticalGroup(
+            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+            .addGroup(jPanel13Layout.createSequentialGroup()
+                .addComponent(jFtotal_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
+        jPanel12.setLayout(jPanel12Layout);
+        jPanel12Layout.setHorizontalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel12Layout.setVerticalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        jTabbedPane3.addTab("COMPRA", jPanel12);
 
         jPanel11.setBackground(new java.awt.Color(204, 204, 255));
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("RESUMEN SALDO"));
@@ -879,7 +940,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO(tblcaja_abierto);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_GASTO(tblgasto_abierto);
+        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgasto_abierto);
+        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblcompra_abierto);
         DAOcc.ancho_tabla_caja_cierre(tblresumen_caja_cierre);
     }//GEN-LAST:event_formInternalFrameOpened
 
@@ -931,6 +993,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFtotal_cc_consumo;
     private javax.swing.JFormattedTextField jFtotal_cc_gasto;
     private javax.swing.JFormattedTextField jFtotal_cc_minimo;
+    private javax.swing.JFormattedTextField jFtotal_compra;
     private javax.swing.JFormattedTextField jFtotal_egreso;
     private javax.swing.JFormattedTextField jFtotal_gasto;
     private javax.swing.JFormattedTextField jFtotal_ingreso;
@@ -949,6 +1012,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -963,11 +1028,13 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTable tblcaja_abierto;
     private javax.swing.JTable tblcc_gasto;
+    private javax.swing.JTable tblcompra_abierto;
     private javax.swing.JTable tblgasto_abierto;
     private javax.swing.JTable tblresumen_caja_cierre;
     private javax.swing.JTable tblventa;

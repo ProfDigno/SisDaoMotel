@@ -34,7 +34,7 @@ public class BO_producto_habitacion_patrimonio {
     }
 
     public void update_producto_habitacion_patrimonio(producto_habitacion_patrimonio prhapa) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE QUITAR PRODUCTO_HABITACION_PATRIMONIO", "QUITAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE QUITAR PRODUCTO_HABITACION_PATRIMONIO", "QUITAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_producto_habitacion_patrimonio";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

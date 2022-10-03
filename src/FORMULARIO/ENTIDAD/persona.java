@@ -15,11 +15,57 @@ private double C10salario_base;
 private int C11fk_idpersona_cargo;
 private static String nom_tabla;
 private static String nom_idtabla;
+public static int bus_idpersona;
+public static String bus_tipo_persona;
+public static String bus_nombre;
+public static String bus_ruc;
+public static int bus_quien_llama;
 //---------------TABLA-ID---------------
 	public persona() {
 		setTb_persona("persona");
 		setId_idpersona("idpersona");
 	}
+
+    public static int getBus_idpersona() {
+        return bus_idpersona;
+    }
+
+    public static void setBus_idpersona(int bus_idpersona) {
+        persona.bus_idpersona = bus_idpersona;
+    }
+
+    public static String getBus_tipo_persona() {
+        return bus_tipo_persona;
+    }
+
+    public static void setBus_tipo_persona(String bus_tipo_persona) {
+        persona.bus_tipo_persona = bus_tipo_persona;
+    }
+
+    public static String getBus_nombre() {
+        return bus_nombre;
+    }
+
+    public static void setBus_nombre(String bus_nombre) {
+        persona.bus_nombre = bus_nombre;
+    }
+
+    public static String getBus_ruc() {
+        return bus_ruc;
+    }
+
+    public static void setBus_ruc(String bus_ruc) {
+        persona.bus_ruc = bus_ruc;
+    }
+
+    public static int getBus_quien_llama() {
+        return bus_quien_llama;
+    }
+
+    public static void setBus_quien_llama(int bus_quien_llama) {
+        persona.bus_quien_llama = bus_quien_llama;
+    }
+        
 	public static String getTb_persona(){
 		return nom_tabla;
 	}

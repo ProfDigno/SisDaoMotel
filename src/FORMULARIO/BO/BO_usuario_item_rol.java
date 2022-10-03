@@ -30,7 +30,7 @@ private DAO_usuario_item_rol usitro_dao = new DAO_usuario_item_rol();
 		}
 	}
 	public void update_usuario_item_rol(usuario_item_rol usitro, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR USUARIO_ITEM_ROL", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR USUARIO_ITEM_ROL", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_usuario_item_rol";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

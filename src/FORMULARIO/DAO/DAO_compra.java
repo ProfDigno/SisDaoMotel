@@ -22,7 +22,6 @@ public class DAO_compra {
     private String mensaje_update = "COMPRA MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO compra(idcompra,fecha_creado,creado_por,fecha_compra,nro_factura,es_factura,monto_total,monto_iva5,monto_iva10,monto_letra,observacion,estado,fk_idpersona,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE compra SET fecha_creado=?,creado_por=?,fecha_compra=?,nro_factura=?,es_factura=?,monto_total=?,monto_iva5=?,monto_iva10=?,monto_letra=?,observacion=?,estado=?,fk_idpersona=?,fk_idusuario=? WHERE idcompra=?;";
-    private String sql_select = "SELECT idcompra,fecha_creado,creado_por,fecha_compra,nro_factura,es_factura,monto_total,monto_iva5,monto_iva10,monto_letra,observacion,estado,fk_idpersona,fk_idusuario FROM compra order by 1 desc;";
     private String sql_cargar = "SELECT idcompra,fecha_creado,creado_por,fecha_compra,nro_factura,es_factura,monto_total,monto_iva5,monto_iva10,monto_letra,observacion,estado,fk_idpersona,fk_idusuario FROM compra WHERE idcompra=";
 
     public void insertar_compra(Connection conn, compra co) {
@@ -108,13 +107,24 @@ public class DAO_compra {
         }
     }
 
-    public void actualizar_tabla_compra(Connection conn, JTable tbltabla) {
+    public void actualizar_tabla_compra(Connection conn, JTable tbltabla, String filtro) {
+        String sql_select = "select c.idcompra as idc,"
+                + "to_char(c.fecha_creado,'yyyy-MM-dd HH24:MI') as creado,  \n"
+                + "c.fecha_compra as fec_nota,c.nro_factura as nro_fac ,"
+                + "p.nombre as proveedor,p.ruc as ruc,p.telefono as telefono,\n"
+                + "TRIM(to_char(c.monto_iva5,'999G999G999')) as m_iva5,\n"
+                + "TRIM(to_char(c.monto_iva10,'999G999G999')) as m_iva10, \n"
+                + "TRIM(to_char(c.monto_total,'999G999G999')) as total,\n"
+                + "c.estado,c.creado_por as usuario  \n"
+                + "from compra c ,persona p \n"
+                + "where c.fk_idpersona=p.idpersona \n" + filtro
+                + " order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_compra(tbltabla);
     }
 
     public void ancho_tabla_compra(JTable tbltabla) {
-        int Ancho[] = {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
+        int Ancho[] = {5, 8, 6, 8, 20, 7, 6, 6, 6, 6, 8,10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 }

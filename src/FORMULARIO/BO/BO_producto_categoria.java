@@ -30,7 +30,7 @@ private DAO_producto_categoria prca_dao = new DAO_producto_categoria();
 		}
 	}
 	public void update_producto_categoria(producto_categoria prca, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_CATEGORIA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_CATEGORIA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_producto_categoria";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

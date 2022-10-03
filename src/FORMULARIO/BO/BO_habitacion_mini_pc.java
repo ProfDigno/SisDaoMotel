@@ -34,7 +34,7 @@ public class BO_habitacion_mini_pc {
     }
 
     public void update_habitacion_mini_pc(habitacion_mini_pc hamipc, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_MINI_PC", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_MINI_PC", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_habitacion_mini_pc";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

@@ -34,7 +34,7 @@ public class BO_producto_habitacion_frigobar {
     }
 
     public void update_producto_habitacion_frigobar(producto_habitacion_frigobar prhafr) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE QUITAR PRODUCTO_HABITACION_FRIGOBAR", "QUITAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE QUITAR PRODUCTO_HABITACION_FRIGOBAR", "QUITAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_producto_habitacion_frigobar";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

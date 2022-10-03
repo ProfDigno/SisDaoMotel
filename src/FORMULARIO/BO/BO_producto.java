@@ -34,7 +34,7 @@ public class BO_producto {
     }
 
     public void update_producto(producto pr) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_producto";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

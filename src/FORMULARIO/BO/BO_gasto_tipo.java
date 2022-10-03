@@ -30,7 +30,7 @@ private DAO_gasto_tipo gati_dao = new DAO_gasto_tipo();
 		}
 	}
 	public void update_gasto_tipo(gasto_tipo gati, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR GASTO_TIPO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR GASTO_TIPO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_gasto_tipo";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

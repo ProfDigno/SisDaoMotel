@@ -30,7 +30,7 @@ private DAO_producto_marca prma_dao = new DAO_producto_marca();
 		}
 	}
 	public void update_producto_marca(producto_marca prma, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_MARCA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_MARCA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_producto_marca";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

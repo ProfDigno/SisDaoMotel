@@ -14,23 +14,29 @@ public class EvenEstado {
     private static String est_Anulado;
     private static String est_Pagado;
     private static String est_Cargado;
-    private static String est_Libre = "LIBRE";
-    private static String est_Ocupado = "OCUPADO";
-    private static String est_Sucio = "SUCIO";
-    private static String est_Limpiando = "LIMPIANDO";
-    private static String est_Terminar = "TERMINADO";
-    private static String est_Cancelado = "CANCELADO";
-    private static String est_Desocupado = "DESOCUPADO";
-    private static String est_Adelanto = "ADELANTO";
-    private static String est_Cerrado = "CERRADO";
-    private static String est_Mudar = "MUDAR";
-    private static String caja_GASTO = "GASTO";
-    private static String caja_COMPRA = "COMPRA";
+    private static String est_Libre;
+    private static String est_Ocupado;
+    private static String est_Sucio;
+    private static String est_Limpiando;
+    private static String est_Terminar;
+    private static String est_Cancelado;
+    private static String est_Desocupado;
+    private static String est_Adelanto;
+    private static String est_Cerrado;
+    private static String est_Mudar;
+    private static String est_INGRESADO;
+    private static String est_PENDIENTE;
+    private static String caja_GASTO;
+    private static String caja_COMPRA;
     private static String cond_Contado;
     private static String cond_Credito;
     private static String forPago_Efectivo;
     private static String forPago_TarjetaDebito;
     private static String forPago_TarjetaCredito;
+    private static String per_CLIENTE;
+    private static String per_PERSONAL;
+    private static String per_PROVEEDOR;
+    private static String per_USUARIO;
     private static String mone_PYG;//Gs
     private static String mone_USD;//Dolar
     private static String mone_BRL;//R$
@@ -55,6 +61,8 @@ public class EvenEstado {
         setEst_Pagado("PAGADO");
         setEst_Cargado("CARGADO");
         setEst_Mudar("MUDAR");
+        setEst_INGRESADO("INGRESADO");
+        setEst_PENDIENTE("PENDIENTE");
         setCond_Contado("CONTADO");
         setCond_Credito("CREDITO");
         setForPago_Efectivo("EFECTIVO");
@@ -70,6 +78,58 @@ public class EvenEstado {
         setTipo_hab_penthouse("PENTHOUSE");
         setCaja_GASTO("GASTO");
         setCaja_COMPRA("COMPRA");
+        setPer_CLIENTE("CLIENTE");
+        setPer_PERSONAL("PERSONAL");
+        setPer_PROVEEDOR("PROVEEDOR");
+        setPer_USUARIO("USUARIO");
+    }
+
+    public static String getEst_PENDIENTE() {
+        return est_PENDIENTE;
+    }
+
+    public static void setEst_PENDIENTE(String est_PENDIENTE) {
+        EvenEstado.est_PENDIENTE = est_PENDIENTE;
+    }
+
+    public static String getEst_INGRESADO() {
+        return est_INGRESADO;
+    }
+
+    public static void setEst_INGRESADO(String est_INGRESADO) {
+        EvenEstado.est_INGRESADO = est_INGRESADO;
+    }
+
+    public static String getPer_CLIENTE() {
+        return per_CLIENTE;
+    }
+
+    public static void setPer_CLIENTE(String per_CLIENTE) {
+        EvenEstado.per_CLIENTE = per_CLIENTE;
+    }
+
+    public static String getPer_PERSONAL() {
+        return per_PERSONAL;
+    }
+
+    public static void setPer_PERSONAL(String per_PERSONAL) {
+        EvenEstado.per_PERSONAL = per_PERSONAL;
+    }
+
+    public static String getPer_PROVEEDOR() {
+        return per_PROVEEDOR;
+    }
+
+    public static void setPer_PROVEEDOR(String per_PROVEEDOR) {
+        EvenEstado.per_PROVEEDOR = per_PROVEEDOR;
+    }
+
+    public static String getPer_USUARIO() {
+        return per_USUARIO;
+    }
+
+    public static void setPer_USUARIO(String per_USUARIO) {
+        EvenEstado.per_USUARIO = per_USUARIO;
     }
 
     public static String getCaja_COMPRA() {

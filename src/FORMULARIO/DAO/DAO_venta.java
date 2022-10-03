@@ -168,8 +168,9 @@ public class DAO_venta {
 
     public void actualizar_tabla_venta(Connection conn, JTable tbltabla, String filtro, String orden) {
         eveconn.Select_cargar_jtable(conn, sql_select + filtro + orden, tbltabla);
-        ancho_tabla_venta(tbltabla);
         everen.rendertabla_estados_venta_habitacion(tbltabla, 13);
+        ancho_tabla_venta(tbltabla);
+        
     }
 
     public void ancho_tabla_venta(JTable tbltabla) {
@@ -187,7 +188,7 @@ public class DAO_venta {
         evejt.alinear_derecha_columna(tbltabla, 10);
         evejt.alinear_derecha_columna(tbltabla, 11);
         evejt.alinear_derecha_columna(tbltabla, 12);
-        evejt.alinear_centro_columna(tbltabla, 13);
+//        evejt.alinear_centro_columna(tbltabla, 13);
         evejt.ocultar_columna(tbltabla, 15);
         evejt.ocultar_columna(tbltabla, 16);
         evejt.ocultar_columna(tbltabla, 17);

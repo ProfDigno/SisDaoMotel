@@ -30,7 +30,7 @@ private DAO_producto_unidad prun_dao = new DAO_producto_unidad();
 		}
 	}
 	public void update_producto_unidad(producto_unidad prun, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_UNIDAD", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR PRODUCTO_UNIDAD", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_producto_unidad";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

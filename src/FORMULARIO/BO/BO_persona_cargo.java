@@ -30,7 +30,7 @@ private DAO_persona_cargo peca_dao = new DAO_persona_cargo();
 		}
 	}
 	public void update_persona_cargo(persona_cargo peca, JTable tbltabla) {
-		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PERSONA_CARGO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+		if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR PERSONA_CARGO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_persona_cargo";
 			Connection conn = ConnPostgres.getConnPosgres();
 			try {

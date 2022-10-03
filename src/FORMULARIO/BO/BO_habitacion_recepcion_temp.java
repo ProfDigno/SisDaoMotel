@@ -34,7 +34,7 @@ public class BO_habitacion_recepcion_temp {
     }
 
     public void update_habitacion_recepcion_temp(habitacion_recepcion_temp harete, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_RECEPCION_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_RECEPCION_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_habitacion_recepcion_temp";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

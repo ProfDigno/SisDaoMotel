@@ -77,6 +77,7 @@ public class FrmMenu extends javax.swing.JFrame {
         btncajacierre = new javax.swing.JButton();
         btngasto = new javax.swing.JButton();
         btncompra = new javax.swing.JButton();
+        btnpersona = new javax.swing.JButton();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -104,6 +105,9 @@ public class FrmMenu extends javax.swing.JFrame {
         jMenuItem14 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem17 = new javax.swing.JMenuItem();
+        jMenu10 = new javax.swing.JMenu();
+        jMenuItem18 = new javax.swing.JMenuItem();
+        jMenuItem19 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -186,6 +190,16 @@ public class FrmMenu extends javax.swing.JFrame {
             }
         });
 
+        btnpersona.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/cliente.png"))); // NOI18N
+        btnpersona.setText("PERSONA");
+        btnpersona.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnpersona.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnpersona.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnpersonaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_acceso_rapidoLayout = new javax.swing.GroupLayout(panel_acceso_rapido);
         panel_acceso_rapido.setLayout(panel_acceso_rapidoLayout);
         panel_acceso_rapidoLayout.setHorizontalGroup(
@@ -201,7 +215,9 @@ public class FrmMenu extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btngasto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btncompra))
+                .addComponent(btncompra)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnpersona))
         );
         panel_acceso_rapidoLayout.setVerticalGroup(
             panel_acceso_rapidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,6 +227,7 @@ public class FrmMenu extends javax.swing.JFrame {
             .addComponent(btngasto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btncompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btncrear_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnpersona, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -229,7 +246,7 @@ public class FrmMenu extends javax.swing.JFrame {
                         .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(263, Short.MAX_VALUE))
+                .addContainerGap(160, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -410,6 +427,26 @@ public class FrmMenu extends javax.swing.JFrame {
 
         barra_menu_principal.add(jMenu9);
 
+        jMenu10.setText("PERSONA");
+
+        jMenuItem18.setText("DATO PERSONA");
+        jMenuItem18.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem18ActionPerformed(evt);
+            }
+        });
+        jMenu10.add(jMenuItem18);
+
+        jMenuItem19.setText("CARGO PERSONA");
+        jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem19ActionPerformed(evt);
+            }
+        });
+        jMenu10.add(jMenuItem19);
+
+        barra_menu_principal.add(jMenu10);
+
         setJMenuBar(barra_menu_principal);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -547,6 +584,21 @@ public class FrmMenu extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmCompra());
     }//GEN-LAST:event_btncompraActionPerformed
 
+    private void jMenuItem19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem19ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPersona_cargo());
+    }//GEN-LAST:event_jMenuItem19ActionPerformed
+
+    private void btnpersonaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpersonaActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPersona());
+    }//GEN-LAST:event_btnpersonaActionPerformed
+
+    private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem18ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPersona());
+    }//GEN-LAST:event_jMenuItem18ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -589,10 +641,12 @@ public class FrmMenu extends javax.swing.JFrame {
     private javax.swing.JButton btncompra;
     private javax.swing.JButton btncrear_habitacion;
     private javax.swing.JButton btngasto;
+    private javax.swing.JButton btnpersona;
     private javax.swing.JButton btnproducto;
     private javax.swing.JButton btnventa;
     public static javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -610,6 +664,8 @@ public class FrmMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem17;
+    private javax.swing.JMenuItem jMenuItem18;
+    private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

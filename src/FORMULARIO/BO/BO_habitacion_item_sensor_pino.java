@@ -34,7 +34,7 @@ public class BO_habitacion_item_sensor_pino {
     }
 
     public void update_habitacion_item_sensor_pino(habitacion_item_sensor_pino haitsepi) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE QUITAR HABITACION_ITEM_SENSOR_PINO", "QUITAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE QUITAR HABITACION_ITEM_SENSOR_PINO", "QUITAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_habitacion_item_sensor_pino";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

@@ -38,7 +38,7 @@ public class BO_habitacion_dato {
     }
 
     public void update_habitacion_dato(habitacion_dato hada,habitacion_recepcion_temp harete) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR HABITACION_DATO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR HABITACION_DATO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_habitacion_dato";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

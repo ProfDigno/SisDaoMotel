@@ -34,7 +34,7 @@ public class BO_venta_item {
     }
 
     public void update_venta_item(venta_item veit, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR VENTA_ITEM", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR VENTA_ITEM", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_venta_item";
             Connection conn = ConnPostgres.getConnPosgres();
             try {
