@@ -20,19 +20,28 @@ public class DAO_habitacion_dato {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "HABITACION_DATO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "HABITACION_DATO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO habitacion_dato(idhabitacion_dato,fecha_creado,creado_por,nro_habitacion,tipo_habitacion,estado_actual,descripcion,ubicacion,activo,con_frigobar,fk_idhabitacion_costo) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE habitacion_dato SET fecha_creado=?,creado_por=?,nro_habitacion=?,tipo_habitacion=?,estado_actual=?,descripcion=?,ubicacion=?,activo=?,con_frigobar=?,fk_idhabitacion_costo=? WHERE idhabitacion_dato=?;";
-    private String sql_select = "select hd.idhabitacion_dato as idhd,hd.nro_habitacion as nro_hab,hd.tipo_habitacion,hd.estado_actual as estado,\n"
+    private String sql_insert = "INSERT INTO habitacion_dato(idhabitacion_dato,fecha_creado,creado_por,"
+            + "nro_habitacion,tipo_habitacion,estado_actual,descripcion,ubicacion,"
+            + "activo,con_frigobar,fk_idhabitacion_costo,es_manual) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE habitacion_dato SET fecha_creado=?,creado_por=?,"
+            + "nro_habitacion=?,tipo_habitacion=?,estado_actual=?,descripcion=?,ubicacion=?,"
+            + "activo=?,con_frigobar=?,fk_idhabitacion_costo=?,es_manual=? WHERE idhabitacion_dato=?;";
+    private String sql_select = "select hd.idhabitacion_dato as idhd,hd.nro_habitacion as nro_hab,"
+            + "hd.tipo_habitacion,hd.estado_actual as estado,\n"
             + "TRIM(to_char(hc.monto_por_hora_minimo,'999G999G999')) as hs_mini,"
             + "TRIM(to_char(hc.monto_por_hora_adicional,'999G999G999')) as hs_add,\n"
             + "TRIM(to_char(hc.monto_por_dormir_minimo,'999G999G999')) as dor_mini,"
             + "TRIM(to_char(hc.monto_por_dormir_adicional,'999G999G999')) as dor_add,\n"
             + "hc.minuto_minimo as min_mini,hc.minuto_adicional as min_add,hc.minuto_cancelar as min_cancel,\n"
-            + "hd.activo \n"
+            + "hd.activo,hd.es_manual as manual \n"
             + "from habitacion_dato hd,habitacion_costo hc\n"
             + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo\n"
-            + "order by hd.nro_habitacion desc;";
-    private String sql_cargar = "SELECT idhabitacion_dato,fecha_creado,creado_por,nro_habitacion,tipo_habitacion,estado_actual,descripcion,ubicacion,activo,con_frigobar,fk_idhabitacion_costo FROM habitacion_dato WHERE idhabitacion_dato=";
+            + "order by hd.idhabitacion_dato asc;";
+    private String sql_cargar = "SELECT idhabitacion_dato,fecha_creado,creado_por,"
+            + "nro_habitacion,tipo_habitacion,estado_actual,descripcion,ubicacion,"
+            + "activo,con_frigobar,fk_idhabitacion_costo,es_manual "
+            + "FROM habitacion_dato WHERE idhabitacion_dato=";
 
     public void insertar_habitacion_dato(Connection conn, habitacion_dato hada) {
         hada.setC1idhabitacion_dato(eveconn.getInt_ultimoID_mas_uno(conn, hada.getTb_habitacion_dato(), hada.getId_idhabitacion_dato()));
@@ -51,6 +60,7 @@ public class DAO_habitacion_dato {
             pst.setBoolean(9, hada.getC9activo());
             pst.setBoolean(10, hada.getC10con_frigobar());
             pst.setInt(11, hada.getC11fk_idhabitacion_costo());
+            pst.setBoolean(12, hada.getC12es_manual());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + hada.toString(), titulo);
@@ -75,7 +85,8 @@ public class DAO_habitacion_dato {
             pst.setBoolean(8, hada.getC9activo());
             pst.setBoolean(9, hada.getC10con_frigobar());
             pst.setInt(10, hada.getC11fk_idhabitacion_costo());
-            pst.setInt(11, hada.getC1idhabitacion_dato());
+            pst.setBoolean(11, hada.getC12es_manual());
+            pst.setInt(12, hada.getC1idhabitacion_dato());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + hada.toString(), titulo);
@@ -101,6 +112,7 @@ public class DAO_habitacion_dato {
                 hada.setC9activo(rs.getBoolean(9));
                 hada.setC10con_frigobar(rs.getBoolean(10));
                 hada.setC11fk_idhabitacion_costo(rs.getInt(11));
+                hada.setC12es_manual(rs.getBoolean(12));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + hada.toString(), titulo);
             }
         } catch (Exception e) {
@@ -114,7 +126,7 @@ public class DAO_habitacion_dato {
     }
 
     public void ancho_tabla_habitacion_dato(JTable tbltabla) {
-        int Ancho[] = {4, 4,8,8, 8,8, 8,8, 7,7,7,5};
+        int Ancho[] = {4, 4,8,8, 8,8, 8,8, 6,6,6,4,4};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.alinear_derecha_columna(tbltabla, 5);

@@ -15,6 +15,7 @@ import Evento.JButton.EvenJButton;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
+import Evento.Jtable.EvenRender;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Utilitario.EvenNumero_a_Letra;
 import FORMULARIO.BO.BO_compra;
@@ -81,6 +82,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     private DAO_usuario DAOusu = new DAO_usuario();
     private persona ENTper = new persona();
+    private EvenRender everen = new EvenRender();
 //    private EvenEstado eveest = new EvenEstado();
     DefaultTableModel model_itemf = new DefaultTableModel();
     private java.util.List<JButton> botones_categoria;
@@ -397,8 +399,14 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         return true;
     }
 
-    private void cargar_item_producto() {
-        if (validar_cargar_item()) {
+    private void cargar_item_producto(boolean cargar_auto) {
+        boolean validar=false;
+        if(cargar_auto){
+            validar=true;
+        }else{
+            validar=validar_cargar_item();
+        }
+        if (validar) {
             String Sidproducto = String.valueOf(idproducto);
             String Sdescripcion = txtbuscar_producto.getText();
             String Sprecio_venta1 = precio_venta_mostrar;
@@ -454,7 +462,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
 
     private void cargar_con_cantidad(int cant) {
         txtcantidad_producto.setText(String.valueOf(cant));
-        cargar_item_producto();
+        cargar_item_producto(false);
     }
 
     private boolean validar_carga_compra() {
@@ -591,21 +599,29 @@ public class FrmCompra extends javax.swing.JInternalFrame {
             if (estado.equals(eveest.getEst_Anulado())) {
                 btncom_anular.setEnabled(false);
                 btncom_pagado.setEnabled(false);
+                btncom_recargar.setEnabled(true);
             }
             if (estado.equals(eveest.getEst_Pagado())) {
                 btncom_anular.setEnabled(false);
                 btncom_pagado.setEnabled(false);
+                btncom_recargar.setEnabled(false);
             }
             if (estado.equals(eveest.getEst_PENDIENTE())) {
                 btncom_anular.setEnabled(true);
                 btncom_pagado.setEnabled(true);
+                btncom_recargar.setEnabled(false);
+            }
+            if (estado.equals(eveest.getEst_Terminar())) {
+                btncom_anular.setEnabled(false);
+                btncom_pagado.setEnabled(false);
+                btncom_recargar.setEnabled(false);
             }
         }
 
     }
 
     public String filtro_estado(JCheckBox jCest_pendiente, JCheckBox jCest_pagado,
-            JCheckBox jCest_anulado) {
+            JCheckBox jCest_anulado,JCheckBox jCest_terminado) {
         String estado = "";
         String sumaestado = "";
         int contestado = 0;
@@ -645,7 +661,17 @@ public class FrmCompra extends javax.swing.JInternalFrame {
             estado = condi + " c.estado='" + eveest.getEst_Anulado() + "' ";
             sumaestado = sumaestado + estado;
         }
-
+        if (jCest_terminado.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + " c.estado='" + eveest.getEst_Terminar() + "' ";
+            sumaestado = sumaestado + estado;
+        }
         return sumaestado + fin;
     }
 
@@ -656,7 +682,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         String filtro_est = "";
         int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
         filtro_fec = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "c.fecha_creado");
-        filtro_est = filtro_estado(jCest_pendiente, jCest_pagado, jCest_anulado);
+        filtro_est = filtro_estado(jCest_pendiente, jCest_pagado, jCest_anulado,jCest_terminado);
         if (idusuario > 0) {
             filtro_usu = " and c.fk_idusuario=" + idusuario;
         }
@@ -666,6 +692,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
 
     private void actualizar_tabla_compra() {
         DAOcom.actualizar_tabla_compra(conn, tblcompra, getfiltro_compra());
+        everen.rendertabla_estados_compra(tblcompra, 10);
         suma_compra_filtro(getfiltro_compra());
     }
 
@@ -676,7 +703,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 + "(sum(c.monto_iva10)) as m_iva10, \n"
                 + "(sum(c.monto_total)) as total \n"
                 + "from compra c ,persona p \n"
-                + "where c.fk_idpersona=p.idpersona "+filtro;
+                + "where c.fk_idpersona=p.idpersona " + filtro;
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             if (rs.next()) {
@@ -686,6 +713,43 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 jFtotal_compra.setValue(total);
                 jFtotal_iva5.setValue(m_iva5);
                 jFtotal_iva10.setValue(m_iva10);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+
+    private void boton_recargar_compra() {
+        if (eveJtab.getBoolean_select_tabla_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA CARGAR \nSOLO SI ESTA ANULADO SE PUEDE RECARGAR")) {
+            if (evemen.getBooMensaje_question("ESTAS SEGURO DE RECARGAR ESTA COMPRA",
+                    "RECARGAR COMPRA", "RECARGAR", "CANCELAR")) {
+                int idcompra = eveJtab.getInt_select_id(tblcompra);
+                recargar_compra_item(idcompra);
+                
+            }
+        }
+    }
+
+    private void recargar_compra_item(int idcompra) {
+        String titulo = "recargar_compra_item";
+        String sql = "select p.idproducto ,p.nombre ,\n"
+                + "TRIM(to_char(p.precio_compra,'999G999G999')) as pcompra ,\n"
+                + "p.precio_venta as opventa ,p.precio_compra ,ci.cantidad,p.iva  \n"
+                + "from compra_item ci,producto p\n"
+                + "where ci.fk_idproducto=p.idproducto \n"
+                + "and ci.fk_idcompra =" + idcompra
+                + " order by p.nombre desc;";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            while (rs.next()) {
+                idproducto = rs.getInt("idproducto");
+                txtbuscar_producto.setText(rs.getString("nombre"));
+                txtcantidad_producto.setText(rs.getString("cantidad"));
+                precio_venta_mostrar = rs.getString("pcompra");
+                precio_venta_oculto = rs.getString("opventa");
+                precio_compra_oculto = rs.getString("precio_compra");
+                iva_producto = rs.getString("iva");
+                cargar_item_producto(true);
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
@@ -763,10 +827,12 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         cmbfecha_caja_cierre = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         cmbusuario = new javax.swing.JComboBox<>();
+        jCest_terminado = new javax.swing.JCheckBox();
         jPanel9 = new javax.swing.JPanel();
         jFtotal_compra = new javax.swing.JFormattedTextField();
         jFtotal_iva5 = new javax.swing.JFormattedTextField();
         jFtotal_iva10 = new javax.swing.JFormattedTextField();
+        btncom_recargar = new javax.swing.JButton();
 
         setClosable(true);
         setResizable(true);
@@ -1313,6 +1379,13 @@ public class FrmCompra extends javax.swing.JInternalFrame {
             }
         });
 
+        jCest_terminado.setText("TERMINADO");
+        jCest_terminado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCest_terminadoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
@@ -1332,7 +1405,9 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCest_pagado)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCest_anulado)))
+                        .addComponent(jCest_anulado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCest_terminado)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
@@ -1341,7 +1416,8 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCest_pendiente)
                     .addComponent(jCest_pagado)
-                    .addComponent(jCest_anulado))
+                    .addComponent(jCest_anulado)
+                    .addComponent(jCest_terminado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel8Layout.createSequentialGroup()
@@ -1397,6 +1473,17 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        btncom_recargar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/48_recargar.png"))); // NOI18N
+        btncom_recargar.setText("RECARGAR");
+        btncom_recargar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btncom_recargar.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        btncom_recargar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btncom_recargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncom_recargarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -1412,6 +1499,8 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btncom_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btncom_recargar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1433,9 +1522,11 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                                 .addGap(5, 5, 5)
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btncom_anular, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btncom_pagado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 8, Short.MAX_VALUE)))
+                                    .addComponent(btncom_pagado, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btncom_recargar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btncom_anular, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(11, 11, 11)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1468,7 +1559,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private void txtcantidad_productoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcantidad_productoKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            cargar_item_producto();
+            cargar_item_producto(false);
         }
     }//GEN-LAST:event_txtcantidad_productoKeyPressed
 
@@ -1487,7 +1578,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private void btnagregar_cantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregar_cantidadActionPerformed
         // TODO add your handling code here:
         //        cargar_item_producto();
-        cargar_item_producto();
+        cargar_item_producto(false);
     }//GEN-LAST:event_btnagregar_cantidadActionPerformed
 
     private void txtcod_barraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcod_barraKeyPressed
@@ -1594,6 +1685,16 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         actualizar_tabla_compra();
     }//GEN-LAST:event_jCest_anuladoActionPerformed
 
+    private void btncom_recargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncom_recargarActionPerformed
+        // TODO add your handling code here:
+        boton_recargar_compra();
+    }//GEN-LAST:event_btncom_recargarActionPerformed
+
+    private void jCest_terminadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCest_terminadoActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_compra();
+    }//GEN-LAST:event_jCest_terminadoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnagregar_cantidad;
@@ -1607,6 +1708,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private javax.swing.JButton btncargar_consumo;
     private javax.swing.JButton btncom_anular;
     private javax.swing.JButton btncom_pagado;
+    private javax.swing.JButton btncom_recargar;
     private javax.swing.JButton btneliminar;
     private javax.swing.JComboBox<String> cmbfecha_caja_cierre;
     private javax.swing.JComboBox<String> cmbusuario;
@@ -1614,6 +1716,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox jCest_anulado;
     private javax.swing.JCheckBox jCest_pagado;
     private javax.swing.JCheckBox jCest_pendiente;
+    private javax.swing.JCheckBox jCest_terminado;
     private javax.swing.JFormattedTextField jFtotal_compra;
     private javax.swing.JFormattedTextField jFtotal_consumo;
     private javax.swing.JFormattedTextField jFtotal_iva10;

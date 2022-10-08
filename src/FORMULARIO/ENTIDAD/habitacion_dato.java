@@ -13,6 +13,7 @@ private String C8ubicacion;
 private boolean C9activo;
 private boolean C10con_frigobar;
 private int C11fk_idhabitacion_costo;
+private boolean C12es_manual;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -20,6 +21,15 @@ private static String nom_idtabla;
 		setTb_habitacion_dato("habitacion_dato");
 		setId_idhabitacion_dato("idhabitacion_dato");
 	}
+
+    public boolean getC12es_manual() {
+        return C12es_manual;
+    }
+
+    public void setC12es_manual(boolean C12es_manual) {
+        this.C12es_manual = C12es_manual;
+    }
+        
 	public static String getTb_habitacion_dato(){
 		return nom_tabla;
 	}

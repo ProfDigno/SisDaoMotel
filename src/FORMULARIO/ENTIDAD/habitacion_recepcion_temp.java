@@ -44,6 +44,7 @@ private boolean C39puerta_limpieza;
 private String C40tipo_habitacion;
 private double C41monto_adelanto;
 private int C42idhabitacion_dato;
+private boolean C43es_manual;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -51,6 +52,15 @@ private static String nom_idtabla;
 		setTb_habitacion_recepcion_temp("habitacion_recepcion_temp");
 		setId_idhabitacion_recepcion_temp("idhabitacion_recepcion_temp");
 	}
+
+    public boolean getC43es_manual() {
+        return C43es_manual;
+    }
+
+    public void setC43es_manual(boolean C43es_manual) {
+        this.C43es_manual = C43es_manual;
+    }
+        
 	public static String getTb_habitacion_recepcion_temp(){
 		return nom_tabla;
 	}

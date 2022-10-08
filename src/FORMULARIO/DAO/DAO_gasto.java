@@ -122,7 +122,7 @@ public class DAO_gasto {
         eveconn.SQL_execute_libre(conn, sql);
     }
 
-    public void actualizar_tabla_gasto_caja_cerrado(Connection conn, JTable tbltabla, int fk_idcaja_cierre) {
+    public void actualizar_tabla_gasto_caja_cerrado(Connection conn, JTable tbltabla, int fk_idcaja_cierre,String filtro_gasto) {
         String sql = "select g.idgasto,\n"
                 + "to_char(g.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
                 + "gt.nombre as tipo,\n"
@@ -134,7 +134,7 @@ public class DAO_gasto {
                 + " where  ccd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle \n"
                 + " and ccd.fk_idgasto=g.idgasto\n"
                 + " and g.fk_idgasto_tipo=gt.idgasto_tipo\n"
-                + " and cci.fk_idcaja_cierre=" + fk_idcaja_cierre
+                + " and cci.fk_idcaja_cierre=" + fk_idcaja_cierre+filtro_gasto+"\n"
                 + " order by g.idgasto desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_gasto_caja_cerrado(tbltabla);

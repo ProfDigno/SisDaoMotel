@@ -117,6 +117,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jCactivo" min="-2" max="-2" attributes="0"/>
                                       <Component id="jCconfrigobar" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jCes_manual" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <Component id="jScrollPane3" alignment="0" max="32767" attributes="0"/>
@@ -149,7 +150,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jScrollPane3" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="btnnuevo" min="-2" max="-2" attributes="0"/>
                               <Component id="btnguardar" min="-2" max="-2" attributes="0"/>
                               <Component id="btneditar" min="-2" max="-2" attributes="0"/>
@@ -157,6 +158,8 @@
                                   <Component id="jCactivo" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="jCconfrigobar" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="jCes_manual" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace pref="56" max="32767" attributes="0"/>
@@ -424,6 +427,11 @@
                 <Component class="javax.swing.JCheckBox" name="jCconfrigobar">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="CON FRIGOBAR"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="jCes_manual">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="ES MANUAL"/>
                   </Properties>
                 </Component>
               </SubComponents>

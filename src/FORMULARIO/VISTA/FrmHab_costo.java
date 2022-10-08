@@ -44,7 +44,14 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);    
         creado_por = ENTusu.getGlobal_nombre();
         reestableser();
+        nombre_boton_habitacion();
         DAOhc.actualizar_tabla_habitacion_costo(conn, tbltabla_pri);
+    }
+    private void nombre_boton_habitacion(){
+        btntipo_estandar.setText(eveest.getTipo_hab_estandar());
+        btntipo_vip.setText(eveest.getTipo_hab_vip());
+        btntipo_lujo.setText(eveest.getTipo_hab_luxury());
+        btntipo_penthause.setText(eveest.getTipo_hab_penthouse());
     }
     private void titulo_formulario(String fecha_creado,String creado_por){
         this.setTitle(nombreTabla_pri+" / fecha creado: "+fecha_creado+" / Creado Por: "+creado_por);

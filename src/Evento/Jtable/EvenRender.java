@@ -176,5 +176,46 @@ public class EvenRender {
             return cell;
         }
     }
+    public void rendertabla_estados_compra(JTable tbltabla, final int columna) {
+        System.out.println("-->rendertabla_estados_venta_habitacion");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender = columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object Opendiente = table.getValueAt(row, columnaRender);
+                Object Opagado = table.getValueAt(row, columnaRender);
+                Object OAnulado = table.getValueAt(row, columnaRender);
+                Object Oterminado = table.getValueAt(row, columnaRender);
+                String Spendiente = eveest.getEst_PENDIENTE();
+                String Spagado = eveest.getEst_Pagado();
+                String SAnulado = eveest.getEst_Anulado();
+                String STerminado = eveest.getEst_Terminar();
+                if (Opendiente != null && Spendiente.equals(Opendiente.toString())) {
+//                    color_fondo = Color.GRAY;
+                    color_text = Color.RED;
+                }
+                if (Opagado != null && Spagado.equals(Opagado.toString())) {
+                    color_fondo = Color.GREEN;
+                    color_text = Color.BLUE;
+                }
+                if (OAnulado != null && SAnulado.equals(OAnulado.toString())) {
+                    color_fondo = Color.RED;
+                    color_text = Color.YELLOW;
+                }
+                if (Oterminado != null && STerminado.equals(Oterminado.toString())) {
+                    color_fondo = Color.GRAY;
+                    color_text = Color.RED;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+                return label;
+            }
+        });
+    }
 
 }

@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import ESTADOS.EvenEstado;
 import FORMULARIO.ENTIDAD.compra;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,6 +19,7 @@ public class DAO_compra {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    private EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "COMPRA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "COMPRA MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO compra(idcompra,fecha_creado,creado_por,fecha_compra,nro_factura,es_factura,monto_total,monto_iva5,monto_iva10,monto_letra,observacion,estado,fk_idpersona,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
@@ -124,7 +126,39 @@ public class DAO_compra {
     }
 
     public void ancho_tabla_compra(JTable tbltabla) {
-        int Ancho[] = {5, 8, 6, 8, 20, 7, 6, 6, 6, 6, 8,10};
+        int Ancho[] = {5, 8, 6, 8, 20, 7, 6, 6, 6, 6, 8, 10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void actualizar_tabla_compra_caja_cerrado(Connection conn, JTable tbltabla, int fk_idcaja_cierre) {
+        String sql = "select c.idcompra as idc,\n"
+                + "to_char(c.fecha_creado,'yyyy-MM-dd HH24:MI') as creado,  \n"
+                + "c.nro_factura as nro_fac ,\n"
+                + "(p.nombre||'-('||p.ruc||')')  as proveedor,\n"
+                + "TRIM(to_char(c.monto_total,'999G999G999')) as total,\n"
+                + "c.estado,c.creado_por as usuario,c.monto_total  \n"
+                + "from compra c ,persona p,caja_cierre_item cci,caja_cierre_detalle ccd \n"
+                + "where c.fk_idpersona=p.idpersona \n"
+                + "and ccd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle\n"
+                + "and ccd.fk_idcompra=c.idcompra\n"
+                + "and cci.fk_idcaja_cierre="+fk_idcaja_cierre
+                + " order by 1 desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_compra_caja_cerrado(tbltabla);
+    }
+
+    public void ancho_tabla_compra_caja_cerrado(JTable tbltabla) {
+        int Ancho[] = {5, 8, 30, 22, 8, 10, 18, 1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.ocultar_columna(tbltabla, 7);
+    }
+    public void terminar_compra_en_caja(Connection conn, int fk_idcaja_cierre) {
+        String sql = "update compra set estado='" + eveest.getEst_Terminar() + "' from caja_cierre_item ,caja_cierre_detalle \n"
+                + "where caja_cierre_item.fk_idcaja_cierre_detalle=caja_cierre_detalle.idcaja_cierre_detalle \n"
+                + "and caja_cierre_detalle.fk_idcompra=compra.idcompra \n"
+                + "and compra.estado='" + eveest.getEst_Pagado() + "'\n"
+                + "and caja_cierre_item.fk_idcaja_cierre=" + fk_idcaja_cierre;
+        eveconn.SQL_execute_libre(conn, sql);
     }
 }

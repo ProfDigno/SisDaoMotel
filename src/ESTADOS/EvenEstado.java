@@ -72,9 +72,9 @@ public class EvenEstado {
         setMone_USD("Dolar");
         setMone_BRL("R$");
         setMone_ARS("peso");
-        setTipo_hab_estandar("ESTANDAR");
-        setTipo_hab_vip("VIP");
-        setTipo_hab_luxury("LUXURY");
+        setTipo_hab_estandar("MOTO");
+        setTipo_hab_vip("NORMAL");
+        setTipo_hab_luxury("SUIT");
         setTipo_hab_penthouse("PENTHOUSE");
         setCaja_GASTO("GASTO");
         setCaja_COMPRA("COMPRA");

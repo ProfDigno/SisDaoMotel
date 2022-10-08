@@ -92,9 +92,16 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         this.setTitle(nombreTabla_pri);
         evetbl.centrar_formulario_internalframa(this); 
         creado_por = ENTusu.getGlobal_nombre();
+        nombre_boton_habitacion();
         carcar_combobox();
         reestableser_hab_dato();
         DAOhd.actualizar_tabla_habitacion_dato(conn, tbltabla_pri);
+    }
+    private void nombre_boton_habitacion(){
+        btntipo_estandar.setText(eveest.getTipo_hab_estandar());
+        btntipo_vip.setText(eveest.getTipo_hab_vip());
+        btntipo_lujo.setText(eveest.getTipo_hab_luxury());
+        btntipo_penthause.setText(eveest.getTipo_hab_penthouse());
     }
     private void carcar_combobox(){
         evecmb.cargarCombobox(conn, cmbcosto, costo_id, costo_nombre, costo_tabla, costo_where);
@@ -168,6 +175,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENThd.setC9activo(jCactivo.isSelected());
         ENThd.setC10con_frigobar(jCconfrigobar.isSelected());
         ENThd.setC11fk_idhabitacion_costo(fk_idhabitacion_costo);
+        ENThd.setC12es_manual(jCes_manual.isSelected());
     }
     private void cargar_dato_hab_recep_temp(){
         ENThrt.setC2idhabitacion_recepcion_actual(0);
@@ -201,6 +209,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENThrt.setC40tipo_habitacion(tipo_habitacion);
         ENThrt.setC41monto_adelanto(0);
         ENThrt.setC42idhabitacion_dato(fk_idhabitacion_dato);
+        ENThrt.setC43es_manual(jCes_manual.isSelected());
     }
     private void boton_guardar_hab_dato() {
         if (validar_guardar_hab_dato()) {
@@ -233,6 +242,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         txtubicacion.setText(ENThd.getC8ubicacion());
         jCactivo.setSelected(ENThd.getC9activo());
         jCconfrigobar.setSelected(ENThd.getC10con_frigobar());
+        jCes_manual.setSelected(ENThd.getC12es_manual());
         fk_idhabitacion_costo=ENThd.getC11fk_idhabitacion_costo();
         cargar_costos(fk_idhabitacion_costo);
         titulo_formulario(ENThd.getC2fecha_creado(), ENThd.getC3creado_por());
@@ -593,6 +603,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         txtadescripcion = new javax.swing.JTextArea();
         jCconfrigobar = new javax.swing.JCheckBox();
+        jCes_manual = new javax.swing.JCheckBox();
         jTab_hijos = new javax.swing.JTabbedPane();
         jPanel6 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -869,6 +880,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
 
         jCconfrigobar.setText("CON FRIGOBAR");
 
+        jCes_manual.setText("ES MANUAL");
+
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
         panel_insertarLayout.setHorizontalGroup(
@@ -899,7 +912,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCactivo)
-                            .addComponent(jCconfrigobar)))
+                            .addComponent(jCconfrigobar)
+                            .addComponent(jCes_manual)))
                     .addComponent(jScrollPane3))
                 .addGap(0, 10, Short.MAX_VALUE))
         );
@@ -923,14 +937,16 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnnuevo)
                     .addComponent(btnguardar)
                     .addComponent(btneditar)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(jCactivo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCconfrigobar)))
+                        .addComponent(jCconfrigobar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCes_manual)))
                 .addContainerGap(56, Short.MAX_VALUE))
         );
 
@@ -2394,6 +2410,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton20;
     private javax.swing.JCheckBox jCactivo;
     private javax.swing.JCheckBox jCconfrigobar;
+    private javax.swing.JCheckBox jCes_manual;
     private javax.swing.JFormattedTextField jFdormir_ingreso_final;
     private javax.swing.JFormattedTextField jFdormir_ingreso_inicio;
     private javax.swing.JFormattedTextField jFdormir_salida_final;

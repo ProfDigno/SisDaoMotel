@@ -172,7 +172,6 @@ public class DAO_venta {
         ancho_tabla_venta(tbltabla);
         
     }
-
     public void ancho_tabla_venta(JTable tbltabla) {
         int Ancho[] = {7, 9, 9, 5, 8, 5, 5, 5, 5, 5, 5, 5, 6, 9, 14, 1,1,1,1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
