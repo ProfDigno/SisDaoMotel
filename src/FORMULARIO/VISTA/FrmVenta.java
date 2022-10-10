@@ -529,10 +529,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void cargar_estados_puertas_gpio(int sensor_puerta_cliente, int sensor_puerta_limpieza) {
         String titulo = "cargar_estados_puertas_gpio";
         String sql = "select hd.idhabitacion_dato,hd.es_manual,\n"
-                + "(select ig.alto_bajo from habitacion_item_sensor_gpio ig \n"
+                + "(select case when hd.es_manual=true then true else ig.alto_bajo end from habitacion_item_sensor_gpio ig \n"
                 + "where ig.fk_idhabitacion_sensor=" + sensor_puerta_cliente + " \n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato ) as cliente,\n"
-                + "(select ig.alto_bajo from habitacion_item_sensor_gpio ig \n"
+                + "(select case when hd.es_manual=true then true else ig.alto_bajo end from habitacion_item_sensor_gpio ig \n"
                 + "where ig.fk_idhabitacion_sensor=" + sensor_puerta_limpieza + " \n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato ) as limpieza\n"
                 + "from habitacion_dato hd \n"
@@ -3867,7 +3867,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     .addContainerGap()))
         );
 
-        jTab_principal.addTab("MODAR DE HABITACION", jPanel14);
+        jTab_principal.addTab("MUDAR DE HABITACION", jPanel14);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

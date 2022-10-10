@@ -181,13 +181,17 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         if (tblresumen_caja_cierre.getSelectedRow() >= 0) {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
             String filtro_gasto="";
+            String filtro_compra="";
             if(jCsolo_terminado_gasto.isSelected()){
                 filtro_gasto=" and g.estado='"+eveest.getEst_Terminar()+"' ";
+            }
+            if(jCsolo_terminado_comp.isSelected()){
+                filtro_compra=" and c.estado='"+eveest.getEst_Terminar()+"' ";
             }
             DAOven.actualizar_tabla_venta_desde_caja_cierre(conn, tblventa, idcaja_cierre);
             DAOven.actualizar_tabla_venta_item_desde_caja_cierre(conn, tblventa_consumo, idcaja_cierre);
             DAOg.actualizar_tabla_gasto_caja_cerrado(conn, tblcc_gasto, idcaja_cierre,filtro_gasto);
-            DAOcom.actualizar_tabla_compra_caja_cerrado(conn, tblcc_compra, idcaja_cierre);
+            DAOcom.actualizar_tabla_compra_caja_cerrado(conn, tblcc_compra, idcaja_cierre,filtro_compra);
             double total_consumo = eveJtab.getDouble_sumar_tabla(tblventa_consumo, 5);
             double total_minimo = eveJtab.getDouble_sumar_tabla(tblventa, 12);
             double total_adicional = eveJtab.getDouble_sumar_tabla(tblventa, 13);
@@ -215,7 +219,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, true);
         }
         if (eleccion_comando == 2) {
-            DAOcc.imprimir_caja_cierre_jasper(conn, idcaja_cierre);
+//            DAOcc.imprimir_caja_cierre_jasper(conn, idcaja_cierre);
+            DAOcc.imprimir_caja_cierre_jasper_resumen(conn, idcaja_cierre);
         }
     }
 
@@ -332,7 +337,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jScrollPane8 = new javax.swing.JScrollPane();
         tblcc_compra = new javax.swing.JTable();
         jFtotal_cc_compra = new javax.swing.JFormattedTextField();
-        jCmos_anulado_compra = new javax.swing.JCheckBox();
+        jCsolo_terminado_comp = new javax.swing.JCheckBox();
         btnimprimir_caja_cierre = new javax.swing.JButton();
         cmbfecha_caja_cierre = new javax.swing.JComboBox<>();
         cmbusuario = new javax.swing.JComboBox<>();
@@ -863,16 +868,21 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_cc_compra.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_cc_compra.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
 
-        jCmos_anulado_compra.setText("SOLO EMITIDO");
+        jCsolo_terminado_comp.setText("SOLO TERMINADO");
+        jCsolo_terminado_comp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCsolo_terminado_compActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
         jPanel14.setLayout(jPanel14Layout);
         jPanel14Layout.setHorizontalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
-                .addContainerGap(835, Short.MAX_VALUE)
-                .addComponent(jCmos_anulado_compra)
-                .addGap(292, 292, 292))
+                .addContainerGap(833, Short.MAX_VALUE)
+                .addComponent(jCsolo_terminado_comp)
+                .addGap(278, 278, 278))
             .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel14Layout.createSequentialGroup()
                     .addContainerGap()
@@ -885,7 +895,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jCmos_anulado_compra)
+                .addComponent(jCsolo_terminado_comp)
                 .addContainerGap(350, Short.MAX_VALUE))
             .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel14Layout.createSequentialGroup()
@@ -1032,6 +1042,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private void tblresumen_caja_cierreMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblresumen_caja_cierreMouseReleased
         // TODO add your handling code here:
         jCsolo_terminado_gasto.setSelected(true);
+        jCsolo_terminado_comp.setSelected(true);
         seleccionar_caja_cierre();
     }//GEN-LAST:event_tblresumen_caja_cierreMouseReleased
 
@@ -1065,6 +1076,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         seleccionar_caja_cierre();
     }//GEN-LAST:event_jCsolo_terminado_gastoActionPerformed
 
+    private void jCsolo_terminado_compActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCsolo_terminado_compActionPerformed
+        // TODO add your handling code here:
+        seleccionar_caja_cierre();
+    }//GEN-LAST:event_jCsolo_terminado_compActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btncarrar_caja;
@@ -1073,7 +1089,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnimprimir_ticket1;
     private javax.swing.JComboBox<String> cmbfecha_caja_cierre;
     private javax.swing.JComboBox<String> cmbusuario;
-    private javax.swing.JCheckBox jCmos_anulado_compra;
+    private javax.swing.JCheckBox jCsolo_terminado_comp;
     private javax.swing.JCheckBox jCsolo_terminado_gasto;
     private javax.swing.JFormattedTextField jFtotal_cc_adicional;
     private javax.swing.JFormattedTextField jFtotal_cc_compra;

@@ -327,12 +327,13 @@ public class DAO_habitacion_recepcion_temp {
 //    }
     public void actualizar_estado_puerta_cliente_limpieza(Connection conn, int sensor_puerta_cliente, int sensor_puerta_limpieza) {
         //case when hd.es_manual=true then false else ig.alto_bajo end
-        String sql = "update habitacion_recepcion_temp  set puerta_cliente=(select case when hd.es_manual=true then false else ig.alto_bajo end  \n"
+        String sql = "update habitacion_recepcion_temp  set "
+                + "puerta_cliente=(select case when hd.es_manual=true then true else ig.alto_bajo end  \n"
                 + "from habitacion_item_sensor_gpio ig,habitacion_dato hd  \n"
                 + "where ig.fk_idhabitacion_sensor=? \n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
                 + "and hd.idhabitacion_dato=habitacion_recepcion_temp.idhabitacion_dato),\n"
-                + "puerta_limpieza=(select case when hd.es_manual=true then false else ig.alto_bajo end  \n"
+                + "puerta_limpieza=(select case when hd.es_manual=true then true else ig.alto_bajo end  \n"
                 + "from habitacion_item_sensor_gpio ig,habitacion_dato hd  \n"
                 + "where ig.fk_idhabitacion_sensor=?\n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato \n"

@@ -130,25 +130,25 @@ public class DAO_compra {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
-    public void actualizar_tabla_compra_caja_cerrado(Connection conn, JTable tbltabla, int fk_idcaja_cierre) {
+    public void actualizar_tabla_compra_caja_cerrado(Connection conn, JTable tbltabla, int fk_idcaja_cierre,String filtro) {
         String sql = "select c.idcompra as idc,\n"
                 + "to_char(c.fecha_creado,'yyyy-MM-dd HH24:MI') as creado,  \n"
                 + "c.nro_factura as nro_fac ,\n"
                 + "(p.nombre||'-('||p.ruc||')')  as proveedor,\n"
-                + "TRIM(to_char(c.monto_total,'999G999G999')) as total,\n"
+                + "TRIM(to_char(c.monto_total,'999G999G999')) as monto,\n"
                 + "c.estado,c.creado_por as usuario,c.monto_total  \n"
                 + "from compra c ,persona p,caja_cierre_item cci,caja_cierre_detalle ccd \n"
                 + "where c.fk_idpersona=p.idpersona \n"
                 + "and ccd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle\n"
                 + "and ccd.fk_idcompra=c.idcompra\n"
-                + "and cci.fk_idcaja_cierre="+fk_idcaja_cierre
+                + "and cci.fk_idcaja_cierre="+fk_idcaja_cierre+filtro
                 + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_compra_caja_cerrado(tbltabla);
     }
 
     public void ancho_tabla_compra_caja_cerrado(JTable tbltabla) {
-        int Ancho[] = {5, 8, 30, 22, 8, 10, 18, 1};
+        int Ancho[] = {5, 15, 10, 35, 8, 10, 18,1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.ocultar_columna(tbltabla, 7);

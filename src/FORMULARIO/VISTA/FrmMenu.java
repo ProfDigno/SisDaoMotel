@@ -26,8 +26,10 @@ public class FrmMenu extends javax.swing.JFrame {
     json_array_conexion jscon=new json_array_conexion();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
     private ComputerInfo pcinfo=new ComputerInfo();
+    private String version="V.: 1.0";
 //    FrmGasto frmgasto=new FrmGasto();
     private void abrir_formulario() {
+        lblversion.setText(version);
         conPs.ConnectDBpostgres(conn,false);
         conn = conPs.getConnPosgres();
         jsprint.cargar_jsom_imprimir_pos();
@@ -78,6 +80,7 @@ public class FrmMenu extends javax.swing.JFrame {
         btngasto = new javax.swing.JButton();
         btncompra = new javax.swing.JButton();
         btnpersona = new javax.swing.JButton();
+        lblversion = new javax.swing.JLabel();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -230,9 +233,14 @@ public class FrmMenu extends javax.swing.JFrame {
             .addComponent(btnpersona, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        lblversion.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblversion.setForeground(new java.awt.Color(102, 102, 102));
+        lblversion.setText("version");
+
         escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblusuario, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(panel_acceso_rapido, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(lblversion, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
@@ -241,18 +249,23 @@ public class FrmMenu extends javax.swing.JFrame {
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(escritorioLayout.createSequentialGroup()
+                        .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(160, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addGap(7, 7, 7)
-                .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btncerrar_seccion)
@@ -675,6 +688,7 @@ public class FrmMenu extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     public static javax.swing.JLabel lblusuario;
+    public static javax.swing.JLabel lblversion;
     public static javax.swing.JPanel panel_acceso_rapido;
     // End of variables declaration//GEN-END:variables
 }

@@ -1046,9 +1046,9 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="835" max="32767" attributes="0"/>
-                              <Component id="jCmos_anulado_compra" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="292" max="-2" attributes="0"/>
+                              <EmptySpace pref="833" max="32767" attributes="0"/>
+                              <Component id="jCsolo_terminado_comp" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="278" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
@@ -1066,7 +1066,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jCmos_anulado_compra" min="-2" max="-2" attributes="0"/>
+                              <Component id="jCsolo_terminado_comp" min="-2" max="-2" attributes="0"/>
                               <EmptySpace pref="350" max="32767" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1119,10 +1119,13 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JCheckBox" name="jCmos_anulado_compra">
+                    <Component class="javax.swing.JCheckBox" name="jCsolo_terminado_comp">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="SOLO EMITIDO"/>
+                        <Property name="text" type="java.lang.String" value="SOLO TERMINADO"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCsolo_terminado_compActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

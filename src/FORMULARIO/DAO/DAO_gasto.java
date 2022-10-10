@@ -129,7 +129,7 @@ public class DAO_gasto {
                 + "g.descripcion,\n"
                 + "TRIM(to_char(g.monto_gasto,'999G999G999')) as monto,\n"
                 + "g.estado, \n"
-                + "g.creado_por,g.monto_gasto as i_monto_gasto  \n"
+                + "g.creado_por as usuario,g.monto_gasto as i_monto_gasto  \n"
                 + " from gasto g,caja_cierre_item cci,caja_cierre_detalle ccd,gasto_tipo gt  \n"
                 + " where  ccd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle \n"
                 + " and ccd.fk_idgasto=g.idgasto\n"

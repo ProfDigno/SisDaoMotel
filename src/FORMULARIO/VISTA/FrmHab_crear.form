@@ -2441,18 +2441,27 @@
                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="txtbuscar" min="-2" pref="147" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnpasar_todo_manual" min="-2" pref="175" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnpasar_todo_auto" min="-2" pref="175" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnreset_toda_puerta" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jScrollPane1" pref="482" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="483" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtbuscar" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnpasar_todo_manual" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnpasar_todo_auto" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnreset_toda_puerta" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -2518,6 +2527,30 @@
                 <Component class="javax.swing.JTextField" name="txtbuscar">
                   <Events>
                     <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtbuscarKeyReleased"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnpasar_todo_manual">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="PASAR TODO A MANUAL"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnpasar_todo_manualActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnpasar_todo_auto">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="PASAR TODO A AUTO"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnpasar_todo_autoActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnreset_toda_puerta">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="RESET TODAS LAS PUERTAS"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnreset_toda_puertaActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>

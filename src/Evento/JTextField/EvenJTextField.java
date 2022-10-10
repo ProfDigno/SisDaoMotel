@@ -250,10 +250,10 @@ public class EvenJTextField {
         
     }
     public void setsuma_cantidad_flecha(KeyEvent evt, JTextField txtcantidad){
-        int cantidad=1;
-        if(txtcantidad.getText().trim().length()==0){
-            txtcantidad.setText("1");
-        }
+        int cantidad=0;
+//        if(txtcantidad.getText().trim().length()==0){
+//            txtcantidad.setText("1");
+//        }
         if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
             cantidad=Integer.parseInt(txtcantidad.getText());
             if(cantidad<=1){

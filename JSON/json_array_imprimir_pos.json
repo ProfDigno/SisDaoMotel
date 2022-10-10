@@ -33,7 +33,7 @@
 			"print_insumo":"true"
 		}
 	],
-	"94-C6-91-AA-DE-93":[
+	"CAJA3":[
 		{
 			"linea_separador":"#=============================#",
 			"linea_cabezera":"=========",
@@ -57,7 +57,7 @@
 			"tt_text_descrip":"150",
 			"tt_fila_ccvg":"20",
 			"tt_fila_cc":"45",
-			"tt_fila_ven":"25",
+			"tt_fila_ven":"27",
 			"tt_fila_coman":"18",
 			"tt_fila_ven_ms":"15",
 			"tt_fila_com_in":"18",

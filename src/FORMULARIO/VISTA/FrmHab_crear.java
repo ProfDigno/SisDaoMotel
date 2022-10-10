@@ -5,6 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
+import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import ESTADOS.EvenEstado;
 import Evento.Combobox.EvenCombobox;
@@ -12,6 +13,7 @@ import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
+import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.awt.Color;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
@@ -34,6 +36,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenEstado eveest = new EvenEstado();
     private EvenCombobox evecmb=new EvenCombobox();
+    private EvenConexion eveconn = new EvenConexion();
+    private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
     usuario ENTusu = new usuario();
     private habitacion_dato ENThd=new habitacion_dato();
@@ -566,6 +570,27 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
             suma_prod_hab_patrimonio();
         }
     }
+    private void boton_pasar_todo_manual(){
+        if(evemen.getBooMensaje_warning("ESTAS SEGURO DE PASAR TODAS LAS HABITACIONES A MANUAL", "PASAR A MANUAL", "MANUAL","CANCELAR")){
+            String sql="update habitacion_dato set es_manual=true;";
+            eveconn.SQL_execute_libre_sin_print(conn, sql);
+            DAOhd.actualizar_tabla_habitacion_dato(conn, tbltabla_pri);
+        }
+    }
+    private void boton_pasar_todo_auto(){
+        if(evemen.getBooMensaje_warning("ESTAS SEGURO DE PASAR TODAS LAS HABITACIONES A AUTOMATICO", "PASAR A AUTO", "AUTOMATICO","CANCELAR")){
+            String sql="update habitacion_dato set es_manual=false;";
+            eveconn.SQL_execute_libre_sin_print(conn, sql);
+            DAOhd.actualizar_tabla_habitacion_dato(conn, tbltabla_pri);
+        }
+    }
+    private void boton_reset_toda_puerta(){
+        if(evemen.getBooMensaje_warning("ESTAS SEGURO DE RESETEAR TODAS LAS PUERTAS ", "RESET PUERTAS", "RESET","CANCELAR")){
+            String sql="UPDATE habitacion_item_sensor_gpio SET alto_bajo=true;";
+            eveconn.SQL_execute_libre_sin_print(conn, sql);
+            DAOhd.actualizar_tabla_habitacion_dato(conn, tbltabla_pri);
+        }
+    }
     public FrmHab_crear() {
         initComponents();
         abrir_formulario();
@@ -705,6 +730,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         tbltabla_pri = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         txtbuscar = new javax.swing.JTextField();
+        btnpasar_todo_manual = new javax.swing.JButton();
+        btnpasar_todo_auto = new javax.swing.JButton();
+        btnreset_toda_puerta = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -2038,6 +2066,27 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
             }
         });
 
+        btnpasar_todo_manual.setText("PASAR TODO A MANUAL");
+        btnpasar_todo_manual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnpasar_todo_manualActionPerformed(evt);
+            }
+        });
+
+        btnpasar_todo_auto.setText("PASAR TODO A AUTO");
+        btnpasar_todo_auto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnpasar_todo_autoActionPerformed(evt);
+            }
+        });
+
+        btnreset_toda_puerta.setText("RESET TODAS LAS PUERTAS");
+        btnreset_toda_puerta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnreset_toda_puertaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
         panel_tablaLayout.setHorizontalGroup(
@@ -2047,16 +2096,25 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnpasar_todo_manual, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnpasar_todo_auto, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnreset_toda_puerta)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnpasar_todo_manual)
+                    .addComponent(btnpasar_todo_auto)
+                    .addComponent(btnreset_toda_puerta)))
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -2372,6 +2430,21 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         evejtf.soloNumero(evt);
     }//GEN-LAST:event_txtprod_precio_patrimonioKeyTyped
 
+    private void btnpasar_todo_manualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpasar_todo_manualActionPerformed
+        // TODO add your handling code here:
+        boton_pasar_todo_manual();
+    }//GEN-LAST:event_btnpasar_todo_manualActionPerformed
+
+    private void btnpasar_todo_autoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpasar_todo_autoActionPerformed
+        // TODO add your handling code here:
+        boton_pasar_todo_auto();
+    }//GEN-LAST:event_btnpasar_todo_autoActionPerformed
+
+    private void btnreset_toda_puertaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnreset_toda_puertaActionPerformed
+        // TODO add your handling code here:
+        boton_reset_toda_puerta();
+    }//GEN-LAST:event_btnreset_toda_puertaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnbuscar_frigobar;
@@ -2396,6 +2469,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnnuevo_habitacion_sensor_pino;
     private javax.swing.JButton btnnuevo_insumo;
     private javax.swing.JButton btnnuevo_patrimonio;
+    private javax.swing.JButton btnpasar_todo_auto;
+    private javax.swing.JButton btnpasar_todo_manual;
+    private javax.swing.JButton btnreset_toda_puerta;
     private javax.swing.JButton btntipo_estandar;
     private javax.swing.JButton btntipo_lujo;
     private javax.swing.JButton btntipo_penthause;

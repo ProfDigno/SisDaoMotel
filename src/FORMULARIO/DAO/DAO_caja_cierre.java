@@ -161,6 +161,36 @@ public class DAO_caja_cierre {
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 
+    public void imprimir_caja_cierre_jasper_resumen(Connection conn, int fk_idcaja_cierre) {
+        String sql = "select cd.idcaja_cierre_detalle as idc,\n"
+                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+                + "cd.descripcion as descripcion,\n"
+                + "((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ing_ocupado,\n"
+                + "cd.monto_ocupa_consumo as ing_consumo,\n"
+                + "((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ing_total,\n"
+                + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso,\n"
+                + "cd.monto_gasto as m_gasto,\n"
+                + "cd.monto_compra as m_compra,\n"
+                + "cd.monto_vale as m_vale,\n"
+                + "cd.monto_liquidacion as m_liquida,\n"
+                + "(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
+                + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo,\n"
+                + "to_char(cca.fecha_inicio,'yyyy-MM-dd HH24:MI') as fec_inicio, \n"
+                + "to_char(cca.fecha_fin,'yyyy-MM-dd HH24:MI') as fec_fin,\n"
+                + "cca.creado_por as creado_por,cci.fk_idcaja_cierre as fk_idcaja_cierre \n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci,caja_cierre cca\n"
+                + "where  cd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle\n"
+                + "and cci.fk_idcaja_cierre=cca.idcaja_cierre \n"
+                + "and cci.fk_idcaja_cierre="+ fk_idcaja_cierre
+                + " order by cd.idcaja_cierre_detalle desc;";
+        String titulonota = "CIERRE DE CAJA RESUMEN";
+        String direccion = "src/REPORTE/CAJA/repCajaCierreResumen.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
     public void imprimir_caja_cierre_jasper_todo(Connection conn) {
         String sql = "select cc.idcaja_cierre as idc, \n"
                 + "to_char(cc.fecha_creado,'yyyy-MM-dd HH24:MI') as fec_cierre,\n"
