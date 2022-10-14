@@ -75,12 +75,12 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="btnrpi_1" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnrpi_1" min="-2" pref="116" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnrpi_2" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnrpi_2" min="-2" pref="116" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnrpi_3" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="209" max="-2" attributes="0"/>
+                              <Component id="btnrpi_3" min="-2" pref="111" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="153" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>

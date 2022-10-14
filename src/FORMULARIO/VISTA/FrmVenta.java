@@ -1225,7 +1225,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 cargar_array_habitacion_puertas();
                 segundo_tiempo = 0;
             }
-            if (segundo_conn_rpi > 30) {
+            if (segundo_conn_rpi > 5) {
                 boton_raspberry_ultima_conexion();
                 segundo_conn_rpi = 0;
             }
@@ -1236,25 +1236,28 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_raspberry_ultima_conexion() {
         String titulo = "boton_raspberry_ultima_conexion";
         String sql = "select idhabitacion_mini_pc, \n"
-                + "case when (((extract(epoch from (current_timestamp-ult_conexion)))>(0)) \n"
+                + "case when (((extract(epoch from (current_timestamp-ult_conexion)))>(-2)) \n"
                 + "and ((extract(epoch from (current_timestamp-ult_conexion)))<(70)))  \n"
-                + "then true else false end as est_boton\n"
+                + "then true else false end as est_boton,"
+                + "TRIM(to_char((extract(epoch from (current_timestamp-ult_conexion))),'9G990D99')) as tiempo\n"
                 + " from habitacion_mini_pc order by idhabitacion_mini_pc asc;";
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             while (rs.next()) {
                 int idhabitacion_mini_pc = rs.getInt("idhabitacion_mini_pc");
                 boolean est_boton = rs.getBoolean("est_boton");
-                color_boton_rpi(idhabitacion_mini_pc, 2, est_boton, btnrpi_1);
-                color_boton_rpi(idhabitacion_mini_pc, 3, est_boton, btnrpi_2);
-                color_boton_rpi(idhabitacion_mini_pc, 4, est_boton, btnrpi_3);
+                String tiempo=rs.getString("tiempo");
+                color_boton_rpi(idhabitacion_mini_pc, 2, est_boton, btnrpi_1,tiempo);
+                color_boton_rpi(idhabitacion_mini_pc, 3, est_boton, btnrpi_2,tiempo);
+                color_boton_rpi(idhabitacion_mini_pc, 4, est_boton, btnrpi_3,tiempo);
+                
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
         }
     }
 
-    private void color_boton_rpi(int idhabitacion_mini_pc, int select, boolean est_boton, JButton btnrpi) {
+    private void color_boton_rpi(int idhabitacion_mini_pc, int select, boolean est_boton, JButton btnrpi,String tiempo) {
         if (idhabitacion_mini_pc == select) {
             if (est_boton) {
                 btnrpi.setBackground(Color.white);
@@ -1263,6 +1266,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 btnrpi.setBackground(Color.red);
                 btnrpi.setForeground(Color.white);
             }
+            btnrpi.setText("RPI-"+select+":"+tiempo);
         }
     }
 
@@ -2404,8 +2408,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boolean con_retorno = false;
         int largo = 30;
         int ancho = 30;
-        Object[] botones = {"INFORMACION", "MODELO", "REINICIAR", "CANCELAR"};
-        int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UN COMANDO PARA LA RASPBERRY:\n" + ENThmp.getC4placa_nombre(),
+        Object[] botones = {"INFORMACION", "MODELO", "REINICIAR","TEMP C", "CANCELAR"};
+        int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UN COMANDO PARA LA RASPBERRY:\n" + ENThmp.getC4placa_nombre()+
+                "\nIP:"+ENThmp.getC5placa_ip()+
+                "\nUBICACION:"+ENThmp.getC6placa_ubicacion(),
                 "ENVIAR COMANDO",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, botones, "INFORMACION");
@@ -2424,6 +2430,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         if (eleccion_comando == 2) {
             comando_enviar = "sudo reboot -h now";
             con_retorno = false;
+            enviar_ssh = true;
+            largo = 15;
+        }
+        if (eleccion_comando == 3) {
+            comando_enviar = "/usr/bin/vcgencmd measure_temp";
+            con_retorno = true;
             enviar_ssh = true;
             largo = 15;
         }
@@ -2651,12 +2663,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnrpi_1)
+                        .addComponent(btnrpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnrpi_2)
+                        .addComponent(btnrpi_2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnrpi_3)
-                        .addGap(209, 209, 209))))
+                        .addComponent(btnrpi_3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(153, 153, 153))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

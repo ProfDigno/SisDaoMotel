@@ -26,7 +26,7 @@ public class FrmMenu extends javax.swing.JFrame {
     json_array_conexion jscon=new json_array_conexion();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
     private ComputerInfo pcinfo=new ComputerInfo();
-    private String version="V.: 1.0";
+    private String version="V.: 1.1";
 //    FrmGasto frmgasto=new FrmGasto();
     private void abrir_formulario() {
         lblversion.setText(version);
