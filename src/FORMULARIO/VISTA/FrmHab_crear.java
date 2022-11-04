@@ -43,6 +43,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private habitacion_dato ENThd=new habitacion_dato();
     private DAO_habitacion_dato DAOhd=new DAO_habitacion_dato();
     private BO_habitacion_dato BOhd=new BO_habitacion_dato();
+    private DAO_habitacion_recepcion_temp DAOhrt=new DAO_habitacion_recepcion_temp();
     private habitacion_recepcion_temp ENThrt=new habitacion_recepcion_temp();
     private habitacion_costo ENThc=new habitacion_costo();
     private DAO_habitacion_costo DAOhc=new DAO_habitacion_costo();
@@ -158,6 +159,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         this.setTitle(nombreTabla_pri+" / fecha creado: "+fecha_creado+" / Creado Por: "+creado_por);
     }
     private boolean validar_guardar_hab_dato() {
+        if (evejtf.getBoo_JTextField_vacio(txtorden, "DEBE CARGAR UN NUMERO DE ORDEN")) {
+            return false;
+        }
         if (evejtf.getBoo_JTextField_vacio(txtubicacion, "DEBE CARGAR UN NOMBRE")) {
             return false;
         }
@@ -214,6 +218,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENThrt.setC41monto_adelanto(0);
         ENThrt.setC42idhabitacion_dato(fk_idhabitacion_dato);
         ENThrt.setC43es_manual(jCes_manual.isSelected());
+        int orden=Integer.parseInt(txtorden.getText());
+        ENThrt.setC44orden(orden);
+        ENThrt.setC45activo(jCactivo.isSelected());
     }
     private void boton_guardar_hab_dato() {
         if (validar_guardar_hab_dato()) {
@@ -235,8 +242,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     }
 
     private void seleccionar_tabla_hab_dato() {
-        int id = eveJtab.getInt_select_id(tbltabla_pri);
-        DAOhd.cargar_habitacion_dato(conn, ENThd, id);
+        int idhabitacion_dato = eveJtab.getInt_select_id(tbltabla_pri);
+        DAOhd.cargar_habitacion_dato(conn, ENThd, idhabitacion_dato);
         fk_idhabitacion_dato=ENThd.getC1idhabitacion_dato();
         txtid.setText(String.valueOf(ENThd.getC1idhabitacion_dato()));
         jSnro_habitacion.setValue(ENThd.getC4nro_habitacion());
@@ -248,6 +255,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         jCconfrigobar.setSelected(ENThd.getC10con_frigobar());
         jCes_manual.setSelected(ENThd.getC12es_manual());
         fk_idhabitacion_costo=ENThd.getC11fk_idhabitacion_costo();
+        DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
+        String Sorden=String.valueOf(ENThrt.getC44orden());
+        txtorden.setText(Sorden);
         cargar_costos(fk_idhabitacion_costo);
         titulo_formulario(ENThd.getC2fecha_creado(), ENThd.getC3creado_por());
         color_tipo_boton(0,ENThd.getC5tipo_habitacion());
@@ -263,6 +273,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         btneditar.setEnabled(true);
     }
     private void reestableser_hab_dato(){
+        fk_idhabitacion_dato=(eveconn.getInt_ultimoID_mas_uno(conn, ENThd.getTb_habitacion_dato(), ENThd.getId_idhabitacion_dato()));
         this.setTitle(nombreTabla_pri);
         jTab_principal.setTitleAt(0, nombreTabla_pri);
         jTab_principal.setTitleAt(1, nombreTabla_sec);
@@ -271,6 +282,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         txtid.setText(null);
         txtubicacion.setText(null);
         txtadescripcion.setText(null);
+        txtorden.setText("1");
         jCactivo.setSelected(true);
         jCconfrigobar.setSelected(false);
         btnguardar.setEnabled(true);
@@ -629,6 +641,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         txtadescripcion = new javax.swing.JTextArea();
         jCconfrigobar = new javax.swing.JCheckBox();
         jCes_manual = new javax.swing.JCheckBox();
+        txtorden = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
         jTab_hijos = new javax.swing.JTabbedPane();
         jPanel6 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -910,6 +924,16 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
 
         jCes_manual.setText("ES MANUAL");
 
+        txtorden.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtorden.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtorden.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtordenKeyTyped(evt);
+            }
+        });
+
+        jLabel14.setText("ORDEN:");
+
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
         panel_insertarLayout.setHorizontalGroup(
@@ -925,7 +949,11 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                                 .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSnro_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jSnro_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtorden, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel14)))
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(jLabel2)
@@ -955,7 +983,11 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                             .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel4))
-                    .addComponent(jSnro_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jSnro_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtorden, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -975,7 +1007,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                         .addComponent(jCconfrigobar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jCes_manual)))
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -2445,6 +2477,11 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         boton_reset_toda_puerta();
     }//GEN-LAST:event_btnreset_toda_puertaActionPerformed
 
+    private void txtordenKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtordenKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_txtordenKeyTyped
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnbuscar_frigobar;
@@ -2502,6 +2539,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -2557,6 +2595,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtminumo_minimo;
     private javax.swing.JTextField txtminuto_adicional;
     private javax.swing.JTextField txtminuto_cancelar;
+    private javax.swing.JTextField txtorden;
     private javax.swing.JTextField txtpino;
     public static javax.swing.JTextField txtprod_cant_frigobar;
     public static javax.swing.JTextField txtprod_cant_insumo;

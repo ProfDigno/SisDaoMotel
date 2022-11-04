@@ -47,10 +47,6 @@ public class PosImprimir_CierreCajaDetalle {
     private static String[] iv_descrip = new String[cant_fila];
     private static String[] iv_subsotal = new String[cant_fila];
     private String nombre_ticket = "ticket Caja Detalle";
-//    private static int tk_iv_sum_fila;
-    private static String tk_nombre_empresa = "PANKY";
-    private static String tk_telefono_empresa = "0992-555666";
-    private static String tk_direccion_empresa = "km8 cde";
     private static String cd_fk_idcaja_cierre = "0";
     private static String cd_fec_inicio = "0";
     private static String cd_fec_fin = "0";
@@ -187,9 +183,9 @@ public class PosImprimir_CierreCajaDetalle {
         String saltolinea = "\n";
         String tabular = "\t";
         String separador = "==========================================";
-        mensaje_impresora = mensaje_impresora + "===============" + tk_nombre_empresa + "================" + saltolinea;
-        mensaje_impresora = mensaje_impresora + tk_telefono_empresa + saltolinea;
-        mensaje_impresora = mensaje_impresora + tk_direccion_empresa + saltolinea;
+        mensaje_impresora = mensaje_impresora + "===============" + jsprint.getEmp_nombre() + "================" + saltolinea;
+        mensaje_impresora = mensaje_impresora + jsprint.getEmp_telefono() + saltolinea;
+        mensaje_impresora = mensaje_impresora + jsprint.getEmp_direccion() + saltolinea;
         mensaje_impresora = mensaje_impresora + "NRO CIERRE:" + cd_fk_idcaja_cierre + saltolinea;
         mensaje_impresora = mensaje_impresora + "FEC-INI: " + cd_fec_inicio + saltolinea;
         mensaje_impresora = mensaje_impresora + "FEC-FIN: " + cd_fec_fin + saltolinea;
@@ -246,9 +242,9 @@ public class PosImprimir_CierreCajaDetalle {
         int tempfila = 0;
         int totalfila = jsprint.getTt_fila_cc() + (tk_iv_fila_ocupa * 3) + (tk_iv_fila_consu * 2);
         printer.setOutSize(totalfila, totalColumna);
-        printer.printTextWrap(1 + tempfila, 1, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_cabezera() + tk_nombre_empresa + jsprint.getLinea_cabezera());
-        printer.printTextWrap(2 + tempfila, 2, jsprint.getSep_inicio(), totalColumna, tk_telefono_empresa);
-        printer.printTextWrap(3 + tempfila, 3, jsprint.getSep_inicio(), totalColumna, tk_direccion_empresa);
+        printer.printTextWrap(1 + tempfila, 1, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_cabezera() + jsprint.getEmp_nombre() + jsprint.getLinea_cabezera());
+        printer.printTextWrap(2 + tempfila, 2, jsprint.getSep_inicio(), totalColumna, jsprint.getEmp_telefono());
+        printer.printTextWrap(3 + tempfila, 3, jsprint.getSep_inicio(), totalColumna, jsprint.getEmp_direccion());
         printer.printTextWrap(4 + tempfila, 4, jsprint.getSep_inicio(), totalColumna, "NRO CAJA:" + cd_fk_idcaja_cierre);
         printer.printTextWrap(5 + tempfila, 5, jsprint.getSep_inicio(), totalColumna, "FEC INI: " + cd_fec_inicio);
         printer.printTextWrap(6 + tempfila, 6, jsprint.getSep_inicio(), totalColumna, "FEC FIN: " + cd_fec_fin);

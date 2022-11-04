@@ -28,6 +28,7 @@ public class EvenEstado {
     private static String est_PENDIENTE;
     private static String caja_GASTO;
     private static String caja_COMPRA;
+    private static String caja_APERTURA;
     private static String cond_Contado;
     private static String cond_Credito;
     private static String forPago_Efectivo;
@@ -78,10 +79,19 @@ public class EvenEstado {
         setTipo_hab_penthouse("PENTHOUSE");
         setCaja_GASTO("GASTO");
         setCaja_COMPRA("COMPRA");
+        setCaja_APERTURA("APERTURA");
         setPer_CLIENTE("CLIENTE");
         setPer_PERSONAL("PERSONAL");
         setPer_PROVEEDOR("PROVEEDOR");
         setPer_USUARIO("USUARIO");
+    }
+
+    public static String getCaja_APERTURA() {
+        return caja_APERTURA;
+    }
+
+    public static void setCaja_APERTURA(String caja_APERTURA) {
+        EvenEstado.caja_APERTURA = caja_APERTURA;
     }
 
     public static String getEst_PENDIENTE() {

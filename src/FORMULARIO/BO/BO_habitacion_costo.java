@@ -3,6 +3,7 @@ package FORMULARIO.BO;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_habitacion_costo;
+import FORMULARIO.DAO.DAO_habitacion_recepcion_temp;
 import FORMULARIO.ENTIDAD.habitacion_costo;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,7 +11,8 @@ import javax.swing.JTable;
 
 public class BO_habitacion_costo {
 
-    private DAO_habitacion_costo haco_dao = new DAO_habitacion_costo();
+    private DAO_habitacion_costo DAOhc = new DAO_habitacion_costo();
+    private DAO_habitacion_recepcion_temp DAOhrt=new DAO_habitacion_recepcion_temp();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
     public void insertar_habitacion_costo(habitacion_costo haco, JTable tbltabla) {
@@ -20,8 +22,8 @@ public class BO_habitacion_costo {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            haco_dao.insertar_habitacion_costo(conn, haco);
-            haco_dao.actualizar_tabla_habitacion_costo(conn, tbltabla);
+            DAOhc.insertar_habitacion_costo(conn, haco);
+            DAOhc.actualizar_tabla_habitacion_costo(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, haco.toString(), titulo);
@@ -41,8 +43,9 @@ public class BO_habitacion_costo {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                haco_dao.update_habitacion_costo(conn, haco);
-                haco_dao.actualizar_tabla_habitacion_costo(conn, tbltabla);
+                DAOhc.update_habitacion_costo(conn, haco);
+                DAOhrt.update_habitacion_recepcion_temp_costos(conn);
+                DAOhc.actualizar_tabla_habitacion_costo(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, haco.toString(), titulo);

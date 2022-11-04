@@ -210,6 +210,9 @@ public class JDiaBuscar extends javax.swing.JDialog {
             if (vbus.getTipo_tabla() == 6) {
                 FrmHab_crear.txtprod_cant_patrimonio.grabFocus();
             }
+            if (vbus.getTipo_tabla() == 7) {
+                FrmGasto.txtmonto_gasto.grabFocus();
+            }
         }
     }
 

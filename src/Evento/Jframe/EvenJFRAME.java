@@ -7,7 +7,7 @@ package Evento.Jframe;
 
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.VISTA.FrmGasto;
-import FORMULARIO.VISTA.FrmMenu;
+import FORMULARIO.VISTA.FrmMenuMotel;
 //import FORMULARIO.VISTA.FrmMenuRestaurante;
 import java.awt.Dimension;
 import javax.swing.JDesktopPane;
@@ -23,7 +23,7 @@ public class EvenJFRAME {
     
 
     public void abrir_TablaJinternal(JInternalFrame formu) {
-        FrmMenu.escritorio.add(formu);
+        FrmMenuMotel.escritorio.add(formu);
         formu.setVisible(true);
         System.out.println("Abrir Jinternal: "+formu.getName());
     }
@@ -40,7 +40,7 @@ public class EvenJFRAME {
         System.out.println("cerrar_TablaJinternal: "+formu.getName());
     }
     public  void centrar_formulario(javax.swing.JInternalFrame frame) {
-        Dimension desktopSize = FrmMenu.escritorio.getSize();
+        Dimension desktopSize = FrmMenuMotel.escritorio.getSize();
         Dimension jInternalFrameSize = frame.getSize();
         frame.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
@@ -54,14 +54,14 @@ public class EvenJFRAME {
         }
     }
     public  void centrar_formulario_JDialog(javax.swing.JDialog frame) {
-        Dimension desktopSize = FrmMenu.escritorio.getSize();
+        Dimension desktopSize = FrmMenuMotel.escritorio.getSize();
         Dimension jInternalFrameSize = frame.getSize();
         frame.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
         System.out.println("CENTRAR JDialog: "+frame.getTitle());
     }
     public  void centrar_formulario_internalframa(javax.swing.JInternalFrame frame) {
-        Dimension desktopSize = FrmMenu.escritorio.getSize();
+        Dimension desktopSize = FrmMenuMotel.escritorio.getSize();
         Dimension jInternalFrameSize = frame.getSize();
         frame.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);

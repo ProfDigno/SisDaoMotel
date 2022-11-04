@@ -5,7 +5,10 @@
  */
 package Evento.Grafico;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.text.AttributedString;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
@@ -17,10 +20,12 @@ import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ThermometerPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.general.PieDataset;
 
 /**
@@ -72,6 +77,35 @@ public class FunFreeChard {
         ChartPanel CP = new ChartPanel(chart);
         panel_grafico.add(CP, BorderLayout.CENTER);
         panel_grafico.validate();
+    }
+    public void crear_grafico_temperatura(JPanel panel_grafico,double temp,String titulo){
+        panel_grafico.removeAll();
+        final DefaultValueDataset dataset = new DefaultValueDataset(temp);
+        // create the chart...
+        final ThermometerPlot plot = new ThermometerPlot(dataset);
+        final JFreeChart chart = new JFreeChart(titulo,  // chart title
+                                          JFreeChart.DEFAULT_TITLE_FONT,
+                                          plot,                 // plot
+                                          false);               // include legend
+
+
+        // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
+    //    plot.setInsets(new Insets(5, 5, 5, 5));
+        //plot.setRangeInfo(ThermometerPlot.NORMAL, 0.0, 55.0, 0.0, 100.0);
+        //plot.setRangeInfo(ThermometerPlot.WARNING, 55.0, 75.0, 0.0, 100.0);
+        //plot.setRangeInfo(ThermometerPlot.CRITICAL, 75.0, 100.0, 0.0, 100.0);
+
+        plot.setThermometerStroke(new BasicStroke(2.0f));
+        plot.setThermometerPaint(Color.lightGray);
+
+//        final PiePlot plot = (PiePlot) chart.getPlot();
+//        plot.setLabelGenerator(new CustomLabelGenerator());
+        panel_grafico.setLayout(new java.awt.BorderLayout());
+        ChartPanel CP = new ChartPanel(chart);
+//        CP.setSize(180, 400);
+        panel_grafico.add(CP, BorderLayout.CENTER);
+        Dimension prefSize = new Dimension(200, 400);
+        panel_grafico.setPreferredSize(prefSize);
     }
      /**
      * A custom label generator (returns null for one item as a test).

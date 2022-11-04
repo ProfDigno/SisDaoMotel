@@ -94,6 +94,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private void suma_total_caja_detalle_abierto(int idusuario) {
         String titulo = "suma_total_caja_detalle_abierto";
         String sql = "select \n"
+                + "sum(cd.monto_apertura_caja) as apertura_caja,\n"
                 + "sum(cd.monto_solo_adelanto) as adelanto,\n"
                 + "sum(cd.monto_ocupa_minimo) as minimo,\n"
                 + "sum(cd.monto_ocupa_adicional) as adicional,\n"
@@ -126,6 +127,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 double compra = rs.getDouble("compra");
                 suma_egreso = rs.getDouble("egreso");
                 suma_saldo = rs.getDouble("saldo");
+                double apertura_caja = rs.getDouble("apertura_caja");
                 jFtotal_ocupa_adelanto.setValue(adelanto);
                 jFtotal_ocupa_minimo.setValue(minimo);
                 jFtotal_ocupa_adicional.setValue(adicional);
@@ -135,6 +137,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 jFtotal_resumen_ingreso.setValue(suma_ingreso);
                 jFtotal_resumen_egreso.setValue(suma_egreso);
                 jFtotal_resumen_saldo.setValue(suma_saldo);
+                jFmonto_apertura_caja.setValue(apertura_caja);
                 fec_inicio = rs.getString("fec_inicio");
                 txtfecha_inicio.setText(fec_inicio);
                 fec_final = rs.getString("fec_final");
@@ -314,6 +317,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_resumen_ingreso = new javax.swing.JFormattedTextField();
         jFtotal_resumen_egreso = new javax.swing.JFormattedTextField();
         jFtotal_resumen_saldo = new javax.swing.JFormattedTextField();
+        jFmonto_apertura_caja = new javax.swing.JFormattedTextField();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -642,6 +646,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addComponent(jFtotal_resumen_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        jFmonto_apertura_caja.setBorder(javax.swing.BorderFactory.createTitledBorder("APERTURA CAJA"));
+        jFmonto_apertura_caja.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFmonto_apertura_caja.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFmonto_apertura_caja.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -656,6 +665,10 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btncarrar_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jFmonto_apertura_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -668,7 +681,9 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                         .addComponent(txtfecha_final, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btncarrar_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jFmonto_apertura_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("DETALLE CAJA ABIERTO", jPanel1);
@@ -1091,6 +1106,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cmbusuario;
     private javax.swing.JCheckBox jCsolo_terminado_comp;
     private javax.swing.JCheckBox jCsolo_terminado_gasto;
+    private javax.swing.JFormattedTextField jFmonto_apertura_caja;
     private javax.swing.JFormattedTextField jFtotal_cc_adicional;
     private javax.swing.JFormattedTextField jFtotal_cc_compra;
     private javax.swing.JFormattedTextField jFtotal_cc_consumo;

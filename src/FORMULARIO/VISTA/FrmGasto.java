@@ -19,6 +19,7 @@ import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
 import FORMULARIO.VISTA.BUSCAR.ClaVarBuscar;
 import FORMULARIO.VISTA.BUSCAR.JDiaBuscar;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 
 /**
@@ -186,10 +187,10 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtadescripcion.setText(ENTgt.getC6descripcion());
         titulo_formulario(ENTgt.getC2fecha_creado(), ENTgt.getC3creado_por());
         btnguardar.setEnabled(false);
-        if((ENTgt.getC7estado().equals(eveest.getEst_Terminar())) || (ENTgt.getC7estado().equals(eveest.getEst_Anulado())) ){
+        if ((ENTgt.getC7estado().equals(eveest.getEst_Terminar())) || (ENTgt.getC7estado().equals(eveest.getEst_Anulado()))) {
             btnanular.setEnabled(false);
         }
-        if((ENTgt.getC7estado().equals(eveest.getEst_Emitido())) ){
+        if ((ENTgt.getC7estado().equals(eveest.getEst_Emitido()))) {
             btnanular.setEnabled(true);
         }
     }
@@ -222,6 +223,14 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         DAOgt.actualizar_tabla_gasto(conn, tbltabla_pri, filtro);
         double suma_gasto = eveJtab.getDouble_sumar_tabla(tbltabla_pri, 7);
         jFtotal_cc_gasto.setValue(suma_gasto);
+    }
+
+    private void buscar_tipo_gasto() {
+        vbus.setNombre_tabla("GASTO TIPO");
+        vbus.setTipo_tabla(7);
+        vbus.setPre_busqueda(txtgasto_tipo.getText());
+        JDiaBuscar frm = new JDiaBuscar(null, true);
+        frm.setVisible(true);
     }
 
     private void boton_nuevo() {
@@ -363,6 +372,9 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtmonto_gasto.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtmonto_gasto.setBorder(javax.swing.BorderFactory.createTitledBorder("MONTO GASTO"));
         txtmonto_gasto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtmonto_gastoKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtmonto_gastoKeyReleased(evt);
             }
@@ -596,6 +608,9 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private void txtgasto_tipoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtgasto_tipoKeyPressed
         // TODO add your handling code here:
 //        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_venta);
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            buscar_tipo_gasto();
+        }
     }//GEN-LAST:event_txtgasto_tipoKeyPressed
 
     private void txtbuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscarKeyReleased
@@ -622,10 +637,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private void btnbuscar_gtipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_gtipoActionPerformed
         // TODO add your handling code here:
-        vbus.setNombre_tabla("GATO TIPO");
-        vbus.setTipo_tabla(7);
-        JDiaBuscar frm = new JDiaBuscar(null, true);
-        frm.setVisible(true);
+        buscar_tipo_gasto();
     }//GEN-LAST:event_btnbuscar_gtipoActionPerformed
 
     private void btnnuevo_gtipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnuevo_gtipoActionPerformed
@@ -642,6 +654,13 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         actualizar_tabla_caja_cierre();
     }//GEN-LAST:event_cmbusuarioActionPerformed
+
+    private void txtmonto_gastoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmonto_gastoKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtadescripcion.grabFocus();
+        }
+    }//GEN-LAST:event_txtmonto_gastoKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -669,7 +688,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtbuscar;
     public static javax.swing.JTextField txtgasto_tipo;
     private javax.swing.JTextField txtid;
-    private javax.swing.JTextField txtmonto_gasto;
+    public static javax.swing.JTextField txtmonto_gasto;
     private javax.swing.JTextField txtmonto_letra;
     // End of variables declaration//GEN-END:variables
 }

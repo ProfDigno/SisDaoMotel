@@ -45,6 +45,8 @@ private String C40tipo_habitacion;
 private double C41monto_adelanto;
 private int C42idhabitacion_dato;
 private boolean C43es_manual;
+private int C44orden;
+private boolean C45activo;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -53,12 +55,28 @@ private static String nom_idtabla;
 		setId_idhabitacion_recepcion_temp("idhabitacion_recepcion_temp");
 	}
 
+    public int getC44orden() {
+        return C44orden;
+    }
+
+    public void setC44orden(int C44orden) {
+        this.C44orden = C44orden;
+    }
+
     public boolean getC43es_manual() {
         return C43es_manual;
     }
 
     public void setC43es_manual(boolean C43es_manual) {
         this.C43es_manual = C43es_manual;
+    }
+
+    public boolean getC45activo() {
+        return C45activo;
+    }
+
+    public void setC45activo(boolean C45activo) {
+        this.C45activo = C45activo;
     }
         
 	public static String getTb_habitacion_recepcion_temp(){

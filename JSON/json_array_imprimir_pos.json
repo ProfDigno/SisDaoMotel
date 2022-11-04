@@ -1,6 +1,9 @@
 {
 	"DIGNO-LENOVO-A12":[
 		{
+			"emp_nombre":"PANKY-I",
+			"emp_telefono":"0993291322",
+			"emp_direccion":"San Miguel",
 			"linea_separador":"#=============================#",
 			"linea_cabezera":"=========",
 			"linea_ven_detalle":"------Detalle Venta-----------",
@@ -35,6 +38,9 @@
 	],
 	"CAJA3":[
 		{
+			"emp_nombre":"PANKY-I",
+			"emp_telefono":"0993291322",
+			"emp_direccion":"San Miguel",
 			"linea_separador":"#=============================#",
 			"linea_cabezera":"=========",
 			"linea_ven_detalle":"------Detalle Venta-----------",

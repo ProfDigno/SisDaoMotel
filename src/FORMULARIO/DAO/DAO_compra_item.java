@@ -170,8 +170,10 @@ public class DAO_compra_item {
 
     public void actualizar_tabla_compra_item_creado(Connection conn, JTable tbltabla, int fk_idcompra) {
         String sql = "select ci.idcompra_item as idci, ci.descripcion,\n"
-                + "ci.precio_compra as pcompra,ci.cantidad as cant,\n"
-                + "(ci.precio_compra*ci.cantidad) as subtotal,ci.tipo_item  \n"
+                + "TRIM(to_char(ci.precio_compra,'999G999G999')) as pcompra,"
+                + "ci.cantidad as cant,\n"
+                + "TRIM(to_char((ci.precio_compra*ci.cantidad),'999G999G999')) as subtotal,"
+                + "ci.tipo_item  \n"
                 + "from compra_item ci where ci.fk_idcompra=" + fk_idcompra
                 + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -181,5 +183,7 @@ public class DAO_compra_item {
     public void ancho_tabla_compra_item_creado(JTable tbltabla) {
         int Ancho[] = {5, 45, 10, 5, 10, 15};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 2);
+        evejt.alinear_derecha_columna(tbltabla, 4);
     }
 }

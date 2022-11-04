@@ -38,6 +38,7 @@ public class JDiaLogin extends javax.swing.JDialog {
     Connection conn = ConnPostgres.getConnPosgres();
     private EvenConexion eveconn = new EvenConexion();
     private VariablesBD var = new VariablesBD();
+    private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     json_array_conexion jscon = new json_array_conexion();
 
     private void abrir_formulario() {
@@ -58,18 +59,23 @@ public class JDiaLogin extends javax.swing.JDialog {
     private void buscar_usuario() {
         if (dao_usu.getBoolean_buscar_usuario_existente(conn, ENTusu)) {
             JOptionPane.showMessageDialog(this, "BIENVENIDO\n" + ENTusu.getGlobal_nombre());
-            FrmMenu.lblusuario.setText(ENTusu.getGlobal_nombre());
+            FrmMenuMotel.lblusuario.setText(ENTusu.getGlobal_nombre());
             if (!ENTusu.getC7activo()) {
                 JOptionPane.showMessageDialog(this, "ESTE USUARIO NO ESTA ACTIVO", "USUARIO", JOptionPane.WARNING_MESSAGE);
                 txtusuario.setText(null);
                 jPassword.setText(null);
                 txtusuario.grabFocus();
             } else {
+                if(DAOccd.getBoo_es_caja_cerrado_por_usu(conn, ENTusu.getGlobal_idusuario())){
+                    JDiaCajaApertura frm=new JDiaCajaApertura(null,true);
+                    frm.setVisible(true);
+                }
                 habilitar_evento_menu();
                 this.dispose();
                 if (jscon.getCrear_backup().equals("SI")) {
                     evetbl.abrir_TablaJinternal(new FrmCrearBackupJson());
                 }
+                
             }
         } else {
             txtusuario.setText(null);
@@ -88,13 +94,13 @@ public class JDiaLogin extends javax.swing.JDialog {
     }
 
     private void habilitar_evento_menu_bloquear() {
-        FrmMenu.barra_menu_principal.setVisible(false);
-        FrmMenu.panel_acceso_rapido.setVisible(false);
+        FrmMenuMotel.barra_menu_principal.setVisible(false);
+        FrmMenuMotel.panel_acceso_rapido.setVisible(false);
     }
 
     private void habilitar_evento_menu() {
-        FrmMenu.barra_menu_principal.setVisible(true);
-        FrmMenu.panel_acceso_rapido.setVisible(true);
+        FrmMenuMotel.barra_menu_principal.setVisible(true);
+        FrmMenuMotel.panel_acceso_rapido.setVisible(true);
 //        FrmMenuDespacho.btnliquidacion_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
     }
 

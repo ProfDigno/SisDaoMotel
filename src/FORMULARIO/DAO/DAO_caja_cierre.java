@@ -175,6 +175,7 @@ public class DAO_caja_cierre {
                 + "cd.monto_compra as m_compra,\n"
                 + "cd.monto_vale as m_vale,\n"
                 + "cd.monto_liquidacion as m_liquida,\n"
+                + "cd.monto_apertura_caja as apertura_caja,\n"
                 + "(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
                 + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo,\n"

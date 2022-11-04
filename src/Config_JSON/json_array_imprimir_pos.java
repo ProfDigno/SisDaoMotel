@@ -63,6 +63,9 @@ public class json_array_imprimir_pos {
     private static boolean print_comanda;
     private static boolean print_insumo;
     private static boolean error_carga_json;
+    private static String emp_nombre;
+    private static String emp_telefono;
+    private static String emp_direccion;
     public void cargar_jsom_imprimir_pos() {
 //         MacAddress_maquina=pcinf.getMacAddress();
         nombre_computador=pcinf.getNombrePC();
@@ -106,6 +109,9 @@ public class json_array_imprimir_pos {
             String cant_top_venta = (String) jsonObject.get("cant_top_venta");
             String print_comanda = (String) jsonObject.get("print_comanda");
             String print_insumo = (String) jsonObject.get("print_insumo");
+            String emp_nombre = (String) jsonObject.get("emp_nombre");
+            String emp_telefono = (String) jsonObject.get("emp_telefono");
+            String emp_direccion = (String) jsonObject.get("emp_direccion");
             setLinea_separador(linea_separador);
             setLinea_ven_detalle(linea_ven_detalle);
             setLinea_ven_categoria(linea_ven_categoria);
@@ -134,6 +140,9 @@ public class json_array_imprimir_pos {
             setLinea_ven_top_1(linea_ven_top_1);
             setLinea_ven_top_2(linea_ven_top_2);
             setCant_top_venta(Integer.parseInt(cant_top_venta));
+            setEmp_nombre(emp_nombre);
+            setEmp_telefono(emp_telefono);
+            setEmp_direccion(emp_direccion);
             if (print_comanda.equals("true")) {
                 setPrint_comanda(true);
             } else {
@@ -157,6 +166,31 @@ public class json_array_imprimir_pos {
 
         }
     }
+
+    public static String getEmp_nombre() {
+        return emp_nombre;
+    }
+
+    public static void setEmp_nombre(String emp_nombre) {
+        json_array_imprimir_pos.emp_nombre = emp_nombre;
+    }
+
+    public static String getEmp_telefono() {
+        return emp_telefono;
+    }
+
+    public static void setEmp_telefono(String emp_telefono) {
+        json_array_imprimir_pos.emp_telefono = emp_telefono;
+    }
+
+    public static String getEmp_direccion() {
+        return emp_direccion;
+    }
+
+    public static void setEmp_direccion(String emp_direccion) {
+        json_array_imprimir_pos.emp_direccion = emp_direccion;
+    }
+    
     public void abrir_este_json_array_imprimir_pos(){
         jsoncf.abrirArchivo(ruta_json);
     }

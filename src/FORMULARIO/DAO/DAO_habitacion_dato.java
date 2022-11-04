@@ -34,9 +34,10 @@ public class DAO_habitacion_dato {
             + "TRIM(to_char(hc.monto_por_dormir_minimo,'999G999G999')) as dor_mini,"
             + "TRIM(to_char(hc.monto_por_dormir_adicional,'999G999G999')) as dor_add,\n"
             + "hc.minuto_minimo as min_mini,hc.minuto_adicional as min_add,hc.minuto_cancelar as min_cancel,\n"
-            + "hd.activo,hd.es_manual as manual \n"
-            + "from habitacion_dato hd,habitacion_costo hc\n"
-            + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo\n"
+            + "hd.activo,hd.es_manual as manual,hrt.orden as ord \n"
+            + "from habitacion_dato hd,habitacion_costo hc,habitacion_recepcion_temp hrt \n"
+            + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo \n"
+            + "and hd.idhabitacion_dato=hrt.idhabitacion_dato \n"
             + "order by hd.idhabitacion_dato asc;";
     private String sql_cargar = "SELECT idhabitacion_dato,fecha_creado,creado_por,"
             + "nro_habitacion,tipo_habitacion,estado_actual,descripcion,ubicacion,"
@@ -126,7 +127,7 @@ public class DAO_habitacion_dato {
     }
 
     public void ancho_tabla_habitacion_dato(JTable tbltabla) {
-        int Ancho[] = {4, 4,8,8, 8,8, 8,8, 6,6,6,4,4};
+        int Ancho[] = {4, 3,8,8, 8,8, 8,8, 6,6,6,3,3,3};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.alinear_derecha_columna(tbltabla, 5);

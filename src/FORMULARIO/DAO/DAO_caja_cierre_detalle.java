@@ -82,7 +82,7 @@ public class DAO_caja_cierre_detalle {
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + cacide.toString(), titulo);
-            evemen.guardado_correcto(mensaje_insert, false);
+//            evemen.guardado_correcto(mensaje_insert, false);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_insert + "\n" + cacide.toString(), titulo);
         }
@@ -249,5 +249,26 @@ public class DAO_caja_cierre_detalle {
             evemen.mensaje_error(e, sql, titulo);
         }
         return idcaja_cierre_detalle_venta;
+    }
+    public boolean getBoo_es_caja_cerrado_por_usu(Connection conn, int fk_idusuario){
+        String titulo = "getBoo_es_caja_cerrado_por_usu";
+        String sql="select count(*) as cant "
+                + "from caja_cierre_detalle "
+                + "where es_cerrado=false and fk_idusuario="+fk_idusuario;
+        boolean es_cerrado=false;
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                int cant = rs.getInt("cant");
+                if(cant==0){
+                    es_cerrado=true;
+                }else{
+                    es_cerrado=false;
+                }
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+        return es_cerrado;
     }
 }

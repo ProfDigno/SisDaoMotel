@@ -1,23 +1,25 @@
                                         
- =========PANKY=========                
- 0992-555666                            
- km8 cde                                
- COD. VENTA:382                         
- FEC INICIO:2022-09-12 13:27            
- FEC FIN:2022-09-12 13:44               
- HABITACION:19                          
- TIEMPO OCUPA:00:17:33                  
+ =========PANKY-I=========              
+ 0993291322                             
+ San Miguel                             
+ COD. VENTA:195                         
+ FEC INICIO:2022-10-16 19:39            
+ FEC FIN:2022-10-18 23:52               
+ HABITACION:13                          
+ TIEMPO OCUPA:04:13:09                  
  USUARIO:PROGRAMADOR ADMIN              
  #=============================#        
  CANT-DESCRIPCION-PRECIO-TOTAL          
+ LUCKY 20                               
+    1 X     12,000 =     12,000         
  #=============================#        
  TIPO : POR HORA                        
- MONTO MINIMO:           70,000         
- MONTO ADICIONAL:        0              
- MONTO CONSUMO:          0              
+ MONTO MINIMO:           25,000         
+ MONTO ADICIONAL:        30,000         
+ MONTO CONSUMO:          12,000         
  MONTO DESCUENTO:        0              
  MONTO ADELANTO:         0              
- TOTAL PAGAR:            70,000         
+ TOTAL PAGAR:            67,000         
                                         
                                         
                                         

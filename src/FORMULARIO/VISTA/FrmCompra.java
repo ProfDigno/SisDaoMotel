@@ -38,6 +38,7 @@ import FORMULARIO.ENTIDAD.usuario;
 //import FORMULARIO.ENTIDAD.venta;
 //import FORMULARIO.ENTIDAD.venta_item;
 import FORMULARIO.VISTA.BUSCAR.ClaVarBuscar;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -101,7 +102,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private int fk_idcompra;
     private int fk_idusuario;
     private int fk_idpersona;
-    private String precio_venta_mostrar;
+    private String precio_compra_mostrar;
     private String precio_venta_oculto;
     private String precio_compra_oculto;
     private String iva_producto;
@@ -109,7 +110,8 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private String monto_letra;
     private double monto_iva5;
     private double monto_iva10;
-
+    private boolean carga_prod_codbarra = false;
+    private boolean modifico_precio_compra;
     private void abrir_formulario() {
         cargar_usuario_acceso();
         creado_por = ENTusu.getGlobal_nombre();
@@ -154,18 +156,27 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         }
     }
 
+    private void precargar_producto(int idproducto) {
+        DAOp.cargar_producto(conn, ENTp, idproducto);
+        txtcod_barra.setText(ENTp.getC4codigo_barra());
+        txtbuscar_producto.setText(ENTp.getC5nombre());
+        String precio_compra=ENTp.getPrecio_compra_mostrar().replace(',', '.');
+        precio_compra_mostrar = precio_compra;
+        precio_venta_oculto = String.valueOf((int) ENTp.getC11precio_venta());
+        precio_compra_oculto = String.valueOf((int) ENTp.getC12precio_compra());
+        iva_producto = String.valueOf((int) ENTp.getC16iva());
+        txtprecio_compra.setText(precio_compra_mostrar);
+        txtprecio_compra.setBackground(Color.white);
+        txtprecio_compra.setForeground(Color.black);
+        txtcantidad_producto.setText("1");
+        txtcantidad_producto.grabFocus();
+    }
+
     private void seleccionar_producto() {
         if (tblproducto.getSelectedRow() >= 0) {
             idproducto = eveJtab.getInt_select_id(tblproducto);
-            DAOp.cargar_producto(conn, ENTp, idproducto);
-            txtcod_barra.setText(ENTp.getC4codigo_barra());
-            txtbuscar_producto.setText(ENTp.getC5nombre());
-            precio_venta_mostrar = eveJtab.getString_select(tblproducto, 4);
-            precio_venta_oculto = String.valueOf((int) ENTp.getC11precio_venta());
-            precio_compra_oculto = String.valueOf((int) ENTp.getC12precio_compra());
-            iva_producto = String.valueOf((int) ENTp.getC16iva());
-            txtcantidad_producto.setText("1");
-            txtcantidad_producto.grabFocus();
+            precargar_producto(idproducto);
+            carga_prod_codbarra = false;
         }
     }
 
@@ -387,7 +398,12 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     }
 
     private boolean validar_cargar_item() {
-        if (eveJtab.getBoolean_validar_select(tblproducto)) {
+        if (!carga_prod_codbarra) {
+            if (eveJtab.getBoolean_validar_select(tblproducto)) {
+                return false;
+            }
+        }
+        if (evejtf.getBoo_JTextField_vacio(txtprecio_compra, "DEBE CARGAR UN PRECIO COMPRA")) {
             return false;
         }
         if (evejtf.getBoo_JTextField_vacio(txtbuscar_producto, "DEBE CARGAR UNA DESCRIPCION")) {
@@ -400,16 +416,16 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     }
 
     private void cargar_item_producto(boolean cargar_auto) {
-        boolean validar=false;
-        if(cargar_auto){
-            validar=true;
-        }else{
-            validar=validar_cargar_item();
+        boolean validar = false;
+        if (cargar_auto) {
+            validar = true;
+        } else {
+            validar = validar_cargar_item();
         }
         if (validar) {
             String Sidproducto = String.valueOf(idproducto);
             String Sdescripcion = txtbuscar_producto.getText();
-            String Sprecio_venta1 = precio_venta_mostrar;
+            String Sprecio_compra1 = precio_compra_mostrar;
             String Scantidad = txtcantidad_producto.getText();
             String Sprecio_venta2 = precio_venta_oculto;
             String Sprecio_compra = precio_compra_oculto;
@@ -417,7 +433,15 @@ public class FrmCompra extends javax.swing.JInternalFrame {
             String Ssubtotal2 = "0";
             String Stipo = eveest.getEst_PENDIENTE();
             String Siva = iva_producto;
-            String dato[] = {Sidproducto, Sdescripcion, Sprecio_venta1, Scantidad, Ssubtotal, Sprecio_venta2, Sprecio_compra, Stipo, Ssubtotal2, Siva};
+            if(modifico_precio_compra){
+                Sprecio_compra1=txtprecio_compra.getText();
+                Sprecio_compra=Sprecio_compra1.replace(".","");
+                Double Dprecio_compra=Double.parseDouble(Sprecio_compra);
+                ENTp.setC1idproducto(idproducto);
+                ENTp.setC12precio_compra(Dprecio_compra);
+                DAOp.update_producto_precio_compra(conn, ENTp);
+            }
+            String dato[] = {Sidproducto, Sdescripcion, Sprecio_compra1, Scantidad, Ssubtotal, Sprecio_venta2, Sprecio_compra, Stipo, Ssubtotal2, Siva};
             eveJtab.cargar_tabla_datos(tblitem_producto, model_itemf, dato);
             eveJtab.calcular_subtotal(tblitem_producto, model_itemf, 3, 6, 4, true);
             eveJtab.calcular_subtotal(tblitem_producto, model_itemf, 3, 6, 8, false);
@@ -451,15 +475,20 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private void reestableser_item_compra() {
         txtcod_barra.setText(null);
         txtbuscar_producto.setText(null);
-        precio_venta_mostrar = "0";
+        precio_compra_mostrar = "0";
         precio_venta_oculto = "0";
         precio_compra_oculto = "0";
         iva_producto = "0";
         txtcantidad_producto.setText("1");
-
+        carga_prod_codbarra=false;
+        modifico_precio_compra=false;
         actualizar_tabla_producto(1);
+        txtprecio_compra.setText(null);
+        txtprecio_compra.setBackground(Color.white);
+        txtprecio_compra.setForeground(Color.black);
+        txtcod_barra.grabFocus();
     }
-
+    
     private void cargar_con_cantidad(int cant) {
         txtcantidad_producto.setText(String.valueOf(cant));
         cargar_item_producto(false);
@@ -481,7 +510,41 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         }
         return true;
     }
-
+    private void buscar_producto_cod_barra() {
+        if (txtcod_barra.getText().trim().length() > 0) {
+            String cod_barra = txtcod_barra.getText();
+            String titulo = "buscar_producto_cod_barra";
+            String sql = "select p.idproducto  "
+                    + "from producto p "
+                    + "where p.codigo_barra='" + cod_barra + "' ";
+            try {
+                ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+                int cant = 0;
+                idproducto = 0;
+                while (rs.next()) {
+                    cant++;
+                    idproducto = rs.getInt("idproducto");
+                }
+                if (cant == 1) {
+                    precargar_producto(idproducto);
+                    carga_prod_codbarra = true;
+                }
+                if (cant == 0) {
+                    JOptionPane.showMessageDialog(this, "NO SE ENCONTRO NINGUN PRODUCTO", "ERROR DE BUSCAR", JOptionPane.ERROR_MESSAGE);
+                    txtcod_barra.setText(null);
+                    txtcod_barra.grabFocus();
+                }
+                if (cant > 1) {
+                    JOptionPane.showMessageDialog(this, "SE ENCONTRO MAS DE UN PRODUCTO CON EL MISMO CODIGO DE BARRA"
+                            + "\nSE DEBE MANTENER UN SOLO CODIGO DE BARRA PARA UN PRODUCTO", "ERROR DE BUSCAR", JOptionPane.ERROR_MESSAGE);
+                    txtcod_barra.setText(null);
+                    txtcod_barra.grabFocus();
+                }
+            } catch (Exception e) {
+                evemen.mensaje_error(e, sql, titulo);
+            }
+        }
+    }
     private void cargar_dato_compra() {
         ENTcom.setC3creado_por(creado_por);
         ENTcom.setC4fecha_compra("now()");
@@ -621,7 +684,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     }
 
     public String filtro_estado(JCheckBox jCest_pendiente, JCheckBox jCest_pagado,
-            JCheckBox jCest_anulado,JCheckBox jCest_terminado) {
+            JCheckBox jCest_anulado, JCheckBox jCest_terminado) {
         String estado = "";
         String sumaestado = "";
         int contestado = 0;
@@ -682,7 +745,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         String filtro_est = "";
         int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
         filtro_fec = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "c.fecha_creado");
-        filtro_est = filtro_estado(jCest_pendiente, jCest_pagado, jCest_anulado,jCest_terminado);
+        filtro_est = filtro_estado(jCest_pendiente, jCest_pagado, jCest_anulado, jCest_terminado);
         if (idusuario > 0) {
             filtro_usu = " and c.fk_idusuario=" + idusuario;
         }
@@ -725,7 +788,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                     "RECARGAR COMPRA", "RECARGAR", "CANCELAR")) {
                 int idcompra = eveJtab.getInt_select_id(tblcompra);
                 recargar_compra_item(idcompra);
-                
+
             }
         }
     }
@@ -745,7 +808,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 idproducto = rs.getInt("idproducto");
                 txtbuscar_producto.setText(rs.getString("nombre"));
                 txtcantidad_producto.setText(rs.getString("cantidad"));
-                precio_venta_mostrar = rs.getString("pcompra");
+                precio_compra_mostrar = rs.getString("pcompra");
                 precio_venta_oculto = rs.getString("opventa");
                 precio_compra_oculto = rs.getString("precio_compra");
                 iva_producto = rs.getString("iva");
@@ -779,21 +842,19 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         panel_referencia_unidad = new javax.swing.JPanel();
         jTab_producto_ingrediente = new javax.swing.JTabbedPane();
         panel_insertar_pri_producto = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        txtbuscar_producto = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblproducto = new javax.swing.JTable();
         txtcantidad_producto = new javax.swing.JTextField();
-        btnagregar_cantidad = new javax.swing.JButton();
-        jLabel29 = new javax.swing.JLabel();
-        txtcod_barra = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         btncantidad_1 = new javax.swing.JButton();
         btncantidad_2 = new javax.swing.JButton();
         btncantidad_3 = new javax.swing.JButton();
         btncantidad_4 = new javax.swing.JButton();
         btncantidad_5 = new javax.swing.JButton();
         btncantidad_6 = new javax.swing.JButton();
+        jPanel10 = new javax.swing.JPanel();
+        txtcod_barra = new javax.swing.JTextField();
+        txtbuscar_producto = new javax.swing.JTextField();
+        txtprecio_compra = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblitem_producto = new javax.swing.JTable();
@@ -870,16 +931,6 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         panel_insertar_pri_producto.setBackground(new java.awt.Color(153, 204, 255));
         panel_insertar_pri_producto.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel1.setText("BUSCAR PRODUCTO:");
-
-        txtbuscar_producto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        txtbuscar_producto.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtbuscar_productoKeyReleased(evt);
-            }
-        });
-
         tblproducto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tblproducto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -902,6 +953,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
 
         txtcantidad_producto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtcantidad_producto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtcantidad_producto.setBorder(javax.swing.BorderFactory.createTitledBorder("CANT:"));
         txtcantidad_producto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtcantidad_productoKeyPressed(evt);
@@ -913,28 +965,6 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 txtcantidad_productoKeyTyped(evt);
             }
         });
-
-        btnagregar_cantidad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Cantidad/flecha_derecha.png"))); // NOI18N
-        btnagregar_cantidad.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnagregar_cantidadActionPerformed(evt);
-            }
-        });
-
-        jLabel29.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel29.setText("COD.BARRA:");
-
-        txtcod_barra.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        txtcod_barra.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtcod_barraKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtcod_barraKeyReleased(evt);
-            }
-        });
-
-        jLabel2.setText("CANTIDAD");
 
         btncantidad_1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         btncantidad_1.setText("1");
@@ -984,54 +1014,91 @@ public class FrmCompra extends javax.swing.JInternalFrame {
             }
         });
 
+        jPanel10.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        txtcod_barra.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtcod_barra.setBorder(javax.swing.BorderFactory.createTitledBorder("COD BARRA:"));
+        txtcod_barra.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtcod_barraKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtcod_barraKeyReleased(evt);
+            }
+        });
+
+        txtbuscar_producto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtbuscar_producto.setBorder(javax.swing.BorderFactory.createTitledBorder("DESCRIPCION"));
+        txtbuscar_producto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtbuscar_productoKeyReleased(evt);
+            }
+        });
+
+        txtprecio_compra.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtprecio_compra.setBorder(javax.swing.BorderFactory.createTitledBorder("PRECIO"));
+        txtprecio_compra.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtprecio_compraKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtprecio_compraKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtprecio_compraKeyTyped(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtbuscar_producto, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtprecio_compra))
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtbuscar_producto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtprecio_compra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 5, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout panel_insertar_pri_productoLayout = new javax.swing.GroupLayout(panel_insertar_pri_producto);
         panel_insertar_pri_producto.setLayout(panel_insertar_pri_productoLayout);
         panel_insertar_pri_productoLayout.setHorizontalGroup(
             panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_pri_productoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_insertar_pri_productoLayout.createSequentialGroup()
-                        .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtbuscar_producto))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-                    .addGroup(panel_insertar_pri_productoLayout.createSequentialGroup()
-                        .addComponent(jLabel29)
-                        .addGap(71, 71, 71)
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btncantidad_1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtcantidad_producto, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
-                        .addComponent(btncantidad_2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btncantidad_3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btncantidad_4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btncantidad_5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btncantidad_6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(btnagregar_cantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(14, 14, 14))
+                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btncantidad_1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtcantidad_producto, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
+                    .addComponent(btncantidad_2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btncantidad_3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btncantidad_4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btncantidad_5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btncantidad_6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(15, 15, 15))
+            .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panel_insertar_pri_productoLayout.setVerticalGroup(
             panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertar_pri_productoLayout.createSequentialGroup()
-                .addGap(4, 4, 4)
-                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel29)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(txtbuscar_producto, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                        .addComponent(txtcod_barra, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addComponent(txtcantidad_producto, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panel_insertar_pri_productoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_insertar_pri_productoLayout.createSequentialGroup()
+                        .addComponent(txtcantidad_producto, javax.swing.GroupLayout.PREFERRED_SIZE, 40, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(btncantidad_1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btncantidad_2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1042,11 +1109,9 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btncantidad_5, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btncantidad_6, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnagregar_cantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btncantidad_6, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(16, 16, 16))
         );
 
         jTab_producto_ingrediente.addTab("PRODUCTOS", panel_insertar_pri_producto);
@@ -1575,16 +1640,10 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         evejtf.soloNumero(evt);
     }//GEN-LAST:event_txtcantidad_productoKeyTyped
 
-    private void btnagregar_cantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregar_cantidadActionPerformed
-        // TODO add your handling code here:
-        //        cargar_item_producto();
-        cargar_item_producto(false);
-    }//GEN-LAST:event_btnagregar_cantidadActionPerformed
-
     private void txtcod_barraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcod_barraKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            //            buscar_cod_barra_producto();
+            buscar_producto_cod_barra();
         }
     }//GEN-LAST:event_txtcod_barraKeyPressed
 
@@ -1695,9 +1754,28 @@ public class FrmCompra extends javax.swing.JInternalFrame {
         actualizar_tabla_compra();
     }//GEN-LAST:event_jCest_terminadoActionPerformed
 
+    private void txtprecio_compraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyReleased
+        // TODO add your handling code here:
+        evejtf.getString_format_nro_entero1(txtprecio_compra);
+        txtprecio_compra.setBackground(Color.gray);
+        txtprecio_compra.setForeground(Color.yellow);
+        modifico_precio_compra=true;
+    }//GEN-LAST:event_txtprecio_compraKeyReleased
+
+    private void txtprecio_compraKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_txtprecio_compraKeyTyped
+
+    private void txtprecio_compraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtcantidad_producto.grabFocus();
+        }
+    }//GEN-LAST:event_txtprecio_compraKeyPressed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnagregar_cantidad;
     private javax.swing.JButton btnbuscar_persona;
     private javax.swing.JButton btncantidad_1;
     private javax.swing.JButton btncantidad_2;
@@ -1721,13 +1799,11 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFtotal_consumo;
     private javax.swing.JFormattedTextField jFtotal_iva10;
     private javax.swing.JFormattedTextField jFtotal_iva5;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1758,6 +1834,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtmonto_letra;
     private javax.swing.JTextField txtnro_factura;
     private javax.swing.JTextField txtobservacion;
+    private javax.swing.JTextField txtprecio_compra;
     public static javax.swing.JTextField txtproveedor_nombre;
     public static javax.swing.JTextField txtproveedor_ruc;
     // End of variables declaration//GEN-END:variables

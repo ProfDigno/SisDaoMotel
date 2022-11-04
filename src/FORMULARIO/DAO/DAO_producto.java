@@ -22,8 +22,17 @@ public class DAO_producto {
     private String mensaje_update = "PRODUCTO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO producto(idproducto,fecha_creado,creado_por,codigo_barra,nombre,controlar_stock,es_venta,es_compra,es_insumo,es_patrimonio,precio_venta,precio_compra,stock_actual,stock_minimo,stock_maximo,iva,fk_idproducto_categoria,fk_idproducto_unidad,fk_idproducto_marca) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE producto SET fecha_creado=?,creado_por=?,codigo_barra=?,nombre=?,controlar_stock=?,es_venta=?,es_compra=?,es_insumo=?,es_patrimonio=?,precio_venta=?,precio_compra=?,stock_actual=?,stock_minimo=?,stock_maximo=?,iva=?,fk_idproducto_categoria=?,fk_idproducto_unidad=?,fk_idproducto_marca=? WHERE idproducto=?;";
-//    private String sql_select = "SELECT idproducto,fecha_creado,creado_por,codigo_barra,nombre,controlar_stock,es_venta,es_compra,es_insumo,es_patrimonio,precio_venta,precio_compra,stock_actual,stock_minimo,stock_maximo,iva,fk_idproducto_categoria,fk_idproducto_unidad,fk_idproducto_marca FROM producto order by 1 desc;";
-    private String sql_cargar = "SELECT idproducto,fecha_creado,creado_por,codigo_barra,nombre,controlar_stock,es_venta,es_compra,es_insumo,es_patrimonio,precio_venta,precio_compra,stock_actual,stock_minimo,stock_maximo,iva,fk_idproducto_categoria,fk_idproducto_unidad,fk_idproducto_marca FROM producto WHERE idproducto=";
+    private String sql_cargar = "SELECT idproducto,fecha_creado,creado_por,codigo_barra,"
+            + "nombre,controlar_stock,es_venta,es_compra,es_insumo,"
+            + "es_patrimonio,precio_venta,precio_compra,stock_actual,"
+            + "stock_minimo,stock_maximo,iva,"
+            + "fk_idproducto_categoria,fk_idproducto_unidad,"
+            + "fk_idproducto_marca,"
+            + "TRIM(to_char(precio_venta,'999G999G999')) as precio_venta_mostrar, "
+            + "TRIM(to_char(precio_compra,'999G999G999')) as precio_compra_mostrar "
+            + "FROM producto WHERE idproducto=";
+    private String sql_update_pcompra = "UPDATE producto SET precio_compra=? WHERE idproducto=?;";
+
 
     public void insertar_producto(Connection conn, producto pr) {
         pr.setC1idproducto(eveconn.getInt_ultimoID_mas_uno(conn, pr.getTb_producto(), pr.getId_idproducto()));
@@ -116,6 +125,8 @@ public class DAO_producto {
                 pr.setC17fk_idproducto_categoria(rs.getInt(17));
                 pr.setC18fk_idproducto_unidad(rs.getInt(18));
                 pr.setC19fk_idproducto_marca(rs.getInt(19));
+                pr.setPrecio_venta_mostrar(rs.getString(20));
+                pr.setPrecio_compra_mostrar(rs.getString(21));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + pr.toString(), titulo);
             }
         } catch (Exception e) {
@@ -185,5 +196,19 @@ public class DAO_producto {
         String titulonota = "GANANCIA PRODUCTO";
         String direccion = "src/REPORTE/PRODUCTO/repGanaciaProducto.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+    public void update_producto_precio_compra(Connection conn, producto pr) {
+        String titulo = "update_producto_precio_compra";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_pcompra);
+            pst.setDouble(1, pr.getC12precio_compra());
+            pst.setInt(2, pr.getC1idproducto());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_pcompra + "\n" + pr.toString(), titulo);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_pcompra + "\n" + pr.toString(), titulo);
+        }
     }
 }
