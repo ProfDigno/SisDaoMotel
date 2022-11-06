@@ -82,7 +82,8 @@ public class FrmProd_categoria extends javax.swing.JInternalFrame {
         jCesventa.setSelected(ENTpc.getC7es_venta());
         titulo_formulario(ENTpc.getC2fecha_creado(), ENTpc.getC3creado_por());
         String filtro="and pc.idproducto_categoria="+ENTpc.getC1idproducto_categoria();
-        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro, 3);
+//        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro, 3);
+        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro, "3", "");
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }

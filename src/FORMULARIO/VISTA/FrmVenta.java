@@ -196,6 +196,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private boolean es_por_dormir;
     private int Icant_hasta_dormir;
     private String Shs_hasta_dormir;
+    private int segundo_conn_rpi;
 
     private void abrir_formulario() {
         cargar_usuario_acceso();
@@ -210,6 +211,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         botones_nro_hab = new ArrayList<>();
         botones_teste = new ArrayList<>();
         FrmMenuMotel.setHabilitar_sonido(true);
+//        jRpor_hora_mas_dormir.setEnabled(false);
         cargar_usuario();
         cargar_boton_categoria();
         crear_item_producto();
@@ -556,7 +558,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_item_producto_adicional_hasta_dormir() {
-        String Sidproducto = "0";
+        String Sidproducto = "1000";
         String Sdescripcion = "OCUPACION POR HORA";
         String Sprecio_venta1 = evejtf.getString_format_nro_decimal(monto_por_hora_minimo);
         String Scantidad = "1";
@@ -568,8 +570,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         String dato[] = {Sidproducto, Sdescripcion, Sprecio_venta1, Scantidad, Ssubtotal, Sprecio_venta2, Sprecio_compra, Stipo, Ssubtotal2};
         eveJtab.cargar_tabla_datos(tblitem_producto, model_itemf, dato);
         if (Icant_hasta_dormir > 0) {
-            Sidproducto = "0";
-            Sdescripcion = "ADICIONAL HASTA DORMIR: "+Shs_hasta_dormir;
+            Sidproducto = "1001";
+            Sdescripcion = "CANT ADICIONAL";
             Sprecio_venta1 = evejtf.getString_format_nro_decimal(monto_por_hora_adicional);
             Scantidad = String.valueOf(Icant_hasta_dormir);
             Sprecio_venta2 = String.valueOf(monto_por_hora_adicional);
@@ -1418,7 +1420,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     class clasetiempo extends TimerTask {
 
-        private int segundo_conn_rpi;
+
 
         public void run() {
             try {
@@ -1429,7 +1431,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 txttiempo_ahora.setText(fecha_hora_ahora);
                 if (segundo_tiempo == 1) {
                     cargar_estados_puertas_gpio(sensor_puerta_cliente, sensor_puerta_limpieza);
-                    actualizar_estado_puerta_cliente_limpieza();
+//                    actualizar_estado_puerta_cliente_limpieza();
                     no_es_sonido_ocupado = true;
                     cargar_sql_habitacion_recepcion_temp();
                 }
@@ -1442,9 +1444,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     if (tab_select == 4) {
                         cargar_array_habitacion_datos_mudar();
                     }
-//                    if (tab_select == 6) {
-////                        cargar_array_teste();
-//                    }
                     segundo_tiempo = 0;
                 }
                 if (segundo_conn_rpi > 5) {
@@ -1734,7 +1733,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOven.cargar_venta(conn, ENTven, idhabitacion_recepcion_actual);
         ENTven.setC4monto_letra("cero");
         ENTven.setC5estado(eveest.getEst_Desocupado());
-        ENTven.setC6observacion("ninguna");
+        ENTven.setC6observacion("Hora Ocupacion hasta dormir:"+Shs_hasta_dormir);
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion("sin");
@@ -2275,11 +2274,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         + "Cantidad adicional Hasta la Dormida: " + Icant_hasta_dormir + "\n"
                         + "Horas adicional hasta la dormida: " + Shs_hasta_dormir,
                         "OCUPACION POR HORA MAS DORMIR", "ACEPTAR", "CANCELAR")) {
+                    if(evemen.senha_crear_tablas("MAJJJSMG")){
                     update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                     lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
                     cargar_item_producto_adicional_hasta_dormir();
                     boton_cargar_consumo();
                     limpiar_habitacion_select();
+                    }
                 }
             }
         }
@@ -4194,9 +4195,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel12Layout.createSequentialGroup()
-                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 22, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(

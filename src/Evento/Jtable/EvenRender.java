@@ -190,16 +190,16 @@ public class EvenRender {
                 Object Opendiente = table.getValueAt(row, columnaRender);
                 Object Opagado = table.getValueAt(row, columnaRender);
                 Object OAnulado = table.getValueAt(row, columnaRender);
-                Object Oterminado = table.getValueAt(row, columnaRender);
+//                Object Oterminado = table.getValueAt(row, columnaRender);
                 String Spendiente = eveest.getEst_PENDIENTE();
-                String Spagado = eveest.getEst_Pagado();
+                String Scargado = eveest.getEst_CARGADOSTOCK();
                 String SAnulado = eveest.getEst_Anulado();
-                String STerminado = eveest.getEst_Terminar();
+//                String STerminado = eveest.getEst_Terminar();
                 if (Opendiente != null && Spendiente.equals(Opendiente.toString())) {
-//                    color_fondo = Color.GRAY;
+                    color_fondo = Color.WHITE;
                     color_text = Color.RED;
                 }
-                if (Opagado != null && Spagado.equals(Opagado.toString())) {
+                if (Opagado != null && Scargado.equals(Opagado.toString())) {
                     color_fondo = Color.GREEN;
                     color_text = Color.BLUE;
                 }
@@ -207,10 +207,10 @@ public class EvenRender {
                     color_fondo = Color.RED;
                     color_text = Color.YELLOW;
                 }
-                if (Oterminado != null && STerminado.equals(Oterminado.toString())) {
-                    color_fondo = Color.GRAY;
-                    color_text = Color.RED;
-                }
+//                if (Oterminado != null && STerminado.equals(Oterminado.toString())) {
+//                    color_fondo = Color.GRAY;
+//                    color_text = Color.RED;
+//                }
                 label.setBackground(color_fondo);
                 table.setSelectionForeground(color_text);
                 return label;

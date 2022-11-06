@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import ESTADOS.EvenEstado;
 import FORMULARIO.ENTIDAD.producto;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -17,6 +18,7 @@ public class DAO_producto {
     EvenJtable evejt = new EvenJtable();
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    EvenEstado eveest = new EvenEstado();
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "PRODUCTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "PRODUCTO MODIFICADO CORECTAMENTE";
@@ -134,27 +136,35 @@ public class DAO_producto {
         }
     }
 
-    public void actualizar_tabla_producto(Connection conn, JTable tbltabla, String filtro, int orden) {
-        String sql_select = "SELECT p.idproducto as idp,p.codigo_barra as codbarra,p.nombre as producto,\n"
+    public void actualizar_tabla_producto(Connection conn, JTable tbltabla, String filtro, String orden,String filtro_item) {
+        String sql_select = "SELECT p.idproducto as idp,p.codigo_barra as codbarra,"
+                + "p.nombre as producto,p.iva,\n"
                 + "pc.nombre as categoria,pu.nombre as unidad,pm.nombre as marca,\n"
                 + "TRIM(to_char(p.precio_venta,'999G999G999')) as pventa,\n"
                 + "TRIM(to_char(p.precio_compra,'999G999G999')) as pcompra,\n"
-                + "p.stock_actual as stock,p.iva \n"
+                + "p.stock_actual as stock, \n"
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v "
+                + "where vi.fk_idventa=v.idventa "
+                + "and vi.tipo_item='" + eveest.getEst_Cargado() + "' "+filtro_item
+                + " and vi.fk_idproducto=p.idproducto),0) as cv, "
+                + "coalesce((select sum(vi.cantidad) as cant from compra_item vi,compra v "
+                + "where vi.fk_idcompra=v.idcompra "
+                + "and vi.tipo_item='" + eveest.getEst_INGRESADO() + "' "+filtro_item
+                + " and vi.fk_idproducto=p.idproducto),0) as cc "
                 + "FROM producto p,producto_categoria pc,producto_unidad pu,producto_marca pm\n"
                 + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"
                 + "and p.fk_idproducto_unidad=pu.idproducto_unidad\n"
                 + "and p.fk_idproducto_marca=pm.idproducto_marca\n" + filtro
-                + " order by " + orden + " asc;";
-
+                + " order by " + orden + ";";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_producto(tbltabla);
     }
 
     public void ancho_tabla_producto(JTable tbltabla) {
-        int Ancho[] = {5, 15, 25, 10, 10, 10, 8, 8, 5, 5};
+        int Ancho[] = {5, 12, 24, 3, 10, 10, 10, 8, 8, 5,4,4};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
-        evejt.alinear_derecha_columna(tbltabla, 6);
         evejt.alinear_derecha_columna(tbltabla, 7);
+        evejt.alinear_derecha_columna(tbltabla, 8);
     }
 
     public void imprimir_rep_inventario_volorizado(Connection conn, String filtro) {
@@ -209,6 +219,51 @@ public class DAO_producto {
             evemen.Imprimir_serial_sql(sql_update_pcompra + "\n" + pr.toString(), titulo);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_update_pcompra + "\n" + pr.toString(), titulo);
+        }
+    }
+    public boolean getBoolean_cargar_producto_por_codbarra(Connection conn, producto pr, String cod_barra) {
+        String sql_cargar_codbarra = "SELECT idproducto,fecha_creado,creado_por,codigo_barra,"
+            + "nombre,controlar_stock,es_venta,es_compra,es_insumo,"
+            + "es_patrimonio,precio_venta,precio_compra,stock_actual,"
+            + "stock_minimo,stock_maximo,iva,"
+            + "fk_idproducto_categoria,fk_idproducto_unidad,"
+            + "fk_idproducto_marca,"
+            + "TRIM(to_char(precio_venta,'999G999G999')) as precio_venta_mostrar, "
+            + "TRIM(to_char(precio_compra,'999G999G999')) as precio_compra_mostrar "
+            + "FROM producto WHERE codigo_barra='"+cod_barra+"';";
+        String titulo = "getBoolean_cargar_producto_por_codbarra";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar_codbarra, titulo);
+            if (rs.next()) {
+                pr.setC1idproducto(rs.getInt(1));
+                pr.setC2fecha_creado(rs.getString(2));
+                pr.setC3creado_por(rs.getString(3));
+                pr.setC4codigo_barra(rs.getString(4));
+                pr.setC5nombre(rs.getString(5));
+                pr.setC6controlar_stock(rs.getBoolean(6));
+                pr.setC7es_venta(rs.getBoolean(7));
+                pr.setC8es_compra(rs.getBoolean(8));
+                pr.setC9es_insumo(rs.getBoolean(9));
+                pr.setC10es_patrimonio(rs.getBoolean(10));
+                pr.setC11precio_venta(rs.getDouble(11));
+                pr.setC12precio_compra(rs.getDouble(12));
+                pr.setC13stock_actual(rs.getDouble(13));
+                pr.setC14stock_minimo(rs.getDouble(14));
+                pr.setC15stock_maximo(rs.getDouble(15));
+                pr.setC16iva(rs.getDouble(16));
+                pr.setC17fk_idproducto_categoria(rs.getInt(17));
+                pr.setC18fk_idproducto_unidad(rs.getInt(18));
+                pr.setC19fk_idproducto_marca(rs.getInt(19));
+                pr.setPrecio_venta_mostrar(rs.getString(20));
+                pr.setPrecio_compra_mostrar(rs.getString(21));
+                evemen.Imprimir_serial_sql(sql_cargar + "\n" + pr.toString(), titulo);
+                return true;
+            }else{
+                return false;
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_cargar + "\n" + pr.toString(), titulo);
+            return false;
         }
     }
 }

@@ -65,6 +65,10 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
                 FrmCompra.txtproveedor_nombre.setText(nombre);
                 FrmCompra.txtproveedor_ruc.setText(ruc);
             }
+            if(ENTper.getBus_quien_llama()==2){
+                FrmCompra_reposicion.txtproveedor_nombre.setText(nombre);
+                FrmCompra_reposicion.txtproveedor_ruc.setText(ruc);
+            }
         }
     }
     public void ancho_tabla_persona(JTable tbltabla) {

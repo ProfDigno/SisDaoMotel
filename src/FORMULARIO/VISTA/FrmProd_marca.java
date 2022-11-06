@@ -80,7 +80,7 @@ public class FrmProd_marca extends javax.swing.JInternalFrame {
         jCactivo.setSelected(ENTpm.getC6activo());
         titulo_formulario(ENTpm.getC2fecha_creado(), ENTpm.getC3creado_por());
         String filtro="and pm.idproducto_marca="+ENTpm.getC1idproducto_marca();
-        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro, 3);
+        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro,"3","");
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }

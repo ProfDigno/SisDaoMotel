@@ -80,7 +80,7 @@ public class FrmProd_unidad extends javax.swing.JInternalFrame {
         jCactivo.setSelected(ENTpu.getC6activo());
         titulo_formulario(ENTpu.getC2fecha_creado(), ENTpu.getC3creado_por());
         String filtro="and pu.idproducto_unidad="+ENTpu.getC1idproducto_unidad();
-        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro, 3);
+        DAOp.actualizar_tabla_producto(conn, tbltabla_sec, filtro,"3","");
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }

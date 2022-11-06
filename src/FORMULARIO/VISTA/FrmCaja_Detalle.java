@@ -150,7 +150,14 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             evemen.Imprimir_serial_sql_error(e, sql, titulo);
         }
     }
-
+    private void bloqueo_inicio() {
+        FrmMenuMotel.barra_menu_principal.setEnabled(false);
+    }
+    private void abrir_login() {
+        bloqueo_inicio();
+        JDiaLogin log = new JDiaLogin(null, true);
+        log.setVisible(true);
+    }
     private void boton_cerrar_caja() {
         if (tblcaja_abierto.getRowCount() > 0) {
             String mensaje = "<html><p style=\"color:red\"><font size=\"8\">CAJA NRO: " + idcaja_cierre + "</font></p>"
@@ -170,11 +177,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 ENTcc.setC6estado(eveest.getEst_Cerrado());
                 ENTcc.setC7fk_idusuario(fk_idusuario);
                 BOcc.insertar_caja_cierre(ENTcc);
-                actualizar_tabla_caja_cierre_detalle_ABIERTO();
-                actualizar_tabla_caja_cierre();
+//                actualizar_tabla_caja_cierre_detalle_ABIERTO();
+//                actualizar_tabla_caja_cierre();
                 if (evemen.getBooMensaje_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
-//                    DAOcc.imprimir_caja_cierre_jasper(conn, ENTcc.getC1idcaja_cierre());
                     select_imprimir_caja_cierre(ENTcc.getC1idcaja_cierre());
+                    this.dispose();
+                    abrir_login();
                 }
             }
         }

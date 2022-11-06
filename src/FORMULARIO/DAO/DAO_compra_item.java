@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import ESTADOS.EvenEstado;
 import FORMULARIO.ENTIDAD.compra_item;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -19,6 +20,7 @@ public class DAO_compra_item {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "COMPRA_ITEM GUARDADO CORRECTAMENTE";
     private String mensaje_update = "COMPRA_ITEM MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO compra_item(idcompra_item,fecha_creado,creado_por,tipo_item,descripcion,cantidad,precio_compra,fk_idproducto,fk_idcompra) VALUES (?,?,?,?,?,?,?,?,?);";
@@ -185,5 +187,27 @@ public class DAO_compra_item {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 2);
         evejt.alinear_derecha_columna(tbltabla, 4);
+    }
+    
+    public void actualizar_tabla_compra_item_producto(Connection conn, JTable tbltabla, String filtro) {
+        String sql_select = "select vi.idcompra_item as idci,\n"
+                + "to_char(vi.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+                + "vi.creado_por,vi.descripcion,"
+                + "TRIM(to_char(vi.precio_compra,'999G999G999')) as pcompra,\n"
+                + "vi.cantidad as cant,\n"
+                + "TRIM(to_char((vi.cantidad*vi.precio_compra),'999G999G999')) as subtotal,\n"
+                + "(vi.cantidad*vi.precio_compra) as osubtotal "
+                + "from compra_item vi,compra v "
+                + "where vi.fk_idcompra=v.idcompra "
+                + "and vi.tipo_item='" + eveest.getEst_INGRESADO() + "' "+filtro
+                + " order by 1 desc";
+        eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        ancho_tabla_compra_item_producto(tbltabla);
+    }
+
+    public void ancho_tabla_compra_item_producto(JTable tbltabla) {
+        int Ancho[] = {4,15,15,40, 10, 5, 10,1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.ocultar_columna(tbltabla, 7);
     }
 }

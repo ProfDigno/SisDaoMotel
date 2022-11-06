@@ -6,6 +6,8 @@
 package FORMULARIO.VISTA;
 
 import BASEDATO.LOCAL.ConnPostgres;
+import Evento.Combobox.EvenCombobox;
+import Evento.Fecha.EvenFecha;
 //import Evento.Color.cla_color_palete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
@@ -27,6 +29,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
     private producto ENTp = new producto();
+     private EvenFecha evefec = new EvenFecha();
+     private EvenCombobox evecmb = new EvenCombobox();
     private DAO_producto DAOp = new DAO_producto();
     private BO_producto BOp = new BO_producto();
     private producto_categoria ENTpc = new producto_categoria();
@@ -35,6 +39,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private DAO_producto_unidad DAOpu = new DAO_producto_unidad();
     private producto_marca ENTpm = new producto_marca();
     private DAO_producto_marca DAOpm = new DAO_producto_marca();
+    private DAO_venta_item DAOvi=new DAO_venta_item();
+    private DAO_compra_item DAOci=new DAO_compra_item();
     private EvenJTextField evejtf = new EvenJTextField();
     private ClaVarBuscar vbus = new ClaVarBuscar();
     Connection conn = ConnPostgres.getConnPosgres();
@@ -42,6 +48,10 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private String nombreTabla_pri = "PRODUCTO";
     private String nombreTabla_sec = "FILTROS";
     private String creado_por = "digno";
+    String usu_id = "idusuario";
+    String usu_nombre = "nombre";
+    String usu_tabla = "usuario";
+    String usu_where = "where activo=true ";
     public static int fk_idproducto_categoria;
     public static int fk_idproducto_unidad;
     public static int fk_idproducto_marca;
@@ -75,9 +85,13 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
         creado_por = ENTusu.getGlobal_nombre();
         reestableser();
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_venta);
+        cargar_usuario();
+        actualizar_producto_filtro("");
     }
-
+    private void cargar_usuario() {
+        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
+    }
     private void titulo_formulario(String fecha_creado, String creado_por) {
         this.setTitle(nombreTabla_pri + " / fecha creado: " + fecha_creado + " / Creado Por: " + creado_por);
     }
@@ -123,22 +137,28 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         return true;
     }
 
-    private int getInt_orden() {
-        int ord = 1;
+    private String getS_orden() {
+        String ord = "1";
         if (jRord_id.isSelected()) {
-            ord = 1;
+            ord = "p.idproducto asc";
         }
         if (jRord_prod.isSelected()) {
-            ord = 3;
+            ord = "p.nombre asc";
         }
         if (jRord_cate.isSelected()) {
-            ord = 4;
+            ord = "pc.nombre asc";
         }
         if (jRord_unidad.isSelected()) {
-            ord = 5;
+            ord = "pu.nombre asc";
         }
         if (jRord_marca.isSelected()) {
-            ord = 6;
+            ord = "pm.nombre asc";
+        }
+        if (jRord_cven.isSelected()) {
+            ord = "11 desc";
+        }
+        if (jRord_ccom.isSelected()) {
+            ord = "12 desc";
         }
         return ord;
     }
@@ -195,7 +215,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         if (validar_guardar()) {
             cargar_dato();
             BOp.insertar_producto(ENTp);
-            DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+            actualizar_producto_filtro("");
             reestableser();
         }
     }
@@ -205,10 +225,27 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             ENTp.setC1idproducto(Integer.parseInt(txtid.getText()));
             cargar_dato();
             BOp.update_producto(ENTp);
-            DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+            actualizar_producto_filtro("");
         }
     }
-
+    String getS_filtro_fec_usu(){
+        String filtro="";
+        String fil_fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_venta, "vi.fecha_creado");
+        String fil_usuario="";
+        int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
+        if (idusuario > 0) {
+            fil_usuario = " and v.fk_idusuario=" + idusuario;
+        }
+        filtro=fil_fecha+fil_usuario;
+        return filtro;
+    }
+    private void actualizar_venta_item(int idproducto){
+        String filtro="";
+        String fil_id=" and vi.fk_idproducto="+idproducto;
+        filtro=fil_id+getS_filtro_fec_usu();
+        DAOvi.actualizar_tabla_venta_item_producto(conn, tblitem_venta, filtro);
+        DAOci.actualizar_tabla_compra_item_producto(conn, tblcompra_item, filtro);
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla_pri);
         DAOp.cargar_producto(conn, ENTp, idproducto);
@@ -236,6 +273,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         DAOpm.cargar_producto_marca(conn, ENTpm, ENTp.getC19fk_idproducto_marca());
         txtprod_marca.setText(ENTpm.getC4nombre());
         setFk_idproducto_marca(ENTp.getC19fk_idproducto_marca());
+        actualizar_venta_item(idproducto);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }
@@ -264,12 +302,14 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         setFk_idproducto_categoria(0);
         setFk_idproducto_unidad(0);
         setFk_idproducto_marca(0);
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+        actualizar_producto_filtro("");
         btnguardar.setEnabled(true);
         btneditar.setEnabled(false);
         txtnombre.grabFocus();
     }
-
+    private void actualizar_producto_filtro(String filtro){
+        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, filtro, getS_orden(),getS_filtro_fec_usu());
+    }
     private void boton_nuevo() {
         reestableser();
     }
@@ -342,10 +382,19 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         jRord_unidad = new javax.swing.JRadioButton();
         jRord_marca = new javax.swing.JRadioButton();
         jRord_id = new javax.swing.JRadioButton();
+        jRord_cven = new javax.swing.JRadioButton();
+        jRord_ccom = new javax.swing.JRadioButton();
+        jLabel5 = new javax.swing.JLabel();
+        cmbfecha_venta = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        cmbusuario = new javax.swing.JComboBox<>();
         jPanel4 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tbltabla_sec = new javax.swing.JTable();
+        tblitem_venta = new javax.swing.JTable();
+        jPanel11 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblcompra_item = new javax.swing.JTable();
 
         setClosable(true);
         setIconifiable(true);
@@ -763,7 +812,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                         .addComponent(btnguardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btneditar)))
-                .addContainerGap(131, Short.MAX_VALUE))
+                .addContainerGap(277, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -787,7 +836,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo)
                     .addComponent(btnguardar)
@@ -901,6 +950,22 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             }
         });
 
+        gru_ord.add(jRord_cven);
+        jRord_cven.setText("C-ven");
+        jRord_cven.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRord_cvenActionPerformed(evt);
+            }
+        });
+
+        gru_ord.add(jRord_ccom);
+        jRord_ccom.setText("C-com");
+        jRord_ccom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRord_ccomActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
@@ -916,7 +981,11 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                 .addComponent(jRord_unidad)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jRord_marca)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRord_cven)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRord_ccom)
+                .addContainerGap(74, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -926,9 +995,39 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                     .addComponent(jRord_cate)
                     .addComponent(jRord_unidad)
                     .addComponent(jRord_marca)
-                    .addComponent(jRord_id))
+                    .addComponent(jRord_id)
+                    .addComponent(jRord_cven)
+                    .addComponent(jRord_ccom))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
+
+        jLabel5.setText("Fecha:");
+
+        cmbfecha_venta.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbfecha_venta.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbfecha_ventaItemStateChanged(evt);
+            }
+        });
+        cmbfecha_venta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbfecha_ventaActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Usuario:");
+
+        cmbusuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbusuario.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbusuarioItemStateChanged(evt);
+            }
+        });
+        cmbusuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbusuarioActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
@@ -939,11 +1038,26 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(panel_tablaLayout.createSequentialGroup()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -965,7 +1079,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA"));
 
-        tbltabla_sec.setModel(new javax.swing.table.DefaultTableModel(
+        tblitem_venta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -976,17 +1090,19 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(tbltabla_sec);
+        jScrollPane2.setViewportView(tblitem_venta);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 951, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 438, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 52, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -1002,11 +1118,41 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
         jTab_principal.addTab("VENTA", jPanel4);
 
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA COMPRA"));
+
+        tblcompra_item.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(tblcompra_item);
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 951, Short.MAX_VALUE)
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 49, Short.MAX_VALUE))
+        );
+
+        jTab_principal.addTab("COMPRA", jPanel11);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTab_principal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTab_principal)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1048,11 +1194,10 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
     private void txtbuscar_productoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_productoKeyReleased
         // TODO add your handling code here:
-//        DAOgt.actualizar_tabla_producto_buscar(conn, tbltabla_pri, txtbuscar);
         if (txtbuscar_producto.getText().trim().length() >= 3) {
             String buscar = txtbuscar_producto.getText();
             String filtro = " and p.nombre ilike'%" + buscar + "%' ";
-            DAOp.actualizar_tabla_producto(conn, tbltabla_pri, filtro, getInt_orden());
+            actualizar_producto_filtro(filtro);
         }
     }//GEN-LAST:event_txtbuscar_productoKeyReleased
 
@@ -1175,33 +1320,61 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private void txtbuscar_codbarraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_codbarraKeyReleased
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-//            if(txtbuscar_codbarra.getText().trim().length()>3){
             String buscar = txtbuscar_codbarra.getText();
             String filtro = " and p.codigo_barra='" + buscar + "' ";
-            DAOp.actualizar_tabla_producto(conn, tbltabla_pri, filtro, getInt_orden());
-//            }
+            actualizar_producto_filtro(filtro);
         }
     }//GEN-LAST:event_txtbuscar_codbarraKeyReleased
 
     private void jRord_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_idActionPerformed
         // TODO add your handling code here:
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+        actualizar_producto_filtro("");
     }//GEN-LAST:event_jRord_idActionPerformed
 
     private void jRord_cateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_cateActionPerformed
         // TODO add your handling code here:
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+        actualizar_producto_filtro("");
     }//GEN-LAST:event_jRord_cateActionPerformed
 
     private void jRord_unidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_unidadActionPerformed
         // TODO add your handling code here:
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+        actualizar_producto_filtro("");
     }//GEN-LAST:event_jRord_unidadActionPerformed
 
     private void jRord_marcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_marcaActionPerformed
         // TODO add your handling code here:
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, "", getInt_orden());
+        actualizar_producto_filtro("");
     }//GEN-LAST:event_jRord_marcaActionPerformed
+
+    private void cmbfecha_ventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbfecha_ventaActionPerformed
+        // TODO add your handling code here:
+//        actualizar_tabla_venta_buscar();
+    }//GEN-LAST:event_cmbfecha_ventaActionPerformed
+
+    private void cmbusuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbusuarioActionPerformed
+        // TODO add your handling code here:
+//        actualizar_tabla_venta_buscar();
+    }//GEN-LAST:event_cmbusuarioActionPerformed
+
+    private void jRord_cvenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_cvenActionPerformed
+        // TODO add your handling code here:
+        actualizar_producto_filtro("");
+    }//GEN-LAST:event_jRord_cvenActionPerformed
+
+    private void jRord_ccomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_ccomActionPerformed
+        // TODO add your handling code here:
+        actualizar_producto_filtro("");
+    }//GEN-LAST:event_jRord_ccomActionPerformed
+
+    private void cmbfecha_ventaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_ventaItemStateChanged
+        // TODO add your handling code here:
+        actualizar_producto_filtro("");
+    }//GEN-LAST:event_cmbfecha_ventaItemStateChanged
+
+    private void cmbusuarioItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbusuarioItemStateChanged
+        // TODO add your handling code here:
+        actualizar_producto_filtro("");
+    }//GEN-LAST:event_cmbusuarioItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1215,6 +1388,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnnuevo_marca;
     private javax.swing.JButton btnnuevo_unidad;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JComboBox<String> cmbfecha_venta;
+    private javax.swing.JComboBox<String> cmbusuario;
     private javax.swing.ButtonGroup gru_iva;
     private javax.swing.ButtonGroup gru_ord;
     private javax.swing.JCheckBox jCescompra;
@@ -1225,8 +1400,11 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1239,17 +1417,21 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton jRiva_5;
     private javax.swing.JRadioButton jRiva_exenta;
     private javax.swing.JRadioButton jRord_cate;
+    private javax.swing.JRadioButton jRord_ccom;
+    private javax.swing.JRadioButton jRord_cven;
     private javax.swing.JRadioButton jRord_id;
     private javax.swing.JRadioButton jRord_marca;
     private javax.swing.JRadioButton jRord_prod;
     private javax.swing.JRadioButton jRord_unidad;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTab_principal;
     private javax.swing.JPanel panel_insertar;
     private javax.swing.JPanel panel_tabla;
+    private javax.swing.JTable tblcompra_item;
+    private javax.swing.JTable tblitem_venta;
     private javax.swing.JTable tbltabla_pri;
-    private javax.swing.JTable tbltabla_sec;
     private javax.swing.JTextField txtbuscar_codbarra;
     private javax.swing.JTextField txtbuscar_producto;
     private javax.swing.JTextField txtcod_barra;

@@ -26,6 +26,7 @@ public class EvenEstado {
     private static String est_Mudar;
     private static String est_INGRESADO;
     private static String est_PENDIENTE;
+    private static String est_CARGADOSTOCK;
     private static String caja_GASTO;
     private static String caja_COMPRA;
     private static String caja_APERTURA;
@@ -64,6 +65,7 @@ public class EvenEstado {
         setEst_Mudar("MUDAR");
         setEst_INGRESADO("INGRESADO");
         setEst_PENDIENTE("PENDIENTE");
+        setEst_CARGADOSTOCK("CARGADO_ST");
         setCond_Contado("CONTADO");
         setCond_Credito("CREDITO");
         setForPago_Efectivo("EFECTIVO");
@@ -84,6 +86,14 @@ public class EvenEstado {
         setPer_PERSONAL("PERSONAL");
         setPer_PROVEEDOR("PROVEEDOR");
         setPer_USUARIO("USUARIO");
+    }
+
+    public static String getEst_CARGADOSTOCK() {
+        return est_CARGADOSTOCK;
+    }
+
+    public static void setEst_CARGADOSTOCK(String est_CARGADOSTOCK) {
+        EvenEstado.est_CARGADOSTOCK = est_CARGADOSTOCK;
     }
 
     public static String getCaja_APERTURA() {

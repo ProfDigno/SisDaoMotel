@@ -14,6 +14,7 @@ import Evento.Fecha.EvenFecha;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Utilitario.EvenSonido;
+import FORMULARIO.BO.BO_habitacion_recepcion_temp;
 import FORMULARIO.ENTIDAD.habitacion_recepcion_temp;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.sql.Connection;
@@ -28,24 +29,26 @@ import javax.swing.JFrame;
  * @author Digno
  */
 public class FrmMenuMotel extends javax.swing.JFrame {
-    
 
     Connection conn = null;
     ConnPostgres conPs = new ConnPostgres();
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenConexion eveconn = new EvenConexion();
-    EvenFecha evefec=new EvenFecha();
+    EvenFecha evefec = new EvenFecha();
     json_array_conexion jscon = new json_array_conexion();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
     private habitacion_recepcion_temp ENThrt = new habitacion_recepcion_temp();
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
-    private String version = "V.: 1.6.2";
+    private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
+    private String version = "V.: 1.6.6";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
     private boolean hab_ruta_sonido[];
     private String string_ruta_sonido[];
     private int cant_de_habitacion;
+    private int sensor_puerta_cliente = 2;
+    private int sensor_puerta_limpieza = 3;
 
     public static boolean isHabilitar_sonido() {
         return habilitar_sonido;
@@ -98,13 +101,45 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n"
-                + "         ALTER TABLE habitacion_recepcion_temp ADD COLUMN activo boolean DEFAULT true;\n"
+                //                + "         ALTER TABLE habitacion_recepcion_temp ADD COLUMN activo boolean DEFAULT true;\n"
+                + "CREATE TABLE \"inventario\" (\n"
+                + "	\"idinventario\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"fecha_inicio\" TIMESTAMP NOT NULL ,\n"
+                + "	\"fecha_fin\" TIMESTAMP NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"es_abierto\" BOOLEAN NOT NULL ,\n"
+                + "	\"es_cerrado\" BOOLEAN NOT NULL ,\n"
+                + "	\"total_precio_venta\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"total_precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idinventario\")\n"
+                + ");\n"
+                + "CREATE TABLE \"inventario_item\" (\n"
+                + "	\"idinventario_item\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"stock_sistema\" INTEGER NOT NULL ,\n"
+                + "	\"stock_contado\" INTEGER NOT NULL ,\n"
+                + "	\"precio_venta\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"es_temp\" BOOLEAN NOT NULL ,\n"
+                + "	\"es_cargado\" BOOLEAN NOT NULL ,\n"
+                + "	\"fk_idinventario\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idproducto\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idinventario_item\")\n"
+                + ");"
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-//        eveconn.SQL_execute_libre(conn, sql);
+        eveconn.SQL_execute_libre(conn, sql);
+    }
+
+    private void actualizar_estado_puerta_cliente_limpieza() {
+        BOhrt.update_habitacion_recepcion_temp_puertas(sensor_puerta_cliente, sensor_puerta_limpieza);
     }
 
     private void iniciarTiempo() {
@@ -114,10 +149,12 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     }
 
     class clasetiempo extends TimerTask {
+
         public void run() {
             if (isHabilitar_sonido()) {
                 lblhora.setText(evefec.getString_formato_hora_min_seg());
                 cargar_sql_habitacion_recepcion_temp();
+                actualizar_estado_puerta_cliente_limpieza();
             }
         }
     }
@@ -129,19 +166,19 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
     private void crear_sonido(String ruta_sonido, int idhabitacion_dato) {
 //        if (no_es_sonido_ocupado) {
-            string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
-            if (!ruta_sonido.equals("NO")) {
-                if (!string_ruta_sonido[idhabitacion_dato].equals(ruta_sonido)) {
-                    hab_ruta_sonido[idhabitacion_dato] = true;
-                }
-                if (hab_ruta_sonido[idhabitacion_dato]) {
-                    EvenSonido.reproducir_vos(ruta_sonido);
-                    string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
-                    hab_ruta_sonido[idhabitacion_dato] = false;
-                }
-            } else {
+        string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
+        if (!ruta_sonido.equals("NO")) {
+            if (!string_ruta_sonido[idhabitacion_dato].equals(ruta_sonido)) {
                 hab_ruta_sonido[idhabitacion_dato] = true;
             }
+            if (hab_ruta_sonido[idhabitacion_dato]) {
+                EvenSonido.reproducir_vos(ruta_sonido);
+                string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
+                hab_ruta_sonido[idhabitacion_dato] = false;
+            }
+        } else {
+            hab_ruta_sonido[idhabitacion_dato] = true;
+        }
 //        }
     }
 
@@ -182,7 +219,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "idhabitacion_dato "
                 + "from\n"
                 + "	habitacion_recepcion_temp \n"
-//                + "where activo=true \n"
+                //                + "where activo=true \n"
                 + "order by orden asc;";
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
@@ -212,7 +249,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 //        }
 //        return getid;
 //    }
-
     private void cargar_array_habitacion() {
         cant_de_habitacion = (eveconn.getInt_ultimoID_max(conn, ENThrt.getTb_habitacion_recepcion_temp(), ENThrt.getId_idhabitacion_recepcion_temp()));
 //        cant_de_habitacion = getInt_cant_habitacion_activo(conn);
@@ -243,8 +279,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         btnventa = new javax.swing.JButton();
         btncajacierre = new javax.swing.JButton();
         btngasto = new javax.swing.JButton();
-        btncompra = new javax.swing.JButton();
         btnpersona = new javax.swing.JButton();
+        btncargar_stock = new javax.swing.JButton();
         lblversion = new javax.swing.JLabel();
         lblhora = new javax.swing.JLabel();
         barra_menu_principal = new javax.swing.JMenuBar();
@@ -263,6 +299,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu8 = new javax.swing.JMenu();
         jMenuItem15 = new javax.swing.JMenuItem();
         jMenuItem16 = new javax.swing.JMenuItem();
+        jMenuItem20 = new javax.swing.JMenuItem();
+        jMenu9 = new javax.swing.JMenu();
+        jMenuItem17 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -272,8 +311,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem13 = new javax.swing.JMenuItem();
         jMenu7 = new javax.swing.JMenu();
         jMenuItem14 = new javax.swing.JMenuItem();
-        jMenu9 = new javax.swing.JMenu();
-        jMenuItem17 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItem18 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
@@ -349,16 +386,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
             }
         });
 
-        btncompra.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_compra.png"))); // NOI18N
-        btncompra.setText("COMPRA");
-        btncompra.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btncompra.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btncompra.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btncompraActionPerformed(evt);
-            }
-        });
-
         btnpersona.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/cliente.png"))); // NOI18N
         btnpersona.setText("PERSONA");
         btnpersona.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -366,6 +393,16 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         btnpersona.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnpersonaActionPerformed(evt);
+            }
+        });
+
+        btncargar_stock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/72_compra.png"))); // NOI18N
+        btncargar_stock.setText("CARGAR ST");
+        btncargar_stock.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btncargar_stock.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btncargar_stock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncargar_stockActionPerformed(evt);
             }
         });
 
@@ -384,9 +421,10 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btngasto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btncompra)
+                .addComponent(btnpersona)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnpersona))
+                .addComponent(btncargar_stock)
+                .addContainerGap())
         );
         panel_acceso_rapidoLayout.setVerticalGroup(
             panel_acceso_rapidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -394,9 +432,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
             .addComponent(btnventa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnproducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btngasto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btncompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btncrear_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnpersona, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btncargar_stock, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         lblversion.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -421,16 +459,16 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(escritorioLayout.createSequentialGroup()
+                        .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblhora)))
-                    .addGroup(escritorioLayout.createSequentialGroup()
-                        .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(51, Short.MAX_VALUE))
+                            .addComponent(lblhora))))
+                .addContainerGap(275, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -551,6 +589,26 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
         jMenu5.add(jMenu8);
 
+        jMenuItem20.setText("CARGA STOCK");
+        jMenuItem20.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem20ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem20);
+
+        jMenu9.setText("INVENTARIO");
+
+        jMenuItem17.setText("CREAR INVENTARIO");
+        jMenuItem17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem17ActionPerformed(evt);
+            }
+        });
+        jMenu9.add(jMenuItem17);
+
+        jMenu5.add(jMenu9);
+
         barra_menu_principal.add(jMenu5);
 
         jMenu6.setText("USUARIO");
@@ -603,18 +661,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu7.add(jMenuItem14);
 
         barra_menu_principal.add(jMenu7);
-
-        jMenu9.setText("COMPRA");
-
-        jMenuItem17.setText("CARGAR COMPRA");
-        jMenuItem17.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem17ActionPerformed(evt);
-            }
-        });
-        jMenu9.add(jMenuItem17);
-
-        barra_menu_principal.add(jMenu9);
 
         jMenu10.setText("PERSONA");
 
@@ -763,16 +809,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmRepGananciaProducto());
     }//GEN-LAST:event_jMenuItem16ActionPerformed
 
-    private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
-        // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmCompra());
-    }//GEN-LAST:event_jMenuItem17ActionPerformed
-
-    private void btncompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncompraActionPerformed
-        // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmCompra());
-    }//GEN-LAST:event_btncompraActionPerformed
-
     private void jMenuItem19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem19ActionPerformed
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmPersona_cargo());
@@ -787,6 +823,21 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmPersona());
     }//GEN-LAST:event_jMenuItem18ActionPerformed
+
+    private void btncargar_stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncargar_stockActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmCompra_reposicion());
+    }//GEN-LAST:event_btncargar_stockActionPerformed
+
+    private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmCompra_reposicion());
+    }//GEN-LAST:event_jMenuItem20ActionPerformed
+
+    private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmCrearInventario());
+    }//GEN-LAST:event_jMenuItem17ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -827,8 +878,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JMenuBar barra_menu_principal;
     private javax.swing.JButton btncajacierre;
+    private javax.swing.JButton btncargar_stock;
     private javax.swing.JButton btncerrar_seccion;
-    private javax.swing.JButton btncompra;
     private javax.swing.JButton btncrear_habitacion;
     private javax.swing.JButton btngasto;
     private javax.swing.JButton btnpersona;
@@ -857,6 +908,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem18;
     private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem20;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;

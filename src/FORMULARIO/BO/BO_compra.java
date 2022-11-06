@@ -49,7 +49,7 @@ public class BO_compra {
                 conn.setAutoCommit(false);
             }
             DAOcom.update_compra(conn, ENTcom);
-            DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
+//            DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
             DAOcomi.update_compra_item_ingresar_stock_producto(conn, ENTcomi);
             DAOcomi.update_compra_item_tipo_item(conn, ENTcomi);
             conn.commit();
