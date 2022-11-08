@@ -59,7 +59,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
     private int idproducto;
     private int idinventario;
 
-    void abrir_formulario() {
+    private void abrir_formulario() {
         this.setTitle("CREAR INVENTARIO");
         eveJfra.centrar_formulario_internalframa(this);
         reestableser();
@@ -72,7 +72,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
             DAOini.actualizar_tabla_item_inventario_diferencia(conn, fk_idinventario, tblitem_inventario_cargado);
         }
     }
-    void reestableser() {
+    private void reestableser() {
         idproducto = -1;
         idinventario = DAOin.getInt_idinventario_iniciado(conn);
         if (idinventario >= 0) {
@@ -93,20 +93,14 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
         }
     }
 
-//    void color_formulario() {
-//        panel_producto.setBackground(clacolor.getColor_insertar_primario());
-//        panel_tabla.setBackground(clacolor.getColor_tabla());
-//        panel_inventario.setBackground(clacolor.getColor_base());
-//    }
-
-    boolean validar_inventario() {
+    private boolean validar_inventario() {
         if (evejtf.getBoo_JTextField_vacio(txtdescripcion, "DEBE CARGAR UNA DESCRIPCION")) {
             return false;
         }
         return true;
     }
 
-    void boton_crear_inventario() {
+    private void boton_crear_inventario() {
         if (validar_inventario()) {
             ENTin.setC3creado_por(ENTusu.getGlobal_nombre());
             ENTin.setC6descripcion(txtdescripcion.getText());
@@ -116,11 +110,12 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
             ENTin.setC8es_cerrado(false);
             ENTin.setC11fk_idusuario(ENTusu.getGlobal_idusuario());
             BOin.insertar_inventario(ENTin);
+            DAOin.actualizar_tabla_inventario(conn, tblinventario);
             reestableser();
         }
     }
 
-    void reestableser_producto() {
+    private void reestableser_producto() {
         txtpro_codbarra.setText(null);
         txtpro_nombre.setText(null);
         txtpro_pventa_mayo.setText(null);
@@ -134,7 +129,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
         txtpro_codbarra.grabFocus();
     }
 
-    void buscar_producto_cargar() {
+    private void buscar_producto_cargar() {
         if (DAOp.getBoolean_cargar_producto_por_codbarra(conn, ENTp, txtpro_codbarra.getText())) {
             if (DAOini.getBoolean_buscar_codbarra_de_item_inventario(conn, idinventario, txtpro_codbarra.getText())) {
                 JOptionPane.showMessageDialog(null, "ESTE PRODUCTO YA ESTA EN LA LISTA DE INVENTARIO");
@@ -156,7 +151,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_cargar_item_inventario() {
+    private void boton_cargar_item_inventario() {
         if (txtstock_contado.getText().trim().length() > 0) {
             if (idproducto >= 0) {
                 int stock = (int) ENTp.getC13stock_actual();
@@ -182,7 +177,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_eliminar_item() {
+    private void boton_eliminar_item() {
         if (!eveJtab.getBoolean_validar_select(tblitem_inventario)) {
             int iditem_inventario = eveJtab.getInt_select_id(tblitem_inventario);
             ENTini.setC8es_temp(false);
@@ -193,7 +188,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
         }
     }
 
-    void boton_terminar_inventario() {
+    private void boton_terminar_inventario() {
         if (tblitem_inventario.getRowCount() > 0) {
             ENTin.setC7es_abierto(false);
             ENTin.setC8es_cerrado(true);
@@ -221,7 +216,6 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
 //            poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, false);
         }
         if (eleccion_comando == 1) {
-//            poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, true);
             DAOini.imprimir_inventario_cargado(conn, idinventario);
         }
     }

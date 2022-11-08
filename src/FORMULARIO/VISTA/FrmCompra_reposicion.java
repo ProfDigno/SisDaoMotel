@@ -25,6 +25,7 @@ import FORMULARIO.DAO.DAO_caja_cierre_detalle;
 //import FORMULARIO.BO.BO_venta_item;
 import FORMULARIO.DAO.DAO_compra;
 import FORMULARIO.DAO.DAO_compra_item;
+import FORMULARIO.DAO.DAO_persona;
 import FORMULARIO.DAO.DAO_producto;
 import FORMULARIO.DAO.DAO_usuario;
 import FORMULARIO.ENTIDAD.caja_cierre_detalle;
@@ -38,6 +39,7 @@ import FORMULARIO.ENTIDAD.usuario;
 //import FORMULARIO.ENTIDAD.venta;
 //import FORMULARIO.ENTIDAD.venta_item;
 import FORMULARIO.VISTA.BUSCAR.ClaVarBuscar;
+import IMPRESORA_POS.PosImprimir_Compra;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -83,7 +85,9 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     private DAO_usuario DAOusu = new DAO_usuario();
     private persona ENTper = new persona();
+    private DAO_persona DAOper=new DAO_persona();
     private EvenRender everen = new EvenRender();
+    private PosImprimir_Compra poscom=new PosImprimir_Compra();
 //    private EvenEstado eveest = new EvenEstado();
     DefaultTableModel model_itemf = new DefaultTableModel();
     private java.util.List<JButton> botones_categoria;
@@ -141,12 +145,16 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
         monto_total = 0;
         monto_iva5 = 0;
         monto_iva10 = 0;
-        fk_idpersona = 0;
-        txtproveedor_nombre.setText(null);
-        txtproveedor_ruc.setText(null);
+        fk_idpersona = 1;
         ENTper.setBus_idpersona(fk_idpersona);
+        cargar_proveedor_ocacional();
+        txtcod_barra.grabFocus();
     }
-
+    private void cargar_proveedor_ocacional(){
+        DAOper.cargar_persona(conn, ENTper, fk_idpersona);
+        txtproveedor_nombre.setText(ENTper.getC4nombre());
+        txtproveedor_ruc.setText(ENTper.getC5ruc());
+    }
     private void cargar_usuario_acceso() {
         if (fk_idusuario != ENTusu.getGlobal_idusuario()) {
             usuario usu = new usuario();
@@ -595,6 +603,7 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
         if (validar_carga_compra()) {
             cargar_dato_compra();
             BOcom.insertar_compra(ENTcom, tblitem_producto);
+            poscom.boton_imprimir_pos_compra(conn, fk_idcompra);
             reestableser_compra();
             suma_item_producto();
         }
@@ -803,7 +812,12 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
             evemen.mensaje_error(e, sql, titulo);
         }
     }
-
+    private void boton_imprimir_compra(){
+        if(eveJtab.getBoolean_select_tabla_mensaje(tblcompra,"SELECCIONE LA TABLA COMPRA")){
+            int idcompra=eveJtab.getInt_select_id(tblcompra);
+            poscom.boton_imprimir_pos_compra(conn, idcompra);
+        }
+    }
     public FrmCompra_reposicion() {
         initComponents();
         abrir_formulario();
@@ -1350,6 +1364,11 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
         jButton2.setText("IMPRIMIR");
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         btncom_cargadostock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/32_pago.png"))); // NOI18N
         btncom_cargadostock.setText("CARGADO ST");
@@ -1742,6 +1761,11 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
             txtcantidad_producto.grabFocus();
         }
     }//GEN-LAST:event_txtprecio_compraKeyPressed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_compra();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

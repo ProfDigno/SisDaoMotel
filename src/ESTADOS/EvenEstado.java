@@ -27,6 +27,13 @@ public class EvenEstado {
     private static String est_INGRESADO;
     private static String est_PENDIENTE;
     private static String est_CARGADOSTOCK;
+    private static String estdes_Limpiando;
+    private static String estdes_cliingreso;
+    private static String estdes_cliAbierto;
+    private static String estdes_mante;
+    private static String estdes_limpAbierto;
+    private static String estdes_sucio;
+    private static String estdes_cancelar;
     private static String caja_GASTO;
     private static String caja_COMPRA;
     private static String caja_APERTURA;
@@ -47,7 +54,15 @@ public class EvenEstado {
     private static String tipo_hab_vip;
     private static String tipo_hab_luxury;
     private static String tipo_hab_penthouse;
-
+    private static String form_nro_9D;
+    private static String son_pue_cli;
+    private static String son_pue_limp;
+    private static String son_ocupa;
+    private static String son_libre;
+    private static String son_desocu;
+    private static String son_limpie;
+    private static String fec_hms;
+    private static String fec_amd;
     public EvenEstado() {
         setEst_Anulado("ANULADO");
         setEst_Emitido("EMITIDO");
@@ -66,6 +81,13 @@ public class EvenEstado {
         setEst_INGRESADO("INGRESADO");
         setEst_PENDIENTE("PENDIENTE");
         setEst_CARGADOSTOCK("CARGADO_ST");
+        setEstdes_Limpiando("-LIMPIANDO");
+        setEstdes_cliingreso("-CLI-INGRESO");
+        setEstdes_cliAbierto("-CLI-ABIERTO");
+        setEstdes_limpAbierto("-LIMP-ABIERTO");
+        setEstdes_cancelar("-(CANCELAR)");
+        setEstdes_sucio("-SUCIO");
+        setEstdes_mante("-MANTE");
         setCond_Contado("CONTADO");
         setCond_Credito("CREDITO");
         setForPago_Efectivo("EFECTIVO");
@@ -86,6 +108,143 @@ public class EvenEstado {
         setPer_PERSONAL("PERSONAL");
         setPer_PROVEEDOR("PROVEEDOR");
         setPer_USUARIO("USUARIO");
+        setForm_nro_9D("999G999G999");
+        setSon_pue_cli("sounds/puerta_cliente.wav");
+        setSon_pue_limp("sounds/puerta_limpieza.wav");
+        setSon_ocupa("sounds/son_ocu/son_ocu_");
+        setSon_libre("sounds/son_libre/son_libre_");
+        setSon_desocu("sounds/son_deso/son_deso_");
+        setSon_limpie("sounds/son_limpieza/son_limpieza_");
+        setFec_hms("HH24:MI:ss");
+        setFec_amd("yyyy-MM-dd");
+    }
+
+    public static String getFec_amd() {
+        return fec_amd;
+    }
+
+    public static void setFec_amd(String fec_amd) {
+        EvenEstado.fec_amd = fec_amd;
+    }
+
+    public static String getFec_hms() {
+        return fec_hms;
+    }
+
+    public static void setFec_hms(String fec_hms) {
+        EvenEstado.fec_hms = fec_hms;
+    }
+
+    public static String getSon_limpie() {
+        return son_limpie;
+    }
+
+    public static void setSon_limpie(String son_limpie) {
+        EvenEstado.son_limpie = son_limpie;
+    }
+
+    public static String getSon_desocu() {
+        return son_desocu;
+    }
+
+    public static void setSon_desocu(String son_desocu) {
+        EvenEstado.son_desocu = son_desocu;
+    }
+
+    public static String getSon_libre() {
+        return son_libre;
+    }
+
+    public static void setSon_libre(String son_libre) {
+        EvenEstado.son_libre = son_libre;
+    }
+
+    public static String getSon_ocupa() {
+        return son_ocupa;
+    }
+
+    public static void setSon_ocupa(String son_ocupa) {
+        EvenEstado.son_ocupa = son_ocupa;
+    }
+
+    public static String getSon_pue_limp() {
+        return son_pue_limp;
+    }
+
+    public static void setSon_pue_limp(String son_pue_limp) {
+        EvenEstado.son_pue_limp = son_pue_limp;
+    }
+
+    public static String getSon_pue_cli() {
+        return son_pue_cli;
+    }
+
+    public static void setSon_pue_cli(String son_pue_cli) {
+        EvenEstado.son_pue_cli = son_pue_cli;
+    }
+
+    public static String getForm_nro_9D() {
+        return form_nro_9D;
+    }
+
+    public static void setForm_nro_9D(String form_nro_9D) {
+        EvenEstado.form_nro_9D = form_nro_9D;
+    }
+
+    public static String getEstdes_cancelar() {
+        return estdes_cancelar;
+    }
+
+    public static void setEstdes_cancelar(String estdes_cancelar) {
+        EvenEstado.estdes_cancelar = estdes_cancelar;
+    }
+
+    public static String getEstdes_sucio() {
+        return estdes_sucio;
+    }
+
+    public static void setEstdes_sucio(String estdes_sucio) {
+        EvenEstado.estdes_sucio = estdes_sucio;
+    }
+
+    public static String getEstdes_cliAbierto() {
+        return estdes_cliAbierto;
+    }
+
+    public static void setEstdes_cliAbierto(String estdes_cliAbierto) {
+        EvenEstado.estdes_cliAbierto = estdes_cliAbierto;
+    }
+
+    public static String getEstdes_limpAbierto() {
+        return estdes_limpAbierto;
+    }
+
+    public static void setEstdes_limpAbierto(String estdes_limpAbierto) {
+        EvenEstado.estdes_limpAbierto = estdes_limpAbierto;
+    }
+
+    public static String getEstdes_mante() {
+        return estdes_mante;
+    }
+
+    public static void setEstdes_mante(String estdes_mante) {
+        EvenEstado.estdes_mante = estdes_mante;
+    }
+
+    public static String getEstdes_cliingreso() {
+        return estdes_cliingreso;
+    }
+
+    public static void setEstdes_cliingreso(String estdes_cliingreso) {
+        EvenEstado.estdes_cliingreso = estdes_cliingreso;
+    }
+
+    public static String getEstdes_Limpiando() {
+        return estdes_Limpiando;
+    }
+
+    public static void setEstdes_Limpiando(String estdes_Limpiando) {
+        EvenEstado.estdes_Limpiando = estdes_Limpiando;
     }
 
     public static String getEst_CARGADOSTOCK() {

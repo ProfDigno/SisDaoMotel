@@ -15,18 +15,21 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 
 /**
  *
  * @author Digno Tala
  */
 public class EvenMensajeJoptionpane {
-    private EvenFecha evefec=new EvenFecha();
+
+    private EvenFecha evefec = new EvenFecha();
     public static boolean activar_print_serial = true;
     private static int cant_error = 0;
     Icon iconoGuardar;
     Icon iconoEditar;
-    private  boolean print_msj;
+    private boolean print_msj;
 
     public boolean isPrint_msj() {
         return print_msj;
@@ -35,7 +38,7 @@ public class EvenMensajeJoptionpane {
     public void setPrint_msj(boolean print_msj) {
         this.print_msj = print_msj;
     }
-    
+
     public EvenMensajeJoptionpane() {
 //        iconoGuardar = new ImageIcon(getClass().getResource("Evento/Mensaje/guardar.png"));
 //        iconoEditar = new ImageIcon(getClass().getResource("Evento/Mensaje/editar.png"));
@@ -65,7 +68,20 @@ public class EvenMensajeJoptionpane {
         }
         return mensajeok;
     }
+    public boolean getBooMensaje_question_focus(JPanel foco,String mensaje, String titulo, String boton1, String boton2) {
 
+        Object[] opciones = {boton1, boton2};
+        boolean mensajeok;
+        int eleccion = JOptionPane.showOptionDialog(foco, mensaje, titulo,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, opciones, boton1);
+        if (eleccion == JOptionPane.YES_OPTION) {
+            mensajeok = true;
+        } else {
+            mensajeok = false;
+        }
+        return mensajeok;
+    }
     public boolean getBooMensaje_informacion(String mensaje, String titulo, String boton1, String boton2) {
         JOptionPane jOptionPane = new JOptionPane();
         jOptionPane.setBackground(Color.RED);
@@ -82,16 +98,18 @@ public class EvenMensajeJoptionpane {
         }
         return mensajeok;
     }
+
     public int getIntMensaje_informacion_3btn(String mensaje, String titulo, String boton1, String boton2, String boton3) {
         JOptionPane jOptionPane = new JOptionPane();
         jOptionPane.setBackground(Color.RED);
         jOptionPane.setOpaque(true);
-        Object[] opciones = {boton1, boton2,boton3};
+        Object[] opciones = {boton1, boton2, boton3};
         int eleccion = jOptionPane.showOptionDialog(null, mensaje, titulo,
                 jOptionPane.YES_NO_OPTION,
                 jOptionPane.INFORMATION_MESSAGE, null, opciones, boton1);
         return eleccion;
     }
+
     public boolean getBooMensaje_warning(String mensaje, String titulo, String boton1, String boton2) {
         JOptionPane jOptionPane = new JOptionPane();
         Object[] opciones = {boton1, boton2};
@@ -166,10 +184,11 @@ public class EvenMensajeJoptionpane {
         }
 
     }
+
     public void mensaje_error(Exception e, String titulo) {
         setCant_error(getCant_error() + 1);
-        JOptionPane.showMessageDialog(null, "Error:" + e , titulo, JOptionPane.ERROR_MESSAGE);
-        System.err.print(titulo+"\nError:"+e);
+        JOptionPane.showMessageDialog(null, "Error:" + e, titulo, JOptionPane.ERROR_MESSAGE);
+        System.err.print(titulo + "\nError:" + e);
         if (getCant_error() > 2) {//cantidad de error antes de cerrar
             setCant_error(0);
             JOptionPane.showMessageDialog(null, "Error:" + e + "\nEL SISTEMA SE REINICIA", titulo, JOptionPane.ERROR_MESSAGE);
@@ -177,22 +196,28 @@ public class EvenMensajeJoptionpane {
         }
 
     }
-    public boolean senha_crear_tablas(String senha) {
-        boolean habilitar = true;
-        String text_senha = JOptionPane.showInputDialog(null, "INGRESE LA SENHA", "SENHA", JOptionPane.WARNING_MESSAGE);
-        if (text_senha.equals(senha)) {
-            habilitar = true;
-        } else {
-            habilitar = false;
-            JOptionPane.showConfirmDialog(null, "SENHA INCORRECTA", "ERROR", JOptionPane.ERROR_MESSAGE);
 
+    public boolean senha_crear_tablas(String senha) {
+        boolean habilitar = false;
+        JPasswordField pf = new JPasswordField();
+        int okCxl = JOptionPane.showConfirmDialog(null, pf, "PASSWORD", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (okCxl == JOptionPane.OK_OPTION) {
+            String password = new String(pf.getPassword());
+            System.err.println("You entered: " + password);
+            if (password.equals(senha)) {
+                habilitar = true;
+            } else {
+                habilitar = false;
+                JOptionPane.showConfirmDialog(null, "SENHA INCORRECTA", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+            }
         }
         return habilitar;
     }
 
     public void Imprimir_serial_sql(String sql, String titulo) {
         String saltolinea = "\n";
-        String linea = "----------------------------------" + titulo+"/"+evefec.getString_formato_hora() + "-------------------------------------";
+        String linea = "----------------------------------" + titulo + "/" + evefec.getString_formato_hora() + "-------------------------------------";
         System.out.println(linea + saltolinea + sql + saltolinea + linea);
     }
 
