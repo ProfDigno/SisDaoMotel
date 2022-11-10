@@ -63,6 +63,14 @@ public class EvenEstado {
     private static String son_limpie;
     private static String fec_hms;
     private static String fec_amd;
+    private static String ico_libre;
+    private static String ico_mante;
+    private static String ico_ocupa;
+    private static String ico_puerta;
+    private static String ico_dormir;
+    private static String ico_limpie;
+    private static String ico_escoba;
+    private static String ico_candado;
     public EvenEstado() {
         setEst_Anulado("ANULADO");
         setEst_Emitido("EMITIDO");
@@ -117,6 +125,78 @@ public class EvenEstado {
         setSon_limpie("sounds/son_limpieza/son_limpieza_");
         setFec_hms("HH24:MI:ss");
         setFec_amd("yyyy-MM-dd");
+        setIco_libre("/graficos/libre.png");
+        setIco_mante("/graficos/48_mante.png");
+        setIco_ocupa("/iconos/motel/48_reloj.png");
+        setIco_puerta("/graficos/48_puerta.png");
+        setIco_dormir("/iconos/motel/48_dormir.png");///iconos/motel/48_dormir.png --/graficos/dormir.png
+        setIco_limpie("/graficos/limpieza.png");
+        setIco_escoba("/graficos/escoba.png");
+        setIco_candado("/graficos/ocupado.png");
+    }
+
+    public static String getIco_candado() {
+        return ico_candado;
+    }
+
+    public static void setIco_candado(String ico_candado) {
+        EvenEstado.ico_candado = ico_candado;
+    }
+
+    public static String getIco_limpie() {
+        return ico_limpie;
+    }
+
+    public static void setIco_limpie(String ico_limpie) {
+        EvenEstado.ico_limpie = ico_limpie;
+    }
+
+    public static String getIco_escoba() {
+        return ico_escoba;
+    }
+
+    public static void setIco_escoba(String ico_escoba) {
+        EvenEstado.ico_escoba = ico_escoba;
+    }
+
+    public static String getIco_dormir() {
+        return ico_dormir;
+    }
+
+    public static void setIco_dormir(String ico_dormir) {
+        EvenEstado.ico_dormir = ico_dormir;
+    }
+
+    public static String getIco_libre() {
+        return ico_libre;
+    }
+
+    public static void setIco_libre(String ico_libre) {
+        EvenEstado.ico_libre = ico_libre;
+    }
+
+    public static String getIco_mante() {
+        return ico_mante;
+    }
+
+    public static void setIco_mante(String ico_mante) {
+        EvenEstado.ico_mante = ico_mante;
+    }
+
+    public static String getIco_ocupa() {
+        return ico_ocupa;
+    }
+
+    public static void setIco_ocupa(String ico_ocupa) {
+        EvenEstado.ico_ocupa = ico_ocupa;
+    }
+
+    public static String getIco_puerta() {
+        return ico_puerta;
+    }
+
+    public static void setIco_puerta(String ico_puerta) {
+        EvenEstado.ico_puerta = ico_puerta;
     }
 
     public static String getFec_amd() {

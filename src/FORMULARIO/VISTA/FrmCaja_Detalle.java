@@ -82,11 +82,27 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void actualizar_tabla_caja_cierre() {
+        String filtro="";
         int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
-        String filtro = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "cc.fecha_creado");
+        String filtro_fec = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "cc.fecha_creado");
+        String filtro_usu="";
         if (idusuario > 0) {
-            filtro = filtro + " and cc.fk_idusuario=" + idusuario;
+            filtro =  " and cc.fk_idusuario=" + idusuario;
         }
+        String filtro_truno="";
+        if(jRturno_todo.isSelected()){
+            filtro_truno="";
+        }
+        if(jRturno_manana.isSelected()){
+            filtro_truno=" and cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' ";
+        }
+        if(jRturno_tarde.isSelected()){
+            filtro_truno=" and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' ";
+        }
+        if(jRturno_noche.isSelected()){
+            filtro_truno=" and cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' ";
+        }
+        filtro=filtro_fec+filtro_usu+filtro_truno;
         DAOcc.actualizar_tabla_caja_cierre(conn, tblresumen_caja_cierre, filtro);
         suma_total_caja_detalle_cerrado(filtro);
     }
@@ -293,6 +309,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        gru_turno = new javax.swing.ButtonGroup();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         txtfecha_inicio = new javax.swing.JTextField();
@@ -358,6 +375,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_ingreso = new javax.swing.JFormattedTextField();
         jFtotal_egreso = new javax.swing.JFormattedTextField();
         jFtotal_saldo = new javax.swing.JFormattedTextField();
+        jPanel15 = new javax.swing.JPanel();
+        jRturno_todo = new javax.swing.JRadioButton();
+        jRturno_manana = new javax.swing.JRadioButton();
+        jRturno_tarde = new javax.swing.JRadioButton();
+        jRturno_noche = new javax.swing.JRadioButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -468,7 +490,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addComponent(jFtotal_ocupa_descuento, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 99, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE)
                 .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -539,7 +561,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                 .addComponent(jFtotal_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -591,7 +613,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                 .addComponent(jFtotal_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -792,7 +814,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(btnimprimir_ticket1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 156, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 168, Short.MAX_VALUE)
                         .addComponent(jFtotal_cc_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -845,7 +867,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(840, Short.MAX_VALUE)
+                .addContainerGap(852, Short.MAX_VALUE)
                 .addComponent(jCsolo_terminado_gasto)
                 .addGap(271, 271, 271))
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -903,7 +925,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel14Layout.setHorizontalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
-                .addContainerGap(833, Short.MAX_VALUE)
+                .addContainerGap(845, Short.MAX_VALUE)
                 .addComponent(jCsolo_terminado_comp)
                 .addGap(278, 278, 278))
             .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -977,6 +999,68 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_saldo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_saldo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
 
+        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("TURNO"));
+
+        gru_turno.add(jRturno_todo);
+        jRturno_todo.setSelected(true);
+        jRturno_todo.setText("TODO");
+        jRturno_todo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRturno_todoActionPerformed(evt);
+            }
+        });
+
+        gru_turno.add(jRturno_manana);
+        jRturno_manana.setText("MAÑANA");
+        jRturno_manana.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRturno_mananaActionPerformed(evt);
+            }
+        });
+
+        gru_turno.add(jRturno_tarde);
+        jRturno_tarde.setText("TARDE");
+        jRturno_tarde.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRturno_tardeActionPerformed(evt);
+            }
+        });
+
+        gru_turno.add(jRturno_noche);
+        jRturno_noche.setText("NOCHE");
+        jRturno_noche.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRturno_nocheActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
+        jPanel15.setLayout(jPanel15Layout);
+        jPanel15Layout.setHorizontalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRturno_todo)
+                    .addComponent(jRturno_tarde))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRturno_noche)
+                    .addComponent(jRturno_manana))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel15Layout.setVerticalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRturno_todo)
+                    .addComponent(jRturno_manana))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRturno_tarde)
+                    .addComponent(jRturno_noche)))
+        );
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -984,30 +1068,29 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jFtotal_ingreso, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.Alignment.LEADING, 0, 159, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jFtotal_egreso, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jFtotal_saldo))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jFtotal_saldo)
-                        .addGap(159, 159, 159)
+                    .addComponent(cmbusuario, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnimprimir_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jFtotal_ingreso, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.Alignment.LEADING, 0, 159, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jFtotal_egreso, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(cmbusuario, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(jTabbedPane2)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -1019,14 +1102,15 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                             .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFtotal_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFtotal_egreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnimprimir_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jFtotal_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jFtotal_egreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jFtotal_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1104,6 +1188,26 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         seleccionar_caja_cierre();
     }//GEN-LAST:event_jCsolo_terminado_compActionPerformed
 
+    private void jRturno_todoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRturno_todoActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_caja_cierre();
+    }//GEN-LAST:event_jRturno_todoActionPerformed
+
+    private void jRturno_mananaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRturno_mananaActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_caja_cierre();
+    }//GEN-LAST:event_jRturno_mananaActionPerformed
+
+    private void jRturno_tardeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRturno_tardeActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_caja_cierre();
+    }//GEN-LAST:event_jRturno_tardeActionPerformed
+
+    private void jRturno_nocheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRturno_nocheActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_caja_cierre();
+    }//GEN-LAST:event_jRturno_nocheActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btncarrar_caja;
@@ -1112,6 +1216,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnimprimir_ticket1;
     private javax.swing.JComboBox<String> cmbfecha_caja_cierre;
     private javax.swing.JComboBox<String> cmbusuario;
+    private javax.swing.ButtonGroup gru_turno;
     private javax.swing.JCheckBox jCsolo_terminado_comp;
     private javax.swing.JCheckBox jCsolo_terminado_gasto;
     private javax.swing.JFormattedTextField jFmonto_apertura_caja;
@@ -1142,6 +1247,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1150,6 +1256,10 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JRadioButton jRturno_manana;
+    private javax.swing.JRadioButton jRturno_noche;
+    private javax.swing.JRadioButton jRturno_tarde;
+    private javax.swing.JRadioButton jRturno_todo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

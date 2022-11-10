@@ -167,6 +167,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     boolean[] Ba_es_manual;
     private int cant_de_habitacion;
     private int segundo_tiempo;
+    private int segundo_act_btn;
     private double monto_adicional;
     private int cant_boton_nrohab;
     String usu_id = "idusuario";
@@ -197,6 +198,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private int Icant_hasta_dormir;
     private String Shs_hasta_dormir;
     private int segundo_conn_rpi;
+    private int cant_add_hab_boton;
 
     private void abrir_formulario() {
         cargar_usuario_acceso();
@@ -463,7 +465,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         String sql = "select p.idproducto as idp,p.codigo_barra as cb,\n"
                 + "(p.nombre) as producto,u.nombre as unidad,\n"
                 + "p.stock_actual as stock, \n"
-                + "TRIM(to_char(p.precio_venta,'"+eveest.getForm_nro_9D()+"')) as pventa,"
+                + "TRIM(to_char(p.precio_venta,'" + eveest.getForm_nro_9D() + "')) as pventa,"
                 + "p.precio_venta as oculto_venta,p.precio_compra as oculto_compra \n"
                 + "from producto p,producto_categoria c,producto_unidad u,producto_marca pm \n"
                 + "where p.fk_idproducto_categoria=c.idproducto_categoria \n"
@@ -689,146 +691,144 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "	nro_habitacion,tipo_habitacion,estado,\n"
                 + "	minuto_cancelar,\n"
                 + "	case\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = true then ''\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '"+eveest.getEstdes_Limpiando()+"'\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "		and puerta_cliente = true then '" + eveest.getEstdes_Limpiando() + "'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_cliingreso()+"'\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliingreso() + "'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_mante()+"'\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = true\n"
                 + "		and (extract(epoch\n"
                 + "	from\n"
                 + "		(current_timestamp-fec_ocupado_inicio))>(minuto_cancelar * 60)) then ''\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = true\n"
                 + "		and (extract(epoch\n"
                 + "	from\n"
-                + "		(current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) then '"+eveest.getEstdes_cancelar()+"'\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		(current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) then '" + eveest.getEstdes_cancelar() + "'\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '"+eveest.getEstdes_limpAbierto()+"'\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and puerta_cliente = true then '" + eveest.getEstdes_limpAbierto() + "'\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_cliAbierto()+"'\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliAbierto() + "'\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_mante()+"'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true then '"+eveest.getEstdes_sucio()+"'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "		and puerta_cliente = true then '" + eveest.getEstdes_sucio() + "'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '"+eveest.getEstdes_Limpiando()+"'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "		and puerta_cliente = true then '" + eveest.getEstdes_Limpiando() + "'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_cliAbierto()+"'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliAbierto() + "'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_mante()+"'\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = true then ''\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '"+eveest.getEstdes_Limpiando()+"'\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
+                + "		and puerta_cliente = true then '" + eveest.getEstdes_Limpiando() + "'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
                 + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_cliingreso()+"'\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliingreso() + "'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
                 + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '"+eveest.getEstdes_mante()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
                 + "		else '.'\n"
                 + "	end as desc_estado,\n"
                 + "	case\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"' then to_char((current_timestamp-fec_ocupado_inicio), '"+eveest.getFec_hms()+"')\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"' then to_char((current_timestamp-fec_ocupado_fin), '"+eveest.getFec_hms()+"')\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"' then to_char((current_timestamp-fec_ocupado_fin), '"+eveest.getFec_hms()+"')\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "' then to_char((current_timestamp-fec_ocupado_inicio), '" + eveest.getFec_hms() + "')\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "' then to_char((current_timestamp-fec_ocupado_fin), '" + eveest.getFec_hms() + "')\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "' then to_char((current_timestamp-fec_ocupado_fin), '" + eveest.getFec_hms() + "')\n"
                 + "		else '.'\n"
                 + "	end as tiempo,\n"
                 + "	case\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"' then to_char((current_timestamp-fec_ocupado_inicio), '"+eveest.getFec_amd()+" "+eveest.getFec_hms()+"')\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "' then to_char((current_timestamp-fec_ocupado_inicio), '" + eveest.getFec_amd() + " " + eveest.getFec_hms() + "')\n"
                 + "		else '.'\n"
                 + "	end as fec_ingreso,\n"
                 + "	es_por_dormir as habilitar_dormir,\n"
                 + "	es_por_hora as habilitar_hora,\n" //add
                 + "	case\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "         then to_char((monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto)), '"+eveest.getForm_nro_9D()+"')\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "         then to_char((monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto)), '" + eveest.getForm_nro_9D() + "')\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "         then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto)), '"+eveest.getForm_nro_9D()+"')\n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "         then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto)), '" + eveest.getForm_nro_9D() + "')\n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
                 + "         then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto) + \n"
-                + "              (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* monto_por_hora_adicional)), '"+eveest.getForm_nro_9D()+"')\n"
+                + "              (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* monto_por_hora_adicional)), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		else '.'\n"
                 + "	end as tarifa_gral_hora,\n"
                 + "	case\n"
                 + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '"+eveest.getForm_nro_9D()+"')\n"
+                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>(fec_ocupado_inicio))\n"
                 + "		and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '"+eveest.getForm_nro_9D()+"')\n"
+                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '"+eveest.getForm_nro_9D()+"')\n"
+                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '"+eveest.getForm_nro_9D()+"')\n"
-       
+                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
-//                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
+                //                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '"+eveest.getForm_nro_9D()+"')\n"
+                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>(fec_ocupado_inicio))\n"
                 + "		and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '"+eveest.getForm_nro_9D()+"')\n"
+                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
-//                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
+                //                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '"+eveest.getForm_nro_9D()+"')\n"
+                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '" + eveest.getForm_nro_9D() + "')\n"
                 + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '"+eveest.getForm_nro_9D()+"')\n"
-            
+                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '" + eveest.getForm_nro_9D() + "')\n"
                 + "		else '.'\n"
                 + "	end as tarifa_gral_dormir,\n"
                 + "case\n"
@@ -853,51 +853,51 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "		else false\n"
                 + "	end as permitir_dormir,\n"
                 + "	case\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = false then true\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = false then true\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
                 + "		and puerta_limpieza = true then true\n"
                 + "		else false\n"
                 + "	end as cambiar_estado,\n"
                 + "	case\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '"+eveest.getEst_Ocupado()+"'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
-                + "		and puerta_limpieza = false then '"+eveest.getEst_Limpiando()+"'\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
-                + "		and puerta_limpieza = true then '"+eveest.getEst_Libre()+"'\n"
+                + "		and puerta_cliente = false then '" + eveest.getEst_Ocupado() + "'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
+                + "		and puerta_limpieza = false then '" + eveest.getEst_Limpiando() + "'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
+                + "		and puerta_limpieza = true then '" + eveest.getEst_Libre() + "'\n"
                 + "		else 'sin'\n"
                 + "	end as est_nuevo,\n"
                 + "	idhabitacion_recepcion_actual as ult_recepcion,\n"
                 + "	case\n"
-                + "             when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "             when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = false \n"
-                + "                          then '"+eveest.getSon_pue_cli()+"'\n"
-                + "             when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "                          then '" + eveest.getSon_pue_cli() + "'\n"
+                + "             when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = false\n"
                 //+ "		and puerta_cliente = false \n"
-                + "                          then '"+eveest.getSon_pue_limp()+"'\n"
-                + "		when estado = '"+eveest.getEst_Libre()+"'\n"
+                + "                          then '" + eveest.getSon_pue_limp() + "'\n"
+                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = false \n"
-                + "                          then '"+eveest.getSon_ocupa()+"' || nro_habitacion || '.wav'\n"
-                + "		when estado = '"+eveest.getEst_Limpiando()+"'\n"
+                + "                          then '" + eveest.getSon_ocupa() + "' || nro_habitacion || '.wav'\n"
+                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = true \n"
-                + "                          then '"+eveest.getSon_libre()+"' || nro_habitacion || '.wav'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "                          then '" + eveest.getSon_libre() + "' || nro_habitacion || '.wav'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = true\n"
                 + "		and puerta_cliente = true\n"
                 + "		and (extract(epoch from (current_timestamp - fec_ocupado_fin)))<20  \n"
-                + "                          then '"+eveest.getSon_desocu()+"' || nro_habitacion || '.wav'\n"
-                + "		when estado = '"+eveest.getEst_Sucio()+"'\n"
+                + "                          then '" + eveest.getSon_desocu() + "' || nro_habitacion || '.wav'\n"
+                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
                 + "		and puerta_limpieza = false \n"
-                + "                          then '"+eveest.getSon_limpie()+"' || nro_habitacion || '.wav'\n"
+                + "                          then '" + eveest.getSon_limpie() + "' || nro_habitacion || '.wav'\n"
                 + "		else 'NO'\n"
                 + "	end as ruta_sonido,\n"
                 + "	(extract(epoch\n"
@@ -911,23 +911,23 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "		when puerta_cliente = true then 1\n"
                 + "		else 0\n"
                 + "	end as puerta_ocu,\n"
-                + "to_char((fec_ocupado_inicio), '"+eveest.getFec_amd()+"') as fecha_ingreso,"
-                + "to_char((fec_ocupado_inicio), '"+eveest.getFec_hms()+"') as hora_ingreso,"
+                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_amd() + "') as fecha_ingreso,"
+                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_hms() + "') as hora_ingreso,"
                 + "minuto_minimo,"
                 + "     case\n"
-                + "	        when estado = '"+eveest.getEst_Ocupado()+"'  and es_por_hora=true \n"
+                + "	        when estado = '" + eveest.getEst_Ocupado() + "'  and es_por_hora=true \n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
                 + "          then 1 \n"
-                + "		when estado = '"+eveest.getEst_Ocupado()+"'  and es_por_hora=true \n"
+                + "		when estado = '" + eveest.getEst_Ocupado() + "'  and es_por_hora=true \n"
                 + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
                 + "          then (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)+1)\n"
-                + "             when estado = '"+eveest.getEst_Ocupado()+"' and es_por_dormir=true\n"
+                + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_dormir=true\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
                 + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))"
-                + "             when estado = '"+eveest.getEst_Ocupado()+"' and es_por_dormir=true\n"
+                + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_dormir=true\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
@@ -935,30 +935,30 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "		else 0\n"
                 + "	end as cant_add_tarifa_hora,"
                 + "idhabitacion_dato,idhabitacion_recepcion_actual,monto_adelanto, "
-                + "case when estado = '"+eveest.getEst_Ocupado()+"' and puerta_limpieza=true and puerta_cliente=true \n"
+                + "case when estado = '" + eveest.getEst_Ocupado() + "' and puerta_limpieza=true and puerta_cliente=true \n"
                 + "        and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_cancelar*60)) then true\n"
                 + "     else false end as cancelar_habitacion,\n"
                 + "    case when ((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))>0 \n"
                 + "         then to_char(((((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))*100)/(minuto_cancelar * 60)),'99D99%') \n"
                 + "         else '0%' end as por_cancelar,"
-                + "TRIM(to_char(monto_por_hora_minimo,'"+eveest.getForm_nro_9D()+"')) as  monto_por_hora_minimo,"
+                + "TRIM(to_char(monto_por_hora_minimo,'" + eveest.getForm_nro_9D() + "')) as  monto_por_hora_minimo,"
                 + "case\n"
-                + "when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
                 + "    then (0)\n"
-                + "when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
                 + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
                 + "    then (1)\n"
-                + "when estado = '"+eveest.getEst_Ocupado()+"'\n"
+                + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
                 + "    then (1 + (cast(to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* 1))\n"
                 + "else 0\n"
                 + "end as cant_hasta_dormir,\n"
                 + "case \n"
-                + "when estado = '"+eveest.getEst_Ocupado()+"' \n"
+                + "when estado = '" + eveest.getEst_Ocupado() + "' \n"
                 + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(0)) \n"
-                + "     then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'"+eveest.getFec_hms()+"') \n"
+                + "     then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'" + eveest.getFec_hms() + "') \n"
                 + "else '00:00' \n"
                 + "end as hs_hasta_dormir "
                 + "from\n"
@@ -998,7 +998,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 int cant_hasta_dormir = rs.getInt("cant_hasta_dormir");
                 String hs_hasta_dormir = rs.getString("hs_hasta_dormir");
                 String monto = "0";
-                
+
                 if (!habilitar_hora && habilitar_dormir) {
                     monto = tarifa_gral_dormir;
                 }
@@ -1131,11 +1131,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton.setName(String.valueOf(nro_habitacion));
         if (estado.equals(eveest.getEst_Libre())) {
             boton.setForeground(new java.awt.Color(0, 102, 0));
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/libre.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_libre())));
         }
-        if (desc_estado.equals(eveest.getEst_Libre() +eveest.getEstdes_mante())) {
+        if (desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_mante())) {
             boton.setBackground(new java.awt.Color(223, 211, 195));
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/48_mante.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_mante())));
         }
         if (desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_Limpiando())) {
             boton.setBackground(new java.awt.Color(223, 211, 195));
@@ -1149,32 +1149,43 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 boton.setBackground(new java.awt.Color(255, 204, 255));
             }
 
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/iconos/motel/48_reloj.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_ocupa())));
         }
         if (desc_estado.equals(eveest.getEst_Ocupado() + eveest.getEstdes_cliAbierto())) {
             boton.setBackground(new java.awt.Color(223, 211, 195));
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/48_puerta.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_puerta())));
         }
         if (estado.equals(eveest.getEst_Ocupado()) && habilitar_dormir) {
             boton.setForeground(Color.red);
             if (monto_adelanto > 0) {
                 boton.setBackground(new java.awt.Color(255, 255, 153));
             }
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/dormir.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_dormir())));
         }
         if (estado.equals(eveest.getEst_Sucio())) {
             boton.setForeground(Color.BLACK);
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/limpieza.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_limpie())));
         }
         if (estado.equals(eveest.getEst_Limpiando())) {
             boton.setForeground(Color.BLACK);
-            boton.setIcon(new ImageIcon(this.getClass().getResource("/graficos/escoba.png")));
+            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_escoba())));
         }
         if (boton_hab_unavez) {
             panel_habitaciones.add(boton, fila);
+            cant_add_hab_boton = 0;
         } else {
-            panel_habitaciones.remove(fila);
-            panel_habitaciones.add(boton, fila);
+            if (estado.equals(eveest.getEst_Ocupado())
+                    || estado.equals(eveest.getEst_Sucio())
+                    || estado.equals(eveest.getEst_Limpiando())
+                    || desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_mante())
+                    || desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_Limpiando())
+                    || desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_cliAbierto())
+                    || cant_add_hab_boton <= (cant_de_habitacion * 4)) {
+                panel_habitaciones.remove(fila);
+                panel_habitaciones.add(boton, fila);
+
+            }
+            cant_add_hab_boton++;
         }
         boton.addActionListener(new ActionListener() {
 
@@ -1272,14 +1283,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             boton_lib.setFont(new Font("Arial", Font.BOLD, 12));
             boton_lib.setName(String.valueOf(nro_habitacion));
             boton_lib.setForeground(new java.awt.Color(0, 102, 0));
-            boton_lib.setIcon(new ImageIcon(this.getClass().getResource("/graficos/libre.png")));
+            boton_lib.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_libre())));
         } else {
             boton_lib = new JButton("NO-DISPONIBLE");
             boton_lib.setFont(new Font("Arial", Font.BOLD, 12));
             boton_lib.setName(String.valueOf(nro_habitacion));
             boton_lib.setForeground(Color.black);
             boton_lib.setBackground(Color.orange);
-            boton_lib.setIcon(new ImageIcon(this.getClass().getResource("/graficos/ocupado.png")));
+            boton_lib.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_candado())));
         }
         if (boton_mudar_unavez) {
             panel_habitaciones_libre.add(boton_lib, fila);
@@ -1344,9 +1355,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         eveJtab.limpiar_tabla_datos(model_itemf);
         String titulo = "limpiar_cargar_tabla_venta_item";
         String sql = "SELECT fk_idproducto as id,descripcion,"
-                + "to_char(precio_venta,'"+eveest.getForm_nro_9D()+"') as precio,"
+                + "to_char(precio_venta,'" + eveest.getForm_nro_9D() + "') as precio,"
                 + "cantidad as cant,"
-                + "to_char(precio_venta*cantidad,'"+eveest.getForm_nro_9D()+"') as total,"
+                + "to_char(precio_venta*cantidad,'" + eveest.getForm_nro_9D() + "') as total,"
                 + "precio_venta as opventa,"
                 + "precio_compra as opcompra,"
                 + "tipo_item as otipo,"
@@ -1387,12 +1398,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     class clasetiempo extends TimerTask {
 
-
-
         public void run() {
             try {
                 segundo_tiempo++;
                 segundo_conn_rpi++;
+                segundo_act_btn++;
                 int tab_select = jTab_principal.getSelectedIndex();
                 fecha_hora_ahora = evefec.getString_formato_fecha_hora();
                 txttiempo_ahora.setText(fecha_hora_ahora);
@@ -1416,6 +1426,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 if (segundo_conn_rpi > 5) {
                     boton_raspberry_ultima_conexion();
                     segundo_conn_rpi = 0;
+                }
+                if (segundo_act_btn > 10) {
+                    cant_add_hab_boton = 0;
+                    segundo_act_btn = 0;
                 }
                 mostrar_boton_hab(tab_select);
             } catch (RuntimeException e) {
@@ -1534,23 +1548,20 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFdormir_ingreso_final.setText(ENThrt.getC36hs_dormir_ingreso_final());
         jFdormir_salida_final.setText(ENThrt.getC37hs_dormir_salida_final());
         if (!es_por_hora && es_por_dormir) {
-//            jRpor_hora.setSelected(false);
             jRpor_dormir.setSelected(true);
-            lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
+            lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
             monto_adicional = monto_por_dormir_adicional;
             monto_minimo = monto_por_dormir_minimo;
         }
         if (es_por_hora && !es_por_dormir) {
             jRpor_hora.setSelected(true);
-//            jRpor_dormir.setSelected(false);
-            lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_reloj.png")));
+            lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_ocupa())));
             monto_adicional = monto_por_hora_adicional;
             monto_minimo = monto_por_hora_minimo;
         }
         if (es_por_hora && es_por_dormir) {
-//            jRpor_hora.setSelected(false);
             jRpor_hora_mas_dormir.setSelected(true);
-            lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
+            lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
             monto_adicional = monto_por_dormir_adicional;
             monto_minimo = monto_por_dormir_minimo;
         }
@@ -1581,6 +1592,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void limpiar_habitacion_select() {
         cargar_usuario_acceso();
+        boton_hab_unavez = true;
         nro_habitacion_select = 0;
         motivo_anulacion = "-";
         fk_idventa = 0;
@@ -1700,7 +1712,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOven.cargar_venta(conn, ENTven, idhabitacion_recepcion_actual);
         ENTven.setC4monto_letra("cero");
         ENTven.setC5estado(eveest.getEst_Desocupado());
-        ENTven.setC6observacion("Hora Ocupacion hasta dormir:"+Shs_hasta_dormir);
+        ENTven.setC6observacion("Hora Ocupacion hasta dormir:" + Shs_hasta_dormir);
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion("sin");
@@ -1777,6 +1789,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             ENTven.setC1idventa(idventa2);
             ENTven.setC3creado_por(creado_por);
             BOveni.insertar_venta_item_sin_commit(conn, ENTveni, ENTven, tblitem_producto, true, false, false);
+            boton_hab_unavez = true;
             conn.commit();
         } catch (SQLException e) {
             evemen.mensaje_error(e, ENTven.toString(), titulo);
@@ -2217,7 +2230,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 if (permitir_dormir_select) {
                     if (evemen.getBooMensaje_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION A DORMIR", "OCUPACION DORMIR", "ACEPTAR", "CANCELAR")) {
                         update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-                        lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
+                        lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
                         limpiar_habitacion_select();
                     } else {
                         jRpor_hora.setSelected(true);
@@ -2231,7 +2244,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 if (jRpor_hora.isSelected()) {
                     if (evemen.getBooMensaje_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION A POR HORA", "OCUPACION POR HORA", "ACEPTAR", "CANCELAR")) {
                         update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-                        lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_reloj.png")));
+                        lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_ocupa())));
                         limpiar_habitacion_select();
                     }
                 }
@@ -2241,12 +2254,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         + "Cantidad adicional Hasta la Dormida: " + Icant_hasta_dormir + "\n"
                         + "Horas adicional hasta la dormida: " + Shs_hasta_dormir,
                         "OCUPACION POR HORA MAS DORMIR", "ACEPTAR", "CANCELAR")) {
-                    if(evemen.senha_crear_tablas("MAJJJSMG")){
-                    update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-                    lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/48_dormir.png")));
-                    cargar_item_producto_adicional_hasta_dormir();
-                    boton_cargar_consumo();
-                    limpiar_habitacion_select();
+                    if (evemen.senha_crear_tablas("MAJJJSMG")) {
+                        update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
+                        lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
+                        cargar_item_producto_adicional_hasta_dormir();
+                        boton_cargar_consumo();
+                        limpiar_habitacion_select();
                     }
                 }
             }
@@ -2337,6 +2350,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             cargar_dato_habitacion_recepcion_limpieza_auto(idhabitacion_recepcion_actual);
             cargar_dato_hab_temp_limpieza_auto(idhabitacion_dato);
             BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
+            boton_hab_unavez = true;
         }
     }
 
@@ -2364,12 +2378,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             cargar_dato_habitacion_recepcion_libre_auto(idhabitacion_recepcion_actual);
             cargar_dato_hab_temp_libre_auto(idhabitacion_dato);
             BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
+            boton_hab_unavez = true;
         }
     }
 
     private void ejecutar_ocupar_automatico(boolean cambiar_estado, String est_nuevo, int idhabitacion_dato, int nro_habitacion, int idhabitacion_recepcion_actual) {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Ocupado())) {
             boton_libre_a_ocupar(nro_habitacion, idhabitacion_dato);
+            boton_hab_unavez = true;
         }
     }
 
@@ -2449,6 +2465,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cargar_dato_hab_temp_ocupado_a_libre_CANCELAR(idhabitacion_dato);
         cargar_dato_caja_detalle_CANCELAR(fk_idventa);
         BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
+        boton_hab_unavez = true;
     }
 
     private void boton_cancelar() {
@@ -2793,6 +2810,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
+    private void boton_actualizar_monto_adelanto() {
+        monto_adelanto = (monto_adicional_total + monto_minimo + monto_consumo);
+        txtmonto_adelanto.setText(evejtf.getString_format_nro_decimal(monto_adelanto));
+        txtmonto_adelanto.setBackground(Color.yellow);
+    }
+
     public FrmVenta() {
         initComponents();
         abrir_formulario();
@@ -2867,6 +2890,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         lbltipo_tarifa_icono = new javax.swing.JLabel();
         btnmudar_habitacion = new javax.swing.JButton();
         btnimprimir_ticket_ocupado = new javax.swing.JButton();
+        btnactualizar_total_pago_adelanto = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrol_referencia_categoria = new javax.swing.JScrollPane();
         panel_referencia_categoria = new javax.swing.JPanel();
@@ -3214,7 +3238,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addComponent(txtminuto_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 19, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         txtfec_ocupado_inicio.setEditable(false);
@@ -3499,6 +3523,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnsalir_ocupacion.setBackground(new java.awt.Color(255, 153, 0));
         btnsalir_ocupacion.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnsalir_ocupacion.setText("SALIR");
         btnsalir_ocupacion.addActionListener(new java.awt.event.ActionListener() {
@@ -3535,13 +3560,20 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnactualizar_total_pago_adelanto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/48_recargar.png"))); // NOI18N
+        btnactualizar_total_pago_adelanto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnactualizar_total_pago_adelantoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -3567,34 +3599,35 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addComponent(btndescontar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtmonto_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(btnadelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbltipo_tarifa_icono, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(12, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnactualizar_total_pago_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnadelanto, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lbltipo_tarifa_icono, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(btncancelar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jFmonto_total_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(btnmudar_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnimprimir_ticket_ocupado)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnsalir_ocupacion, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(68, 68, 68))))
+                                .addComponent(btnsalir_ocupacion, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btncancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jFmonto_total_pagar)
+                                    .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))))
+                        .addGap(18, 18, 18)))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3602,66 +3635,57 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(txtnro_hab_grande, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(txttipo_habitacion)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblicono_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(txtnro_hab_grande, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(txttipo_habitacion)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblicono_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtfec_ocupado_inicio, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
-                                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(lbltipo_tarifa_icono, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addComponent(txtfec_ocupado_inicio_hora, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(11, 11, 11)
-                                                .addComponent(txttiempo_transcurrido, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(145, 145, 145))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(356, 356, 356)
-                                        .addComponent(jFmonto_total_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(btncancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGap(20, 20, 20)))))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(btnimprimir_ticket_ocupado, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnadelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnmudar_habitacion))
-                        .addGap(13, 13, 13))
+                                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(8, 8, 8))
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtfec_ocupado_inicio, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
+                            .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lbltipo_tarifa_icono, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.CENTER, jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtmonto_adelanto, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btndescontar, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtmonto_descontar, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(13, 13, 13))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(btnsalir_ocupacion, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(19, 19, 19))))))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(txtfec_ocupado_inicio_hora, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(11, 11, 11)
+                                .addComponent(txttiempo_transcurrido, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jFmonto_total_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btncancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(15, 15, 15)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(txtmonto_descontar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btndescontar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtmonto_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnadelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnmudar_habitacion)
+                    .addComponent(btnimprimir_ticket_ocupado, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnactualizar_total_pago_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(13, 13, 13))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnsalir_ocupacion, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jTab_principal.addTab("TIEMPO HABITACION", jPanel2);
@@ -4598,8 +4622,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         seleccionar_tipo_ocupacion();
     }//GEN-LAST:event_jRpor_hora_mas_dormirActionPerformed
 
+    private void btnactualizar_total_pago_adelantoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizar_total_pago_adelantoActionPerformed
+        // TODO add your handling code here:
+        boton_actualizar_monto_adelanto();
+    }//GEN-LAST:event_btnactualizar_total_pago_adelantoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnactualizar_total_pago_adelanto;
     private javax.swing.JButton btnadelanto;
     private javax.swing.JButton btnagregar_cantidad;
     private javax.swing.JButton btncancelar;

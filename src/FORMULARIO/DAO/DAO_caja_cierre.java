@@ -6,6 +6,7 @@ import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Fecha.EvenFecha;
+import Evento.Jtable.EvenRender;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +19,7 @@ public class DAO_caja_cierre {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EvenRender eren = new EvenRender();
     private String mensaje_insert = "CAJA_CIERRE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CAJA_CIERRE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO caja_cierre(idcaja_cierre,fecha_creado,creado_por,fecha_inicio,fecha_fin,estado,fk_idusuario) VALUES (?,?,?,?,?,?,?);";
@@ -113,16 +115,22 @@ public class DAO_caja_cierre {
                 + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
                 + "and cd.es_cerrado=true \n"
                 + "and cci.fk_idcaja_cierre=cc.idcaja_cierre),'999G999G999') as saldo,\n"
-                + "cc.estado,u.nombre as usuario \n"
+                + "cc.estado,u.nombre as usuario, \n"
+                + "case \n"
+                + "	when cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' then 'manana'\n"
+                + "	when cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' then 'tarde'\n"
+                + "	when cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' then 'noche'\n"
+                + "else to_char(cc.fecha_inicio ,'HH24:MI:ss') end as turno "
                 + "from caja_cierre cc,usuario u \n"
                 + "where cc.fk_idusuario=u.idusuario \n" + filtro
                 + " order by cc.idcaja_cierre desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre(tbltabla);
+        eren.rendertabla_turno_caja(tbltabla, 9);
     }
 
     public void ancho_tabla_caja_cierre(JTable tbltabla) {
-        int Ancho[] = {5, 13, 13, 13, 9, 9, 9, 8, 21};
+        int Ancho[] = {5, 11, 13, 13, 9, 9, 9, 8,15,8};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.alinear_derecha_columna(tbltabla, 5);
@@ -185,7 +193,7 @@ public class DAO_caja_cierre {
                 + "from caja_cierre_detalle cd,caja_cierre_item cci,caja_cierre cca\n"
                 + "where  cd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle\n"
                 + "and cci.fk_idcaja_cierre=cca.idcaja_cierre \n"
-                + "and cci.fk_idcaja_cierre="+ fk_idcaja_cierre
+                + "and cci.fk_idcaja_cierre=" + fk_idcaja_cierre
                 + " order by cd.idcaja_cierre_detalle desc;";
         String titulonota = "CIERRE DE CAJA RESUMEN";
         String direccion = "src/REPORTE/CAJA/repCajaCierreResumen.jrxml";

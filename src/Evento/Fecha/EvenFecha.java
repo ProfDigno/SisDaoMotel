@@ -342,4 +342,33 @@ public class EvenFecha {
         }
         return tiempo_transcurrido;
     }
+    public String getString_turno() {
+        String Sturno="";
+        java.util.Date date = new java.util.Date();
+        int hora=date.getHours();
+        int minuto=date.getMinutes();
+        int hs_min=(hora*60)+minuto;
+        int t1_1=(6*60+1);
+        int t1_2=(14*60);
+        int t2_1=(14*60+1);
+        int t2_2=(22*60);
+        int t3_1=(22*60+1);
+        int t3_2=(23*60+59);
+        int t4_1=1;
+        int t4_2=(6*60);
+        if(hs_min>t1_1 && hs_min<t1_2){
+            Sturno="Turno: MAÑANA";
+        }
+        if(hs_min>t2_1 && hs_min<t2_2){
+            Sturno="Turno: TARDE";
+        }
+        if(hs_min>t3_1 && hs_min<t3_2){
+            Sturno="Turno: NOCHE";
+        }
+        if(hs_min>t4_1 && hs_min<t4_2){
+            Sturno="Turno: MADRUGADA";
+        }
+//        Sturno="hs_min:"+hs_min;
+        return Sturno;
+    }
 }

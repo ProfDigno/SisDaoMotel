@@ -41,7 +41,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
-    private String version = "V.: 1.6.6";
+    private String version = "V.: 1.6.8";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
     private boolean hab_ruta_sonido[];
@@ -135,7 +135,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql);
+//        eveconn.SQL_execute_libre(conn, sql);
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
@@ -153,6 +153,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         public void run() {
             if (isHabilitar_sonido()) {
                 lblhora.setText(evefec.getString_formato_hora_min_seg());
+                lblturno.setText(evefec.getString_turno());
                 cargar_sql_habitacion_recepcion_temp();
                 actualizar_estado_puerta_cliente_limpieza();
             }
@@ -283,6 +284,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         btncargar_stock = new javax.swing.JButton();
         lblversion = new javax.swing.JLabel();
         lblhora = new javax.swing.JLabel();
+        lblturno = new javax.swing.JLabel();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -444,13 +446,18 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
         lblhora.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         lblhora.setForeground(new java.awt.Color(0, 0, 102));
-        lblhora.setText("jLabel1");
+        lblhora.setText("HORA");
+
+        lblturno.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        lblturno.setForeground(new java.awt.Color(0, 0, 102));
+        lblturno.setText("HORA");
 
         escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblusuario, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(panel_acceso_rapido, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblversion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblhora, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(lblturno, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
@@ -468,7 +475,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblhora))))
+                            .addComponent(lblhora)
+                            .addComponent(lblturno))))
                 .addContainerGap(275, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
@@ -480,7 +488,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                     .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblhora)))
+                        .addComponent(lblhora)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblturno)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btncerrar_seccion)
@@ -933,6 +943,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JLabel lblhora;
+    private javax.swing.JLabel lblturno;
     public static javax.swing.JLabel lblusuario;
     public static javax.swing.JLabel lblversion;
     public static javax.swing.JPanel panel_acceso_rapido;

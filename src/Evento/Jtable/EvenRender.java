@@ -217,5 +217,39 @@ public class EvenRender {
             }
         });
     }
-
+    public void rendertabla_turno_caja(JTable tbltabla, final int columna) {
+        System.out.println("-->rendertabla_estados_venta_habitacion");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender = columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object Omanana = table.getValueAt(row, columnaRender);
+                Object Otarde = table.getValueAt(row, columnaRender);
+                Object Onoche = table.getValueAt(row, columnaRender);
+                String Smanana = "manana";
+                String Starde = "tarde";
+                String Snoche = "noche";
+                if (Omanana != null && Smanana.equals(Omanana.toString())) {
+                    color_fondo = new Color(255, 251, 193);
+                    color_text = Color.BLACK;
+                }
+                if (Otarde != null && Starde.equals(Otarde.toString())) {
+                    color_fondo = new Color(254, 190, 140);
+                    color_text = Color.BLACK;
+                }
+                if (Onoche != null && Snoche.equals(Onoche.toString())) {
+                    color_fondo = new Color(155, 161, 123);
+                    color_text = Color.BLACK;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+                return label;
+            }
+        });
+    }
 }
