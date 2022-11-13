@@ -8,6 +8,7 @@ import FORMULARIO.DAO.DAO_caja_cierre_item;
 import FORMULARIO.DAO.DAO_compra;
 import FORMULARIO.DAO.DAO_gasto;
 import FORMULARIO.DAO.DAO_venta;
+import FORMULARIO.DAO.DAO_venta_interno;
 import FORMULARIO.ENTIDAD.caja_cierre;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ public class BO_caja_cierre {
     private DAO_venta DAOven = new DAO_venta();
     private DAO_gasto DAOg = new DAO_gasto();
     private DAO_compra DAOcom=new DAO_compra();
+    private DAO_venta_interno DAOveni=new DAO_venta_interno();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
     public void insertar_caja_cierre(caja_cierre caci) {
@@ -36,6 +38,7 @@ public class BO_caja_cierre {
             DAOven.terminar_venta_en_caja(conn,caci.getC1idcaja_cierre());
             DAOg.terminar_gasto_en_caja(conn,caci.getC1idcaja_cierre());
             DAOcom.terminar_compra_en_caja(conn,caci.getC1idcaja_cierre());
+            DAOveni.terminar_venta_interno_en_caja(conn, caci.getC1idcaja_cierre());
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, caci.toString(), titulo);

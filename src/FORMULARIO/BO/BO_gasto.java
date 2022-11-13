@@ -16,7 +16,7 @@ public class BO_gasto {
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public void insertar_gasto(gasto ga, caja_cierre_detalle ENTccd) {
+    public void insertar_gasto1(gasto ga, caja_cierre_detalle ENTccd) {
         String titulo = "insertar_gasto";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
@@ -24,7 +24,7 @@ public class BO_gasto {
                 conn.setAutoCommit(false);
             }
             DAOg.insertar_gasto(conn, ga);
-            DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
+            DAOccd.insertar_caja_cierre_detalle1(conn, ENTccd);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, ga.toString(), titulo);

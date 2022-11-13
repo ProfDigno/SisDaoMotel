@@ -82,12 +82,14 @@ public class JDiaCajaApertura extends javax.swing.JDialog {
         ENTccd.setC23fk_idrh_vale(0);
         ENTccd.setC24fk_idrh_liquidacion(0);
         ENTccd.setC25monto_solo_adelanto(0);
+        ENTccd.setC26monto_interno(0);
+        ENTccd.setC27fk_idventa_interno(0);
     }
     private void boton_abrir_caja(){
         if(txtmonto_apertura.getText().trim().length()>0){
             monto_apertura_caja=evejtf.getDouble_format_nro_entero1(txtmonto_apertura);
             cargar_dato_caja_detalle_APERTURA();
-            BOccd.insertar_caja_cierre_detalle(ENTccd);
+            BOccd.insertar_caja_cierre_detalle1(ENTccd);
             this.dispose();
         }else{
             JOptionPane.showMessageDialog(null,"DEBE CARGAR EL MONTO DE APERTURA","ERROR",JOptionPane.ERROR_MESSAGE);

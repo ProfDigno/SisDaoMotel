@@ -213,6 +213,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         botones_nro_hab = new ArrayList<>();
         botones_teste = new ArrayList<>();
         FrmMenuMotel.setHabilitar_sonido(true);
+        FrmMenuMotel.setAbrir_frmventa(false);
 //        jRpor_hora_mas_dormir.setEnabled(false);
         cargar_usuario();
         cargar_boton_categoria();
@@ -221,6 +222,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         limpiar_habitacion_select();
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_venta);
         jbar_tiempo_minimo.setMaximum(jbar_tie_min_max);
+    }
+
+    private void color_panel_venta(int tipo) {
+        if (tipo == 1) {
+            jPanel_venta_principal.setBackground(new Color(245, 199, 169));
+            jPanel_item_venta.setBackground(new Color(245, 199, 169));
+        }
+        if (tipo == 2) {
+            jPanel_venta_principal.setBackground(new Color(209, 81, 45));
+            jPanel_item_venta.setBackground(new Color(209, 81, 45));
+        }
     }
 
     private void cargar_grafico_temperatura() {
@@ -1364,7 +1376,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "(precio_venta*cantidad) as ototal "
                 + "FROM venta_item "
                 + "where fk_idventa=" + fk_idventa
-                //                + " and precio_venta>0 "
+                + " and cantidad>0 "
                 + "order by 1 desc;";
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
@@ -1623,6 +1635,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFmonto_tarifa_ocupacion_total.setValue(0);
         jFmonto_total_pagar.setValue(0);
         jFmonto_total_pagar_salir.setValue(0);
+        color_panel_venta(1);
 //        jRpor_hora.setSelected(true);
         this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por);
         DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
@@ -1774,7 +1787,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             cargar_dato_habitacion_recepcion_desocupar_MUDAR_SALIR(fk_idhabitacion_recepcion_actual_select);
             cargar_dato_hab_temp_sucio_MUDAR_SALIR(fk_idhabitacion_dato_select);
             cargar_dato_caja_detalle_desocupar_MUDAR_SALIR(fk_idhabitacion_recepcion_actual_select);
-            BOven.update_venta_sin_commit(conn, ENTven, ENThr, ENThrt, ENTccd, true, false, true);
+            BOven.update_venta_sin_commit1(conn, ENTven, ENThr, ENThrt, ENTccd, true, false, true);
             //#####OCUPAR-ENTRAR#######
             DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
             monto_minimo = ENThrt.getC26monto_por_hora_minimo();
@@ -1833,6 +1846,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             ENTccd.setC23fk_idrh_vale(0);
             ENTccd.setC24fk_idrh_liquidacion(0);
             ENTccd.setC25monto_solo_adelanto(monto_adelanto);
+            ENTccd.setC26monto_interno(0);
+            ENTccd.setC27fk_idventa_interno(0);
         }
     }
 
@@ -1930,6 +1945,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             ENTccd.setC23fk_idrh_vale(0);
             ENTccd.setC24fk_idrh_liquidacion(0);
             ENTccd.setC25monto_solo_adelanto(0);
+            ENTccd.setC26monto_interno(0);
+            ENTccd.setC27fk_idventa_interno(0);
         }
     }
 
@@ -2022,7 +2039,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 cargar_dato_habitacion_recepcion_desocupar(fk_idhabitacion_recepcion_actual_select);
                 cargar_dato_hab_temp_desocupar(fk_idhabitacion_dato_select);
                 cargar_dato_caja_detalle_DESOCUPAR();
-                BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
+                BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
                 BOveni.insertar_venta_item(ENTveni, ENTven, tblitem_producto, false, true, false);
                 if (eleccion == 1) {
                     posv.boton_imprimir_pos_VENTA(conn, fk_idventa);
@@ -2064,6 +2081,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTccd.setC23fk_idrh_vale(0);
         ENTccd.setC24fk_idrh_liquidacion(0);
         ENTccd.setC25monto_solo_adelanto(0);
+        ENTccd.setC26monto_interno(0);
+        ENTccd.setC27fk_idventa_interno(0);
     }
 
     private void cargar_dato_caja_detalle_ADELANTO() {
@@ -2093,6 +2112,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTccd.setC23fk_idrh_vale(0);
         ENTccd.setC24fk_idrh_liquidacion(0);
         ENTccd.setC25monto_solo_adelanto(monto_adelanto);
+        ENTccd.setC26monto_interno(0);
+        ENTccd.setC27fk_idventa_interno(0);
     }
 
     private void boton_cargar_consumo() {
@@ -2105,7 +2126,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
             limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
             update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-            BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
+            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
             calculo_monto_pagar();
             eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
         }
@@ -2134,7 +2155,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_sucio_a_libre(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         cargar_dato_habitacion_recepcion_sucio_a_libre(idhabitacion_recepcion_actual);
         cargar_dato_hab_temp_sucio_a_libre(idhabitacion_dato);
-        BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
+        BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
         boton_hab_unavez = true;
         boton_mudar_unavez = true;
     }
@@ -2162,7 +2183,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_limpieza_a_libre(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         cargar_dato_habitacion_recepcion_limpieza_a_libre(idhabitacion_recepcion_actual);
         cargar_dato_hab_temp_limpieza_a_libre(idhabitacion_dato);
-        BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
+        BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
         boton_hab_unavez = true;
         boton_mudar_unavez = true;
     }
@@ -2221,7 +2242,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
         ENThrt.setC24es_por_hora(es_por_hora);
         ENThrt.setC25es_por_dormir(es_por_dormir);
-        BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
+        BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
     }
 
     private void seleccionar_tipo_ocupacion() {
@@ -2269,6 +2290,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_ir_consumo() {
         if (validar_habitacion_select()) {
             tiempo_boton_hab = 0;
+            color_panel_venta(2);
             eveJtab.mostrar_JTabbedPane(jTab_principal, 2);
         }
     }
@@ -2285,7 +2307,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             monto_descuento = Double.parseDouble(txtmonto_descontar.getText());
             if (monto_descuento > 0) {
                 update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-                BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
+                BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
                 JOptionPane.showMessageDialog(null, "DESCUENTO CARGADO CORRECTAMENTE");
                 calculo_monto_pagar();
             }
@@ -2313,9 +2335,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                         cargar_dato_caja_detalle_ADELANTO();
                         if (es_adelanto_cargado) {
-                            BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
+                            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
                         } else {
-                            BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
+                            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
                         }
 //                    BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
                         JOptionPane.showMessageDialog(null, "ADELANTO CARGADO CORRECTAMENTE");
@@ -2349,7 +2371,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Limpiando())) {
             cargar_dato_habitacion_recepcion_limpieza_auto(idhabitacion_recepcion_actual);
             cargar_dato_hab_temp_limpieza_auto(idhabitacion_dato);
-            BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
+            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
             boton_hab_unavez = true;
         }
     }
@@ -2377,7 +2399,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Libre())) {
             cargar_dato_habitacion_recepcion_libre_auto(idhabitacion_recepcion_actual);
             cargar_dato_hab_temp_libre_auto(idhabitacion_dato);
-            BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
+            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
             boton_hab_unavez = true;
         }
     }
@@ -2456,6 +2478,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             ENTccd.setC23fk_idrh_vale(0);
             ENTccd.setC24fk_idrh_liquidacion(0);
             ENTccd.setC25monto_solo_adelanto(0);
+            ENTccd.setC26monto_interno(0);
+            ENTccd.setC27fk_idventa_interno(0);
         }
     }
 
@@ -2464,7 +2488,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cargar_dato_habitacion_recepcion_ocupado_a_libre_CANCELAR(idhabitacion_recepcion_actual);
         cargar_dato_hab_temp_ocupado_a_libre_CANCELAR(idhabitacion_dato);
         cargar_dato_caja_detalle_CANCELAR(fk_idventa);
-        BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
+        BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
         boton_hab_unavez = true;
     }
 
@@ -2621,7 +2645,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
                 limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
                 update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-                BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
+                BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
                 calculo_monto_pagar();
             }
         }
@@ -2832,7 +2856,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
         gru_tarifa = new javax.swing.ButtonGroup();
         jTab_principal = new javax.swing.JTabbedPane();
-        jPanel5 = new javax.swing.JPanel();
+        jPanel_estado_habitacion = new javax.swing.JPanel();
         panel_puerta = new javax.swing.JPanel();
         panel_habitaciones = new javax.swing.JPanel();
         txttiempo_ahora = new javax.swing.JTextField();
@@ -2840,7 +2864,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         btnrpi_2 = new javax.swing.JButton();
         btnrpi_3 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        btnventa_interna = new javax.swing.JButton();
+        jPanel_tiempo_habitacion = new javax.swing.JPanel();
         txtnro_hab_grande = new javax.swing.JTextField();
         lblicono_tipo = new javax.swing.JLabel();
         txttipo_habitacion = new javax.swing.JTextField();
@@ -2891,7 +2916,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         btnmudar_habitacion = new javax.swing.JButton();
         btnimprimir_ticket_ocupado = new javax.swing.JButton();
         btnactualizar_total_pago_adelanto = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        jPanel_venta_principal = new javax.swing.JPanel();
         jScrol_referencia_categoria = new javax.swing.JScrollPane();
         panel_referencia_categoria = new javax.swing.JPanel();
         panel_referencia_marca = new javax.swing.JPanel();
@@ -2913,7 +2938,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         btncantidad_4 = new javax.swing.JButton();
         btncantidad_5 = new javax.swing.JButton();
         btncantidad_6 = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
+        jPanel_item_venta = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblitem_producto = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
@@ -2923,7 +2948,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_consumo = new javax.swing.JFormattedTextField();
         btncargar_consumo = new javax.swing.JButton();
         btneliminar_item_temp = new javax.swing.JButton();
-        jPanel12 = new javax.swing.JPanel();
+        jPanel_filtro_habitacion = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         tblfiltro_venta = new javax.swing.JTable();
@@ -2942,7 +2967,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txtcant_venta = new javax.swing.JTextField();
         txtmotivo_mudar_cancelar = new javax.swing.JTextField();
         jCest_mudar = new javax.swing.JCheckBox();
-        jPanel14 = new javax.swing.JPanel();
+        jPanel_mudar_habitacion = new javax.swing.JPanel();
         panel_habitaciones_libre = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
         txtnro_hab_grande_salir = new javax.swing.JTextField();
@@ -3016,50 +3041,60 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        btnventa_interna.setText("VENTA INTERNA");
+        btnventa_interna.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnventa_internaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel_estado_habitacionLayout = new javax.swing.GroupLayout(jPanel_estado_habitacion);
+        jPanel_estado_habitacion.setLayout(jPanel_estado_habitacionLayout);
+        jPanel_estado_habitacionLayout.setHorizontalGroup(
+            jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                         .addComponent(panel_habitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 1085, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                         .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnventa_interna, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnrpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnrpi_2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnrpi_3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(153, 153, 153))))
+                        .addComponent(btnrpi_3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        jPanel_estado_habitacionLayout.setVerticalGroup(
+            jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 592, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                         .addComponent(panel_habitaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnrpi_1)
                             .addComponent(btnrpi_2)
                             .addComponent(btnrpi_3)
-                            .addComponent(jButton1))
+                            .addComponent(jButton1)
+                            .addComponent(btnventa_interna))
                         .addGap(3, 3, 3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTab_principal.addTab("ESTADO HABITACION", jPanel5);
+        jTab_principal.addTab("ESTADO HABITACION", jPanel_estado_habitacion);
 
         txtnro_hab_grande.setEditable(false);
         txtnro_hab_grande.setBackground(new java.awt.Color(204, 204, 255));
@@ -3567,33 +3602,33 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel_tiempo_habitacionLayout = new javax.swing.GroupLayout(jPanel_tiempo_habitacion);
+        jPanel_tiempo_habitacion.setLayout(jPanel_tiempo_habitacionLayout);
+        jPanel_tiempo_habitacionLayout.setHorizontalGroup(
+            jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addComponent(txtnro_hab_grande, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(lblicono_tipo, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
                                     .addComponent(txttipo_habitacion)))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 416, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtfec_ocupado_inicio, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                             .addComponent(txtfec_ocupado_inicio_hora, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                             .addComponent(txttiempo_transcurrido, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                         .addComponent(txtmonto_descontar, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(4, 4, 4)
                         .addComponent(btndescontar)
@@ -3604,64 +3639,64 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnadelanto, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                             .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(lbltipo_tarifa_icono, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                    .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addComponent(btnmudar_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnimprimir_ticket_ocupado)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnsalir_ocupacion, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(btncancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jFmonto_total_pagar)
                                     .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))))
                         .addGap(18, 18, 18)))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        jPanel_tiempo_habitacionLayout.setVerticalGroup(
+            jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(txtnro_hab_grande, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addComponent(txttipo_habitacion)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblicono_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(8, 8, 8))
                             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtfec_ocupado_inicio, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
                             .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lbltipo_tarifa_icono, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel_tiempo_habitacionLayout.createSequentialGroup()
                                 .addComponent(txtfec_ocupado_inicio_hora, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(11, 11, 11)
                                 .addComponent(txttiempo_transcurrido, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -3669,11 +3704,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jFmonto_total_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btncancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(15, 15, 15)))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(txtmonto_descontar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btndescontar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtmonto_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3682,13 +3717,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     .addComponent(btnimprimir_ticket_ocupado, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnactualizar_total_pago_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_tiempo_habitacionLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnsalir_ocupacion, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
-        jTab_principal.addTab("TIEMPO HABITACION", jPanel2);
+        jTab_principal.addTab("TIEMPO HABITACION", jPanel_tiempo_habitacion);
 
         panel_referencia_categoria.setBackground(new java.awt.Color(102, 153, 255));
         panel_referencia_categoria.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -3889,7 +3924,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
         jTab_producto_ingrediente.addTab("PRODUCTOS", panel_insertar_pri_producto);
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("ITEM VENTA"));
+        jPanel_item_venta.setBorder(javax.swing.BorderFactory.createTitledBorder("ITEM VENTA"));
 
         tblitem_producto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -3945,7 +3980,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_consumo.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL"));
         jFtotal_consumo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_consumo.setText("0");
-        jFtotal_consumo.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jFtotal_consumo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
         btncargar_consumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/32_guardar.png"))); // NOI18N
         btncargar_consumo.setText("GUARDAR");
@@ -3962,72 +3997,71 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel_item_ventaLayout = new javax.swing.GroupLayout(jPanel_item_venta);
+        jPanel_item_venta.setLayout(jPanel_item_ventaLayout);
+        jPanel_item_ventaLayout.setHorizontalGroup(
+            jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_item_ventaLayout.createSequentialGroup()
                 .addComponent(btncargar_consumo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btneliminar_item_temp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+            .addGroup(jPanel_item_ventaLayout.createSequentialGroup()
+                .addGroup(jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+        jPanel_item_ventaLayout.setVerticalGroup(
+            jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_item_ventaLayout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btncargar_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btneliminar_item_temp, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btneliminar_item_temp, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btncargar_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel_venta_principalLayout = new javax.swing.GroupLayout(jPanel_venta_principal);
+        jPanel_venta_principal.setLayout(jPanel_venta_principalLayout);
+        jPanel_venta_principalLayout.setHorizontalGroup(
+            jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_venta_principalLayout.createSequentialGroup()
                 .addGap(168, 168, 168)
                 .addComponent(jTab_producto_ingrediente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel_item_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(46, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_venta_principalLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrol_referencia_categoria, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(panel_referencia_marca, javax.swing.GroupLayout.DEFAULT_SIZE, 1091, Short.MAX_VALUE)
                         .addComponent(panel_referencia_unidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGap(42, 42, 42)))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        jPanel_venta_principalLayout.setVerticalGroup(
+            jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_venta_principalLayout.createSequentialGroup()
                 .addContainerGap(69, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTab_producto_ingrediente)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel_item_venta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_venta_principalLayout.createSequentialGroup()
                     .addGap(2, 2, 2)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jScrol_referencia_categoria)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel_venta_principalLayout.createSequentialGroup()
                             .addComponent(panel_referencia_unidad, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(panel_referencia_marca, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -4035,7 +4069,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     .addContainerGap()))
         );
 
-        jTab_principal.addTab("VENTA PRINCIPAL", jPanel1);
+        jTab_principal.addTab("VENTA PRINCIPAL", jPanel_venta_principal);
 
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA OCUPACION"));
 
@@ -4150,14 +4184,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
-        jPanel12.setLayout(jPanel12Layout);
-        jPanel12Layout.setHorizontalGroup(
-            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel_filtro_habitacionLayout = new javax.swing.GroupLayout(jPanel_filtro_habitacion);
+        jPanel_filtro_habitacion.setLayout(jPanel_filtro_habitacionLayout);
+        jPanel_filtro_habitacionLayout.setHorizontalGroup(
+            jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_filtro_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel_filtro_habitacionLayout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -4175,7 +4209,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addComponent(jCest_cancelado)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCest_mudar))
-                    .addGroup(jPanel12Layout.createSequentialGroup()
+                    .addGroup(jPanel_filtro_habitacionLayout.createSequentialGroup()
                         .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnvertodoventa)
@@ -4186,22 +4220,22 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel12Layout.createSequentialGroup()
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+            .addGroup(jPanel_filtro_habitacionLayout.createSequentialGroup()
+                .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 22, Short.MAX_VALUE))
         );
-        jPanel12Layout.setVerticalGroup(
-            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
+        jPanel_filtro_habitacionLayout.setVerticalGroup(
+            jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_filtro_habitacionLayout.createSequentialGroup()
                 .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(4, 4, 4)
                 .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel_filtro_habitacionLayout.createSequentialGroup()
+                        .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4)
                             .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -4212,17 +4246,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             .addComponent(jCest_desocupado)
                             .addComponent(jCest_mudar))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnvertodoventa)
                                 .addComponent(txtmotivo_mudar_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtcant_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jFtotal_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
-        jTab_principal.addTab("FILTRO HABITACION ", jPanel12);
+        jTab_principal.addTab("FILTRO HABITACION ", jPanel_filtro_habitacion);
 
         panel_habitaciones_libre.setBorder(javax.swing.BorderFactory.createTitledBorder("HABITACIONES"));
         panel_habitaciones_libre.setLayout(new java.awt.GridLayout(0, 5));
@@ -4270,34 +4304,34 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addComponent(txttiempo_transcurrido_salir, javax.swing.GroupLayout.PREFERRED_SIZE, 65, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
-        jPanel14.setLayout(jPanel14Layout);
-        jPanel14Layout.setHorizontalGroup(
-            jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel14Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel_mudar_habitacionLayout = new javax.swing.GroupLayout(jPanel_mudar_habitacion);
+        jPanel_mudar_habitacion.setLayout(jPanel_mudar_habitacionLayout);
+        jPanel_mudar_habitacionLayout.setHorizontalGroup(
+            jPanel_mudar_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_mudar_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(988, Short.MAX_VALUE))
-            .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
+            .addGroup(jPanel_mudar_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_mudar_habitacionLayout.createSequentialGroup()
                     .addContainerGap(303, Short.MAX_VALUE)
                     .addComponent(panel_habitaciones_libre, javax.swing.GroupLayout.PREFERRED_SIZE, 953, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
-        jPanel14Layout.setVerticalGroup(
-            jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel14Layout.createSequentialGroup()
+        jPanel_mudar_habitacionLayout.setVerticalGroup(
+            jPanel_mudar_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_mudar_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(289, Short.MAX_VALUE))
-            .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel14Layout.createSequentialGroup()
+            .addGroup(jPanel_mudar_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_mudar_habitacionLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(panel_habitaciones_libre, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
-        jTab_principal.addTab("MUDAR DE HABITACION", jPanel14);
+        jTab_principal.addTab("MUDAR DE HABITACION", jPanel_mudar_habitacion);
 
         panel_temp_rpi_1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED)));
         panel_temp_rpi_1.setOpaque(false);
@@ -4435,6 +4469,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
         // TODO add your handling code here:
+        FrmMenuMotel.setAbrir_frmventa(true);
         pararTimer();
     }//GEN-LAST:event_formInternalFrameClosing
 
@@ -4627,6 +4662,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_actualizar_monto_adelanto();
     }//GEN-LAST:event_btnactualizar_total_pago_adelantoActionPerformed
 
+    private void btnventa_internaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnventa_internaActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmVenta_interna());
+    }//GEN-LAST:event_btnventa_internaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizar_total_pago_adelanto;
@@ -4652,6 +4692,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnrpi_2;
     private javax.swing.JButton btnrpi_3;
     private javax.swing.JButton btnsalir_ocupacion;
+    private javax.swing.JButton btnventa_interna;
     private javax.swing.JButton btnvertodoventa;
     private javax.swing.JComboBox<String> cmbfecha_venta;
     private javax.swing.JComboBox<String> cmbusuario;
@@ -4684,22 +4725,22 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPanel jPanel_estado_habitacion;
+    private javax.swing.JPanel jPanel_filtro_habitacion;
+    private javax.swing.JPanel jPanel_item_venta;
+    private javax.swing.JPanel jPanel_mudar_habitacion;
+    private javax.swing.JPanel jPanel_tiempo_habitacion;
+    private javax.swing.JPanel jPanel_venta_principal;
     private javax.swing.JRadioButton jRpor_dormir;
     private javax.swing.JRadioButton jRpor_hora;
     private javax.swing.JRadioButton jRpor_hora_mas_dormir;

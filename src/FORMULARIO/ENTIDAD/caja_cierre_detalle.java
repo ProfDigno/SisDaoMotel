@@ -27,6 +27,8 @@ private int C22fk_idusuario;
 private int C23fk_idrh_vale;
 private int C24fk_idrh_liquidacion;
 private double C25monto_solo_adelanto;
+private double C26monto_interno;
+private int C27fk_idventa_interno;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -47,6 +49,23 @@ private static String nom_idtabla;
 		caja_cierre_detalle.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public double getC26monto_interno() {
+        return C26monto_interno;
+    }
+
+    public void setC26monto_interno(double C26monto_interno) {
+        this.C26monto_interno = C26monto_interno;
+    }
+
+    public int getC27fk_idventa_interno() {
+        return C27fk_idventa_interno;
+    }
+
+    public void setC27fk_idventa_interno(int C27fk_idventa_interno) {
+        this.C27fk_idventa_interno = C27fk_idventa_interno;
+    }
+        
 	public int getC1idcaja_cierre_detalle(){
 		return C1idcaja_cierre_detalle;
 	}

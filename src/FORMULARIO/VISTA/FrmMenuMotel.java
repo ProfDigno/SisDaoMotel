@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -49,6 +50,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private int cant_de_habitacion;
     private int sensor_puerta_cliente = 2;
     private int sensor_puerta_limpieza = 3;
+    public static boolean abrir_frmventa;
 
     public static boolean isHabilitar_sonido() {
         return habilitar_sonido;
@@ -66,6 +68,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         conn = conPs.getConnPosgres();
         jsprint.cargar_jsom_imprimir_pos();
         setHabilitar_sonido(false);
+        setAbrir_frmventa(true);
         iniciarTiempo();
         bloqueo_inicio();
         cargar_array_habitacion();
@@ -101,41 +104,42 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n"
-                //                + "         ALTER TABLE habitacion_recepcion_temp ADD COLUMN activo boolean DEFAULT true;\n"
-                + "CREATE TABLE \"inventario\" (\n"
-                + "	\"idinventario\" INTEGER NOT NULL ,\n"
+                + "         ALTER TABLE producto ADD COLUMN precio_interno NUMERIC(14,0) DEFAULT 0;\n"
+                + "         update producto set precio_interno=precio_venta;"
+                + "         ALTER TABLE caja_cierre_detalle ADD COLUMN monto_interno NUMERIC(14,0) DEFAULT 0;\n"
+                + "         ALTER TABLE caja_cierre_detalle ADD COLUMN fk_idventa_interno INTEGER DEFAULT 0;\n"
+                + "CREATE TABLE \"venta_interno\" (\n"
+                + "	\"idventa_interno\" INTEGER NOT NULL ,\n"
                 + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
                 + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"fecha_inicio\" TIMESTAMP NOT NULL ,\n"
-                + "	\"fecha_fin\" TIMESTAMP NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	\"es_abierto\" BOOLEAN NOT NULL ,\n"
-                + "	\"es_cerrado\" BOOLEAN NOT NULL ,\n"
-                + "	\"total_precio_venta\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"total_precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_letra\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"observacion\" TEXT NOT NULL ,\n"
+                + "	\"motivo_anulacion\" TEXT NOT NULL ,\n"
+                + "	\"monto_interno\" NUMERIC(14,0) NOT NULL ,\n"
                 + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idinventario\")\n"
+                + "	\"fk_idpersona\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idventa_interno\")\n"
                 + ");\n"
-                + "CREATE TABLE \"inventario_item\" (\n"
-                + "	\"idinventario_item\" INTEGER NOT NULL ,\n"
+                + "CREATE TABLE \"venta_item_interno\" (\n"
+                + "	\"idventa_item_interno\" INTEGER NOT NULL ,\n"
                 + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
                 + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"stock_sistema\" INTEGER NOT NULL ,\n"
-                + "	\"stock_contado\" INTEGER NOT NULL ,\n"
-                + "	\"precio_venta\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"es_temp\" BOOLEAN NOT NULL ,\n"
-                + "	\"es_cargado\" BOOLEAN NOT NULL ,\n"
-                + "	\"fk_idinventario\" INTEGER NOT NULL ,\n"
+                + "	\"tipo_item\" TEXT NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"cantidad\" NUMERIC(5,0) NOT NULL ,\n"
+                + "	\"precio_venta\" NUMERIC(10,0) NOT NULL ,\n"
+                + "	\"precio_compra\" NUMERIC(10,0) NOT NULL ,\n"
+                + "	\"fk_idventa_interno\" INTEGER NOT NULL ,\n"
                 + "	\"fk_idproducto\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idinventario_item\")\n"
-                + ");"
+                + "	PRIMARY KEY(\"idventa_item_interno\")\n"
+                + "); "
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-//        eveconn.SQL_execute_libre(conn, sql);
+        eveconn.SQL_execute_libre(conn, sql);
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
@@ -257,6 +261,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         string_ruta_sonido = new String[cant_de_habitacion + 1];//+1
     }
 
+    public static boolean isAbrir_frmventa() {
+        return abrir_frmventa;
+    }
+
+    public static void setAbrir_frmventa(boolean abrir_frmventa) {
+        FrmMenuMotel.abrir_frmventa = abrir_frmventa;
+    }
+
     public FrmMenuMotel() {
         initComponents();
         abrir_formulario();
@@ -282,6 +294,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         btngasto = new javax.swing.JButton();
         btnpersona = new javax.swing.JButton();
         btncargar_stock = new javax.swing.JButton();
+        btnventa_interna = new javax.swing.JButton();
         lblversion = new javax.swing.JLabel();
         lblhora = new javax.swing.JLabel();
         lblturno = new javax.swing.JLabel();
@@ -302,6 +315,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu8 = new javax.swing.JMenu();
         jMenuItem15 = new javax.swing.JMenuItem();
         jMenuItem16 = new javax.swing.JMenuItem();
+        jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem20 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem17 = new javax.swing.JMenuItem();
@@ -317,6 +331,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu10 = new javax.swing.JMenu();
         jMenuItem18 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
+        jMenu11 = new javax.swing.JMenu();
+        jMenuItem23 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -409,6 +425,16 @@ public class FrmMenuMotel extends javax.swing.JFrame {
             }
         });
 
+        btnventa_interna.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/72_ven_inter.png"))); // NOI18N
+        btnventa_interna.setText("VEN INTERNA");
+        btnventa_interna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnventa_interna.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnventa_interna.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnventa_internaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_acceso_rapidoLayout = new javax.swing.GroupLayout(panel_acceso_rapido);
         panel_acceso_rapido.setLayout(panel_acceso_rapidoLayout);
         panel_acceso_rapidoLayout.setHorizontalGroup(
@@ -427,7 +453,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addComponent(btnpersona)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btncargar_stock)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnventa_interna)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_acceso_rapidoLayout.setVerticalGroup(
             panel_acceso_rapidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -438,6 +466,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
             .addComponent(btncrear_habitacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnpersona, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btncargar_stock, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnventa_interna, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         lblversion.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -477,7 +506,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                             .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblhora)
                             .addComponent(lblturno))))
-                .addContainerGap(275, Short.MAX_VALUE))
+                .addContainerGap(164, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -606,6 +635,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu8.add(jMenuItem16);
 
+        jMenuItem22.setText("INVENTARIO SIMPLE");
+        jMenuItem22.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem22ActionPerformed(evt);
+            }
+        });
+        jMenu8.add(jMenuItem22);
+
         jMenu5.add(jMenu8);
 
         jMenuItem20.setText("CARGA STOCK");
@@ -701,6 +738,18 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
         barra_menu_principal.add(jMenu10);
 
+        jMenu11.setText("VENTA INTERNA");
+
+        jMenuItem23.setText("NUEVA VENTA INTERNA");
+        jMenuItem23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem23ActionPerformed(evt);
+            }
+        });
+        jMenu11.add(jMenuItem23);
+
+        barra_menu_principal.add(jMenu11);
+
         setJMenuBar(barra_menu_principal);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -779,7 +828,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
     private void btnventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnventaActionPerformed
         // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmVenta());
+        if (isAbrir_frmventa()) {
+            evetbl.abrir_TablaJinternal(new FrmVenta());
+        } else {
+            JOptionPane.showMessageDialog(null, "FORMULARIO OCUPACION YA ESTA ABIERTO");
+        }
     }//GEN-LAST:event_btnventaActionPerformed
 
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
@@ -860,9 +913,24 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
     private void jMenuItem21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem21ActionPerformed
         // TODO add your handling code here:
-        FrmPuertas frm=new FrmPuertas();
+        FrmPuertas frm = new FrmPuertas();
         frm.setVisible(true);
     }//GEN-LAST:event_jMenuItem21ActionPerformed
+
+    private void jMenuItem22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem22ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepInventarioSimple());
+    }//GEN-LAST:event_jMenuItem22ActionPerformed
+
+    private void jMenuItem23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem23ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmVenta_interna());
+    }//GEN-LAST:event_jMenuItem23ActionPerformed
+
+    private void btnventa_internaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnventa_internaActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmVenta_interna());
+    }//GEN-LAST:event_btnventa_internaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -910,9 +978,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JButton btnpersona;
     private javax.swing.JButton btnproducto;
     private javax.swing.JButton btnventa;
+    private javax.swing.JButton btnventa_interna;
     public static javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
+    private javax.swing.JMenu jMenu11;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -935,6 +1005,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem20;
     private javax.swing.JMenuItem jMenuItem21;
+    private javax.swing.JMenuItem jMenuItem22;
+    private javax.swing.JMenuItem jMenuItem23;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;

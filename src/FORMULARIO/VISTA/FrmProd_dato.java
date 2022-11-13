@@ -199,8 +199,11 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         ENTp.setC8es_compra(jCescompra.isSelected());
         ENTp.setC9es_insumo(jCesinsumo.isSelected());
         ENTp.setC10es_patrimonio(jCespatrimonio.isSelected());
-        ENTp.setC11precio_venta(Integer.parseInt(txtprecio_venta.getText()));
-        ENTp.setC12precio_compra(Integer.parseInt(txtprecio_compra.getText()));
+        double precio_venta=evejtf.getDouble_format_nro_entero(txtprecio_venta);
+        double precio_compra=evejtf.getDouble_format_nro_entero(txtprecio_compra);
+        double precio_interno=evejtf.getDouble_format_nro_entero(txtprecio_interno);
+        ENTp.setC11precio_venta(precio_venta);
+        ENTp.setC12precio_compra(precio_compra);
         ENTp.setC13stock_actual(Integer.parseInt(txtstock_actual.getText()));
         ENTp.setC14stock_minimo(Integer.parseInt(txtstock_minimo.getText()));
         ENTp.setC15stock_maximo(Integer.parseInt(txtstock_maximo.getText()));
@@ -208,6 +211,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         ENTp.setC17fk_idproducto_categoria(getFk_idproducto_categoria());
         ENTp.setC18fk_idproducto_unidad(getFk_idproducto_unidad());
         ENTp.setC19fk_idproducto_marca(getFk_idproducto_marca());
+        ENTp.setC20precio_interno(precio_interno);
 
     }
 
@@ -246,9 +250,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         DAOvi.actualizar_tabla_venta_item_producto(conn, tblitem_venta, filtro);
         DAOci.actualizar_tabla_compra_item_producto(conn, tblcompra_item, filtro);
     }
-    private void seleccionar_tabla() {
-        int idproducto = eveJtab.getInt_select_id(tbltabla_pri);
-        DAOp.cargar_producto(conn, ENTp, idproducto);
+    private void recargar_datos_local(producto ENTp){
         txtid.setText(String.valueOf(ENTp.getC1idproducto()));
         titulo_formulario(ENTp.getC2fecha_creado(), ENTp.getC3creado_por());
         txtcod_barra.setText(ENTp.getC4codigo_barra());
@@ -258,8 +260,12 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         jCescompra.setSelected(ENTp.getC8es_compra());
         jCesinsumo.setSelected(ENTp.getC9es_insumo());
         jCespatrimonio.setSelected(ENTp.getC10es_patrimonio());
-        txtprecio_venta.setText(String.valueOf((int) ENTp.getC11precio_venta()));
-        txtprecio_compra.setText(String.valueOf((int) ENTp.getC12precio_compra()));
+        String Sprecio_venta=evejtf.getString_format_nro_decimal(ENTp.getC11precio_venta());
+        String Sprecio_compra=evejtf.getString_format_nro_decimal(ENTp.getC12precio_compra());
+        String Sprecio_interno=evejtf.getString_format_nro_decimal(ENTp.getC20precio_interno());
+        txtprecio_venta.setText(Sprecio_venta);
+        txtprecio_compra.setText(Sprecio_compra);
+        txtprecio_interno.setText(Sprecio_interno);
         txtstock_actual.setText(String.valueOf((int) ENTp.getC13stock_actual()));
         txtstock_minimo.setText(String.valueOf((int) ENTp.getC14stock_minimo()));
         txtstock_maximo.setText(String.valueOf((int) ENTp.getC15stock_maximo()));
@@ -273,9 +279,14 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         DAOpm.cargar_producto_marca(conn, ENTpm, ENTp.getC19fk_idproducto_marca());
         txtprod_marca.setText(ENTpm.getC4nombre());
         setFk_idproducto_marca(ENTp.getC19fk_idproducto_marca());
-        actualizar_venta_item(idproducto);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+    }
+    private void seleccionar_tabla() {
+        int idproducto = eveJtab.getInt_select_id(tbltabla_pri);
+        DAOp.cargar_producto(conn, ENTp, idproducto);
+        recargar_datos_local(ENTp);
+        actualizar_venta_item(idproducto);
     }
 
     private void reestableser() {
@@ -287,6 +298,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         txtcod_barra.setText(null);
         txtprecio_compra.setText(null);
         txtprecio_venta.setText(null);
+        txtprecio_interno.setText(null);
         txtstock_actual.setText(null);
         txtstock_minimo.setText(null);
         txtstock_maximo.setText(null);
@@ -336,12 +348,10 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         panel_insertar = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         txtnombre = new javax.swing.JTextField();
         btnnuevo = new javax.swing.JButton();
         btnguardar = new javax.swing.JButton();
         btneditar = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         txtcod_barra = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         txtstock_actual = new javax.swing.JTextField();
@@ -350,6 +360,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         jPanel6 = new javax.swing.JPanel();
         txtprecio_compra = new javax.swing.JTextField();
         txtprecio_venta = new javax.swing.JTextField();
+        txtprecio_interno = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
         jRiva_exenta = new javax.swing.JRadioButton();
         jRiva_5 = new javax.swing.JRadioButton();
@@ -426,10 +437,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         txtid.setBackground(new java.awt.Color(204, 204, 204));
         txtid.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setText("NOMBRE:");
-
         txtnombre.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtnombre.setBorder(javax.swing.BorderFactory.createTitledBorder("NOMBRE"));
         txtnombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtnombreKeyPressed(evt);
@@ -469,9 +478,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setText("Cod Barra:");
-
+        txtcod_barra.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtcod_barra.setBorder(javax.swing.BorderFactory.createTitledBorder("COD BARRA"));
         txtcod_barra.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtcod_barraKeyPressed(evt);
@@ -550,6 +558,9 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtprecio_compraKeyPressed(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtprecio_compraKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtprecio_compraKeyTyped(evt);
             }
@@ -563,8 +574,27 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtprecio_ventaKeyPressed(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtprecio_ventaKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtprecio_ventaKeyTyped(evt);
+            }
+        });
+
+        txtprecio_interno.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        txtprecio_interno.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtprecio_interno.setText("1000");
+        txtprecio_interno.setBorder(javax.swing.BorderFactory.createTitledBorder("PRECIO INTERNO"));
+        txtprecio_interno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtprecio_internoKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtprecio_internoKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtprecio_internoKeyTyped(evt);
             }
         });
 
@@ -575,7 +605,9 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(txtprecio_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtprecio_venta))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtprecio_interno, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtprecio_venta)))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -583,7 +615,9 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtprecio_compra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtprecio_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 14, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtprecio_interno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 23, Short.MAX_VALUE))
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("TIPO IVA"));
@@ -611,7 +645,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                 .addComponent(jRiva_5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRiva_10)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 27, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -774,7 +808,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                     .addComponent(jCesventa)
                     .addComponent(jCescompra)
                     .addComponent(jCescontrolstock))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 2, Short.MAX_VALUE)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCesinsumo)
                     .addComponent(jCespatrimonio)))
@@ -786,57 +820,52 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtnombre))
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(btnnuevo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnguardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btneditar)))
+                        .addComponent(btneditar))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 492, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(277, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtcod_barra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo)
                     .addComponent(btnguardar)
@@ -1189,7 +1218,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
     private void txtnombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombreKeyPressed
         // TODO add your handling code here:
-        evejtf.saltar_campo_enter(evt, txtnombre, txtcod_barra);
+        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_compra);
     }//GEN-LAST:event_txtnombreKeyPressed
 
     private void txtbuscar_productoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_productoKeyReleased
@@ -1289,7 +1318,15 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
     private void txtcod_barraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcod_barraKeyPressed
         // TODO add your handling code here:
-        evejtf.saltar_campo_enter(evt, txtcod_barra, txtprecio_compra);
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            String codbarra = txtcod_barra.getText();
+            if(DAOp.getBoolean_cargar_producto_por_codbarra(conn, ENTp,codbarra)){
+                recargar_datos_local(ENTp);
+            }else{
+                evejtf.saltar_campo_enter(evt, txtcod_barra, txtnombre);
+            }
+        }
+        
     }//GEN-LAST:event_txtcod_barraKeyPressed
 
     private void txtprecio_compraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyPressed
@@ -1299,7 +1336,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
     private void txtprecio_ventaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_ventaKeyPressed
         // TODO add your handling code here:
-        evejtf.saltar_campo_enter(evt, txtprecio_venta, txtstock_actual);
+        evejtf.saltar_campo_enter(evt, txtprecio_venta, txtprecio_interno);
     }//GEN-LAST:event_txtprecio_ventaKeyPressed
 
     private void txtstock_actualKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtstock_actualKeyPressed
@@ -1376,6 +1413,30 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         actualizar_producto_filtro("");
     }//GEN-LAST:event_cmbusuarioItemStateChanged
 
+    private void txtprecio_internoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_internoKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtprecio_interno, txtstock_actual);
+    }//GEN-LAST:event_txtprecio_internoKeyPressed
+
+    private void txtprecio_internoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_internoKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtprecio_internoKeyTyped
+
+    private void txtprecio_compraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyReleased
+        // TODO add your handling code here:
+        evejtf.getDouble_format_nro_entero(txtprecio_compra);
+    }//GEN-LAST:event_txtprecio_compraKeyReleased
+
+    private void txtprecio_ventaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_ventaKeyReleased
+        // TODO add your handling code here:
+        evejtf.getDouble_format_nro_entero(txtprecio_venta);
+    }//GEN-LAST:event_txtprecio_ventaKeyReleased
+
+    private void txtprecio_internoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_internoKeyReleased
+        // TODO add your handling code here:
+         evejtf.getDouble_format_nro_entero(txtprecio_interno);
+    }//GEN-LAST:event_txtprecio_internoKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnbuscar_categoria;
@@ -1398,8 +1459,6 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox jCespatrimonio;
     private javax.swing.JCheckBox jCesventa;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
@@ -1438,6 +1497,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtid;
     public static javax.swing.JTextField txtnombre;
     private javax.swing.JTextField txtprecio_compra;
+    private javax.swing.JTextField txtprecio_interno;
     private javax.swing.JTextField txtprecio_venta;
     public static javax.swing.JTextField txtprod_categoria;
     public static javax.swing.JTextField txtprod_marca;

@@ -14,14 +14,14 @@ public class BO_caja_cierre_detalle {
     private DAO_caja_cierre_detalle cacide_dao = new DAO_caja_cierre_detalle();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public void insertar_caja_cierre_detalle(caja_cierre_detalle cacide) {
+    public void insertar_caja_cierre_detalle1(caja_cierre_detalle cacide) {
         String titulo = "insertar_caja_cierre_detalle";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            cacide_dao.insertar_caja_cierre_detalle(conn, cacide);
+            cacide_dao.insertar_caja_cierre_detalle1(conn, cacide);
             JOptionPane.showMessageDialog(null,"APERTURA DE CAJA CORRECTAMENTE","CAJA APERTURA",JOptionPane.INFORMATION_MESSAGE);
             conn.commit();
         } catch (SQLException e) {

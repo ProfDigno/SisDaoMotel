@@ -146,13 +146,15 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         ENTccd.setC23fk_idrh_vale(0);
         ENTccd.setC24fk_idrh_liquidacion(0);
         ENTccd.setC25monto_solo_adelanto(0);
+        ENTccd.setC26monto_interno(0);
+        ENTccd.setC27fk_idventa_interno(0);
     }
 
     private void boton_guardar() {
         if (validar_guardar()) {
             cargar_dato_gasto();
             cargar_dato_caja_detalle_GASTO();
-            BOgt.insertar_gasto(ENTgt, ENTccd);
+            BOgt.insertar_gasto1(ENTgt, ENTccd);
             reestableser();
         }
     }

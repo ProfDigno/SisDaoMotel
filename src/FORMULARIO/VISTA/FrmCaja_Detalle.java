@@ -78,6 +78,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA(conn, tblcaja_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(conn, tblgasto_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_COMPRA(conn, tblcompra_abierto, fk_idusuario);
+        DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA_INTERNO(conn, tblventa_interna_abierto, fk_idusuario);
         suma_total_caja_detalle_abierto(fk_idusuario);
     }
 
@@ -117,11 +118,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 + "sum(cd.monto_ocupa_consumo) as consumo,\n"
                 + "sum(cd.monto_gasto) as gasto,\n"
                 + "sum(cd.monto_compra) as compra,\n"
+                + "sum(cd.monto_interno) as interno,\n"
                 + "sum((0-(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as descuento,\n"
-                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as ingreso, \n"
                 + "sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as egreso,\n"
-                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
                 + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as saldo,\n"
                 + "to_char(min(fecha_creado),'yyyy-MM-dd HH24:MI:ss') as fec_inicio, "
@@ -138,6 +140,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 double adicional = rs.getDouble("adicional");
                 double consumo = rs.getDouble("consumo");
                 double descuento = rs.getDouble("descuento");
+                double interno = rs.getDouble("interno");
                 suma_ingreso = rs.getDouble("ingreso");
                 double gasto = rs.getDouble("gasto");
                 double compra = rs.getDouble("compra");
@@ -160,6 +163,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 txtfecha_final.setText(fec_final);
                 jFtotal_gasto.setValue(gasto);
                 jFtotal_compra.setValue(compra);
+                jFtotal_venta_interno.setValue(interno);
+                jFtotal_venta_interno_2.setValue(interno);
             }
 
         } catch (Exception e) {
@@ -246,7 +251,6 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, true);
         }
         if (eleccion_comando == 2) {
-//            DAOcc.imprimir_caja_cierre_jasper(conn, idcaja_cierre);
             DAOcc.imprimir_caja_cierre_jasper_resumen(conn, idcaja_cierre);
         }
     }
@@ -328,6 +332,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_ocupa_descuento = new javax.swing.JFormattedTextField();
         jFtotal_ocupa_ingreso = new javax.swing.JFormattedTextField();
         btnimprimir_ticket = new javax.swing.JButton();
+        jFtotal_venta_interno_2 = new javax.swing.JFormattedTextField();
+        jPanel16 = new javax.swing.JPanel();
+        jPanel17 = new javax.swing.JPanel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        tblventa_interna_abierto = new javax.swing.JTable();
+        jFtotal_venta_interno = new javax.swing.JFormattedTextField();
         jPanel9 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -456,6 +466,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_ocupa_consumo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_ocupa_consumo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        jFtotal_ocupa_descuento.setBackground(new java.awt.Color(204, 204, 204));
         jFtotal_ocupa_descuento.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL DESCUENTO"));
         jFtotal_ocupa_descuento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
         jFtotal_ocupa_descuento.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -474,23 +485,30 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             }
         });
 
+        jFtotal_venta_interno_2.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL INTERNO"));
+        jFtotal_venta_interno_2.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_venta_interno_2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_venta_interno_2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jFtotal_ocupa_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jFtotal_ocupa_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_ocupa_adelanto, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_ocupa_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_ocupa_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_ocupa_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_ocupa_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_ocupa_descuento, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_ocupa_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE)
+                .addComponent(jFtotal_venta_interno_2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_ocupa_descuento, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
                 .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -502,7 +520,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addComponent(jFtotal_ocupa_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFtotal_ocupa_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFtotal_ocupa_descuento, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_venta_interno_2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
@@ -534,6 +553,60 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
 
         jTabbedPane3.addTab("HABITACION", jPanel8);
 
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("CAJA VENTA INTERNA"));
+
+        tblventa_interna_abierto.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane9.setViewportView(tblventa_interna_abierto);
+
+        jFtotal_venta_interno.setBackground(new java.awt.Color(255, 255, 102));
+        jFtotal_venta_interno.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL VENTA INTERNA"));
+        jFtotal_venta_interno.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_venta_interno.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_venta_interno.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
+        jPanel17.setLayout(jPanel17Layout);
+        jPanel17Layout.setHorizontalGroup(
+            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel17Layout.createSequentialGroup()
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_venta_interno, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel17Layout.setVerticalGroup(
+            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+            .addGroup(jPanel17Layout.createSequentialGroup()
+                .addComponent(jFtotal_venta_interno, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
+        jPanel16.setLayout(jPanel16Layout);
+        jPanel16Layout.setHorizontalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel16Layout.setVerticalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel16Layout.createSequentialGroup()
+                .addGap(0, 3, Short.MAX_VALUE)
+                .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jTabbedPane3.addTab("VENTA INTERNA", jPanel16);
+
         jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("CAJA GASTO"));
 
         tblgasto_abierto.setModel(new javax.swing.table.DefaultTableModel(
@@ -560,8 +633,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -581,7 +654,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("GASTO", jPanel9);
@@ -612,14 +685,14 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel13Layout.createSequentialGroup()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 935, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addComponent(jFtotal_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -633,7 +706,9 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel12Layout.createSequentialGroup()
+                .addGap(0, 3, Short.MAX_VALUE)
+                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTabbedPane3.addTab("COMPRA", jPanel12);
@@ -1138,6 +1213,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO(tblcaja_abierto);
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgasto_abierto);
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblcompra_abierto);
+        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblventa_interna_abierto);
         DAOcc.ancho_tabla_caja_cierre(tblresumen_caja_cierre);
     }//GEN-LAST:event_formInternalFrameOpened
 
@@ -1239,6 +1315,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFtotal_resumen_ingreso;
     private javax.swing.JFormattedTextField jFtotal_resumen_saldo;
     private javax.swing.JFormattedTextField jFtotal_saldo;
+    private javax.swing.JFormattedTextField jFtotal_venta_interno;
+    private javax.swing.JFormattedTextField jFtotal_venta_interno_2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -1248,6 +1326,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1268,6 +1348,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
@@ -1279,6 +1360,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblresumen_caja_cierre;
     private javax.swing.JTable tblventa;
     private javax.swing.JTable tblventa_consumo;
+    private javax.swing.JTable tblventa_interna_abierto;
     private javax.swing.JTextField txtfecha_final;
     private javax.swing.JTextField txtfecha_inicio;
     // End of variables declaration//GEN-END:variables

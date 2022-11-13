@@ -22,6 +22,7 @@ public class producto {
     private int C17fk_idproducto_categoria;
     private int C18fk_idproducto_unidad;
     private int C19fk_idproducto_marca;
+    private double C20precio_interno;
     private String precio_venta_mostrar;
     private String precio_compra_mostrar;
     private static String nom_tabla;
@@ -31,6 +32,14 @@ public class producto {
     public producto() {
         setTb_producto("producto");
         setId_idproducto("idproducto");
+    }
+
+    public double getC20precio_interno() {
+        return C20precio_interno;
+    }
+
+    public void setC20precio_interno(double C20precio_interno) {
+        this.C20precio_interno = C20precio_interno;
     }
 
     public static String getTb_producto() {

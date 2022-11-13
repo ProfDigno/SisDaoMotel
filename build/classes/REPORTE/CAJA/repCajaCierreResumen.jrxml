@@ -19,8 +19,8 @@ to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,
 cd.descripcion as descripcion,
 ((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional)-
 (cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ing_ocupado,
-cd.monto_ocupa_consumo as ing_consumo,
-((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-
+(cd.monto_ocupa_consumo+cd.monto_interno) as ing_consumo,
+((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-
 (cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ing_total,
 (cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso,
 cd.monto_gasto as m_gasto,
@@ -28,7 +28,7 @@ cd.monto_compra as m_compra,
 cd.monto_vale as m_vale,
 cd.monto_liquidacion as m_liquida,
 cd.monto_apertura_caja as apertura_caja,
-(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-
+(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-
 (cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-
 (cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo,
 to_char(cca.fecha_inicio,'yyyy-MM-dd HH24:MI') as fec_inicio, 

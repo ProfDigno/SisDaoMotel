@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.net.Socket;
+import java.sql.SQLException;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -184,7 +185,24 @@ public class EvenMensajeJoptionpane {
         }
 
     }
+    public void mensaje_error_sql(SQLException e, String sql, String titulo) {
+        setCant_error(getCant_error() + 1);
+        String sumasql = "";
+        for (int caracter = 1; caracter <= sql.length(); caracter++) {
+            sumasql = sumasql + sql.substring((caracter - 1), caracter);
+            if (caracter % 150 == 0) {
+                sumasql = sumasql + "\n";
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Error:" + e + "\n" + sumasql, titulo, JOptionPane.ERROR_MESSAGE);
+        Imprimir_serial_sql_error(e, sql, titulo);
+        if (getCant_error() > 2) {//cantidad de error antes de cerrar
+            setCant_error(0);
+            JOptionPane.showMessageDialog(null, "Error:" + e + "\nEL SISTEMA SE REINICIA", titulo, JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
 
+    }
     public void mensaje_error(Exception e, String titulo) {
         setCant_error(getCant_error() + 1);
         JOptionPane.showMessageDialog(null, "Error:" + e, titulo, JOptionPane.ERROR_MESSAGE);

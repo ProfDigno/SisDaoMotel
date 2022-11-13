@@ -252,4 +252,41 @@ public class EvenRender {
             }
         });
     }
+    public void rendertabla_estados_venta_interno(JTable tbltabla, final int columna) {
+        System.out.println("-->rendertabla_estados_venta_habitacion");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender = columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object Oemitido = table.getValueAt(row, columnaRender);
+                Object Oterminado = table.getValueAt(row, columnaRender);
+                Object OAnulado = table.getValueAt(row, columnaRender);
+//                Object Oterminado = table.getValueAt(row, columnaRender);
+                String Semitido = eveest.getEst_Emitido();
+                String Sterminado = eveest.getEst_Terminar();
+                String SAnulado = eveest.getEst_Anulado();
+//                String STerminado = eveest.getEst_Terminar();
+                if (Oemitido != null && Semitido.equals(Oemitido.toString())) {
+                    color_fondo = Color.WHITE;
+                    color_text = Color.RED;
+                }
+                if (Oterminado != null && Sterminado.equals(Oterminado.toString())) {
+                    color_fondo = Color.GREEN;
+                    color_text = Color.BLUE;
+                }
+                if (OAnulado != null && SAnulado.equals(OAnulado.toString())) {
+                    color_fondo = Color.RED;
+                    color_text = Color.YELLOW;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+                return label;
+            }
+        });
+    }
 }
