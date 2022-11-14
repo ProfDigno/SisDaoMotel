@@ -2275,7 +2275,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         + "Cantidad adicional Hasta la Dormida: " + Icant_hasta_dormir + "\n"
                         + "Horas adicional hasta la dormida: " + Shs_hasta_dormir,
                         "OCUPACION POR HORA MAS DORMIR", "ACEPTAR", "CANCELAR")) {
-                    if (evemen.senha_crear_tablas("MAJJJSMG")) {
+                    if (evemen.senha_crear_tablas("12345")) {
                         update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                         lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
                         cargar_item_producto_adicional_hasta_dormir();

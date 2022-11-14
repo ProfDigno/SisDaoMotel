@@ -42,7 +42,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
-    private String version = "V.: 1.6.8";
+    private String version = "V.: 1.6.9";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
     private boolean hab_ruta_sonido[];
