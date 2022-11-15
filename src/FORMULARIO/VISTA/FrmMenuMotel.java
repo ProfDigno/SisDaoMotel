@@ -42,7 +42,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
-    private String version = "V.: 1.6.9";
+    private String version = "V.: 1.7.0";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
     private boolean hab_ruta_sonido[];
@@ -341,7 +341,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
             }
         });
 
-        btncerrar_seccion.setText("CERRAR SECCION");
+        btncerrar_seccion.setText("CERRAR SESION");
         btncerrar_seccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btncerrar_seccionActionPerformed(evt);

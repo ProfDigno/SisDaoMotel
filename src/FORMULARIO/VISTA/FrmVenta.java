@@ -199,6 +199,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private String Shs_hasta_dormir;
     private int segundo_conn_rpi;
     private int cant_add_hab_boton;
+    private double monto_adelanto_1;
+    private String descripcion_consumo_adelantado = "";
 
     private void abrir_formulario() {
         cargar_usuario_acceso();
@@ -228,10 +230,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         if (tipo == 1) {
             jPanel_venta_principal.setBackground(new Color(245, 199, 169));
             jPanel_item_venta.setBackground(new Color(245, 199, 169));
+            jPanel_tiempo_habitacion.setBackground(new Color(204, 255, 204));//[204,255,204]
         }
         if (tipo == 2) {
             jPanel_venta_principal.setBackground(new Color(209, 81, 45));
             jPanel_item_venta.setBackground(new Color(209, 81, 45));
+            jPanel_tiempo_habitacion.setBackground(new Color(209, 81, 45));
         }
     }
 
@@ -567,6 +571,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             eveJtab.calcular_subtotal(tblitem_producto, model_itemf, 3, 5, 4, true);
             eveJtab.calcular_subtotal(tblitem_producto, model_itemf, 3, 5, 8, false);
             jFtotal_consumo.setValue(eveJtab.getDouble_sumar_tabla(tblitem_producto, 8));
+            descripcion_consumo_adelantado = descripcion_consumo_adelantado + "(" + Scantidad + "," + Sdescripcion + ")\n";
             reestableser_item_venta();
         }
     }
@@ -1238,6 +1243,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         Shs_hasta_dormir = hs_hasta_dormir;
                         tiempo_boton_hab = 0;
                         boton_mudar_unavez = true;
+                        color_panel_venta(1);
                         eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
                         jFtotal_consumo.setValue(0);
                         icono_tipo_habitacion(tipo_habitacion);
@@ -1548,6 +1554,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         monto_descuento = ENThrt.getC31monto_descuento();
         monto_consumo = ENThrt.getC30monto_consumision();
         monto_adelanto = ENThrt.getC41monto_adelanto();
+        monto_adelanto_1 = ENThrt.getC41monto_adelanto();
         cant_adicional = cant_add_tarifa_hora;
         jFmonto_hora_minimo.setValue(monto_por_hora_minimo);
         jFmonto_hora_adicional.setValue(monto_por_hora_adicional);
@@ -1584,19 +1591,18 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFmonto_adicional.setValue(monto_adicional);
         txtcant_adicional.setText(String.valueOf(cant_adicional));
         jFmonto_adicional_total.setValue(monto_adicional_total);
-        txtmonto_adelanto.setText("0");
+        txtmonto_adelanto.setText(null);
         calculo_monto_pagar();
         txtmonto_descontar.setText(String.valueOf((int) monto_descuento));
         if (monto_adelanto > 0) {
-//            btnadelanto.setEnabled(false);
+            btnadelanto.setEnabled(false);
             es_adelanto_cargado = true;
             btnadelanto.setText("EDITAR-ADELANTO");
             txtmonto_adelanto.setText(evejtf.getString_format_nro_decimal(monto_adelanto));
             txtmonto_adelanto.setBackground(Color.yellow);
-            //[255,255,153]
         } else {
             es_adelanto_cargado = false;
-//            btnadelanto.setEnabled(true);
+            btnadelanto.setEnabled(true);
             btnadelanto.setText("NUEVO-ADELANTO");
 
         }
@@ -1635,7 +1641,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFmonto_tarifa_ocupacion_total.setValue(0);
         jFmonto_total_pagar.setValue(0);
         jFmonto_total_pagar_salir.setValue(0);
-        color_panel_venta(1);
+        color_panel_venta(2);
 //        jRpor_hora.setSelected(true);
         this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por);
         DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
@@ -2089,6 +2095,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
         String descripcion = fk_idhabitacion_recepcion_actual_select + "-(" + eveest.getEst_Adelanto() + ")-HAB: " + nro_habitacion_select + ",T:(" + tiempo_select + ")";
+        descripcion = descripcion + descripcion_consumo_adelantado;
         ENTccd.setC3creado_por(creado_por);
         ENTccd.setC4cerrado_por(eveest.getEst_Adelanto());
         ENTccd.setC5es_cerrado(false);
@@ -2275,13 +2282,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         + "Cantidad adicional Hasta la Dormida: " + Icant_hasta_dormir + "\n"
                         + "Horas adicional hasta la dormida: " + Shs_hasta_dormir,
                         "OCUPACION POR HORA MAS DORMIR", "ACEPTAR", "CANCELAR")) {
-                    if (evemen.senha_crear_tablas("12345")) {
+//                    if (evemen.senha_crear_tablas("12345")) {
                         update_cambio_tipo_ocupacion(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                         lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
                         cargar_item_producto_adicional_hasta_dormir();
                         boton_cargar_consumo();
                         limpiar_habitacion_select();
-                    }
+//                    }
                 }
             }
         }
@@ -2290,7 +2297,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_ir_consumo() {
         if (validar_habitacion_select()) {
             tiempo_boton_hab = 0;
-            color_panel_venta(2);
+            color_panel_venta(1);
             eveJtab.mostrar_JTabbedPane(jTab_principal, 2);
         }
     }
@@ -2315,36 +2322,61 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void boton_cargar_adelanto() {
-
-        if ((validar_habitacion_select()) && txtmonto_adelanto.getText().trim().length() > 0) {
-//            calculo_monto_pagar();
-            monto_total_pagar = ((monto_adicional_total + monto_minimo + monto_consumo) - (monto_descuento + 0));
-            tiempo_boton_hab = 0;
-            String Smonto_adelanto = evejtf.getString_format_nro_entero1(txtmonto_adelanto);
-            monto_adelanto = Double.parseDouble(Smonto_adelanto);
-            if (monto_total_pagar < monto_adelanto) {
-                JOptionPane.showMessageDialog(null, "EL MONTO DE ADELANTO NO PUEDE SUPERAR EL MONTO TOTAL\n"
-                        + "monto_total_pagar:" + monto_total_pagar + "\n"
-                        + "monto_adelanto:" + monto_adelanto, "ERROR ADELANTO", JOptionPane.ERROR_MESSAGE);
-//                calculo_monto_pagar();
-                txtmonto_adelanto.setText(null);
-                txtmonto_adelanto.grabFocus();
-            } else {
-                if (monto_adelanto > 0) {
-                    if (evemen.getBooMensaje_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
-                        update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-                        cargar_dato_caja_detalle_ADELANTO();
-                        if (es_adelanto_cargado) {
-                            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
-                        } else {
-                            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
+        if (!evejtf.getBoo_JTextField_vacio(txtmonto_adelanto, "DEBE CARGAR EL CAMPO MONTO ADELANTO")) {
+            if ((validar_habitacion_select())) {
+                monto_total_pagar = ((monto_adicional_total + monto_minimo + monto_consumo) - (monto_descuento + 0));
+                tiempo_boton_hab = 0;
+                String Smonto_adelanto = evejtf.getString_format_nro_entero1(txtmonto_adelanto);
+                monto_adelanto = Double.parseDouble(Smonto_adelanto);
+                if (monto_total_pagar < monto_adelanto) {
+                    JOptionPane.showMessageDialog(null, "EL MONTO DE ADELANTO NO PUEDE SUPERAR EL MONTO TOTAL\n"
+                            + "monto_total_pagar:" + monto_total_pagar + "\n"
+                            + "monto_adelanto:" + monto_adelanto, "ERROR ADELANTO", JOptionPane.ERROR_MESSAGE);
+                    txtmonto_adelanto.setText(null);
+                    txtmonto_adelanto.grabFocus();
+                } else {
+                    if (monto_adelanto > 0) {
+                        if (evemen.getBooMensaje_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
+                            update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
+                            cargar_dato_caja_detalle_ADELANTO();
+                            if (es_adelanto_cargado) {
+//                            BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, true);
+//                            JOptionPane.showMessageDialog(null, "AGREGAR ADELANTO CARGADO CORRECTAMENTE");
+                            } else {
+                                BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
+                                JOptionPane.showMessageDialog(null, "NUEVO ADELANTO CARGADO CORRECTAMENTE");
+                            }
+                            calculo_monto_pagar();
+                            limpiar_habitacion_select();
                         }
-//                    BOven.update_venta(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
-                        JOptionPane.showMessageDialog(null, "ADELANTO CARGADO CORRECTAMENTE");
-                        calculo_monto_pagar();
-                        limpiar_habitacion_select();
                     }
                 }
+            }
+        }
+
+    }
+
+    private void boton_cargar_consumo_adelanto() {
+        if (validar_habitacion_select()) {
+            if (monto_adelanto > 0) {
+                if (evemen.getBooMensaje_question("ESTAS SEGURO DE CONSUMO POR ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
+                    tiempo_boton_hab = 0;
+                    ENTven.setC1idventa(fk_idventa);
+                    ENTven.setC3creado_por(creado_por);
+                    BOveni.insertar_venta_item(ENTveni, ENTven, tblitem_producto, false, false, false);
+                    DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
+                    limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
+                    monto_total_pagar = ((monto_adicional_total + monto_minimo + monto_consumo) - (monto_descuento + 0));
+                    monto_adelanto = monto_total_pagar;
+                    update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
+                    monto_adelanto = monto_total_pagar - monto_adelanto_1;
+                    cargar_dato_caja_detalle_ADELANTO();
+                    BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
+                    JOptionPane.showMessageDialog(null, "CONSUMO ADELANTO CARGADO CORRECTAMENTE");
+                    limpiar_habitacion_select();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "PRIMERO SE DEBE CARGA UN ADELANTO POR LA OCUPACION");
             }
         }
 
@@ -2863,7 +2895,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         btnrpi_1 = new javax.swing.JButton();
         btnrpi_2 = new javax.swing.JButton();
         btnrpi_3 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         btnventa_interna = new javax.swing.JButton();
         jPanel_tiempo_habitacion = new javax.swing.JPanel();
         txtnro_hab_grande = new javax.swing.JTextField();
@@ -2948,6 +2979,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jFtotal_consumo = new javax.swing.JFormattedTextField();
         btncargar_consumo = new javax.swing.JButton();
         btneliminar_item_temp = new javax.swing.JButton();
+        btnconsumo_adelantado = new javax.swing.JButton();
         jPanel_filtro_habitacion = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -3034,13 +3066,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton1.setText("EXPORT");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         btnventa_interna.setText("VENTA INTERNA");
         btnventa_interna.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3062,8 +3087,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                         .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnventa_interna, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -3088,13 +3111,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             .addComponent(btnrpi_1)
                             .addComponent(btnrpi_2)
                             .addComponent(btnrpi_3)
-                            .addComponent(jButton1)
                             .addComponent(btnventa_interna))
                         .addGap(3, 3, 3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTab_principal.addTab("ESTADO HABITACION", jPanel_estado_habitacion);
+
+        jPanel_tiempo_habitacion.setBackground(new java.awt.Color(204, 255, 204));
 
         txtnro_hab_grande.setEditable(false);
         txtnro_hab_grande.setBackground(new java.awt.Color(204, 204, 255));
@@ -3454,7 +3478,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
         jFmonto_consumo.setEditable(false);
         jFmonto_consumo.setBackground(new java.awt.Color(255, 255, 153));
-        jFmonto_consumo.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL TARIFA OCUPACION"));
+        jFmonto_consumo.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL CONSUMO"));
         jFmonto_consumo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
         jFmonto_consumo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFmonto_consumo.setText("1");
@@ -3550,6 +3574,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnadelanto.setBackground(new java.awt.Color(255, 0, 255));
+        btnadelanto.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnadelanto.setForeground(new java.awt.Color(255, 255, 255));
         btnadelanto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/32_pago.png"))); // NOI18N
         btnadelanto.setText("ADELANTO");
         btnadelanto.addActionListener(new java.awt.event.ActionListener() {
@@ -3704,9 +3731,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jFmonto_total_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btncancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(btncancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(15, 15, 15)))
                 .addGroup(jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(txtmonto_descontar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3917,7 +3944,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         .addComponent(btncantidad_5, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btncantidad_6, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
                         .addComponent(btnagregar_cantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -3963,7 +3990,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtidventa, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
@@ -3997,19 +4024,31 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnconsumo_adelantado.setBackground(new java.awt.Color(204, 0, 204));
+        btnconsumo_adelantado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnconsumo_adelantado.setForeground(new java.awt.Color(255, 255, 255));
+        btnconsumo_adelantado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/32_pago.png"))); // NOI18N
+        btnconsumo_adelantado.setText("ADELANTADO");
+        btnconsumo_adelantado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnconsumo_adelantadoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel_item_ventaLayout = new javax.swing.GroupLayout(jPanel_item_venta);
         jPanel_item_venta.setLayout(jPanel_item_ventaLayout);
         jPanel_item_ventaLayout.setHorizontalGroup(
             jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_item_ventaLayout.createSequentialGroup()
-                .addComponent(btncargar_consumo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btneliminar_item_temp)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(jPanel_item_ventaLayout.createSequentialGroup()
                 .addGroup(jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel_item_ventaLayout.createSequentialGroup()
+                        .addComponent(btncargar_consumo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnconsumo_adelantado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btneliminar_item_temp, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -4019,12 +4058,15 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_item_ventaLayout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel_item_ventaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(btncargar_consumo)
+                    .addComponent(btnconsumo_adelantado, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btneliminar_item_temp, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btncargar_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel_item_ventaLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(jFtotal_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -4051,7 +4093,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jPanel_venta_principalLayout.setVerticalGroup(
             jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_venta_principalLayout.createSequentialGroup()
-                .addContainerGap(69, Short.MAX_VALUE)
+                .addContainerGap(66, Short.MAX_VALUE)
                 .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTab_producto_ingrediente)
                     .addComponent(jPanel_item_venta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -4632,11 +4674,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         evejtf.getString_format_nro_entero1(txtmonto_adelanto);
     }//GEN-LAST:event_txtmonto_adelantoKeyReleased
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        DAOcc.exportar_excel_monto_usuario_todo_ano(conn);
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void btneliminar_item_tempActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminar_item_tempActionPerformed
         // TODO add your handling code here:
         boton_eliminar_item_venta();
@@ -4667,6 +4704,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         evetbl.abrir_TablaJinternal(new FrmVenta_interna());
     }//GEN-LAST:event_btnventa_internaActionPerformed
 
+    private void btnconsumo_adelantadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnconsumo_adelantadoActionPerformed
+        // TODO add your handling code here:
+        boton_cargar_consumo_adelanto();
+    }//GEN-LAST:event_btnconsumo_adelantadoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizar_total_pago_adelanto;
@@ -4681,6 +4723,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton btncantidad_6;
     private javax.swing.JButton btncargar_consumo;
     private javax.swing.JButton btnconsumo;
+    private javax.swing.JButton btnconsumo_adelantado;
     private javax.swing.JButton btndescontar;
     private javax.swing.JButton btndesocupar_pagar;
     private javax.swing.JButton btneliminar_item;
@@ -4697,7 +4740,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cmbfecha_venta;
     private javax.swing.JComboBox<String> cmbusuario;
     private javax.swing.ButtonGroup gru_tarifa;
-    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCest_cancelado;
     private javax.swing.JCheckBox jCest_desocupado;
     private javax.swing.JCheckBox jCest_mudar;

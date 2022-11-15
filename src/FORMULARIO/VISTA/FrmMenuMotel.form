@@ -361,7 +361,7 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="btncerrar_seccion">
           <Properties>
-            <Property name="text" type="java.lang.String" value="CERRAR SECCION"/>
+            <Property name="text" type="java.lang.String" value="CERRAR SESION"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btncerrar_seccionActionPerformed"/>
