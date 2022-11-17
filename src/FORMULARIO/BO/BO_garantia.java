@@ -3,28 +3,29 @@ package FORMULARIO.BO;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_caja_cierre_detalle;
-import FORMULARIO.DAO.DAO_gasto;
+import FORMULARIO.DAO.DAO_garantia;
 import FORMULARIO.ENTIDAD.caja_cierre_detalle;
-import FORMULARIO.ENTIDAD.gasto;
+import FORMULARIO.ENTIDAD.garantia;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.swing.JTable;
 
-public class BO_gasto {
+public class BO_garantia {
 
-    private DAO_gasto DAOg = new DAO_gasto();
+    private DAO_garantia DAOgar = new DAO_garantia();
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public void insertar_gasto(gasto ga, caja_cierre_detalle ENTccd) {
-        String titulo = "insertar_gasto";
+    public void insertar_garantia(garantia ga, caja_cierre_detalle ENTccd) {
+        String titulo = "insertar_garantia";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            DAOg.insertar_gasto(conn, ga);
+            DAOgar.insertar_garantia(conn, ga);
             DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
+//            ga_dao.actualizar_tabla_garantia(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, ga.toString(), titulo);
@@ -36,16 +37,16 @@ public class BO_gasto {
         }
     }
 
-    public void update_gasto(gasto ga, caja_cierre_detalle ENTccd) {
-        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE ANULAR ESTE GASTO", "ANULAR", "ACEPTAR", "CANCELAR")) {
-            String titulo = "update_gasto";
+    public void update_garantia(garantia ga, JTable tbltabla) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR GARANTIA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+            String titulo = "update_garantia";
             Connection conn = ConnPostgres.getConnPosgres();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                DAOg.update_gasto(conn, ga);
-                DAOccd.update_caja_cierre_detalle(conn, ENTccd);
+                DAOgar.update_garantia(conn, ga);
+                DAOgar.actualizar_tabla_garantia(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, ga.toString(), titulo);

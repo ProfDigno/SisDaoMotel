@@ -19,7 +19,7 @@ public class BO_venta_interno {
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public void insertar_venta_interno(venta_interno vein, caja_cierre_detalle ENTccd, JTable tbltabla) {
+    public void insertar_venta_interno1(venta_interno vein, caja_cierre_detalle ENTccd, JTable tbltabla) {
         String titulo = "insertar_venta_interno";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
@@ -28,7 +28,7 @@ public class BO_venta_interno {
             }
             DAOveni.insertar_venta_interno(conn, vein);
             DAOvenii.insertar_venta_item_interno_de_tabla(conn, tbltabla, vein);
-            DAOccd.insertar_caja_cierre_detalle1(conn, ENTccd);
+            DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
 //            DAOveni.actualizar_tabla_venta_interno(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {

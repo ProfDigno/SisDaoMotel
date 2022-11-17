@@ -38,6 +38,7 @@ public class EvenEstado {
     private static String caja_COMPRA;
     private static String caja_APERTURA;
     private static String caja_VEN_INTERNA;
+    private static String caja_GARANTIA;
     private static String cond_Contado;
     private static String cond_Credito;
     private static String forPago_Efectivo;
@@ -114,6 +115,7 @@ public class EvenEstado {
         setCaja_COMPRA("COMPRA");
         setCaja_APERTURA("APERTURA");
         setCaja_VEN_INTERNA("VEN_INTERNA");
+        setCaja_GARANTIA("GARANTIA");
         setPer_CLIENTE("CLIENTE");
         setPer_PERSONAL("PERSONAL");
         setPer_PROVEEDOR("PROVEEDOR");
@@ -135,6 +137,14 @@ public class EvenEstado {
         setIco_limpie("/graficos/limpieza.png");
         setIco_escoba("/graficos/escoba.png");
         setIco_candado("/graficos/ocupado.png");
+    }
+
+    public static String getCaja_GARANTIA() {
+        return caja_GARANTIA;
+    }
+
+    public static void setCaja_GARANTIA(String caja_GARANTIA) {
+        EvenEstado.caja_GARANTIA = caja_GARANTIA;
     }
 
     public static String getCaja_VEN_INTERNA() {

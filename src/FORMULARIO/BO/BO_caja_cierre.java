@@ -6,6 +6,7 @@ import FORMULARIO.DAO.DAO_caja_cierre;
 import FORMULARIO.DAO.DAO_caja_cierre_detalle;
 import FORMULARIO.DAO.DAO_caja_cierre_item;
 import FORMULARIO.DAO.DAO_compra;
+import FORMULARIO.DAO.DAO_garantia;
 import FORMULARIO.DAO.DAO_gasto;
 import FORMULARIO.DAO.DAO_venta;
 import FORMULARIO.DAO.DAO_venta_interno;
@@ -23,6 +24,7 @@ public class BO_caja_cierre {
     private DAO_gasto DAOg = new DAO_gasto();
     private DAO_compra DAOcom=new DAO_compra();
     private DAO_venta_interno DAOveni=new DAO_venta_interno();
+    private DAO_garantia DAOgar=new DAO_garantia();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
     public void insertar_caja_cierre(caja_cierre caci) {
@@ -39,6 +41,7 @@ public class BO_caja_cierre {
             DAOg.terminar_gasto_en_caja(conn,caci.getC1idcaja_cierre());
             DAOcom.terminar_compra_en_caja(conn,caci.getC1idcaja_cierre());
             DAOveni.terminar_venta_interno_en_caja(conn, caci.getC1idcaja_cierre());
+            DAOgar.terminar_garantia_en_caja(conn,caci.getC1idcaja_cierre());
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, caci.toString(), titulo);

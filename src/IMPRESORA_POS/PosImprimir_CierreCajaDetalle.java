@@ -61,6 +61,7 @@ public class PosImprimir_CierreCajaDetalle {
     private static String cd_tt_vale = "0";
     private static String cd_tt_liquida = "0";
     private static String cd_tt_ven_interno = "0";
+    private static String cd_tt_garantia = "0";
     private static String cd_tt_egreso = "0";
     private static String cd_tt_saldo = "0";
 //    private static boolean es_consumo;
@@ -79,14 +80,15 @@ public class PosImprimir_CierreCajaDetalle {
                 + "TRIM(to_char(sum(cd.monto_ocupa_adicional),'999G999G999')) as tt_adicional,\n"
                 + "TRIM(to_char(sum(cd.monto_ocupa_consumo),'999G999G999')) as tt_consumo,\n"
                 + "TRIM(to_char(sum(cd.monto_interno),'999G999G999')) as tt_interno,\n"
-                + "TRIM(to_char(sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
+                + "TRIM(to_char(sum(cd.monto_garantia),'999G999G999')) as tt_garantia,\n"
+                + "TRIM(to_char(sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)),'999G999G999')) as tt_ingreso,\n"
                 + "TRIM(to_char(sum(cd.monto_gasto),'999G999G999')) as tt_gasto,\n"
                 + "TRIM(to_char(sum(cd.monto_compra),'999G999G999')) as tt_compra,\n"
                 + "TRIM(to_char(sum(cd.monto_vale),'999G999G999')) as tt_vale,\n"
                 + "TRIM(to_char(sum(cd.monto_liquidacion),'999G999G999')) as tt_liquida,\n"
                 + "TRIM(to_char(sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion),'999G999G999')) as tt_egreso,\n"
-                + "TRIM(to_char(sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
+                + "TRIM(to_char(sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
                 + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)),'999G999G999')) as tt_saldo\n"
                 + "from caja_cierre_detalle cd,caja_cierre_item cci,caja_cierre cca\n"
@@ -111,6 +113,7 @@ public class PosImprimir_CierreCajaDetalle {
                 cd_tt_vale = rs.getString("tt_vale");
                 cd_tt_liquida = rs.getString("tt_liquida");
                 cd_tt_ven_interno = rs.getString("tt_interno");
+                cd_tt_garantia = rs.getString("tt_garantia");
                 cd_tt_egreso = rs.getString("tt_egreso");
                 cd_tt_saldo = rs.getString("tt_saldo");
                 cd_creado_por = rs.getString("creado_por");
@@ -128,7 +131,7 @@ public class PosImprimir_CierreCajaDetalle {
                 + "TRIM(to_char(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)),'999G999G999')) as m_ocupacion,\n"
                 + "TRIM(to_char((cd.monto_ocupa_consumo+cd.monto_interno),'999G999G999')) as m_consumo,\n"
-                + "TRIM(to_char(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
+                + "TRIM(to_char(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)),'999G999G999')) as tt_ingreso\n"
                 + "from caja_cierre_detalle cd,caja_cierre_item cci,caja_cierre cca\n"
                 + "where  cd.idcaja_cierre_detalle=cci.fk_idcaja_cierre_detalle\n"
@@ -219,6 +222,8 @@ public class PosImprimir_CierreCajaDetalle {
         mensaje_impresora = mensaje_impresora + tabular + tabular + pos.alinearDerecha(cd_tt_adelanto, cant_char) + saltolinea;
         mensaje_impresora = mensaje_impresora + "TT. VEN-INTERNO: " + saltolinea;
         mensaje_impresora = mensaje_impresora + tabular + tabular + pos.alinearDerecha(cd_tt_ven_interno, cant_char) + saltolinea;
+        mensaje_impresora = mensaje_impresora + "TT. GARANTIA: " + saltolinea;
+        mensaje_impresora = mensaje_impresora + tabular + tabular + pos.alinearDerecha(cd_tt_garantia, cant_char) + saltolinea;
         mensaje_impresora = mensaje_impresora + "===>TOTAL  INGRESO: " + saltolinea;
         mensaje_impresora = mensaje_impresora + tabular + tabular + pos.alinearDerecha(cd_tt_ingreso, cant_char) + saltolinea;
         mensaje_impresora = mensaje_impresora + separador + saltolinea;
@@ -295,23 +300,25 @@ public class PosImprimir_CierreCajaDetalle {
         printer.printTextWrap(22 + tempfila, 22, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_adelanto, cant_char));
         printer.printTextWrap(23 + tempfila, 23, jsprint.getSep_inicio(), totalColumna, "TT. VEN-INTERNO:");
         printer.printTextWrap(23 + tempfila, 23, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_ven_interno, cant_char));
-        printer.printTextWrap(24 + tempfila, 24, jsprint.getSep_inicio(), totalColumna, "===>TOTAL INGRESO: ");
-        printer.printTextWrap(24 + tempfila, 24, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_ingreso, cant_char));
-        printer.printTextWrap(25 + tempfila, 25, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
-        printer.printTextWrap(26 + tempfila, 26, jsprint.getSep_inicio(), totalColumna, "###-DATOS EGRESO-###");
-        printer.printTextWrap(27 + tempfila, 27, jsprint.getSep_inicio(), totalColumna, "TT. COMPRA : ");
-        printer.printTextWrap(27 + tempfila, 27, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_compra, cant_char));
-        printer.printTextWrap(28 + tempfila, 28, jsprint.getSep_inicio(), totalColumna, "TT. VALE : ");
-        printer.printTextWrap(28 + tempfila, 28, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_vale, cant_char));
-        printer.printTextWrap(29 + tempfila, 29, jsprint.getSep_inicio(), totalColumna, "TT. LIQUIDACION : ");
-        printer.printTextWrap(29 + tempfila, 29, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_liquida, cant_char));
-        printer.printTextWrap(30 + tempfila, 30, jsprint.getSep_inicio(), totalColumna, "TT. GASTO : ");
-        printer.printTextWrap(30 + tempfila, 30, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_gasto, cant_char));
-        printer.printTextWrap(31 + tempfila, 31, jsprint.getSep_inicio(), totalColumna, "===>TOTAL EGRESO : ");
-        printer.printTextWrap(31 + tempfila, 31, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_egreso, cant_char));
-        printer.printTextWrap(32 + tempfila, 32, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
-        printer.printTextWrap(33 + tempfila, 33, jsprint.getSep_inicio(), totalColumna, "===>TOTAL SALDO : ");
-        printer.printTextWrap(33 + tempfila, 33, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_saldo, cant_char));
+        printer.printTextWrap(24 + tempfila, 24, jsprint.getSep_inicio(), totalColumna, "TT. GARANTIA:");
+        printer.printTextWrap(24 + tempfila, 24, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_garantia, cant_char));
+        printer.printTextWrap(25 + tempfila, 25, jsprint.getSep_inicio(), totalColumna, "===>TOTAL INGRESO: ");
+        printer.printTextWrap(25 + tempfila, 25, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_ingreso, cant_char));
+        printer.printTextWrap(26 + tempfila, 26, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
+        printer.printTextWrap(27 + tempfila, 27, jsprint.getSep_inicio(), totalColumna, "###-DATOS EGRESO-###");
+        printer.printTextWrap(28 + tempfila, 28, jsprint.getSep_inicio(), totalColumna, "TT. COMPRA : ");
+        printer.printTextWrap(28 + tempfila, 28, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_compra, cant_char));
+        printer.printTextWrap(29 + tempfila, 29, jsprint.getSep_inicio(), totalColumna, "TT. VALE : ");
+        printer.printTextWrap(29 + tempfila, 29, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_vale, cant_char));
+        printer.printTextWrap(30 + tempfila, 30, jsprint.getSep_inicio(), totalColumna, "TT. LIQUIDACION : ");
+        printer.printTextWrap(30 + tempfila, 30, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_liquida, cant_char));
+        printer.printTextWrap(31 + tempfila, 31, jsprint.getSep_inicio(), totalColumna, "TT. GASTO : ");
+        printer.printTextWrap(31 + tempfila, 31, jsprint.getSep_item_subtotal(), totalColumna, pos.alinearDerecha(cd_tt_gasto, cant_char));
+        printer.printTextWrap(32 + tempfila, 32, jsprint.getSep_inicio(), totalColumna, "===>TOTAL EGRESO : ");
+        printer.printTextWrap(32 + tempfila, 32, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_egreso, cant_char));
+        printer.printTextWrap(33 + tempfila, 33, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
+        printer.printTextWrap(34 + tempfila, 34, jsprint.getSep_inicio(), totalColumna, "===>TOTAL SALDO : ");
+        printer.printTextWrap(34 + tempfila, 34, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_saldo, cant_char));
         printer.toFile(tk_ruta_archivo);
         try {
             inputStream = new FileInputStream(tk_ruta_archivo);

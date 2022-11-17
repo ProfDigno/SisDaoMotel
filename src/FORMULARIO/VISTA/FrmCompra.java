@@ -601,7 +601,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     }
 
     private void boton_pagar_compra() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA PAGAR")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA PAGAR")) {
             if (evemen.getBooMensaje_question("ESTAS SEGURO DE DAR PAGO A ESTA COMPRA\n"
                     + "ESTE PAGO DA INGRESO A CAJA Y INGRESA AL STOCK",
                     "PAGO DE COMPRA", "PAGAR", "CANCELAR")) {
@@ -622,7 +622,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     }
 
     private void boton_anular_compra() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA ANULAR")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA ANULAR")) {
             if (evemen.getBooMensaje_warning("ESTAS SEGURO DE ANULAR ESTA COMPRA\n"
                     + "ESTO NO AFECTA LA CAJA O EL STOCK",
                     "ANULAR COMPRA", "ANULAR", "CANCELAR")) {
@@ -783,7 +783,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
     }
 
     private void boton_recargar_compra() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA CARGAR \nSOLO SI ESTA ANULADO SE PUEDE RECARGAR")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblcompra, "DEBE SELECCIONAR UNA COMPRA PARA CARGAR \nSOLO SI ESTA ANULADO SE PUEDE RECARGAR")) {
             if (evemen.getBooMensaje_question("ESTAS SEGURO DE RECARGAR ESTA COMPRA",
                     "RECARGAR COMPRA", "RECARGAR", "CANCELAR")) {
                 int idcompra = eveJtab.getInt_select_id(tblcompra);

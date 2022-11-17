@@ -29,6 +29,8 @@ private int C24fk_idrh_liquidacion;
 private double C25monto_solo_adelanto;
 private double C26monto_interno;
 private int C27fk_idventa_interno;
+private double C28monto_garantia;
+private int C29fk_idgarantia;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -49,6 +51,22 @@ private static String nom_idtabla;
 		caja_cierre_detalle.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public double getC28monto_garantia() {
+        return C28monto_garantia;
+    }
+
+    public void setC28monto_garantia(double C28monto_garantia) {
+        this.C28monto_garantia = C28monto_garantia;
+    }
+
+    public int getC29fk_idgarantia() {
+        return C29fk_idgarantia;
+    }
+
+    public void setC29fk_idgarantia(int C29fk_idgarantia) {
+        this.C29fk_idgarantia = C29fk_idgarantia;
+    }
 
     public double getC26monto_interno() {
         return C26monto_interno;

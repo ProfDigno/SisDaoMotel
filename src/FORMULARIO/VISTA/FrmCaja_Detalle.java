@@ -79,6 +79,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(conn, tblgasto_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_COMPRA(conn, tblcompra_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA_INTERNO(conn, tblventa_interna_abierto, fk_idusuario);
+        DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GARANTIA(conn, tblgarantia_abierto, fk_idusuario);
         suma_total_caja_detalle_abierto(fk_idusuario);
     }
 
@@ -119,11 +120,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 + "sum(cd.monto_gasto) as gasto,\n"
                 + "sum(cd.monto_compra) as compra,\n"
                 + "sum(cd.monto_interno) as interno,\n"
+                + "sum(cd.monto_garantia) as garantia,\n"
                 + "sum((0-(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as descuento,\n"
-                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as ingreso, \n"
                 + "sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as egreso,\n"
-                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-\n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
                 + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as saldo,\n"
                 + "to_char(min(fecha_creado),'yyyy-MM-dd HH24:MI:ss') as fec_inicio, "
@@ -141,6 +143,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 double consumo = rs.getDouble("consumo");
                 double descuento = rs.getDouble("descuento");
                 double interno = rs.getDouble("interno");
+                double garantia = rs.getDouble("garantia");
                 suma_ingreso = rs.getDouble("ingreso");
                 double gasto = rs.getDouble("gasto");
                 double compra = rs.getDouble("compra");
@@ -165,6 +168,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 jFtotal_compra.setValue(compra);
                 jFtotal_venta_interno.setValue(interno);
                 jFtotal_venta_interno_2.setValue(interno);
+                jFtotal_garantia.setValue(garantia);
+                jFtotal_garantia_2.setValue(garantia);
             }
 
         } catch (Exception e) {
@@ -201,10 +206,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
 //                actualizar_tabla_caja_cierre_detalle_ABIERTO();
 //                actualizar_tabla_caja_cierre();
                 if (evemen.getBooMensaje_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
+//                    this.dispose();
                     select_imprimir_caja_cierre(ENTcc.getC1idcaja_cierre());
-                    this.dispose();
-                    abrir_login();
                 }
+                this.dispose();
+                abrir_login();
             }
         }
     }
@@ -256,7 +262,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void boton_imprimir_caja_cierre() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblresumen_caja_cierre, "SELECCIONAR LA TABLA CAJA CIERRE")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblresumen_caja_cierre, "SELECCIONAR LA TABLA CAJA CIERRE")) {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
             select_imprimir_caja_cierre(idcaja_cierre);
         }
@@ -293,7 +299,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void boton_imprimir_ticket_venta(JTable tblventa) {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblventa, "SELECCIONAR LA TABLA DE VENTA")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblventa, "SELECCIONAR LA TABLA DE VENTA")) {
             int idventa = eveJtab.getInt_select_id(tblventa);
             posv.boton_imprimir_pos_VENTA(conn, idventa);
         }
@@ -333,6 +339,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_ocupa_ingreso = new javax.swing.JFormattedTextField();
         btnimprimir_ticket = new javax.swing.JButton();
         jFtotal_venta_interno_2 = new javax.swing.JFormattedTextField();
+        jFtotal_garantia_2 = new javax.swing.JFormattedTextField();
         jPanel16 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
         jScrollPane9 = new javax.swing.JScrollPane();
@@ -348,6 +355,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jScrollPane7 = new javax.swing.JScrollPane();
         tblcompra_abierto = new javax.swing.JTable();
         jFtotal_compra = new javax.swing.JFormattedTextField();
+        jPanel18 = new javax.swing.JPanel();
+        jPanel19 = new javax.swing.JPanel();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        tblgarantia_abierto = new javax.swing.JTable();
+        jFtotal_garantia = new javax.swing.JFormattedTextField();
         jPanel11 = new javax.swing.JPanel();
         jFtotal_resumen_ingreso = new javax.swing.JFormattedTextField();
         jFtotal_resumen_egreso = new javax.swing.JFormattedTextField();
@@ -490,6 +502,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_venta_interno_2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFtotal_venta_interno_2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        jFtotal_garantia_2.setBackground(new java.awt.Color(204, 204, 204));
+        jFtotal_garantia_2.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL GARANTIA"));
+        jFtotal_garantia_2.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_garantia_2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_garantia_2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -507,8 +525,10 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_ocupa_descuento, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_garantia_2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -521,7 +541,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addComponent(jFtotal_ocupa_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFtotal_ocupa_descuento, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jFtotal_ocupa_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jFtotal_venta_interno_2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jFtotal_venta_interno_2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jFtotal_garantia_2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(btnimprimir_ticket, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
@@ -579,7 +600,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel17Layout.setHorizontalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel17Layout.createSequentialGroup()
-                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_venta_interno, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -633,7 +654,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -685,7 +706,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel13Layout.createSequentialGroup()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFtotal_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -712,6 +733,60 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         );
 
         jTabbedPane3.addTab("COMPRA", jPanel12);
+
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("CAJA GARANTIA"));
+
+        tblgarantia_abierto.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane10.setViewportView(tblgarantia_abierto);
+
+        jFtotal_garantia.setBackground(new java.awt.Color(255, 255, 102));
+        jFtotal_garantia.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL GARANTIA"));
+        jFtotal_garantia.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_garantia.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_garantia.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
+        jPanel19.setLayout(jPanel19Layout);
+        jPanel19Layout.setHorizontalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel19Layout.setVerticalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addComponent(jFtotal_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
+        jPanel18.setLayout(jPanel18Layout);
+        jPanel18Layout.setHorizontalGroup(
+            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel18Layout.setVerticalGroup(
+            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
+                .addGap(0, 3, Short.MAX_VALUE)
+                .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jTabbedPane3.addTab("GARANTIA", jPanel18);
 
         jPanel11.setBackground(new java.awt.Color(204, 204, 255));
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("RESUMEN SALDO"));
@@ -889,7 +964,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(btnimprimir_ticket1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 168, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
                         .addComponent(jFtotal_cc_consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -942,7 +1017,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(852, Short.MAX_VALUE)
+                .addContainerGap(895, Short.MAX_VALUE)
                 .addComponent(jCsolo_terminado_gasto)
                 .addGap(271, 271, 271))
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1000,7 +1075,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jPanel14Layout.setHorizontalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
-                .addContainerGap(845, Short.MAX_VALUE)
+                .addContainerGap(888, Short.MAX_VALUE)
                 .addComponent(jCsolo_terminado_comp)
                 .addGap(278, 278, 278))
             .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1214,6 +1289,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgasto_abierto);
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblcompra_abierto);
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblventa_interna_abierto);
+        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgarantia_abierto);
         DAOcc.ancho_tabla_caja_cierre(tblresumen_caja_cierre);
     }//GEN-LAST:event_formInternalFrameOpened
 
@@ -1303,6 +1379,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFtotal_cc_minimo;
     private javax.swing.JFormattedTextField jFtotal_compra;
     private javax.swing.JFormattedTextField jFtotal_egreso;
+    private javax.swing.JFormattedTextField jFtotal_garantia;
+    private javax.swing.JFormattedTextField jFtotal_garantia_2;
     private javax.swing.JFormattedTextField jFtotal_gasto;
     private javax.swing.JFormattedTextField jFtotal_ingreso;
     private javax.swing.JFormattedTextField jFtotal_ocupa_adelanto;
@@ -1328,6 +1406,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1341,6 +1421,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton jRturno_tarde;
     private javax.swing.JRadioButton jRturno_todo;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1356,6 +1437,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblcc_compra;
     private javax.swing.JTable tblcc_gasto;
     private javax.swing.JTable tblcompra_abierto;
+    private javax.swing.JTable tblgarantia_abierto;
     private javax.swing.JTable tblgasto_abierto;
     private javax.swing.JTable tblresumen_caja_cierre;
     private javax.swing.JTable tblventa;

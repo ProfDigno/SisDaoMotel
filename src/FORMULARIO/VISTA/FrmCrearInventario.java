@@ -201,7 +201,7 @@ public class FrmCrearInventario extends javax.swing.JInternalFrame {
         }
     }
     private void boton_imprimir_inventario() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblinventario, "SELECCIONAR LA TABLA INVENTARIO")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblinventario, "SELECCIONAR LA TABLA INVENTARIO")) {
             int idinventario = eveJtab.getInt_select_id(tblinventario);
             select_imprimir_inventario(idinventario);
         }

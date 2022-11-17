@@ -610,13 +610,15 @@ public class FrmVenta_interna extends javax.swing.JInternalFrame {
         ENTccd.setC25monto_solo_adelanto(0);
         ENTccd.setC26monto_interno(monto_interno);
         ENTccd.setC27fk_idventa_interno(fk_idventa_interno);
+        ENTccd.setC28monto_garantia(0);
+        ENTccd.setC29fk_idgarantia(0);
     }
 
     private void boton_guardar_venta_interno() {
         if (validar_carga_venta_interno()) {
             cargar_dato_venta_interno();
             cargar_dato_caja_detalle_venta_interno();
-            BOveni.insertar_venta_interno(ENTveni, ENTccd, tblitem_producto);
+            BOveni.insertar_venta_interno1(ENTveni, ENTccd, tblitem_producto);
             posveni.boton_imprimir_pos_venta_interno(conn, fk_idventa_interno);
 //            poscom.boton_imprimir_pos_compra(conn, fk_idventa_interno);
             reestableser_venta_interno();
@@ -625,7 +627,7 @@ public class FrmVenta_interna extends javax.swing.JInternalFrame {
     }
 
     private void boton_anular_venta_interno() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblventa_interna, "DEBE SELECCIONAR UNA venta_interno PARA ANULAR")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblventa_interna, "DEBE SELECCIONAR UNA venta_interno PARA ANULAR")) {
             if (evemen.getBooMensaje_warning("ESTAS SEGURO DE ANULAR ESTA venta_interno\n"
                     + "ESTO REPONE EL STOCK",
                     "ANULAR venta_interno", "ANULAR", "CANCELAR")) {
@@ -765,7 +767,7 @@ public class FrmVenta_interna extends javax.swing.JInternalFrame {
     }
 
     private void boton_imprimir_venta_interno() {
-        if (eveJtab.getBoolean_select_tabla_mensaje(tblventa_interna, "SELECCIONE LA TABLA venta_interno")) {
+        if (eveJtab.getBoolean_validar_select_mensaje(tblventa_interna, "SELECCIONE LA TABLA venta_interno")) {
             int idventa_interno = eveJtab.getInt_select_id(tblventa_interna);
             posveni.boton_imprimir_pos_venta_interno(conn, idventa_interno);
         }

@@ -28,8 +28,9 @@ public class DAO_caja_cierre_detalle {
             + "monto_gasto,monto_compra,monto_vale,monto_liquidacion,"
             + "estado,descripcion,"
             + "fk_idgasto,fk_idcompra,fk_idventa,fk_idusuario,fk_idrh_vale,fk_idrh_liquidacion,monto_solo_adelanto,"
-            + "monto_interno,fk_idventa_interno) "
-            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            + "monto_interno,fk_idventa_interno,"
+            + "monto_garantia,fk_idgarantia) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE caja_cierre_detalle SET creado_por=?,cerrado_por=?,es_cerrado=?,"
             + "monto_apertura_caja=?,monto_cierre_caja=?,"
             + "monto_ocupa_minimo=?,monto_ocupa_adicional=?,monto_ocupa_consumo=?,"
@@ -37,7 +38,8 @@ public class DAO_caja_cierre_detalle {
             + "monto_gasto=?,monto_compra=?,monto_vale=?,monto_liquidacion=?,"
             + "estado=?,descripcion=?,"
             + "fk_idgasto=?,fk_idcompra=?,fk_idventa=?,fk_idusuario=?,fk_idrh_vale=?,fk_idrh_liquidacion=?,monto_solo_adelanto=?,"
-            + "monto_interno=?,fk_idventa_interno=? "
+            + "monto_interno=?,fk_idventa_interno=?,"
+            + "monto_garantia=?,fk_idgarantia=? "
             + "WHERE idcaja_cierre_detalle=?;";
     private String sql_select = "SELECT idcaja_cierre_detalle,fecha_creado,creado_por,cerrado_por,es_cerrado,"
             + "monto_apertura_caja,monto_cierre_caja,"
@@ -54,11 +56,12 @@ public class DAO_caja_cierre_detalle {
             + "monto_gasto,monto_compra,monto_vale,monto_liquidacion,"
             + "estado,descripcion,"
             + "fk_idgasto,fk_idcompra,fk_idventa,fk_idusuario,fk_idrh_vale,fk_idrh_liquidacion,monto_solo_adelanto,"
-            + "monto_interno,fk_idventa_interno "
+            + "monto_interno,fk_idventa_interno,"
+            + "monto_garantia,fk_idgarantia "
             + "FROM caja_cierre_detalle "
             + "WHERE idcaja_cierre_detalle=";
 
-    public void insertar_caja_cierre_detalle1(Connection conn, caja_cierre_detalle cacide) {
+    public void insertar_caja_cierre_detalle(Connection conn, caja_cierre_detalle cacide) {
         cacide.setC1idcaja_cierre_detalle(eveconn.getInt_ultimoID_mas_uno(conn, cacide.getTb_caja_cierre_detalle(), cacide.getId_idcaja_cierre_detalle()));
         String titulo = "insertar_caja_cierre_detalle";
         PreparedStatement pst = null;
@@ -91,6 +94,8 @@ public class DAO_caja_cierre_detalle {
             pst.setDouble(25, cacide.getC25monto_solo_adelanto());
             pst.setDouble(26, cacide.getC26monto_interno());
             pst.setInt(27, cacide.getC27fk_idventa_interno());
+            pst.setDouble(28, cacide.getC28monto_garantia());
+            pst.setInt(29, cacide.getC29fk_idgarantia());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + cacide.toString(), titulo);
@@ -131,7 +136,9 @@ public class DAO_caja_cierre_detalle {
             pst.setDouble(23, cacide.getC25monto_solo_adelanto());
             pst.setDouble(24, cacide.getC26monto_interno());
             pst.setInt(25, cacide.getC27fk_idventa_interno());
-            pst.setInt(26, cacide.getC1idcaja_cierre_detalle());
+            pst.setDouble(26, cacide.getC28monto_garantia());
+            pst.setInt(27, cacide.getC29fk_idgarantia());
+            pst.setInt(28, cacide.getC1idcaja_cierre_detalle());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + cacide.toString(), titulo);
@@ -173,6 +180,8 @@ public class DAO_caja_cierre_detalle {
                 cacide.setC25monto_solo_adelanto(rs.getDouble(25));
                 cacide.setC26monto_interno(rs.getDouble(26));
                 cacide.setC27fk_idventa_interno(rs.getInt(27));
+                cacide.setC28monto_garantia(rs.getDouble(28));
+                cacide.setC29fk_idgarantia(rs.getInt(29));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + cacide.toString(), titulo);
             }
         } catch (Exception e) {
@@ -237,6 +246,20 @@ public class DAO_caja_cierre_detalle {
                 + "from caja_cierre_detalle cd\n"
                 + "where cd.es_cerrado=false \n"
                 + "and cd.fk_idventa_interno>0 \n"
+                + "and cd.fk_idusuario=" + fk_idusuario
+                + " order by cd.idcaja_cierre_detalle desc";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
+    }
+    public void actualizar_tabla_caja_cierre_detalle_ABIERTO_GARANTIA(Connection conn, JTable tbltabla, int fk_idusuario) {
+        String sql = "select cd.fk_idgarantia as idgarantia,\n"
+                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
+                + "cd.descripcion as descripcion,\n"
+                + "to_char(cd.monto_garantia,'999G999G999') as monto_garantia,\n"
+                + "cd.estado,cd.creado_por as usuario \n"
+                + "from caja_cierre_detalle cd\n"
+                + "where cd.es_cerrado=false \n"
+                + "and cd.fk_idgarantia>0 \n"
                 + "and cd.fk_idusuario=" + fk_idusuario
                 + " order by cd.idcaja_cierre_detalle desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);

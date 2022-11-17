@@ -241,7 +241,7 @@ public class EvenJtable {
         }
         return false;
     }
-     public boolean getBoolean_select_tabla_mensaje(JTable tabla,String mensaje) {
+    public boolean getBoolean_validar_select_mensaje(JTable tabla,String mensaje) {
         if (tabla.getSelectedRow() < 0) {
             JOptionPane.showMessageDialog(tabla,mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
             return false;

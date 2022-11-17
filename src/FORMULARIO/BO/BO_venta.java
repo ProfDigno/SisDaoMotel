@@ -57,7 +57,7 @@ public class BO_venta {
             DAOhr.update_habitacion_recepcion(conn, ENThr);
             DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
             if (es_caja) {
-                DAOccd.insertar_caja_cierre_detalle1(conn, ENTccd);
+                DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
             }
             if (up_caja) {
                 if (ENTccd.getC1idcaja_cierre_detalle() > 0) {
@@ -84,7 +84,7 @@ public class BO_venta {
         DAOhr.update_habitacion_recepcion(conn, ENThr);
         DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
         if (es_caja) {
-            DAOccd.insertar_caja_cierre_detalle1(conn, ENTccd);
+            DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
         }
         if (up_caja) {
             if (ENTccd.getC1idcaja_cierre_detalle() > 0) {
