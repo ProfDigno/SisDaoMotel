@@ -24,15 +24,23 @@ public class DAO_garantia {
     private String mensaje_update = "GARANTIA MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO garantia(idgarantia,fecha_creado,creado_por,fecha_inicio,fecha_fin,"
             + "responsable,descripcion_objeto,monto_garantia,estado,fk_idusuario,fk_idventa) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE garantia SET fecha_creado=?,creado_por=?,fecha_inicio=?,fecha_fin=?,responsable=?,descripcion_objeto=?,monto_garantia=?,estado=?,fk_idusuario=?,fk_idventa=? WHERE idgarantia=?;";
+    private String sql_update = "UPDATE garantia SET fecha_creado=?,creado_por=?,"
+            + "fecha_inicio=?,fecha_fin=?,"
+            + "responsable=?,descripcion_objeto=?"
+            + ",monto_garantia=?,estado=?,"
+            + "fk_idusuario=?,fk_idventa=? "
+            + "WHERE idgarantia=?;";
     private String sql_select = "SELECT idgarantia as idg,"
-            + "to_char(fecha_inicio,'yyyy-MM-dd HH24:MI') as fecha,"
+            + "to_char(fecha_inicio,'yyyy-MM-dd HH24:MI') as f_inicio,"
+            + "to_char(fecha_fin,'yyyy-MM-dd HH24:MI') as f_fin,"
             + "responsable,descripcion_objeto as descripcion,"
             + "TRIM(to_char(monto_garantia,'999G999G999')) as monto,"
             + "estado,fk_idventa as idv,creado_por as usuario "
             + "FROM garantia order by 1 desc;";
     private String sql_cargar = "SELECT idgarantia,fecha_creado,creado_por,fecha_inicio,fecha_fin,responsable,descripcion_objeto,monto_garantia,estado,fk_idusuario,fk_idventa FROM garantia WHERE idgarantia=";
-
+    private String sql_update_pagar = "UPDATE garantia SET fecha_fin=?,"
+            + "monto_garantia=?,estado=? "
+            + "WHERE idgarantia=?;";
     public void insertar_garantia(Connection conn, garantia ga) {
         ga.setC1idgarantia(eveconn.getInt_ultimoID_mas_uno(conn, ga.getTb_garantia(), ga.getId_idgarantia()));
         String titulo = "insertar_garantia";
@@ -113,7 +121,7 @@ public class DAO_garantia {
     }
 
     public void ancho_tabla_garantia(JTable tbltabla) {
-        int Ancho[] = {5, 12, 12, 30, 10, 10,8,13};
+        int Ancho[] = {5, 12,12, 12, 20, 9, 9,8,13};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
     public void terminar_garantia_en_caja(Connection conn, int fk_idcaja_cierre) {
@@ -123,5 +131,22 @@ public class DAO_garantia {
                 + "and garantia.estado='" + eveest.getEst_Emitido() + "'\n"
                 + "and caja_cierre_item.fk_idcaja_cierre=" + fk_idcaja_cierre;
         eveconn.SQL_execute_libre(conn, sql);
+    }
+    public void update_garantia_pagar(Connection conn, garantia ga) {
+        String titulo = "update_garantia_pagar";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_pagar);
+            pst.setTimestamp(1, evefec.getTimestamp_sistema());
+            pst.setDouble(2, ga.getC8monto_garantia());
+            pst.setString(3, ga.getC9estado());
+            pst.setInt(4, ga.getC1idgarantia());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_pagar + "\n" + ga.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, true);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_pagar + "\n" + ga.toString(), titulo);
+        }
     }
 }

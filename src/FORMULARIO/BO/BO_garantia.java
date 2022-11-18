@@ -25,7 +25,6 @@ public class BO_garantia {
             }
             DAOgar.insertar_garantia(conn, ga);
             DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
-//            ga_dao.actualizar_tabla_garantia(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, ga.toString(), titulo);
@@ -37,16 +36,16 @@ public class BO_garantia {
         }
     }
 
-    public void update_garantia(garantia ga, JTable tbltabla) {
-        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE MODIFICAR GARANTIA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
-            String titulo = "update_garantia";
+    public void update_garantia_pagar(garantia ga, caja_cierre_detalle ENTccd) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE PAGAR ESTA GARANTIA\nEL MONTO INGRESA A LA CAJA", "PAGAR", "ACEPTAR", "CANCELAR")) {
+            String titulo = "update_garantia_pagar";
             Connection conn = ConnPostgres.getConnPosgres();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                DAOgar.update_garantia(conn, ga);
-                DAOgar.actualizar_tabla_garantia(conn, tbltabla);
+                DAOgar.update_garantia_pagar(conn, ga);
+                DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, ga.toString(), titulo);

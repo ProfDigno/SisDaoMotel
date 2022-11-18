@@ -17,6 +17,7 @@ import Evento.JButton.EvenJButton;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
+import Evento.Jtable.EvenRender;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Utilitario.EvenSonido;
 import FORMULARIO.BO.*;
@@ -65,6 +66,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private EvenCombobox evecmb = new EvenCombobox();
     private EvenConexion eveconn = new EvenConexion();
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private EvenRender render=new EvenRender();
     private habitacion_costo ENThc = new habitacion_costo();
     private DAO_habitacion_costo DAOhc = new DAO_habitacion_costo();
     private habitacion_dato ENThd = new habitacion_dato();
@@ -86,9 +88,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private BO_venta_item BOveni = new BO_venta_item();
     private habitacion_mini_pc ENThmp = new habitacion_mini_pc();
     private DAO_habitacion_mini_pc DAOhmp = new DAO_habitacion_mini_pc();
-    private garantia ENTgar=new garantia();
-    private DAO_garantia DAOgar=new DAO_garantia();
-    private BO_garantia BOgar=new BO_garantia();
+    private garantia ENTgar = new garantia();
+    private DAO_garantia DAOgar = new DAO_garantia();
+    private BO_garantia BOgar = new BO_garantia();
     private JSchExampleSSHConnection connRPI = new JSchExampleSSHConnection();
     private ComputerInfo pcinfo = new ComputerInfo();
     usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
@@ -229,6 +231,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cargar_array_habitacion();
         limpiar_habitacion_select();
         reestableser_garantia();
+        txtgar_idventa.setText(null);
+        txtgar_monto_ocupacion.setText(null);
+        btngar_guardar.setEnabled(false);
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_venta);
         jbar_tiempo_minimo.setMaximum(jbar_tie_min_max);
     }
@@ -493,7 +498,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "(p.nombre) as producto,u.nombre as unidad,\n"
                 + "p.stock_actual as stock, \n"
                 + "TRIM(to_char(p.precio_venta,'" + eveest.getForm_nro_9D() + "')) as pventa,"
-                + "p.precio_venta as oculto_venta,p.precio_compra as oculto_compra \n"
+                + "p.precio_venta as oculto_venta,p.precio_compra as oculto_compra, \n"
+                + "case when p.stock_actual>0 then 'SI' "
+                + "     else 'NO' end as tiene_stock "
                 + "from producto p,producto_categoria c,producto_unidad u,producto_marca pm \n"
                 + "where p.fk_idproducto_categoria=c.idproducto_categoria \n"
                 + "and p.fk_idproducto_unidad=u.idproducto_unidad \n"
@@ -507,11 +514,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void ancho_tabla_producto() {
-        int Ancho[] = {5, 13, 45, 15, 10, 12, 1, 1};
+        int Ancho[] = {5, 13, 45, 15, 10, 12, 1, 1,1};
         eveJtab.setAnchoColumnaJtable(tblproducto, Ancho);
         eveJtab.alinear_derecha_columna(tblproducto, 5);
         eveJtab.ocultar_columna(tblproducto, 6);
         eveJtab.ocultar_columna(tblproducto, 7);
+        eveJtab.ocultar_columna(tblproducto, 8);
+        render.rendertabla_venta_producto(tblproducto, 8);
     }
 
     private void crear_item_producto() {
@@ -2595,7 +2604,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void seleccionar_venta() {
         if (tblfiltro_venta.getSelectedRow() >= 0) {
+            fk_idventa_select = eveJtab.getInt_select_id(tblfiltro_venta);
             String estado = eveJtab.getString_select(tblfiltro_venta, 13);
+            String monto_ocupacion = eveJtab.getString_select(tblfiltro_venta, 12);
             String motivo_mudar = eveJtab.getString_select(tblfiltro_venta, 17);
             String motivo_anular = eveJtab.getString_select(tblfiltro_venta, 18);
             if (estado.equals(eveest.getEst_Cancelado())) {
@@ -2614,8 +2625,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
             if (estado.equals(eveest.getEst_Desocupado())) {
                 btncargar_garantia.setEnabled(true);
+                txtgar_idventa.setText(String.valueOf(fk_idventa_select));
+                txtgar_monto_ocupacion.setText(monto_ocupacion);
                 reestableser_garantia();
-            }else{
+            } else {
+                txtgar_idventa.setText(null);
+                txtgar_monto_ocupacion.setText(null);
                 btncargar_garantia.setEnabled(false);
                 btngar_guardar.setEnabled(false);
             }
@@ -2899,13 +2914,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txtmonto_adelanto.setText(evejtf.getString_format_nro_decimal(monto_adelanto));
         txtmonto_adelanto.setBackground(Color.yellow);
     }
-    private void cargar_dato_garantia(){
-        fk_idgarantia=(eveconn.getInt_ultimoID_mas_uno(conn, ENTgar.getTb_garantia(), ENTgar.getId_idgarantia()));
-        double Dmonto_garantia=evejtf.getDouble_format_nro_entero(txtgar_monto);
-        monto_garantia=(0-Dmonto_garantia);
-        fk_idventa_select=eveJtab.getInt_select_id(tblfiltro_venta);
-        String gar_responsable=txtgar_responsable.getText().toUpperCase();
-        String gar_descripcion=txtgar_descripcion.getText().toUpperCase();
+
+    private void cargar_dato_garantia() {
+        fk_idgarantia = (eveconn.getInt_ultimoID_mas_uno(conn, ENTgar.getTb_garantia(), ENTgar.getId_idgarantia()));
+        double Dmonto_garantia = evejtf.getDouble_format_nro_entero(txtgar_monto);
+        monto_garantia = (0 - Dmonto_garantia);
+
+        String gar_responsable = txtgar_responsable.getText().toUpperCase();
+        String gar_descripcion = txtgar_descripcion.getText().toUpperCase();
         ENTgar.setC3creado_por(creado_por);
         ENTgar.setC6responsable(gar_responsable);
         ENTgar.setC7descripcion_objeto(gar_descripcion);
@@ -2914,12 +2930,22 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTgar.setC10fk_idusuario(fk_idusuario);
         ENTgar.setC11fk_idventa(fk_idventa_select);
     }
-    private void cargar_dato_caja_detalle_GARANTIA() {
+
+    private void cargar_dato_caja_detalle_GARANTIA(boolean es_ingreso) {
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
-        String gar_responsable=txtgar_responsable.getText().toUpperCase();
-        String gar_descripcion=txtgar_descripcion.getText().toUpperCase();
-        String descripcion = fk_idventa_select + "-(" + eveest.getCaja_GARANTIA() + ")-" + gar_responsable + ",(" + gar_descripcion + ")";
+        String descripcion = "";
+        String gar_responsable = "";
+        String gar_descripcion = "";
+        if (es_ingreso) {
+            gar_responsable = txtgar_responsable.getText().toUpperCase();
+            gar_descripcion = txtgar_descripcion.getText().toUpperCase();
+            descripcion = fk_idventa_select + "-(" + eveest.getCaja_GARANTIA() + ")-" + gar_responsable + ",(" + gar_descripcion + ")";
+        } else {
+            gar_responsable = eveJtab.getString_select(tblgarantia, 2);
+            gar_descripcion = eveJtab.getString_select(tblgarantia, 3);
+            descripcion = fk_idgarantia + "-(" + eveest.getCaja_GARANTIA() + ")-" + gar_responsable + ",(" + gar_descripcion + ")-" + eveest.getEst_Pagado();
+        }
         ENTccd.setC3creado_por(creado_por);
         ENTccd.setC4cerrado_por(eveest.getCaja_GARANTIA());
         ENTccd.setC5es_cerrado(false);
@@ -2948,22 +2974,24 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTccd.setC28monto_garantia(monto_garantia);
         ENTccd.setC29fk_idgarantia(fk_idgarantia);
     }
-    private boolean validar_garantia(){
-        if(!eveJtab.getBoolean_validar_select_mensaje(tblfiltro_venta, "DEBE SELECCIONAR UNA OCUPACION")){
+
+    private boolean validar_garantia() {
+        if (!eveJtab.getBoolean_validar_select_mensaje(tblfiltro_venta, "DEBE SELECCIONAR UNA OCUPACION")) {
             return false;
         }
-        if(evejtf.getBoo_JTextField_vacio(txtgar_responsable, "DEBE CARGAR UN RESPONSABLE")){
+        if (evejtf.getBoo_JTextField_vacio(txtgar_responsable, "DEBE CARGAR UN RESPONSABLE")) {
             return false;
         }
-        if(evejtf.getBoo_JTextarea_vacio(txtgar_descripcion,"DEBE CARGAR UNA DESCRIPCION")){
+        if (evejtf.getBoo_JTextarea_vacio(txtgar_descripcion, "DEBE CARGAR UNA DESCRIPCION")) {
             return false;
         }
-        if(evejtf.getBoo_JTextField_vacio(txtgar_monto,"DEBE CARGAR UN MONTO")){
+        if (evejtf.getBoo_JTextField_vacio(txtgar_monto, "DEBE CARGAR UN MONTO")) {
             return false;
         }
         return true;
     }
-    private void reestableser_garantia(){
+
+    private void reestableser_garantia() {
         DAOgar.actualizar_tabla_garantia(conn, tblgarantia);
         txtgar_responsable.setText(null);
         txtgar_descripcion.setText(null);
@@ -2971,16 +2999,48 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         btngar_guardar.setEnabled(true);
         txtgar_responsable.grabFocus();
     }
+
     //caja_cierre_detalle ENTccd
-    private void boton_guardar_garantia(){
-        if(validar_garantia()){
+    private void boton_guardar_garantia() {
+        if (validar_garantia()) {
             cargar_dato_garantia();
-            cargar_dato_caja_detalle_GARANTIA();
+            cargar_dato_caja_detalle_GARANTIA(true);
             BOgar.insertar_garantia(ENTgar, ENTccd);
             reestableser_garantia();
+            txtgar_idventa.setText(null);
+            txtgar_monto_ocupacion.setText(null);
             btngar_guardar.setEnabled(false);
         }
     }
+
+    private void seleccionar_garantia() {
+        if (tblgarantia.getSelectedRow() >= 0) {
+            fk_idgarantia = eveJtab.getInt_select_id(tblgarantia);
+            DAOgar.cargar_garantia(conn, ENTgar, fk_idgarantia);
+            monto_garantia = Math.abs(ENTgar.getC8monto_garantia());
+            String estado = eveJtab.getString_select(tblgarantia, 6);
+            if (estado.equals(eveest.getEst_PENDIENTE())) {
+                btngar_pagar_garantia.setEnabled(true);
+            } else {
+                btngar_pagar_garantia.setEnabled(false);
+            }
+        }
+    }
+
+    private void boton_guardar_garantia_pagar() {
+        if (tblgarantia.getSelectedRow() >= 0) {
+            ENTgar.setC1idgarantia(fk_idgarantia);
+            ENTgar.setC8monto_garantia(monto_garantia);
+            ENTgar.setC9estado(eveest.getEst_Pagado());
+            cargar_dato_caja_detalle_GARANTIA(false);
+            BOgar.update_garantia_pagar(ENTgar, ENTccd);
+            reestableser_garantia();
+            txtgar_idventa.setText(null);
+            txtgar_monto_ocupacion.setText(null);
+            btngar_guardar.setEnabled(false);
+        }
+    }
+
     public FrmVenta() {
         initComponents();
         abrir_formulario();
@@ -3125,9 +3185,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txtgar_monto = new javax.swing.JTextField();
         btngar_guardar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        txtgar_idventa = new javax.swing.JTextField();
+        txtgar_monto_ocupacion = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tblgarantia = new javax.swing.JTable();
+        btngar_pagar_garantia = new javax.swing.JButton();
 
         setClosable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -4541,6 +4604,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
         jTab_principal.addTab("DIAGNOSTICO RASPBERRY", jPanel16);
 
+        jPanel1.setBackground(new java.awt.Color(204, 204, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("DATOS GARANTIA"));
 
         txtgar_responsable.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -4559,6 +4623,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtgar_montoKeyReleased(evt);
             }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtgar_montoKeyTyped(evt);
+            }
         });
 
         btngar_guardar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -4570,17 +4637,34 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 153));
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("DATO OCUPACION"));
+
+        txtgar_idventa.setEditable(false);
+        txtgar_idventa.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtgar_idventa.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtgar_idventa.setText("jTextField3");
+        txtgar_idventa.setBorder(javax.swing.BorderFactory.createTitledBorder("ID OCUPACION"));
+
+        txtgar_monto_ocupacion.setEditable(false);
+        txtgar_monto_ocupacion.setFont(new java.awt.Font("Stencil", 0, 24)); // NOI18N
+        txtgar_monto_ocupacion.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtgar_monto_ocupacion.setText("jTextField4");
+        txtgar_monto_ocupacion.setBorder(javax.swing.BorderFactory.createTitledBorder("MONTO OCUPACION"));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(txtgar_idventa, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtgar_monto_ocupacion))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 120, Short.MAX_VALUE)
+            .addComponent(txtgar_idventa)
+            .addComponent(txtgar_monto_ocupacion)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -4590,26 +4674,26 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             .addComponent(txtgar_responsable)
             .addComponent(jScrollPane5)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(53, 53, 53)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btngar_guardar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtgar_monto, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(txtgar_monto, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btngar_guardar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtgar_responsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtgar_monto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btngar_guardar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -4626,19 +4710,37 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblgarantia.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tblgarantiaMousePressed(evt);
+            }
+        });
         jScrollPane6.setViewportView(tblgarantia);
+
+        btngar_pagar_garantia.setText("PAGAR GARANTIA");
+        btngar_pagar_garantia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btngar_pagar_garantiaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 933, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 55, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout panel_garantia_pendienteLayout = new javax.swing.GroupLayout(panel_garantia_pendiente);
@@ -4975,6 +5077,21 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         evejtf.getDouble_format_nro_entero(txtgar_monto);
     }//GEN-LAST:event_txtgar_montoKeyReleased
 
+    private void txtgar_montoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtgar_montoKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_txtgar_montoKeyTyped
+
+    private void btngar_pagar_garantiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btngar_pagar_garantiaActionPerformed
+        // TODO add your handling code here:
+        boton_guardar_garantia_pagar();
+    }//GEN-LAST:event_btngar_pagar_garantiaActionPerformed
+
+    private void tblgarantiaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblgarantiaMousePressed
+        // TODO add your handling code here:
+        seleccionar_garantia();
+    }//GEN-LAST:event_tblgarantiaMousePressed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizar_total_pago_adelanto;
@@ -4996,6 +5113,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton btneliminar_item;
     private javax.swing.JButton btneliminar_item_temp;
     private javax.swing.JButton btngar_guardar;
+    private javax.swing.JButton btngar_pagar_garantia;
     private javax.swing.JButton btnimprimir_ticket;
     private javax.swing.JButton btnimprimir_ticket_ocupado;
     private javax.swing.JButton btnmudar_habitacion;
@@ -5094,7 +5212,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtfec_ocupado_inicio;
     private javax.swing.JTextField txtfec_ocupado_inicio_hora;
     private javax.swing.JTextArea txtgar_descripcion;
+    private javax.swing.JTextField txtgar_idventa;
     private javax.swing.JTextField txtgar_monto;
+    private javax.swing.JTextField txtgar_monto_ocupacion;
     private javax.swing.JTextField txtgar_responsable;
     private javax.swing.JTextField txtidventa;
     private javax.swing.JTextField txtminumo_minimo;
