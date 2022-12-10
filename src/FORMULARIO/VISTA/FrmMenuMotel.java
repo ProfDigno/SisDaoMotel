@@ -9,6 +9,7 @@ import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import CONFIGURACION.ComputerInfo;
 import Config_JSON.json_array_conexion;
+import Config_JSON.json_array_formulario;
 import Config_JSON.json_array_imprimir_pos;
 import Evento.Fecha.EvenFecha;
 import Evento.Jframe.EvenJFRAME;
@@ -38,11 +39,12 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     EvenFecha evefec = new EvenFecha();
     json_array_conexion jscon = new json_array_conexion();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
+    json_array_formulario jsfrm = new json_array_formulario();
     private habitacion_recepcion_temp ENThrt = new habitacion_recepcion_temp();
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
-    private String version = "V.: 1.7.3";
+    private String version = "V.: 1.7.5";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
     private boolean hab_ruta_sonido[];
@@ -67,6 +69,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         conPs.ConnectDBpostgres(conn, false);
         conn = conPs.getConnPosgres();
         jsprint.cargar_jsom_imprimir_pos();
+        jsfrm.cargar_jsom_array_formulario();
         setHabilitar_sonido(false);
         setAbrir_frmventa(true);
         iniciarTiempo();
@@ -74,6 +77,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         cargar_array_habitacion();
         titulo_sistema(this);
         actualizacion_version_v1();
+        BOhrt.update_habitacion_recepcion_temp_puertas_activos();
     }
 
     private void bloqueo_inicio() {
@@ -240,7 +244,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "idhabitacion_dato "
                 + "from\n"
                 + "	habitacion_recepcion_temp \n"
-                //                + "where activo=true \n"
+                + "where activo=true \n"
                 + "order by orden asc;";
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);

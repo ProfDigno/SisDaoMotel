@@ -184,6 +184,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENThd.setC10con_frigobar(jCconfrigobar.isSelected());
         ENThd.setC11fk_idhabitacion_costo(fk_idhabitacion_costo);
         ENThd.setC12es_manual(jCes_manual.isSelected());
+//        ENThd.setC9activo(jCactivo.isSelected());
     }
     private void cargar_dato_hab_recep_temp(){
         ENThrt.setC2idhabitacion_recepcion_actual(0);

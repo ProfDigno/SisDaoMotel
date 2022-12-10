@@ -8,6 +8,7 @@ package FORMULARIO.VISTA;
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import CONFIGURACION.ComputerInfo;
+import Config_JSON.json_array_formulario;
 import ConnRPI.JSchExampleSSHConnection;
 import ESTADOS.EvenEstado;
 import Evento.Combobox.EvenCombobox;
@@ -24,6 +25,7 @@ import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
 import FORMULARIO.VISTA.BUSCAR.ClaVarBuscar;
+import IMPRESORA_POS.PosImprimir_Garantia;
 import IMPRESORA_POS.PosImprimir_Venta;
 import java.awt.Color;
 import java.awt.Font;
@@ -66,7 +68,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private EvenCombobox evecmb = new EvenCombobox();
     private EvenConexion eveconn = new EvenConexion();
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
-    private EvenRender render=new EvenRender();
+    private EvenRender render = new EvenRender();
     private habitacion_costo ENThc = new habitacion_costo();
     private DAO_habitacion_costo DAOhc = new DAO_habitacion_costo();
     private habitacion_dato ENThd = new habitacion_dato();
@@ -80,6 +82,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     private PosImprimir_Venta posv = new PosImprimir_Venta();
+    private PosImprimir_Garantia posgar=new PosImprimir_Garantia();
     private venta ENTven = new venta();
     private DAO_venta DAOven = new DAO_venta();
     private BO_venta BOven = new BO_venta();
@@ -93,6 +96,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private BO_garantia BOgar = new BO_garantia();
     private JSchExampleSSHConnection connRPI = new JSchExampleSSHConnection();
     private ComputerInfo pcinfo = new ComputerInfo();
+    json_array_formulario jsfrm = new json_array_formulario();
     usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     Connection conn = ConnPostgres.getConnPosgres();
     private producto ENTp = new producto();
@@ -185,6 +189,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private String btncancelar_html = "<html><p style=\"color:purple\"><font size=\"4\">CANCELAR</font></p></html>";
     private String btnocupar_html = "<html><p style=\"color:red\"><font size=\"4\">OCUPAR</font></p></html>";
     private String btndesocupar_html = "<html><p style=\"color:green\"><font size=\"4\">DESOCUPAR</font></p></html>";
+    private String btnreiniciar_html = "<html><p style=\"color:red\"><font size=\"4\">REINICIAR</font></p></html>";
     private String motivo_mudar_habitacion;
     private String fecha_hora_ahora;
     private int sensor_puerta_cliente = 2;
@@ -209,14 +214,19 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private double monto_garantia;
     private int fk_idgarantia;
     private int fk_idventa_select;
+    private boolean btn_reboot_rp_1;
+    private boolean btn_reboot_rp_2;
+    private boolean btn_reboot_rp_3;
+    private boolean est_btn_cancelar;
 
     private void abrir_formulario() {
-        cargar_usuario_acceso();
-        cargar_grafico_temperatura();
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
         this.setTitle(nombreTabla_pri + " USUARIO:" + creado_por + " IP:" + pcinfo.getStringMiIP());
         evetbl.centrar_formulario_internalframa(this);
+        cargar_array_habitacion();
+        cargar_usuario_acceso();
+        cargar_grafico_temperatura();
         botones_categoria = new ArrayList<>();
         botones_unidad = new ArrayList<>();
         botones_marca = new ArrayList<>();
@@ -228,14 +238,20 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cargar_usuario();
         cargar_boton_categoria();
         crear_item_producto();
-        cargar_array_habitacion();
         limpiar_habitacion_select();
         reestableser_garantia();
+        boton_raspberry();
         txtgar_idventa.setText(null);
         txtgar_monto_ocupacion.setText(null);
         btngar_guardar.setEnabled(false);
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_venta);
         jbar_tiempo_minimo.setMaximum(jbar_tie_min_max);
+    }
+
+    private void boton_raspberry() {
+        btnrpi_1.setVisible(jsfrm.isBoo_rasp_1());
+        btnrpi_2.setVisible(jsfrm.isBoo_rasp_2());
+        btnrpi_3.setVisible(jsfrm.isBoo_rasp_3());
     }
 
     private void color_panel_venta(int tipo) {
@@ -288,8 +304,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_array_habitacion() {
-        cant_de_habitacion = (eveconn.getInt_ultimoID_max(conn, ENThrt.getTb_habitacion_recepcion_temp(), ENThrt.getId_idhabitacion_recepcion_temp()));
-//        cant_de_habitacion=getInt_cant_habitacion_activo(conn);
+//        cant_de_habitacion = (eveconn.getInt_ultimoID_max(conn, ENThrt.getTb_habitacion_recepcion_temp(), ENThrt.getId_idhabitacion_recepcion_temp()));
+        cant_de_habitacion = getInt_cant_habitacion_activo(conn);
         Sa_tipo_habitacion = new String[cant_de_habitacion];
         Ia_nro_habitacion = new int[cant_de_habitacion];
         Sa_estado = new String[cant_de_habitacion];
@@ -514,7 +530,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void ancho_tabla_producto() {
-        int Ancho[] = {5, 13, 45, 15, 10, 12, 1, 1,1};
+        int Ancho[] = {5, 13, 45, 15, 10, 12, 1, 1, 1};
         eveJtab.setAnchoColumnaJtable(tblproducto, Ancho);
         eveJtab.alinear_derecha_columna(tblproducto, 5);
         eveJtab.ocultar_columna(tblproducto, 6);
@@ -659,6 +675,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "where ig.fk_idhabitacion_sensor=" + sensor_puerta_limpieza + " \n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato ) as limpieza\n"
                 + "from habitacion_dato hd \n"
+                + "where hd.activo=true "
                 + "order by hd.idhabitacion_dato asc;";
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
@@ -1000,7 +1017,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "end as hs_hasta_dormir "
                 + "from\n"
                 + "	habitacion_recepcion_temp \n"
-                //                + "where activo=true \n"
+                + "where activo=true \n"
                 + "order by orden asc;";
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
@@ -1185,7 +1202,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             if (cant_add_tarifa_hora > 0) {
                 boton.setBackground(new java.awt.Color(255, 204, 255));
             }
-
+            if (cancelar_habitacion) {
+                if (est_btn_cancelar) {
+                    boton.setBackground(new java.awt.Color(168, 92, 249));
+//                    est_btn_cancelar=false;
+                } else {
+                    boton.setBackground(new java.awt.Color(111, 223, 223));
+//                    est_btn_cancelar=true;
+                }
+//                txtaux.setText(String.valueOf(segundo_act_btn));
+                boton.setForeground(Color.WHITE);
+            }
             boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_ocupa())));
         }
         if (desc_estado.equals(eveest.getEst_Ocupado() + eveest.getEstdes_cliAbierto())) {
@@ -1444,6 +1471,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 int tab_select = jTab_principal.getSelectedIndex();
                 fecha_hora_ahora = evefec.getString_formato_fecha_hora();
                 txttiempo_ahora.setText(fecha_hora_ahora);
+
                 if (segundo_tiempo == 1) {
                     cargar_estados_puertas_gpio(sensor_puerta_cliente, sensor_puerta_limpieza);
 //                    actualizar_estado_puerta_cliente_limpieza();
@@ -1452,6 +1480,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 }
                 if (segundo_tiempo == 2) {
                     if (tab_select == 0) {
+                        if (est_btn_cancelar) {
+                            est_btn_cancelar = false;
+                        } else {
+                            est_btn_cancelar = true;
+                        }
                         cargar_array_habitacion_puertas();
                         cargar_array_habitacion_datos();
                         cargar_usuario_acceso();
@@ -1501,26 +1534,41 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 int idhabitacion_mini_pc = rs.getInt("idhabitacion_mini_pc");
                 boolean est_boton = rs.getBoolean("est_boton");
                 String tiempo = rs.getString("tiempo");
-                color_boton_rpi(idhabitacion_mini_pc, 2, est_boton, btnrpi_1, tiempo);
-                color_boton_rpi(idhabitacion_mini_pc, 3, est_boton, btnrpi_2, tiempo);
-                color_boton_rpi(idhabitacion_mini_pc, 4, est_boton, btnrpi_3, tiempo);
-
+                color_boton_rpi(idhabitacion_mini_pc, 2, est_boton, btnrpi_1, tiempo, btn_reboot_rp_1);
+                color_boton_rpi(idhabitacion_mini_pc, 3, est_boton, btnrpi_2, tiempo, btn_reboot_rp_2);
+                color_boton_rpi(idhabitacion_mini_pc, 4, est_boton, btnrpi_3, tiempo, btn_reboot_rp_3);
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
         }
     }
 
-    private void color_boton_rpi(int idhabitacion_mini_pc, int select, boolean est_boton, JButton btnrpi, String tiempo) {
+    private void color_boton_rpi(int idhabitacion_mini_pc, int select, boolean est_boton, JButton btnrpi, String tiempo, boolean reboot_rp) {
         if (idhabitacion_mini_pc == select) {
             if (est_boton) {
                 btnrpi.setBackground(Color.white);
                 btnrpi.setForeground(Color.black);
+                if (idhabitacion_mini_pc == 2) {
+                    btn_reboot_rp_1 = false;
+                }
+                if (idhabitacion_mini_pc == 3) {
+                    btn_reboot_rp_2 = false;
+                }
+                if (idhabitacion_mini_pc == 4) {
+                    btn_reboot_rp_3 = false;
+                }
             } else {
                 btnrpi.setBackground(Color.red);
                 btnrpi.setForeground(Color.white);
             }
-            btnrpi.setText("RPI-" + select + ":" + tiempo);
+            if (reboot_rp) {
+                btnrpi.setText("REINICIO");
+                btnrpi.setBackground(Color.ORANGE);
+                btnrpi.setForeground(Color.BLUE);
+            } else {
+                btnrpi.setText("RPI-" + select + ":" + tiempo);
+            }
+
         }
     }
 
@@ -2386,7 +2434,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void boton_cargar_consumo_adelanto() {
         if (validar_habitacion_select()) {
-            if (monto_adelanto > 0) {
+//            if (monto_adelanto > 0) {
                 if (evemen.getBooMensaje_question("ESTAS SEGURO DE CONSUMO POR ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
                     tiempo_boton_hab = 0;
                     ENTven.setC1idventa(fk_idventa);
@@ -2403,9 +2451,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(null, "CONSUMO ADELANTO CARGADO CORRECTAMENTE");
                     limpiar_habitacion_select();
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "PRIMERO SE DEBE CARGA UN ADELANTO POR LA OCUPACION");
-            }
+//            } else {
+//                JOptionPane.showMessageDialog(null, "PRIMERO SE DEBE CARGA UN ADELANTO POR LA OCUPACION");
+//            }
         }
 
     }
@@ -2601,7 +2649,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             posv.boton_imprimir_pos_VENTA(conn, fk_idventa);
         }
     }
-
+    private void boton_imprimir_ticket_garantia() {
+        if (tblgarantia.getSelectedRow() >= 0) {
+            int idgarantia = eveJtab.getInt_select_id(tblgarantia);
+            posgar.boton_imprimir_pos_GARANTIA(conn, idgarantia);
+        }
+    }
     private void seleccionar_venta() {
         if (tblfiltro_venta.getSelectedRow() >= 0) {
             fk_idventa_select = eveJtab.getInt_select_id(tblfiltro_venta);
@@ -2831,7 +2884,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boolean con_retorno = false;
         int largo = 30;
         int ancho = 30;
-        Object[] botones = {"INFORMACION", "MODELO", "REINICIAR", "TEMP C", "CANCELAR"};
+        Object[] botones = {"INFORMACION", "MODELO", btnreiniciar_html, "TEMP C", "CANCELAR"};
         int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UN COMANDO PARA LA RASPBERRY:\n" + ENThmp.getC4placa_nombre()
                 + "\nIP:" + ENThmp.getC5placa_ip()
                 + "\nUBICACION:" + ENThmp.getC6placa_ubicacion(),
@@ -2855,6 +2908,15 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             con_retorno = false;
             enviar_ssh = true;
             largo = 15;
+            if (idhabitacion_mini_pc == 2) {
+                btn_reboot_rp_1 = true;
+            }
+            if (idhabitacion_mini_pc == 3) {
+                btn_reboot_rp_2 = true;
+            }
+            if (idhabitacion_mini_pc == 4) {
+                btn_reboot_rp_3 = true;
+            }
         }
         if (eleccion_comando == 3) {
             comando_enviar = "/usr/bin/vcgencmd measure_temp";
@@ -3191,6 +3253,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         jScrollPane6 = new javax.swing.JScrollPane();
         tblgarantia = new javax.swing.JTable();
         btngar_pagar_garantia = new javax.swing.JButton();
+        btnimprimir_garantia = new javax.swing.JButton();
 
         setClosable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -4724,6 +4787,14 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         });
 
+        btnimprimir_garantia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ult_print.png"))); // NOI18N
+        btnimprimir_garantia.setText("GARANTIA");
+        btnimprimir_garantia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_garantiaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -4732,6 +4803,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimprimir_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -4739,7 +4812,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnimprimir_garantia, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -5092,6 +5167,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         seleccionar_garantia();
     }//GEN-LAST:event_tblgarantiaMousePressed
 
+    private void btnimprimir_garantiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_garantiaActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_ticket_garantia();
+    }//GEN-LAST:event_btnimprimir_garantiaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizar_total_pago_adelanto;
@@ -5114,6 +5194,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton btneliminar_item_temp;
     private javax.swing.JButton btngar_guardar;
     private javax.swing.JButton btngar_pagar_garantia;
+    private javax.swing.JButton btnimprimir_garantia;
     private javax.swing.JButton btnimprimir_ticket;
     private javax.swing.JButton btnimprimir_ticket_ocupado;
     private javax.swing.JButton btnmudar_habitacion;

@@ -2,58 +2,79 @@
  =========PANKY-I=========              
  0993291322                             
  San Miguel                             
- NRO CAJA:44                            
- FEC INI: 2022-11-09 22:51              
- FEC FIN: 2022-11-12 18:23              
- USUARIO:PEDRO PABLO                    
+ NRO CAJA:89                            
+ FEC INI: 2022-11-18 01:57              
+ FEC FIN: 2022-12-06 16:28              
+ USUARIO:PROGRAMADOR ADMIN              
  #=============================#        
  FEC-DESCRIP-OCUPA-CONSU-TOTAL          
                                         
- 2022-11-12 18:23                       
- 17-(GASTO)-TIPO: INSUMO OFICINA,D:(hojas)
-          0          0            0     
- 2022-11-12 18:22                       
- 11-(VEN_INTERNA)-Cli:(OCACIONAL)       
-          0     91,000       91,000     
- 2022-11-12 18:22                       
- 10-(VEN_INTERNA)-Cli:(OCACIONAL)       
-          0     40,000       40,000     
- 2022-11-09 22:52                       
- 945-(PAGADO)-HAB: 3,T:(18:58:34)       
-    480,000          0      480,000     
- 2022-11-09 22:52                       
- 947-(PAGADO)-HAB: 2,T:(18:58:23)       
-    490,000          0      490,000     
- 2022-11-09 22:52                       
- 946-(PAGADO)-HAB: 1,T:(18:58:07)       
-    490,000          0      490,000     
- 2022-11-09 22:51                       
+ 2022-12-06 16:28                       
+ 1669-(PAGADO)-HAB: 7,T:(00:03:43)      
+     50,000          0       50,000     
+ 2022-12-06 16:28                       
+ 1668-(PAGADO)-HAB: 4,T:(00:03:39)      
+     50,000          0       50,000     
+ 2022-12-06 16:28                       
+ 1667-(PAGADO)-HAB: 3,T:(00:03:36)      
+     50,000          0       50,000     
+ 2022-12-06 16:28                       
+ 1666-(PAGADO)-HAB: 2,T:(00:03:31)      
+     80,000          0       80,000     
+ 2022-12-06 16:27                       
+ 1665-(PAGADO)-HAB: 1,T:(00:03:26)      
+     80,000          0       80,000     
+ 2022-12-06 16:27                       
+ 1664-(PAGADO)-HAB: 13,T:(00:03:21)     
+     25,000          0       25,000     
+ 2022-12-06 16:27                       
+ 1663-(PAGADO)-HAB: 12,T:(00:03:17)     
+     25,000          0       25,000     
+ 2022-12-06 16:27                       
+ 1662-(PAGADO)-HAB: 11,T:(00:03:10)     
+     25,000          0       25,000     
+ 2022-12-06 16:25                       
+ 1661-(PAGADO)-HAB: 22,T:(14:10:36)     
+    170,000          0      170,000     
+ 2022-11-18 02:01                       
+ 5-(GARANTIA)-2022-11-18 01:56,(MARIA)-PAGADO
+          0          0       40,000     
+ 2022-11-18 02:00                       
+ 1660-(PAGADO)-HAB: 21,T:(00:00:44)     
+     80,000    144,000      224,000     
+ 2022-11-18 01:57                       
  APERTURA DE CAJA                       
           0          0            0     
                                         
                                         
+ CANT - DESCRIPCION - SUBTOTAL          
+ HEINEKEN                               
+   6                         54,000     
+ CORONA BOTELLA 355ML                   
+   5                         50,000     
+ MILLER LATA                            
+   5                         40,000     
+                                        
                                         
  #=============================#        
  ###-DATOS INGRESO-###                  
- TT. MINIMO:                290,000     
- TT. ADICIONAL:           1,170,000     
- TT. CONSUMO:                     0     
+ TT. MINIMO:                505,000     
+ TT. ADICIONAL:             130,000     
+ TT. CONSUMO:               144,000     
  TT. DESCUENTO:                   0     
  TT. ADELANTO:                    0     
- TT. VEN-INTERNO:           131,000     
- ===>TOTAL INGRESO:       1,591,000     
+ TT. VEN-INTERNO:                 0     
+ TT. GARANTIA:               40,000     
+ ===>TOTAL INGRESO:         819,000     
  #=============================#        
  ###-DATOS EGRESO-###                   
  TT. COMPRA :                     0     
  TT. VALE :                       0     
  TT. LIQUIDACION :                0     
- TT. GASTO :                100,000     
- ===>TOTAL EGRESO :         100,000     
+ TT. GASTO :                      0     
+ ===>TOTAL EGRESO :               0     
  #=============================#        
- ===>TOTAL SALDO :        1,491,000     
-                                        
-                                        
-                                        
+ ===>TOTAL SALDO :          819,000     
                                         
                                         
                                         

@@ -12,7 +12,7 @@ import javax.swing.JTable;
 
 public class BO_habitacion_dato {
 
-    private DAO_habitacion_dato hada_dao = new DAO_habitacion_dato();
+    private DAO_habitacion_dato DAOhd = new DAO_habitacion_dato();
     private DAO_habitacion_recepcion_temp DAOhrt=new DAO_habitacion_recepcion_temp();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
@@ -23,9 +23,8 @@ public class BO_habitacion_dato {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            hada_dao.insertar_habitacion_dato(conn, hada);
+            DAOhd.insertar_habitacion_dato(conn, hada);
             DAOhrt.insertar_habitacion_recepcion_temp(conn, harete);
-//            hada_dao.actualizar_tabla_habitacion_dato(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, hada.toString(), titulo);
@@ -45,8 +44,10 @@ public class BO_habitacion_dato {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                hada_dao.update_habitacion_dato(conn, hada);
+                DAOhd.update_habitacion_dato(conn, hada);
+                DAOhrt.update_habitacion_recepcion_temp_pasar_dato(conn);
                 DAOhrt.update_habitacion_recepcion_temp_dato(conn, harete);
+                
 //                hada_dao.actualizar_tabla_habitacion_dato(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {

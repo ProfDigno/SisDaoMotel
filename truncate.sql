@@ -9,3 +9,18 @@ truncate producto_habitacion_insumo;
 truncate producto_habitacion_patrimonio;
 truncate producto_marca;
 truncate producto_unidad;
+--todos los movimientos
+truncate caja_cierre_detalle;
+truncate caja_cierre;
+truncate caja_cierre_item;
+truncate gasto;
+truncate venta;
+truncate venta_item;
+truncate habitacion_recepcion;
+truncate inventario;
+truncate inventario_item;
+truncate compra;
+truncate compra_item;
+truncate venta_interno;
+truncate venta_item_interno;
+truncate garantia;

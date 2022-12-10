@@ -313,4 +313,31 @@ public class EvenRender {
             }
         });
     }
+    public void rendertabla_stock_producto(JTable tbltabla, final int columna) {
+        System.out.println("-->rendertabla_venta_producto");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender = columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object Otiene_stock = table.getValueAt(row, columnaRender);
+                int stock=Integer.parseInt(Otiene_stock.toString());
+                if (stock==0) {
+                    color_fondo = Color.YELLOW;
+                    color_text = Color.RED;
+                }
+                if (stock<0) {
+                    color_fondo = Color.GRAY;
+                    color_text = Color.RED;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+                return label;
+            }
+        });
+    }
 }

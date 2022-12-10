@@ -4,9 +4,24 @@
 			"nombre":"MI-COMPU",
 			"localhost":"localhost",
 			"port":"5432",
-			"basedato":"bddaomotel_5",
+			"basedato":"bddaomotel_7",
 			"usuario":"postgres",
 			"password":"4650586"
+            "direc_dump":"C:\\Program Files\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
+            "direc_backup":"backup\\",
+            "nombre_backup":"bddaomotel_",
+			"limite_dia_eliminar":"3",
+            "crear_backup":"NO"
+		}
+	],
+        "DIGNO-LENOVO-A12_1":[
+		{
+			"nombre":"MI-COMPU",
+			"localhost":"192.168.0.200",
+			"port":"5432",
+			"basedato":"bdpankyfranco_1",
+			"usuario":"postgres",
+			"password":"MAJJJSMG"
             "direc_dump":"C:\\Program Files\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
             "direc_backup":"backup\\",
             "nombre_backup":"bddaomotel_",

@@ -66,7 +66,7 @@ public class DAO_habitacion_recepcion_temp {
             + "minuto_minimo,minuto_adicional,minuto_cancelar,"
             + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,"
             + "puerta_cliente,puerta_limpieza,tipo_habitacion,"
-            + "monto_adelanto,idhabitacion_dato,es_manual,orden "
+            + "monto_adelanto,idhabitacion_dato,es_manual,orden,activo "
             + "FROM habitacion_recepcion_temp WHERE idhabitacion_dato=";
     private String sql_update_dato = "UPDATE habitacion_recepcion_temp "
             + "SET "
@@ -288,6 +288,7 @@ public class DAO_habitacion_recepcion_temp {
                 harete.setC42idhabitacion_dato(rs.getInt(42));
                 harete.setC43es_manual(rs.getBoolean(43));
                 harete.setC44orden(rs.getInt(44));
+                harete.setC45activo(rs.getBoolean(45));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + harete.toString(), titulo);
             }
         } catch (Exception e) {
@@ -349,6 +350,13 @@ public class DAO_habitacion_recepcion_temp {
                 + "from habitacion_costo hc,habitacion_dato hd  \n"
                 + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo \n"
                 + "and hd.idhabitacion_dato=hrt.idhabitacion_dato;";
+        eveconn.SQL_execute_libre(conn, sql);
+    }
+    public void update_habitacion_recepcion_temp_pasar_dato(Connection conn) {
+        String sql = "update habitacion_recepcion_temp hrt \n"
+                + "set activo=hd.activo \n"
+                + "from habitacion_dato hd  \n"
+                + "where  hd.idhabitacion_dato=hrt.idhabitacion_dato;";
         eveconn.SQL_execute_libre(conn, sql);
     }
 }

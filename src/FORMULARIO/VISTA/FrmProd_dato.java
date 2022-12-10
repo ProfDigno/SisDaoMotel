@@ -29,8 +29,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
     private producto ENTp = new producto();
-     private EvenFecha evefec = new EvenFecha();
-     private EvenCombobox evecmb = new EvenCombobox();
+    private EvenFecha evefec = new EvenFecha();
+    private EvenCombobox evecmb = new EvenCombobox();
     private DAO_producto DAOp = new DAO_producto();
     private BO_producto BOp = new BO_producto();
     private producto_categoria ENTpc = new producto_categoria();
@@ -39,8 +39,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private DAO_producto_unidad DAOpu = new DAO_producto_unidad();
     private producto_marca ENTpm = new producto_marca();
     private DAO_producto_marca DAOpm = new DAO_producto_marca();
-    private DAO_venta_item DAOvi=new DAO_venta_item();
-    private DAO_compra_item DAOci=new DAO_compra_item();
+    private DAO_venta_item DAOvi = new DAO_venta_item();
+    private DAO_compra_item DAOci = new DAO_compra_item();
     private EvenJTextField evejtf = new EvenJTextField();
     private ClaVarBuscar vbus = new ClaVarBuscar();
     Connection conn = ConnPostgres.getConnPosgres();
@@ -87,11 +87,13 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         reestableser();
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_venta);
         cargar_usuario();
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }
+
     private void cargar_usuario() {
         evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
     }
+
     private void titulo_formulario(String fecha_creado, String creado_por) {
         this.setTitle(nombreTabla_pri + " / fecha creado: " + fecha_creado + " / Creado Por: " + creado_por);
     }
@@ -199,9 +201,9 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         ENTp.setC8es_compra(jCescompra.isSelected());
         ENTp.setC9es_insumo(jCesinsumo.isSelected());
         ENTp.setC10es_patrimonio(jCespatrimonio.isSelected());
-        double precio_venta=evejtf.getDouble_format_nro_entero(txtprecio_venta);
-        double precio_compra=evejtf.getDouble_format_nro_entero(txtprecio_compra);
-        double precio_interno=evejtf.getDouble_format_nro_entero(txtprecio_interno);
+        double precio_venta = evejtf.getDouble_format_nro_entero(txtprecio_venta);
+        double precio_compra = evejtf.getDouble_format_nro_entero(txtprecio_compra);
+        double precio_interno = evejtf.getDouble_format_nro_entero(txtprecio_interno);
         ENTp.setC11precio_venta(precio_venta);
         ENTp.setC12precio_compra(precio_compra);
         ENTp.setC13stock_actual(Integer.parseInt(txtstock_actual.getText()));
@@ -219,7 +221,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         if (validar_guardar()) {
             cargar_dato();
             BOp.insertar_producto(ENTp);
-            actualizar_producto_filtro("");
+            actualizar_producto_filtro(0);
             reestableser();
         }
     }
@@ -229,28 +231,31 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             ENTp.setC1idproducto(Integer.parseInt(txtid.getText()));
             cargar_dato();
             BOp.update_producto(ENTp);
-            actualizar_producto_filtro("");
+            actualizar_producto_filtro(0);
         }
     }
-    String getS_filtro_fec_usu(){
-        String filtro="";
+
+    String getS_filtro_fec_usu() {
+        String filtro = "";
         String fil_fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_venta, "vi.fecha_creado");
-        String fil_usuario="";
+        String fil_usuario = "";
         int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
         if (idusuario > 0) {
             fil_usuario = " and v.fk_idusuario=" + idusuario;
         }
-        filtro=fil_fecha+fil_usuario;
+        filtro = fil_fecha + fil_usuario;
         return filtro;
     }
-    private void actualizar_venta_item(int idproducto){
-        String filtro="";
-        String fil_id=" and vi.fk_idproducto="+idproducto;
-        filtro=fil_id+getS_filtro_fec_usu();
+
+    private void actualizar_venta_item(int idproducto) {
+        String filtro = "";
+        String fil_id = " and vi.fk_idproducto=" + idproducto;
+        filtro = fil_id + getS_filtro_fec_usu();
         DAOvi.actualizar_tabla_venta_item_producto(conn, tblitem_venta, filtro);
         DAOci.actualizar_tabla_compra_item_producto(conn, tblcompra_item, filtro);
     }
-    private void recargar_datos_local(producto ENTp){
+
+    private void recargar_datos_local(producto ENTp) {
         txtid.setText(String.valueOf(ENTp.getC1idproducto()));
         titulo_formulario(ENTp.getC2fecha_creado(), ENTp.getC3creado_por());
         txtcod_barra.setText(ENTp.getC4codigo_barra());
@@ -260,9 +265,9 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         jCescompra.setSelected(ENTp.getC8es_compra());
         jCesinsumo.setSelected(ENTp.getC9es_insumo());
         jCespatrimonio.setSelected(ENTp.getC10es_patrimonio());
-        String Sprecio_venta=evejtf.getString_format_nro_decimal(ENTp.getC11precio_venta());
-        String Sprecio_compra=evejtf.getString_format_nro_decimal(ENTp.getC12precio_compra());
-        String Sprecio_interno=evejtf.getString_format_nro_decimal(ENTp.getC20precio_interno());
+        String Sprecio_venta = evejtf.getString_format_nro_decimal(ENTp.getC11precio_venta());
+        String Sprecio_compra = evejtf.getString_format_nro_decimal(ENTp.getC12precio_compra());
+        String Sprecio_interno = evejtf.getString_format_nro_decimal(ENTp.getC20precio_interno());
         txtprecio_venta.setText(Sprecio_venta);
         txtprecio_compra.setText(Sprecio_compra);
         txtprecio_interno.setText(Sprecio_interno);
@@ -282,6 +287,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }
+
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla_pri);
         DAOp.cargar_producto(conn, ENTp, idproducto);
@@ -314,14 +320,35 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         setFk_idproducto_categoria(0);
         setFk_idproducto_unidad(0);
         setFk_idproducto_marca(0);
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
         btnguardar.setEnabled(true);
         btneditar.setEnabled(false);
         txtnombre.grabFocus();
     }
-    private void actualizar_producto_filtro(String filtro){
-        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, filtro, getS_orden(),getS_filtro_fec_usu());
+
+    private void actualizar_producto_filtro(int tipo) {
+        String filtro = "";
+        String filtro_nombre = "";
+        String fil_venta=" and p.es_venta="+jCesventa_filtro.isSelected();
+        String fil_compra=" and p.es_compra="+jCescompra_filtro.isSelected();
+        String fil_stock="";
+        if(jCstock_positivo.isSelected() && !jCstock_negativo.isSelected()){
+            fil_stock=" and p.stock_actual>0 ";
+        }
+        if(!jCstock_positivo.isSelected() && jCstock_negativo.isSelected()){
+            fil_stock=" and p.stock_actual<=0 ";
+        }
+        if (tipo == 1) {
+            if (txtbuscar_producto.getText().trim().length() >= 3) {
+                String buscar = txtbuscar_producto.getText();
+                filtro_nombre = " and p.nombre ilike'%" + buscar + "%' ";
+            }
+        }
+        
+        filtro=filtro_nombre+fil_venta+fil_compra+fil_stock;
+        DAOp.actualizar_tabla_producto(conn, tbltabla_pri, filtro, getS_orden(), getS_filtro_fec_usu());
     }
+
     private void boton_nuevo() {
         reestableser();
     }
@@ -399,6 +426,10 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         cmbfecha_venta = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         cmbusuario = new javax.swing.JComboBox<>();
+        jCesventa_filtro = new javax.swing.JCheckBox();
+        jCescompra_filtro = new javax.swing.JCheckBox();
+        jCstock_positivo = new javax.swing.JCheckBox();
+        jCstock_negativo = new javax.swing.JCheckBox();
         jPanel4 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -946,6 +977,11 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         gru_ord.add(jRord_prod);
         jRord_prod.setSelected(true);
         jRord_prod.setText("PRODUCTO");
+        jRord_prod.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRord_prodActionPerformed(evt);
+            }
+        });
 
         gru_ord.add(jRord_cate);
         jRord_cate.setText("CATEGORIA");
@@ -1058,6 +1094,36 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             }
         });
 
+        jCesventa_filtro.setSelected(true);
+        jCesventa_filtro.setText("ES VENTA");
+        jCesventa_filtro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCesventa_filtroActionPerformed(evt);
+            }
+        });
+
+        jCescompra_filtro.setSelected(true);
+        jCescompra_filtro.setText("ES COMPRA");
+        jCescompra_filtro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCescompra_filtroActionPerformed(evt);
+            }
+        });
+
+        jCstock_positivo.setText("STOCK-POSITIVO");
+        jCstock_positivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCstock_positivoActionPerformed(evt);
+            }
+        });
+
+        jCstock_negativo.setText("STOCK-NEGATIVO");
+        jCstock_negativo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCstock_negativoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
         panel_tablaLayout.setHorizontalGroup(
@@ -1070,23 +1136,35 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
             .addGroup(panel_tablaLayout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCesventa_filtro)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jCescompra_filtro)
+                .addGap(18, 18, 18)
+                .addComponent(jCstock_positivo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jCstock_negativo)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmbfecha_venta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
                     .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                    .addComponent(jLabel6)
+                    .addComponent(jCesventa_filtro)
+                    .addComponent(jCescompra_filtro)
+                    .addComponent(jCstock_positivo)
+                    .addComponent(jCstock_negativo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1226,7 +1304,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         if (txtbuscar_producto.getText().trim().length() >= 3) {
             String buscar = txtbuscar_producto.getText();
             String filtro = " and p.nombre ilike'%" + buscar + "%' ";
-            actualizar_producto_filtro(filtro);
+            actualizar_producto_filtro(1);
         }
     }//GEN-LAST:event_txtbuscar_productoKeyReleased
 
@@ -1320,13 +1398,13 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             String codbarra = txtcod_barra.getText();
-            if(DAOp.getBoolean_cargar_producto_por_codbarra(conn, ENTp,codbarra)){
+            if (DAOp.getBoolean_cargar_producto_por_codbarra(conn, ENTp, codbarra)) {
                 recargar_datos_local(ENTp);
-            }else{
+            } else {
                 evejtf.saltar_campo_enter(evt, txtcod_barra, txtnombre);
             }
         }
-        
+
     }//GEN-LAST:event_txtcod_barraKeyPressed
 
     private void txtprecio_compraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyPressed
@@ -1359,28 +1437,28 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             String buscar = txtbuscar_codbarra.getText();
             String filtro = " and p.codigo_barra='" + buscar + "' ";
-            actualizar_producto_filtro(filtro);
+            actualizar_producto_filtro(2);
         }
     }//GEN-LAST:event_txtbuscar_codbarraKeyReleased
 
     private void jRord_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_idActionPerformed
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_jRord_idActionPerformed
 
     private void jRord_cateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_cateActionPerformed
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_jRord_cateActionPerformed
 
     private void jRord_unidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_unidadActionPerformed
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_jRord_unidadActionPerformed
 
     private void jRord_marcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_marcaActionPerformed
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_jRord_marcaActionPerformed
 
     private void cmbfecha_ventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbfecha_ventaActionPerformed
@@ -1395,22 +1473,22 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
     private void jRord_cvenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_cvenActionPerformed
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_jRord_cvenActionPerformed
 
     private void jRord_ccomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_ccomActionPerformed
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_jRord_ccomActionPerformed
 
     private void cmbfecha_ventaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_ventaItemStateChanged
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_cmbfecha_ventaItemStateChanged
 
     private void cmbusuarioItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbusuarioItemStateChanged
         // TODO add your handling code here:
-        actualizar_producto_filtro("");
+        actualizar_producto_filtro(0);
     }//GEN-LAST:event_cmbusuarioItemStateChanged
 
     private void txtprecio_internoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_internoKeyPressed
@@ -1434,8 +1512,32 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
 
     private void txtprecio_internoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_internoKeyReleased
         // TODO add your handling code here:
-         evejtf.getDouble_format_nro_entero(txtprecio_interno);
+        evejtf.getDouble_format_nro_entero(txtprecio_interno);
     }//GEN-LAST:event_txtprecio_internoKeyReleased
+
+    private void jRord_prodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRord_prodActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRord_prodActionPerformed
+
+    private void jCesventa_filtroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCesventa_filtroActionPerformed
+        // TODO add your handling code here:
+        actualizar_producto_filtro(0);
+    }//GEN-LAST:event_jCesventa_filtroActionPerformed
+
+    private void jCescompra_filtroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCescompra_filtroActionPerformed
+        // TODO add your handling code here:
+        actualizar_producto_filtro(0);
+    }//GEN-LAST:event_jCescompra_filtroActionPerformed
+
+    private void jCstock_positivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCstock_positivoActionPerformed
+        // TODO add your handling code here:
+        actualizar_producto_filtro(0);
+    }//GEN-LAST:event_jCstock_positivoActionPerformed
+
+    private void jCstock_negativoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCstock_negativoActionPerformed
+        // TODO add your handling code here:
+        actualizar_producto_filtro(0);
+    }//GEN-LAST:event_jCstock_negativoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1454,10 +1556,14 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup gru_iva;
     private javax.swing.ButtonGroup gru_ord;
     private javax.swing.JCheckBox jCescompra;
+    private javax.swing.JCheckBox jCescompra_filtro;
     private javax.swing.JCheckBox jCescontrolstock;
     private javax.swing.JCheckBox jCesinsumo;
     private javax.swing.JCheckBox jCespatrimonio;
     private javax.swing.JCheckBox jCesventa;
+    private javax.swing.JCheckBox jCesventa_filtro;
+    private javax.swing.JCheckBox jCstock_negativo;
+    private javax.swing.JCheckBox jCstock_positivo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

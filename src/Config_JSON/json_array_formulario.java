@@ -35,6 +35,9 @@ public class json_array_formulario {
     private static boolean boo_frmventa_ven_aux;
     private static boolean boo_frmventa_zona_nro;
     private static boolean boo_frmventa_zona_nombre;
+    private static boolean boo_rasp_1;
+    private static boolean boo_rasp_2;
+    private static boolean boo_rasp_3;
     
     public void cargar_jsom_array_formulario() {
 //         MacAddress_maquina=pcinf.getMacAddress();
@@ -52,9 +55,15 @@ public class json_array_formulario {
             String  frmventa_ven_aux = (String) jsonObject_conexion.get("frmventa_ven_aux");
             String  frmventa_zona_nro = (String) jsonObject_conexion.get("frmventa_zona_nro");
             String  frmventa_zona_nombre = (String) jsonObject_conexion.get("frmventa_zona_nombre");
+            String  rasp_1 = (String) jsonObject_conexion.get("rasp_1");
+            String  rasp_2 = (String) jsonObject_conexion.get("rasp_2");
+            String  rasp_3 = (String) jsonObject_conexion.get("rasp_3");
             setBoo_frmventa_ven_aux(getBoo_si_no(frmventa_ven_aux));
             setBoo_frmventa_zona_nro(getBoo_si_no(frmventa_zona_nro));
             setBoo_frmventa_zona_nombre(getBoo_si_no(frmventa_zona_nombre));
+            setBoo_rasp_1(getBoo_si_no(rasp_1));
+            setBoo_rasp_2(getBoo_si_no(rasp_2));
+            setBoo_rasp_3(getBoo_si_no(rasp_3));
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
@@ -108,6 +117,30 @@ public class json_array_formulario {
 
     public static void setBoo_frmventa_zona_nombre(boolean boo_frmventa_zona_nombre) {
         json_array_formulario.boo_frmventa_zona_nombre = boo_frmventa_zona_nombre;
+    }
+
+    public static boolean isBoo_rasp_1() {
+        return boo_rasp_1;
+    }
+
+    public static void setBoo_rasp_1(boolean boo_rasp_1) {
+        json_array_formulario.boo_rasp_1 = boo_rasp_1;
+    }
+
+    public static boolean isBoo_rasp_2() {
+        return boo_rasp_2;
+    }
+
+    public static void setBoo_rasp_2(boolean boo_rasp_2) {
+        json_array_formulario.boo_rasp_2 = boo_rasp_2;
+    }
+
+    public static boolean isBoo_rasp_3() {
+        return boo_rasp_3;
+    }
+
+    public static void setBoo_rasp_3(boolean boo_rasp_3) {
+        json_array_formulario.boo_rasp_3 = boo_rasp_3;
     }
 
    

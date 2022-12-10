@@ -7,6 +7,7 @@ import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Fecha.EvenFecha;
+import Evento.Jtable.EvenRender;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,6 +21,7 @@ public class DAO_producto {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenEstado eveest = new EvenEstado();
     EvenFecha evefec = new EvenFecha();
+    EvenRender render=new EvenRender();
     private String mensaje_insert = "PRODUCTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "PRODUCTO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO producto(idproducto,fecha_creado,creado_por,"
@@ -170,6 +172,7 @@ public class DAO_producto {
                 + " order by " + orden + ";";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_producto(tbltabla);
+        render.rendertabla_stock_producto(tbltabla, 9);
     }
 
     public void ancho_tabla_producto(JTable tbltabla) {
@@ -177,6 +180,7 @@ public class DAO_producto {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 7);
         evejt.alinear_derecha_columna(tbltabla, 8);
+        evejt.alinear_derecha_columna(tbltabla, 9);
     }
 
     public void imprimir_rep_inventario_volorizado(Connection conn, String filtro) {

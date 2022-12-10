@@ -1,0 +1,8 @@
+{
+"localhost":"192.168.0.200",
+"port":"5432",
+"basedato":"bddaomotel_1",
+"usuario":"postgres",
+"password":"MAJJJSMG",
+"miip_rpi":"192.168.0.202"
+}

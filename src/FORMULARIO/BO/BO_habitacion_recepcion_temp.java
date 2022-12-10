@@ -72,4 +72,22 @@ public class BO_habitacion_recepcion_temp {
                 }
             }
     }
+    public void update_habitacion_recepcion_temp_puertas_activos() {
+            String titulo = "update_habitacion_recepcion_temp_puertas_activos";
+            Connection conn = ConnPostgres.getConnPosgres();
+            try {
+                if (conn.getAutoCommit()) {
+                    conn.setAutoCommit(false);
+                }
+                DAOhrt.update_habitacion_recepcion_temp_pasar_dato(conn);
+                conn.commit();
+            } catch (SQLException e) {
+                evmen.mensaje_error(e,"error", titulo);
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    evmen.Imprimir_serial_sql_error(e1,"error", titulo);
+                }
+            }
+    }
 }
