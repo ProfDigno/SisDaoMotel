@@ -22,7 +22,9 @@ import IMPRESORA_POS.PosImprimir_Venta;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -42,6 +44,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private caja_cierre_item ENTcci = new caja_cierre_item();
     private DAO_caja_cierre_item DAOcci = new DAO_caja_cierre_item();
     private DAO_venta DAOven = new DAO_venta();
+    private venta ENTven = new venta();
     private DAO_gasto DAOg = new DAO_gasto();
     private DAO_compra DAOcom = new DAO_compra();
     private EvenJTextField evejtf = new EvenJTextField();
@@ -74,6 +77,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         actualizar_tabla_caja_cierre_detalle_ABIERTO();
         actualizar_tabla_caja_cierre();
     }
+
     private void actualizar_tabla_caja_cierre_detalle_ABIERTO() {
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA(conn, tblcaja_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(conn, tblgasto_abierto, fk_idusuario);
@@ -84,27 +88,27 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void actualizar_tabla_caja_cierre() {
-        String filtro="";
+        String filtro = "";
         int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
         String filtro_fec = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "cc.fecha_creado");
-        String filtro_usu="";
+        String filtro_usu = "";
         if (idusuario > 0) {
-            filtro =  " and cc.fk_idusuario=" + idusuario;
+            filtro = " and cc.fk_idusuario=" + idusuario;
         }
-        String filtro_truno="";
-        if(jRturno_todo.isSelected()){
-            filtro_truno="";
+        String filtro_truno = "";
+        if (jRturno_todo.isSelected()) {
+            filtro_truno = "";
         }
-        if(jRturno_manana.isSelected()){
-            filtro_truno=" and cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' ";
+        if (jRturno_manana.isSelected()) {
+            filtro_truno = " and cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' ";
         }
-        if(jRturno_tarde.isSelected()){
-            filtro_truno=" and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' ";
+        if (jRturno_tarde.isSelected()) {
+            filtro_truno = " and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' ";
         }
-        if(jRturno_noche.isSelected()){
-            filtro_truno=" and cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' ";
+        if (jRturno_noche.isSelected()) {
+            filtro_truno = " and cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' ";
         }
-        filtro=filtro_fec+filtro_usu+filtro_truno;
+        filtro = filtro_fec + filtro_usu + filtro_truno;
         DAOcc.actualizar_tabla_caja_cierre(conn, tblresumen_caja_cierre, filtro);
         suma_total_caja_detalle_cerrado(filtro);
     }
@@ -176,14 +180,17 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             evemen.Imprimir_serial_sql_error(e, sql, titulo);
         }
     }
+
     private void bloqueo_inicio() {
         FrmMenuMotel.barra_menu_principal.setEnabled(false);
     }
+
     private void abrir_login() {
         bloqueo_inicio();
         JDiaLogin log = new JDiaLogin(null, true);
         log.setVisible(true);
     }
+
     private void boton_cerrar_caja() {
         if (tblcaja_abierto.getRowCount() > 0) {
             String mensaje = "<html><p style=\"color:red\"><font size=\"8\">CAJA NRO: " + idcaja_cierre + "</font></p>"
@@ -196,7 +203,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                     + "<p style=\"color:red\"><font size=\"4\">SUMA SALDO:   </font></p>"
                     + "<p><font size=\"8\">" + evejtf.getString_format_nro_decimal(suma_saldo) + "</font></p>"
                     + "</html>";
-            if (evemen.getBooMensaje_warning(mensaje,"CERRAR CAJA", "ACEPTAR", "CANCELAR")) {
+            if (evemen.getBooMensaje_warning(mensaje, "CERRAR CAJA", "ACEPTAR", "CANCELAR")) {
                 ENTcc.setC3creado_por(creado_por);
                 ENTcc.setC4fecha_inicio(fec_inicio);
                 ENTcc.setC5fecha_fin(fec_final);
@@ -212,24 +219,26 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 this.dispose();
                 abrir_login();
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUNA OCUPACION", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void seleccionar_caja_cierre() {
         if (tblresumen_caja_cierre.getSelectedRow() >= 0) {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
-            String filtro_gasto="";
-            String filtro_compra="";
-            if(jCsolo_terminado_gasto.isSelected()){
-                filtro_gasto=" and g.estado='"+eveest.getEst_Terminar()+"' ";
+            String filtro_gasto = "";
+            String filtro_compra = "";
+            if (jCsolo_terminado_gasto.isSelected()) {
+                filtro_gasto = " and g.estado='" + eveest.getEst_Terminar() + "' ";
             }
-            if(jCsolo_terminado_comp.isSelected()){
-                filtro_compra=" and c.estado='"+eveest.getEst_Terminar()+"' ";
+            if (jCsolo_terminado_comp.isSelected()) {
+                filtro_compra = " and c.estado='" + eveest.getEst_Terminar() + "' ";
             }
             DAOven.actualizar_tabla_venta_desde_caja_cierre(conn, tblventa, idcaja_cierre);
             DAOven.actualizar_tabla_venta_item_desde_caja_cierre(conn, tblventa_consumo, idcaja_cierre);
-            DAOg.actualizar_tabla_gasto_caja_cerrado(conn, tblcc_gasto, idcaja_cierre,filtro_gasto);
-            DAOcom.actualizar_tabla_compra_caja_cerrado(conn, tblcc_compra, idcaja_cierre,filtro_compra);
+            DAOg.actualizar_tabla_gasto_caja_cerrado(conn, tblcc_gasto, idcaja_cierre, filtro_gasto);
+            DAOcom.actualizar_tabla_compra_caja_cerrado(conn, tblcc_compra, idcaja_cierre, filtro_compra);
             double total_consumo = eveJtab.getDouble_sumar_tabla(tblventa_consumo, 5);
             double total_minimo = eveJtab.getDouble_sumar_tabla(tblventa, 12);
             double total_adicional = eveJtab.getDouble_sumar_tabla(tblventa, 13);
@@ -305,6 +314,24 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         }
     }
 
+    private void seleccionar_caja_abierta() {
+        if (tblcaja_abierto.getSelectedRow() >= 0) {
+            int idventa = eveJtab.getInt_select_id(tblcaja_abierto);
+            DAOven.cargar_venta_idventa(conn, ENTven, idventa);
+            
+        }
+    }
+    private void boton_ver_observacion_venta(){
+        JTextArea ta = new JTextArea(30, 40);
+            ta.setText(ENTven.getC6observacion());
+            Object[] opciones = {"ACEPTAR", "CANCELAR"};
+            int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(ta), "OBSERVACION",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, opciones, "ACEPTAR");
+            if (eleccion == JOptionPane.YES_OPTION) {
+                System.out.println(ENTven.getC6observacion());
+            }
+    }
     public FrmCaja_Detalle() {
         initComponents();
         abrir_formulario();
@@ -365,6 +392,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_resumen_egreso = new javax.swing.JFormattedTextField();
         jFtotal_resumen_saldo = new javax.swing.JFormattedTextField();
         jFmonto_apertura_caja = new javax.swing.JFormattedTextField();
+        btnobs_venta = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -453,6 +481,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblcaja_abierto.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblcaja_abiertoMouseReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblcaja_abierto);
 
         jPanel3.setBackground(new java.awt.Color(204, 255, 204));
@@ -831,6 +864,13 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFmonto_apertura_caja.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFmonto_apertura_caja.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        btnobs_venta.setText("Obs. Venta");
+        btnobs_venta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnobs_ventaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -848,6 +888,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jFmonto_apertura_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnobs_venta)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -861,9 +903,15 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                         .addComponent(txtfecha_final, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btncarrar_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jFmonto_apertura_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                        .addComponent(jFmonto_apertura_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnobs_venta)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jTabbedPane1.addTab("DETALLE CAJA ABIERTO", jPanel1);
@@ -1360,12 +1408,23 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         actualizar_tabla_caja_cierre();
     }//GEN-LAST:event_jRturno_nocheActionPerformed
 
+    private void tblcaja_abiertoMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblcaja_abiertoMouseReleased
+        // TODO add your handling code here:
+        seleccionar_caja_abierta();
+    }//GEN-LAST:event_tblcaja_abiertoMouseReleased
+
+    private void btnobs_ventaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnobs_ventaActionPerformed
+        // TODO add your handling code here:
+        boton_ver_observacion_venta();
+    }//GEN-LAST:event_btnobs_ventaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btncarrar_caja;
     private javax.swing.JButton btnimprimir_caja_cierre;
     private javax.swing.JButton btnimprimir_ticket;
     private javax.swing.JButton btnimprimir_ticket1;
+    private javax.swing.JButton btnobs_venta;
     private javax.swing.JComboBox<String> cmbfecha_caja_cierre;
     private javax.swing.JComboBox<String> cmbusuario;
     private javax.swing.ButtonGroup gru_turno;

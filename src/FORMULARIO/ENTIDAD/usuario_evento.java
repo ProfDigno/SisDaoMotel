@@ -8,8 +8,9 @@ private String C3creado_por;
 private int C4codigo;
 private String C5nombre;
 private String C6descripcion;
-private int C7fk_idusuario_tipo_evento;
-private int C8fk_idusuario_formulario;
+private String C7mensaje_error;
+private int C8fk_idusuario_tipo_evento;
+private int C9fk_idusuario_formulario;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -66,19 +67,25 @@ private static String nom_idtabla;
 	public void setC6descripcion(String C6descripcion){
 		this.C6descripcion = C6descripcion;
 	}
-	public int getC7fk_idusuario_tipo_evento(){
-		return C7fk_idusuario_tipo_evento;
+	public String getC7mensaje_error(){
+		return C7mensaje_error;
 	}
-	public void setC7fk_idusuario_tipo_evento(int C7fk_idusuario_tipo_evento){
-		this.C7fk_idusuario_tipo_evento = C7fk_idusuario_tipo_evento;
+	public void setC7mensaje_error(String C7mensaje_error){
+		this.C7mensaje_error = C7mensaje_error;
 	}
-	public int getC8fk_idusuario_formulario(){
-		return C8fk_idusuario_formulario;
+	public int getC8fk_idusuario_tipo_evento(){
+		return C8fk_idusuario_tipo_evento;
 	}
-	public void setC8fk_idusuario_formulario(int C8fk_idusuario_formulario){
-		this.C8fk_idusuario_formulario = C8fk_idusuario_formulario;
+	public void setC8fk_idusuario_tipo_evento(int C8fk_idusuario_tipo_evento){
+		this.C8fk_idusuario_tipo_evento = C8fk_idusuario_tipo_evento;
+	}
+	public int getC9fk_idusuario_formulario(){
+		return C9fk_idusuario_formulario;
+	}
+	public void setC9fk_idusuario_formulario(int C9fk_idusuario_formulario){
+		this.C9fk_idusuario_formulario = C9fk_idusuario_formulario;
 	}
 	public String toString() {
-		return "usuario_evento(" + ",idusuario_evento=" + C1idusuario_evento + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,codigo=" + C4codigo + " ,nombre=" + C5nombre + " ,descripcion=" + C6descripcion + " ,fk_idusuario_tipo_evento=" + C7fk_idusuario_tipo_evento + " ,fk_idusuario_formulario=" + C8fk_idusuario_formulario + " )";
+		return "usuario_evento(" + ",idusuario_evento=" + C1idusuario_evento + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,codigo=" + C4codigo + " ,nombre=" + C5nombre + " ,descripcion=" + C6descripcion + " ,mensaje_error=" + C7mensaje_error + " ,fk_idusuario_tipo_evento=" + C8fk_idusuario_tipo_evento + " ,fk_idusuario_formulario=" + C9fk_idusuario_formulario + " )";
 	}
 }

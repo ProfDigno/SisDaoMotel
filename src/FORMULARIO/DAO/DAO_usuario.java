@@ -32,6 +32,7 @@ public class DAO_usuario {
     String usu_nombre = "nombre";
     String usu_tabla = "usuario";
     String usu_where = "where activo=true ";
+
     public void insertar_usuario(Connection conn, usuario us) {
         us.setC1idusuario(eveconn.getInt_ultimoID_mas_uno(conn, us.getTb_usuario(), us.getId_idusuario()));
         String titulo = "insertar_usuario";
@@ -109,6 +110,7 @@ public class DAO_usuario {
         int Ancho[] = {10, 50, 30, 10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
+
     public boolean getBoolean_buscar_usuario_existente(Connection conn, usuario usu) {
         String titulo = "getBoolean_buscar_usuario_existente";
         String sql = "select * from usuario where usuario='" + usu.getC5usuario() + "' and password='" + usu.getC6password() + "' ";
@@ -132,11 +134,43 @@ public class DAO_usuario {
             return false;
         }
     }
-    public void cargar_usuario_combo(Connection conn,JComboBox cmbusuario) {
+
+    public void cargar_usuario_combo(Connection conn, JComboBox cmbusuario) {
         evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
     }
-    public int getInt_idusuario_combo(Connection conn,JComboBox cmbusuario){
+
+    public int getInt_idusuario_combo(Connection conn, JComboBox cmbusuario) {
         int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
         return idusuario;
+    }
+
+    public boolean getBoo_eve_permitido(Connection conn, int codigo) {
+        usuario ENTusu = new usuario();
+        String titulo = "getBoo_eve_permitido";
+        String sql = "select uir.activo,ue.mensaje_error \n"
+                + "from usuario_rol ur,usuario u,usuario_item_rol uir,usuario_evento ue  \n"
+                + "where u.fk_idusuario_rol=ur.idusuario_rol \n"
+                + "and ur.idusuario_rol=uir.fk_idusuario_rol \n"
+                + "and uir.fk_idusuario_evento=ue.idusuario_evento \n"
+                + "and ue.codigo=" + codigo + " and u.idusuario=" + ENTusu.getGlobal_idusuario();
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                boolean activo = rs.getBoolean("activo");
+                String mensaje_error = rs.getString("mensaje_error");
+                if (activo) {
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(null, mensaje_error, "ERROR", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "NO SE ENCONTRO EVENTO PARA EL CODIGO:" + codigo, "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+            return false;
+        }
     }
 }

@@ -269,7 +269,12 @@ public class EvenJtable {
             evmen.mensaje_error(e, titulo);
         }
     }
-
+    public void limpiar_tabla_todasfila(JTable table) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        while (model.getRowCount() > 0) {
+            model.removeRow(0);
+        }
+    }
     public void cargar_tabla_datos(JTable tabla, DefaultTableModel Detabla, String dato[]) {
         String titulo = "cargar_tabla_datos";
         try {

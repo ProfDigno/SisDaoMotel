@@ -6,6 +6,7 @@
 package FORMULARIO.VISTA;
 
 import BASEDATO.LOCAL.ConnPostgres;
+import Evento.Combobox.EvenCombobox;
 //import Evento.Color.cla_color_palete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
@@ -23,10 +24,11 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
 
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
-    private usuario ENTgt=new usuario();
-    private DAO_usuario DAOgt=new DAO_usuario();
-    private BO_usuario BOgt=new BO_usuario();
+    private usuario ENTu=new usuario();
+    private DAO_usuario DAOu=new DAO_usuario();
+    private BO_usuario BOu=new BO_usuario();
     private EvenJTextField evejtf = new EvenJTextField();
+    private EvenCombobox evecmb=new EvenCombobox();
     Connection conn = ConnPostgres.getConnPosgres();
     usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
     private String nombreTabla_pri="CREAR USUARIO"; 
@@ -34,15 +36,45 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
     private String creado_por="digno";
     int fk_idusuario_roll=0;
     int fk_idpersona=0;
+    private String ur_id="idusuario_rol";
+    private String ur_nombre="nombre";
+    private String ur_tabla="usuario_rol";
+    private String ur_where="";
+    private String p_id="idpersona";
+    private String p_nombre="nombre";
+    private String p_tabla="persona";
+    private String p_where="";
+    private boolean hab_carga_usu_rol;
+    private boolean hab_carga_persona;
     private void abrir_formulario() {
         this.setTitle(nombreTabla_pri);
         evetbl.centrar_formulario_internalframa(this);
         creado_por = ENTusu.getGlobal_nombre();        
         reestableser();
-        DAOgt.actualizar_tabla_usuario(conn, tbltabla_pri);
+        cargar_usuario_rol();
+        cargar_persona();
+        DAOu.actualizar_tabla_usuario(conn, tbltabla_pri);
     }
     private void titulo_formulario(String fecha_creado,String creado_por){
         this.setTitle(nombreTabla_pri+" / fecha creado: "+fecha_creado+" / Creado Por: "+creado_por);
+    }
+    private void cargar_usuario_rol(){
+        evecmb.cargarCombobox(conn, cmbusuario_roll, ur_id, ur_nombre, ur_tabla,ur_where);
+        hab_carga_usu_rol=true;
+    }
+    private void cargar_persona(){
+        evecmb.cargarCombobox(conn, cmbpersona, p_id, p_nombre, p_tabla,p_where);
+        hab_carga_persona=true;
+    }
+    private void seleccionar_usuario_rol(){
+        if(hab_carga_usu_rol){
+            fk_idusuario_roll=evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario_roll, ur_id, ur_nombre, ur_tabla);
+        }
+    }
+    private void seleccionar_persona(){
+        if(hab_carga_persona){
+            fk_idpersona=evecmb.getInt_seleccionar_COMBOBOX(conn, cmbpersona, p_id, p_nombre, p_tabla);
+        }
     }
     private boolean validar_guardar() {
         if (evejtf.getBoo_JTextField_vacio(txtnombre, "DEBE CARGAR UN NOMBRE")) {
@@ -54,43 +86,50 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtpassword, "DEBE CARGAR UN PASSWORD")) {
             return false;
         }
+        if(evecmb.getBoo_JCombobox_seleccionar(cmbusuario_roll,"SELECCIONE UN ROLL")){
+            return false;
+        }
+        if(evecmb.getBoo_JCombobox_seleccionar(cmbpersona,"SELECCIONE UNA PERSONA")){
+            return false;
+        }
         return true;
     }
     private void cargar_dato(){
-        ENTgt.setC3creado_por(creado_por);
-        ENTgt.setC4nombre(txtnombre.getText());
-        ENTgt.setC5usuario(txtusuario.getText());
-        ENTgt.setC6password(txtpassword.getText());
-        ENTgt.setC7activo(jCactivo.isSelected());
-        ENTgt.setC8fk_idusuario_rol(fk_idusuario_roll);
-        ENTgt.setC9fk_idpersona(fk_idpersona);
-//        ENTgt.setC5activo(jCactivo.isSelected());
+        ENTu.setC3creado_por(creado_por);
+        ENTu.setC4nombre(txtnombre.getText());
+        ENTu.setC5usuario(txtusuario.getText());
+        ENTu.setC6password(txtpassword.getText());
+        ENTu.setC7activo(jCactivo.isSelected());
+        ENTu.setC8fk_idusuario_rol(fk_idusuario_roll);
+        ENTu.setC9fk_idpersona(fk_idpersona);
     }
     private void boton_guardar() {
         if (validar_guardar()) {
             cargar_dato();
-            BOgt.insertar_usuario(ENTgt, tbltabla_pri);
+            BOu.insertar_usuario(ENTu, tbltabla_pri);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            ENTgt.setC1idusuario(Integer.parseInt(txtid.getText()));
+            ENTu.setC1idusuario(Integer.parseInt(txtid.getText()));
             cargar_dato();
-            BOgt.update_usuario(ENTgt, tbltabla_pri);
+            BOu.update_usuario(ENTu, tbltabla_pri);
         }
     }
 
     private void seleccionar_tabla() {
         int id = eveJtab.getInt_select_id(tbltabla_pri);
-        DAOgt.cargar_usuario(conn, ENTgt, id);
-        txtid.setText(String.valueOf(ENTgt.getC1idusuario()));
-        txtnombre.setText(ENTgt.getC4nombre());
-        txtusuario.setText(ENTgt.getC5usuario());
-//        txtpassword.setText("****************");
-        jCactivo.setSelected(ENTgt.getC7activo());
-        titulo_formulario(ENTgt.getC2fecha_creado(), ENTgt.getC3creado_por());
+        DAOu.cargar_usuario(conn, ENTu, id);
+        txtid.setText(String.valueOf(ENTu.getC1idusuario()));
+        txtnombre.setText(ENTu.getC4nombre());
+        txtusuario.setText(ENTu.getC5usuario());
+        txtpassword.setText(null);
+        jCactivo.setSelected(ENTu.getC7activo());
+        evecmb.setSeleccionarCombobox(conn, cmbpersona, p_id, p_nombre, p_tabla, ENTu.getC9fk_idpersona());
+        evecmb.setSeleccionarCombobox(conn, cmbusuario_roll, ur_id, ur_nombre, ur_tabla, ENTu.getC8fk_idusuario_rol());
+        titulo_formulario(ENTu.getC2fecha_creado(), ENTu.getC3creado_por());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }
@@ -247,9 +286,19 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
 
         cmbusuario_roll.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cmbusuario_roll.setBorder(javax.swing.BorderFactory.createTitledBorder("ROLL"));
+        cmbusuario_roll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbusuario_rollActionPerformed(evt);
+            }
+        });
 
         cmbpersona.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cmbpersona.setBorder(javax.swing.BorderFactory.createTitledBorder("PERSONA"));
+        cmbpersona.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbpersonaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -439,7 +488,7 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAOgt.ancho_tabla_usuario(tbltabla_pri);
+        DAOu.ancho_tabla_usuario(tbltabla_pri);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltabla_priMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltabla_priMouseReleased
@@ -487,6 +536,16 @@ public class FrmUsuario_crear extends javax.swing.JInternalFrame {
     private void txtpasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpasswordKeyReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_txtpasswordKeyReleased
+
+    private void cmbusuario_rollActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbusuario_rollActionPerformed
+        // TODO add your handling code here:
+        seleccionar_usuario_rol();
+    }//GEN-LAST:event_cmbusuario_rollActionPerformed
+
+    private void cmbpersonaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbpersonaActionPerformed
+        // TODO add your handling code here:
+        seleccionar_persona();
+    }//GEN-LAST:event_cmbpersonaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -59,7 +59,7 @@ public class JDiaLogin extends javax.swing.JDialog {
     private void buscar_usuario() {
         if (dao_usu.getBoolean_buscar_usuario_existente(conn, ENTusu)) {
             JOptionPane.showMessageDialog(this, "BIENVENIDO\n" + ENTusu.getGlobal_nombre());
-            FrmMenuMotel.lblusuario.setText(ENTusu.getGlobal_nombre());
+            FrmMenuMotel.lblusuario.setText(ENTusu.getGlobal_idusuario()+"-"+ENTusu.getGlobal_nombre());
             if (!ENTusu.getC7activo()) {
                 JOptionPane.showMessageDialog(this, "ESTE USUARIO NO ESTA ACTIVO", "USUARIO", JOptionPane.WARNING_MESSAGE);
                 txtusuario.setText(null);

@@ -45,6 +45,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private ClaVarBuscar vbus = new ClaVarBuscar();
     Connection conn = ConnPostgres.getConnPosgres();
     usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
+    private DAO_usuario DAOusu = new DAO_usuario();
     private String nombreTabla_pri = "PRODUCTO";
     private String nombreTabla_sec = "FILTROS";
     private String creado_por = "digno";
@@ -227,11 +228,13 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     }
 
     private void boton_editar() {
-        if (validar_guardar()) {
-            ENTp.setC1idproducto(Integer.parseInt(txtid.getText()));
-            cargar_dato();
-            BOp.update_producto(ENTp);
-            actualizar_producto_filtro(0);
+        if (DAOusu.getBoo_eve_permitido(conn, 1001)) {
+            if (validar_guardar()) {
+                ENTp.setC1idproducto(Integer.parseInt(txtid.getText()));
+                cargar_dato();
+                BOp.update_producto(ENTp);
+                actualizar_producto_filtro(0);
+            }
         }
     }
 
@@ -329,14 +332,14 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     private void actualizar_producto_filtro(int tipo) {
         String filtro = "";
         String filtro_nombre = "";
-        String fil_venta=" and p.es_venta="+jCesventa_filtro.isSelected();
-        String fil_compra=" and p.es_compra="+jCescompra_filtro.isSelected();
-        String fil_stock="";
-        if(jCstock_positivo.isSelected() && !jCstock_negativo.isSelected()){
-            fil_stock=" and p.stock_actual>0 ";
+        String fil_venta = " and p.es_venta=" + jCesventa_filtro.isSelected();
+        String fil_compra = " and p.es_compra=" + jCescompra_filtro.isSelected();
+        String fil_stock = "";
+        if (jCstock_positivo.isSelected() && !jCstock_negativo.isSelected()) {
+            fil_stock = " and p.stock_actual>0 ";
         }
-        if(!jCstock_positivo.isSelected() && jCstock_negativo.isSelected()){
-            fil_stock=" and p.stock_actual<=0 ";
+        if (!jCstock_positivo.isSelected() && jCstock_negativo.isSelected()) {
+            fil_stock = " and p.stock_actual<=0 ";
         }
         if (tipo == 1) {
             if (txtbuscar_producto.getText().trim().length() >= 3) {
@@ -344,8 +347,8 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
                 filtro_nombre = " and p.nombre ilike'%" + buscar + "%' ";
             }
         }
-        
-        filtro=filtro_nombre+fil_venta+fil_compra+fil_stock;
+
+        filtro = filtro_nombre + fil_venta + fil_compra + fil_stock;
         DAOp.actualizar_tabla_producto(conn, tbltabla_pri, filtro, getS_orden(), getS_filtro_fec_usu());
     }
 

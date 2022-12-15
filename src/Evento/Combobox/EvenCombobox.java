@@ -36,7 +36,7 @@ public class EvenCombobox {
         String titulo="cargarCombobox";
       DefaultComboBoxModel model = (DefaultComboBoxModel) combo.getModel();
       model.removeAllElements();//eliminamos todo antes de cargar
-      String sql="select ("+nombre+"||'-('||"+id+"||')') as nombre from "+tabla+" "+where+";";
+      String sql="select ("+nombre+"||'-('||"+id+"||')') as nombre from "+tabla+" "+where+" order by "+nombre+" desc;";
         try{
             ResultSet rs=eveconn.getResulsetSQL(conn, sql, titulo);
             combo.addItem("-SELECCIONAR-"); 
@@ -55,6 +55,8 @@ public class EvenCombobox {
             ResultSet rs=eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()){
                 combo.setSelectedItem(rs.getString("nombre")); 
+            }else{
+                combo.setSelectedIndex(0);
             }
         }catch(SQLException e){
             evmen.mensaje_error(e, sql, titulo);

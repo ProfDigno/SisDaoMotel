@@ -21,7 +21,7 @@ public class DAO_venta {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
     EvenEstado eveest = new EvenEstado();
-    EvenRender everen=new EvenRender();
+    EvenRender everen = new EvenRender();
     private String mensaje_insert = "VENTA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "VENTA MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO venta(idventa,fecha_creado,creado_por,monto_letra,estado,observacion,tipo_persona,motivo_anulacion,motivo_mudar_habitacion,monto_minimo,monto_adicional,cant_adicional,monto_consumo,monto_insumo,monto_descuento,monto_adelanto,fk_idhabitacion_recepcion,fk_idpersona,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
@@ -58,7 +58,7 @@ public class DAO_venta {
             + "and hr.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
             + "and v.fk_idusuario=u.idusuario \n"
             + " ";
-    private String sql_cargar = "SELECT idventa,fecha_creado,creado_por,"
+    private String sql_cargar_idhr = "SELECT idventa,fecha_creado,creado_por,"
             + "monto_letra,estado,observacion,"
             + "tipo_persona,motivo_anulacion,motivo_mudar_habitacion,"
             + "monto_minimo,monto_adicional,"
@@ -68,6 +68,16 @@ public class DAO_venta {
             + "fk_idhabitacion_recepcion,"
             + "fk_idpersona,fk_idusuario "
             + "FROM venta WHERE fk_idhabitacion_recepcion=";
+    private String sql_cargar_idventa = "SELECT idventa,fecha_creado,creado_por,"
+            + "monto_letra,estado,observacion,"
+            + "tipo_persona,motivo_anulacion,motivo_mudar_habitacion,"
+            + "monto_minimo,monto_adicional,"
+            + "cant_adicional,"
+            + "monto_consumo,monto_insumo,"
+            + "monto_descuento,monto_adelanto,"
+            + "fk_idhabitacion_recepcion,"
+            + "fk_idpersona,fk_idusuario "
+            + "FROM venta WHERE idventa=";
 
     public void insertar_venta(Connection conn, venta ve) {
         ve.setC1idventa(eveconn.getInt_ultimoID_mas_uno(conn, ve.getTb_venta(), ve.getId_idventa()));
@@ -108,7 +118,7 @@ public class DAO_venta {
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update);
-            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(ve.getC2fecha_creado(),"ve.getC2fecha_creado()"));
+            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(ve.getC2fecha_creado(), "ve.getC2fecha_creado()"));
             pst.setString(2, ve.getC3creado_por());
             pst.setString(3, ve.getC4monto_letra());
             pst.setString(4, ve.getC5estado());
@@ -136,10 +146,10 @@ public class DAO_venta {
         }
     }
 
-    public void cargar_venta(Connection conn, venta ve, int idhabitacion_recepcion) {
-        String titulo = "Cargar_venta";
+    public void cargar_venta_idhabitacion_recepcion(Connection conn, venta ve, int idhabitacion_recepcion) {
+        String titulo = "cargar_venta_idhabitacion_recepcion";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + idhabitacion_recepcion, titulo);
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar_idhr + idhabitacion_recepcion, titulo);
             if (rs.next()) {
                 ve.setC1idventa(rs.getInt(1));
                 ve.setC2fecha_creado(rs.getString(2));
@@ -160,10 +170,41 @@ public class DAO_venta {
                 ve.setC17fk_idhabitacion_recepcion(rs.getInt(17));
                 ve.setC18fk_idpersona(rs.getInt(18));
                 ve.setC19fk_idusuario(rs.getInt(19));
-                evemen.Imprimir_serial_sql(sql_cargar + "\n" + ve.toString(), titulo);
+                evemen.Imprimir_serial_sql(sql_cargar_idhr + "\n" + ve.toString(), titulo);
             }
         } catch (Exception e) {
-            evemen.mensaje_error(e, sql_cargar + "\n" + ve.toString(), titulo);
+            evemen.mensaje_error(e, sql_cargar_idhr + "\n" + ve.toString(), titulo);
+        }
+    }
+
+    public void cargar_venta_idventa(Connection conn, venta ve, int idventa) {
+        String titulo = "cargar_venta_idventa";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar_idventa + idventa, titulo);
+            if (rs.next()) {
+                ve.setC1idventa(rs.getInt(1));
+                ve.setC2fecha_creado(rs.getString(2));
+                ve.setC3creado_por(rs.getString(3));
+                ve.setC4monto_letra(rs.getString(4));
+                ve.setC5estado(rs.getString(5));
+                ve.setC6observacion(rs.getString(6));
+                ve.setC7tipo_persona(rs.getString(7));
+                ve.setC8motivo_anulacion(rs.getString(8));
+                ve.setC9motivo_mudar_habitacion(rs.getString(9));
+                ve.setC10monto_minimo(rs.getDouble(10));
+                ve.setC11monto_adicional(rs.getDouble(11));
+                ve.setC12cant_adicional(rs.getDouble(12));
+                ve.setC13monto_consumo(rs.getDouble(13));
+                ve.setC14monto_insumo(rs.getDouble(14));
+                ve.setC15monto_descuento(rs.getDouble(15));
+                ve.setC16monto_adelanto(rs.getDouble(16));
+                ve.setC17fk_idhabitacion_recepcion(rs.getInt(17));
+                ve.setC18fk_idpersona(rs.getInt(18));
+                ve.setC19fk_idusuario(rs.getInt(19));
+                evemen.Imprimir_serial_sql(sql_cargar_idventa + "\n" + ve.toString(), titulo);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_cargar_idventa + "\n" + ve.toString(), titulo);
         }
     }
 
@@ -171,10 +212,11 @@ public class DAO_venta {
         eveconn.Select_cargar_jtable(conn, sql_select + filtro + orden, tbltabla);
         everen.rendertabla_estados_venta_habitacion(tbltabla, 13);
         ancho_tabla_venta(tbltabla);
-        
+
     }
+
     public void ancho_tabla_venta(JTable tbltabla) {
-        int Ancho[] = {7, 9, 9, 5, 8, 5, 5, 5, 5, 5, 5, 5, 6, 9, 14, 1,1,1,1};
+        int Ancho[] = {7, 9, 9, 5, 8, 5, 5, 5, 5, 5, 5, 5, 6, 9, 14, 1, 1, 1, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_centro_columna(tbltabla, 1);
         evejt.alinear_centro_columna(tbltabla, 2);
@@ -234,7 +276,7 @@ public class DAO_venta {
     }
 
     public void ancho_tabla_venta_desde_caja_cierre(JTable tbltabla) {
-        int Ancho[] = {5, 13, 4, 10, 5, 6, 7, 7, 7, 7, 7, 7,1,1,1};
+        int Ancho[] = {5, 13, 4, 10, 5, 6, 7, 7, 7, 7, 7, 7, 1, 1, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_centro_columna(tbltabla, 2);
         evejt.alinear_centro_columna(tbltabla, 3);
@@ -262,19 +304,20 @@ public class DAO_venta {
                 + " and v.estado='TERMINADO'\n"
                 + " and ccd.cerrado_por='DESOCUPADO'\n"
                 + " and v.monto_consumo>0\n"
-                + " and cci.fk_idcaja_cierre="+ fk_idcaja_cierre
+                + " and cci.fk_idcaja_cierre=" + fk_idcaja_cierre
                 + " group by 1,2\n"
                 + " order by 3 desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_venta_item_desde_caja_cierre(tbltabla);
     }
+
     public void ancho_tabla_venta_item_desde_caja_cierre(JTable tbltabla) {
-        int Ancho[] = {5,50,10,15,20,1};
+        int Ancho[] = {5, 50, 10, 15, 20, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 2);
         evejt.alinear_derecha_columna(tbltabla, 3);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.ocultar_columna(tbltabla, 5);
-        
+
     }
 }

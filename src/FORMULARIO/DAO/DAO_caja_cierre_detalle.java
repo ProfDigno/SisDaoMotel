@@ -200,7 +200,7 @@ public class DAO_caja_cierre_detalle {
                 + "to_char((0-(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)),'999G999G999') as descuento,\n"
                 + "to_char(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)),'999G999G999') as total,\n"
-                + "cd.estado,cd.creado_por as usuario \n"
+                + "cd.estado,cd.creado_por as usuario,cd.idcaja_cierre_detalle as idcaja \n"
                 + "from caja_cierre_detalle cd\n"
                 + "where cd.es_cerrado=false \n"
                 + "and cd.fk_idventa>0 \n"
@@ -271,7 +271,7 @@ public class DAO_caja_cierre_detalle {
         evejt.alinear_derecha_columna(tbltabla, 3);
     }
     public void ancho_tabla_caja_cierre_detalle_ABIERTO(JTable tbltabla) {
-        int Ancho[] = {5, 9, 30, 6, 6, 6, 7, 7, 7, 7, 10};
+        int Ancho[] = {5, 9, 25, 6, 6, 6, 7, 7, 7, 7, 10,5};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 3);
         evejt.alinear_derecha_columna(tbltabla, 4);
