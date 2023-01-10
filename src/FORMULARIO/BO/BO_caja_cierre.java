@@ -5,6 +5,7 @@ import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_caja_cierre;
 import FORMULARIO.DAO.DAO_caja_cierre_detalle;
 import FORMULARIO.DAO.DAO_caja_cierre_item;
+import FORMULARIO.DAO.DAO_caja_producto_item;
 import FORMULARIO.DAO.DAO_compra;
 import FORMULARIO.DAO.DAO_garantia;
 import FORMULARIO.DAO.DAO_gasto;
@@ -25,6 +26,7 @@ public class BO_caja_cierre {
     private DAO_compra DAOcom=new DAO_compra();
     private DAO_venta_interno DAOveni=new DAO_venta_interno();
     private DAO_garantia DAOgar=new DAO_garantia();
+    private DAO_caja_producto_item DAOcpi = new DAO_caja_producto_item();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
     public void insertar_caja_cierre(caja_cierre caci) {
@@ -36,12 +38,16 @@ public class BO_caja_cierre {
             }
             DAOcc.insertar_caja_cierre(conn, caci);
             DAOcci.insertar_tabla_caja_cierre_item_CERRAR(conn, caci.getC3creado_por(), caci.getC7fk_idusuario());
+            DAOcpi.insertar_caja_producto_item_por_select_todos(conn, caci.getC3creado_por(), caci.getC7fk_idusuario());
             DAOccd.cerrar_todo_caja_detalle(conn,caci.getC7fk_idusuario());
             DAOven.terminar_venta_en_caja(conn,caci.getC1idcaja_cierre());
             DAOg.terminar_gasto_en_caja(conn,caci.getC1idcaja_cierre());
             DAOcom.terminar_compra_en_caja(conn,caci.getC1idcaja_cierre());
             DAOveni.terminar_venta_interno_en_caja(conn, caci.getC1idcaja_cierre());
             DAOgar.terminar_garantia_en_caja(conn,caci.getC1idcaja_cierre());
+            DAOcpi.update_caja_producto_item_stock_venta(conn,caci.getC1idcaja_cierre());
+            DAOcpi.update_caja_producto_item_stock_venta_interna(conn,caci.getC1idcaja_cierre());
+            DAOcpi.update_caja_producto_item_stock_compra(conn,caci.getC1idcaja_cierre());
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, caci.toString(), titulo);
@@ -74,4 +80,5 @@ public class BO_caja_cierre {
             }
         }
     }
+    
 }

@@ -1,0 +1,26 @@
+{
+	"DIGNO-LENOVO-A12":[
+		{
+			"frmventa_ven_aux":"SI",
+			"frmventa_zona_nro":"NO",
+			"frmventa_zona_nombre":"SI",
+			"rasp_1":"SI",
+			"rasp_2":"SI",
+			"rasp_3":"NO",
+			"app_tiempo_min_exp":"300",
+			"app_nom_report":"_franco"
+		}
+	],
+	"DESKTOP-55T4FC2":[
+		{
+			"frmventa_ven_aux":"SI",
+			"frmventa_zona_nro":"SI",
+			"frmventa_zona_nombre":"SI",
+			"rasp_1":"SI",
+			"rasp_2":"SI",
+			"rasp_3":"NO",
+			"app_tiempo_min_exp":"300",
+			"app_nom_report":"_franco"
+		}
+	]
+}

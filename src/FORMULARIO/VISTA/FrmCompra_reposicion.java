@@ -617,10 +617,10 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
                 int idcompra = eveJtab.getInt_select_id(tblcompra);
                 DAOcom.cargar_compra(conn, ENTcom, idcompra);
                 ENTcom.setC12estado(eveest.getEst_CARGADOSTOCK());
-                double monto_compra = ENTcom.getC7monto_total();
+                double monto_compra = 0;
                 String nro_factura = eveJtab.getString_select(tblcompra, 3);
                 String proveedor_nombre = eveJtab.getString_select(tblcompra, 4);
-//                cargar_dato_caja_detalle_COMPRA(idcompra, monto_compra, nro_factura, proveedor_nombre);
+                cargar_dato_caja_detalle_COMPRA(idcompra, monto_compra, nro_factura, proveedor_nombre);
                 ENTcomi.setC9fk_idcompra(idcompra);
                 ENTcomi.setC4tipo_item(eveest.getEst_INGRESADO());
                 BOcom.update_compra_estado_pagado(ENTcom, ENTccd, ENTcomi);
@@ -832,7 +832,7 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jTabbed_compra = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrol_referencia_categoria = new javax.swing.JScrollPane();
@@ -894,6 +894,7 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
         btncom_recargar = new javax.swing.JButton();
 
         setClosable(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -901,6 +902,7 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
             public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
             }
             public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
             }
             public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -1317,7 +1319,7 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
-        jTabbedPane1.addTab("CREAR COMPRA", jPanel1);
+        jTabbed_compra.addTab("CREAR COMPRA", jPanel1);
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA COMPRA"));
 
@@ -1588,17 +1590,17 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("FILTRO DE COMPRA", jPanel5);
+        jTabbed_compra.addTab("FILTRO DE COMPRA", jPanel5);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbed_compra)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbed_compra, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -1767,6 +1769,21 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
         boton_imprimir_compra();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        // TODO add your handling code here:
+        if(DAOcom.getBoo_varificar_compra_pendiente(conn, fk_idusuario)){
+            this.dispose();
+        }else{
+            eveJtab.mostrar_JTabbedPane(jTabbed_compra,1);
+            if(evemen.getBooMensaje_warning("TENES UNA CARGA EN PENDIENTE\n"
+                    + "DEBERIAS PASAR A CARGADO O ANULAR\n"
+                    + "ESTE PROCESO SUMA AL STOCK LOS PRODUCTOS CARGADOS\n"
+                    + "DESEAS SALIR DE TODAS FORMAS..?", "PASAR A CARGADO","SALIR","CANCELAR")){
+                this.dispose();
+            }
+        }
+    }//GEN-LAST:event_formInternalFrameClosing
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnbuscar_persona;
@@ -1810,7 +1827,7 @@ public class FrmCompra_reposicion extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTab_producto_ingrediente;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbed_compra;
     private javax.swing.JPanel panel_insertar_pri_producto;
     private javax.swing.JPanel panel_referencia_categoria;
     private javax.swing.JPanel panel_referencia_marca;

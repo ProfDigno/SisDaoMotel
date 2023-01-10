@@ -17,6 +17,7 @@ import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
+import IMPRESORA_POS.PosImprimir_Caja_Producto;
 import IMPRESORA_POS.PosImprimir_CierreCajaDetalle;
 import IMPRESORA_POS.PosImprimir_Venta;
 import java.sql.Connection;
@@ -41,8 +42,10 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private caja_cierre ENTcc = new caja_cierre();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     private BO_caja_cierre BOcc = new BO_caja_cierre();
+    private BO_caja_cierre_detalle BOccd = new BO_caja_cierre_detalle();
     private caja_cierre_item ENTcci = new caja_cierre_item();
     private DAO_caja_cierre_item DAOcci = new DAO_caja_cierre_item();
+    private DAO_caja_producto_item DAOcpi = new DAO_caja_producto_item();
     private DAO_venta DAOven = new DAO_venta();
     private venta ENTven = new venta();
     private DAO_gasto DAOg = new DAO_gasto();
@@ -53,6 +56,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private EvenEstado eveest = new EvenEstado();
     private PosImprimir_Venta posv = new PosImprimir_Venta();
     private PosImprimir_CierreCajaDetalle poscd = new PosImprimir_CierreCajaDetalle();
+    private PosImprimir_Caja_Producto poscp = new PosImprimir_Caja_Producto();
     usuario ENTusu = new usuario();
     private DAO_usuario DAOusu = new DAO_usuario();
     Connection conn = ConnPostgres.getConnPosgres();
@@ -72,10 +76,17 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
         idcaja_cierre = (eveconn.getInt_ultimoID_mas_uno(conn, ENTcc.getTb_caja_cierre(), ENTcc.getId_idcaja_cierre()));
         fk_idusuario = ENTusu.getGlobal_idusuario();
+        jTab_caja_prin.setEnabledAt(1,false);
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_caja_cierre);
         DAOusu.cargar_usuario_combo(conn, cmbusuario);
+        BOccd.update_caja_cierre_detalle_corregir();
         actualizar_tabla_caja_cierre_detalle_ABIERTO();
         actualizar_tabla_caja_cierre();
+//        if(DAOusu.gB_JTabbedPane_caja_cerrado()){
+//            jTab_caja_prin.setEnabledAt(1,true);
+//        }else{
+//            jTab_caja_prin.setEnabledAt(1,false);
+//        }
     }
 
     private void actualizar_tabla_caja_cierre_detalle_ABIERTO() {
@@ -103,7 +114,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             filtro_truno = " and cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' ";
         }
         if (jRturno_tarde.isSelected()) {
-            filtro_truno = " and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' ";
+            filtro_truno = " and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '19:00:00' ";
         }
         if (jRturno_noche.isSelected()) {
             filtro_truno = " and cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' ";
@@ -192,35 +203,42 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void boton_cerrar_caja() {
-        if (tblcaja_abierto.getRowCount() > 0) {
-            String mensaje = "<html><p style=\"color:red\"><font size=\"8\">CAJA NRO: " + idcaja_cierre + "</font></p>"
-                    + "<p style=\"color:blue\"><font size=\"5\">" + creado_por + "</font></p>"
-                    + "<p style=\"color:red\"><font size=\"4\">=>SUMA INGRESO:</font></p>"
-                    + "<p><font size=\"6\">" + evejtf.getString_format_nro_decimal(suma_ingreso) + "</font></p>"
-                    + "<p style=\"color:red\"><font size=\"4\">=>SUMA EGRESO:</font></p>"
-                    + "<p><font size=\"6\">" + evejtf.getString_format_nro_decimal(suma_egreso) + "</font></p>"
-                    + "<p><font size=\"4\">====================</font></p>"
-                    + "<p style=\"color:red\"><font size=\"4\">SUMA SALDO:   </font></p>"
-                    + "<p><font size=\"8\">" + evejtf.getString_format_nro_decimal(suma_saldo) + "</font></p>"
-                    + "</html>";
-            if (evemen.getBooMensaje_warning(mensaje, "CERRAR CAJA", "ACEPTAR", "CANCELAR")) {
-                ENTcc.setC3creado_por(creado_por);
-                ENTcc.setC4fecha_inicio(fec_inicio);
-                ENTcc.setC5fecha_fin(fec_final);
-                ENTcc.setC6estado(eveest.getEst_Cerrado());
-                ENTcc.setC7fk_idusuario(fk_idusuario);
-                BOcc.insertar_caja_cierre(ENTcc);
-//                actualizar_tabla_caja_cierre_detalle_ABIERTO();
-//                actualizar_tabla_caja_cierre();
-                if (evemen.getBooMensaje_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
-//                    this.dispose();
-                    select_imprimir_caja_cierre(ENTcc.getC1idcaja_cierre());
-                }
+        if (!DAOcom.getBoo_varificar_compra_pendiente(conn, fk_idusuario)) {
+            if (evemen.getBooMensaje_warning("TENES UNA CARGA EN PENDIENTE\n"
+                    + "DEBERIAS PASAR A CARGADO O ANULAR\n"
+                    + "ESTE PROCESO SUMA AL STOCK LOS PRODUCTOS CARGADOS\n"
+                    + "DESEAS IR A CARGA DE STOCK", "PASAR A CARGADO", "IR A CARGA", "CANCELAR")) {
+                evetbl.abrir_TablaJinternal(new FrmCompra_reposicion());
                 this.dispose();
-                abrir_login();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUNA OCUPACION", "ERROR", JOptionPane.ERROR_MESSAGE);
+            if (tblcaja_abierto.getRowCount() > 0) {
+                String mensaje = "<html><p style=\"color:red\"><font size=\"8\">CAJA NRO: " + idcaja_cierre + "</font></p>"
+                        + "<p style=\"color:blue\"><font size=\"5\">" + creado_por + "</font></p>"
+                        + "<p style=\"color:red\"><font size=\"4\">=>SUMA INGRESO:</font></p>"
+                        + "<p><font size=\"6\">" + evejtf.getString_format_nro_decimal(suma_ingreso) + "</font></p>"
+                        + "<p style=\"color:red\"><font size=\"4\">=>SUMA EGRESO:</font></p>"
+                        + "<p><font size=\"6\">" + evejtf.getString_format_nro_decimal(suma_egreso) + "</font></p>"
+                        + "<p><font size=\"4\">====================</font></p>"
+                        + "<p style=\"color:red\"><font size=\"4\">SUMA SALDO:   </font></p>"
+                        + "<p><font size=\"8\">" + evejtf.getString_format_nro_decimal(suma_saldo) + "</font></p>"
+                        + "</html>";
+                if (evemen.getBooMensaje_warning(mensaje, "CERRAR CAJA", "ACEPTAR", "CANCELAR")) {
+                    ENTcc.setC3creado_por(creado_por);
+                    ENTcc.setC4fecha_inicio(fec_inicio);
+                    ENTcc.setC5fecha_fin(fec_final);
+                    ENTcc.setC6estado(eveest.getEst_Cerrado());
+                    ENTcc.setC7fk_idusuario(fk_idusuario);
+                    BOcc.insertar_caja_cierre(ENTcc);
+                    if (evemen.getBooMensaje_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
+                        select_imprimir_caja_cierre(ENTcc.getC1idcaja_cierre());
+                    }
+                    this.dispose();
+                    abrir_login();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUNA OCUPACION", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -239,6 +257,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             DAOven.actualizar_tabla_venta_item_desde_caja_cierre(conn, tblventa_consumo, idcaja_cierre);
             DAOg.actualizar_tabla_gasto_caja_cerrado(conn, tblcc_gasto, idcaja_cierre, filtro_gasto);
             DAOcom.actualizar_tabla_compra_caja_cerrado(conn, tblcc_compra, idcaja_cierre, filtro_compra);
+            DAOcpi.actualizar_tabla_caja_producto_item_por_caja(conn, tblcc_lista_producto, idcaja_cierre);
             double total_consumo = eveJtab.getDouble_sumar_tabla(tblventa_consumo, 5);
             double total_minimo = eveJtab.getDouble_sumar_tabla(tblventa, 12);
             double total_adicional = eveJtab.getDouble_sumar_tabla(tblventa, 13);
@@ -254,19 +273,24 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void select_imprimir_caja_cierre(int idcaja_cierre) {
-        Object[] botones = {"TICKET RESUMEN", "TICKET DETALLE", "REPORTE A4", "CANCELAR"};
+        Object[] botones = {"TICKET RESUMEN", "TICKET DETALLE", "REPORTE A4", "LISTA PRODUCTO", "CANCELAR"};
         int eleccion_comando = JOptionPane.showOptionDialog(null, "SELECCIONA UNA PARA IMPRIMIR ",
                 "CIERRE CAJA",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, botones, "TICKET DETALLE");
         if (eleccion_comando == 0) {
             poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, false);
+            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
         }
         if (eleccion_comando == 1) {
             poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, true);
+            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
         }
         if (eleccion_comando == 2) {
             DAOcc.imprimir_caja_cierre_jasper_resumen(conn, idcaja_cierre);
+        }
+        if (eleccion_comando == 3) {
+            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
         }
     }
 
@@ -318,20 +342,22 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         if (tblcaja_abierto.getSelectedRow() >= 0) {
             int idventa = eveJtab.getInt_select_id(tblcaja_abierto);
             DAOven.cargar_venta_idventa(conn, ENTven, idventa);
-            
+
         }
     }
-    private void boton_ver_observacion_venta(){
+
+    private void boton_ver_observacion_venta() {
         JTextArea ta = new JTextArea(30, 40);
-            ta.setText(ENTven.getC6observacion());
-            Object[] opciones = {"ACEPTAR", "CANCELAR"};
-            int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(ta), "OBSERVACION",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, opciones, "ACEPTAR");
-            if (eleccion == JOptionPane.YES_OPTION) {
-                System.out.println(ENTven.getC6observacion());
-            }
+        ta.setText(ENTven.getC6observacion());
+        Object[] opciones = {"ACEPTAR", "CANCELAR"};
+        int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(ta), "OBSERVACION",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, opciones, "ACEPTAR");
+        if (eleccion == JOptionPane.YES_OPTION) {
+            System.out.println(ENTven.getC6observacion());
+        }
     }
+
     public FrmCaja_Detalle() {
         initComponents();
         abrir_formulario();
@@ -347,7 +373,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         gru_turno = new javax.swing.ButtonGroup();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jTab_caja_prin = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         txtfecha_inicio = new javax.swing.JTextField();
         txtfecha_final = new javax.swing.JTextField();
@@ -393,7 +419,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_resumen_saldo = new javax.swing.JFormattedTextField();
         jFmonto_apertura_caja = new javax.swing.JFormattedTextField();
         btnobs_venta = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
+        panel_caja_cerrado = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblresumen_caja_cierre = new javax.swing.JTable();
@@ -417,6 +443,9 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         tblcc_compra = new javax.swing.JTable();
         jFtotal_cc_compra = new javax.swing.JFormattedTextField();
         jCsolo_terminado_comp = new javax.swing.JCheckBox();
+        jPanel20 = new javax.swing.JPanel();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        tblcc_lista_producto = new javax.swing.JTable();
         btnimprimir_caja_cierre = new javax.swing.JButton();
         cmbfecha_caja_cierre = new javax.swing.JComboBox<>();
         cmbusuario = new javax.swing.JComboBox<>();
@@ -448,6 +477,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             }
             public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
                 formInternalFrameOpened(evt);
+            }
+        });
+
+        jTab_caja_prin.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTab_caja_prinMouseClicked(evt);
             }
         });
 
@@ -914,7 +949,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
-        jTabbedPane1.addTab("DETALLE CAJA ABIERTO", jPanel1);
+        jTab_caja_prin.addTab("DETALLE CAJA ABIERTO", jPanel1);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("RESUMEN CAJA CERRADO"));
 
@@ -1151,6 +1186,38 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
 
         jTabbedPane2.addTab("COMPRA", jPanel14);
 
+        tblcc_lista_producto.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane11.setViewportView(tblcc_lista_producto);
+
+        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
+        jPanel20.setLayout(jPanel20Layout);
+        jPanel20Layout.setHorizontalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 813, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(458, Short.MAX_VALUE))
+        );
+        jPanel20Layout.setVerticalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane2.addTab("LISTA PRODUCTO", jPanel20);
+
         btnimprimir_caja_cierre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ven_imprimir.png"))); // NOI18N
         btnimprimir_caja_cierre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1259,53 +1326,53 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                     .addComponent(jRturno_noche)))
         );
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout panel_caja_cerradoLayout = new javax.swing.GroupLayout(panel_caja_cerrado);
+        panel_caja_cerrado.setLayout(panel_caja_cerradoLayout);
+        panel_caja_cerradoLayout.setHorizontalGroup(
+            panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_caja_cerradoLayout.createSequentialGroup()
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jFtotal_ingreso, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.Alignment.LEADING, 0, 159, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jFtotal_egreso, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jFtotal_saldo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cmbusuario, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_caja_cerradoLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnimprimir_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(panel_caja_cerradoLayout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(jTabbedPane2)
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panel_caja_cerradoLayout.setVerticalGroup(
+            panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_caja_cerradoLayout.createSequentialGroup()
+                .addGroup(panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(panel_caja_cerradoLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cmbfecha_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cmbusuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(panel_caja_cerradoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_caja_cerradoLayout.createSequentialGroup()
                                 .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnimprimir_caja_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addGroup(panel_caja_cerradoLayout.createSequentialGroup()
                                 .addComponent(jFtotal_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jFtotal_egreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1315,17 +1382,17 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addComponent(jTabbedPane2))
         );
 
-        jTabbedPane1.addTab("CAJA CERRADO", jPanel4);
+        jTab_caja_prin.addTab("CAJA CERRADO", panel_caja_cerrado);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTab_caja_prin)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTab_caja_prin, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -1418,6 +1485,15 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         boton_ver_observacion_venta();
     }//GEN-LAST:event_btnobs_ventaActionPerformed
 
+    private void jTab_caja_prinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTab_caja_prinMouseClicked
+        // TODO add your handling code here:
+        if(DAOusu.gB_JTabbedPane_caja_cerrado()){
+            jTab_caja_prin.setEnabledAt(1,true);
+        }else{
+            jTab_caja_prin.setEnabledAt(1,false);
+        }
+    }//GEN-LAST:event_jTab_caja_prinMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btncarrar_caja;
@@ -1468,8 +1544,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -1481,6 +1557,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton jRturno_todo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1489,12 +1566,14 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTab_caja_prin;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JPanel panel_caja_cerrado;
     private javax.swing.JTable tblcaja_abierto;
     private javax.swing.JTable tblcc_compra;
     private javax.swing.JTable tblcc_gasto;
+    private javax.swing.JTable tblcc_lista_producto;
     private javax.swing.JTable tblcompra_abierto;
     private javax.swing.JTable tblgarantia_abierto;
     private javax.swing.JTable tblgasto_abierto;

@@ -208,6 +208,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private int Icant_hasta_dormir;
     private String Shs_hasta_dormir;
     private int segundo_conn_rpi;
+//    private int segundo_exp_app;
     private int cant_add_hab_boton;
     private double monto_adelanto_1;
     private String descripcion_consumo_adelantado = "";
@@ -219,7 +220,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private boolean btn_reboot_rp_3;
     private boolean est_btn_cancelar;
     private String observacion_venta="";
-
+//    private boolean crear_exp_app;
+//    private int tiempo_exp_app=(2*60);
     private void abrir_formulario() {
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
@@ -242,6 +244,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         limpiar_habitacion_select();
         reestableser_garantia();
         boton_raspberry();
+//        crear_exp_app=true;
         txtgar_idventa.setText(null);
         txtgar_monto_ocupacion.setText(null);
         btngar_guardar.setEnabled(false);
@@ -1099,23 +1102,23 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    private void crear_sonido(String ruta_sonido, int idhabitacion_dato) {
-        if (no_es_sonido_ocupado) {
-            string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
-            if (!ruta_sonido.equals("NO")) {
-                if (!string_ruta_sonido[idhabitacion_dato].equals(ruta_sonido)) {
-                    hab_ruta_sonido[idhabitacion_dato] = true;
-                }
-                if (hab_ruta_sonido[idhabitacion_dato]) {
-                    EvenSonido.reproducir_vos(ruta_sonido);
-                    string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
-                    hab_ruta_sonido[idhabitacion_dato] = false;
-                }
-            } else {
-                hab_ruta_sonido[idhabitacion_dato] = true;
-            }
-        }
-    }
+//    private void crear_sonido(String ruta_sonido, int idhabitacion_dato) {
+//        if (no_es_sonido_ocupado) {
+//            string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
+//            if (!ruta_sonido.equals("NO")) {
+//                if (!string_ruta_sonido[idhabitacion_dato].equals(ruta_sonido)) {
+//                    hab_ruta_sonido[idhabitacion_dato] = true;
+//                }
+//                if (hab_ruta_sonido[idhabitacion_dato]) {
+//                    EvenSonido.reproducir_vos(ruta_sonido);
+//                    string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
+//                    hab_ruta_sonido[idhabitacion_dato] = false;
+//                }
+//            } else {
+//                hab_ruta_sonido[idhabitacion_dato] = true;
+//            }
+//        }
+//    }
 
     private void cargar_array_habitacion_datos() {
         String titulo = "cargar_array_habitacion_datos";
@@ -1476,16 +1479,15 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     class clasetiempo extends TimerTask {
-
         public void run() {
             try {
                 segundo_tiempo++;
                 segundo_conn_rpi++;
                 segundo_act_btn++;
+//                segundo_exp_app++;
                 int tab_select = jTab_principal.getSelectedIndex();
                 fecha_hora_ahora = evefec.getString_formato_fecha_hora();
                 txttiempo_ahora.setText(fecha_hora_ahora);
-
                 if (segundo_tiempo == 1) {
                     cargar_estados_puertas_gpio(sensor_puerta_cliente, sensor_puerta_limpieza);
 //                    actualizar_estado_puerta_cliente_limpieza();
@@ -1516,6 +1518,18 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     cant_add_hab_boton = 0;
                     segundo_act_btn = 0;
                 }
+//                if(segundo_exp_app>(tiempo_exp_app)){
+//                    if(crear_exp_app){
+//                        jPanel_estado_habitacion.setBackground(Color.red);//[240,240,240]
+//                        DAOcc.exportar_excel_monto_usuario_todo_ano(conn);
+//                        crear_exp_app=false;
+//                    }
+//                }
+//                if(segundo_exp_app>((tiempo_exp_app)+10)){
+//                    jPanel_estado_habitacion.setBackground(new java.awt.Color(240, 240, 240));
+//                    crear_exp_app=true;
+//                    segundo_exp_app=0;
+//                }
                 mostrar_boton_hab(tab_select);
             } catch (RuntimeException e) {
                 System.err.println("Uncaught Runtime Exception" + e);
@@ -1884,6 +1898,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         cargar_usuario_acceso();
         limpiar_variable();
         observacion_venta="";
+        
         txtidventa.setText(null);
         eveJtab.limpiar_tabla_datos(model_itemf);
         jFtotal_consumo.setValue(0);
@@ -2986,8 +3001,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             largo = 15;
         }
         if (enviar_ssh) {
-            String mensaje = "DESCONECTADO";
-//            String mensaje = connRPI.getStringEnviar_ssh_raspberry(ENThmp.getC5placa_ip(), ENThmp.getC7ssh_usuario(), ENThmp.getC8ssh_password(), comando_enviar, con_retorno);
+//            String mensaje = "DESCONECTADO";
+            String mensaje = connRPI.getStringEnviar_ssh_raspberry(ENThmp.getC5placa_ip(), ENThmp.getC7ssh_usuario(), ENThmp.getC8ssh_password(), comando_enviar, con_retorno);
             JTextArea txtacancel = new JTextArea(largo, ancho);
             txtacancel.setText(mensaje);
             Object[] opciones = {"ACEPTAR", "CANCELAR"};
@@ -3044,7 +3059,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         fk_idgarantia = (eveconn.getInt_ultimoID_mas_uno(conn, ENTgar.getTb_garantia(), ENTgar.getId_idgarantia()));
         double Dmonto_garantia = evejtf.getDouble_format_nro_entero(txtgar_monto);
         monto_garantia = (0 - Dmonto_garantia);
-
         String gar_responsable = txtgar_responsable.getText().toUpperCase();
         String gar_descripcion = txtgar_descripcion.getText().toUpperCase();
         ENTgar.setC3creado_por(creado_por);
@@ -3144,7 +3158,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             DAOgar.cargar_garantia(conn, ENTgar, fk_idgarantia);
             monto_garantia = Math.abs(ENTgar.getC8monto_garantia());
             String estado = eveJtab.getString_select(tblgarantia, 6);
-            if (estado.equals(eveest.getEst_PENDIENTE())) {
+            if (estado.equals(eveest.getEst_PENDIENTE())||estado.equals(eveest.getEst_Emitido())) {
                 btngar_pagar_garantia.setEnabled(true);
             } else {
                 btngar_pagar_garantia.setEnabled(false);

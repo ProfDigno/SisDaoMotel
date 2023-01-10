@@ -209,6 +209,7 @@ public class DAO_caja_cierre_detalle {
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre_detalle_ABIERTO(tbltabla);
     }
+
     public void actualizar_tabla_caja_cierre_detalle_ABIERTO_GASTO(Connection conn, JTable tbltabla, int fk_idusuario) {
         String sql = "select cd.fk_idgasto as idgasto,\n"
                 + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
@@ -223,6 +224,7 @@ public class DAO_caja_cierre_detalle {
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
     }
+
     public void actualizar_tabla_caja_cierre_detalle_ABIERTO_COMPRA(Connection conn, JTable tbltabla, int fk_idusuario) {
         String sql = "select cd.fk_idcompra as idcompra,\n"
                 + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
@@ -237,6 +239,7 @@ public class DAO_caja_cierre_detalle {
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
     }
+
     public void actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA_INTERNO(Connection conn, JTable tbltabla, int fk_idusuario) {
         String sql = "select cd.fk_idventa_interno as idv_interno,\n"
                 + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
@@ -251,6 +254,7 @@ public class DAO_caja_cierre_detalle {
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
     }
+
     public void actualizar_tabla_caja_cierre_detalle_ABIERTO_GARANTIA(Connection conn, JTable tbltabla, int fk_idusuario) {
         String sql = "select cd.fk_idgarantia as idgarantia,\n"
                 + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
@@ -265,13 +269,15 @@ public class DAO_caja_cierre_detalle {
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
     }
+
     public void ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(JTable tbltabla) {
-        int Ancho[] = {5,12,48, 10, 10,15};
+        int Ancho[] = {5, 12, 48, 10, 10, 15};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 3);
     }
+
     public void ancho_tabla_caja_cierre_detalle_ABIERTO(JTable tbltabla) {
-        int Ancho[] = {5, 9, 25, 6, 6, 6, 7, 7, 7, 7, 10,5};
+        int Ancho[] = {5, 9, 25, 6, 6, 6, 7, 7, 7, 7, 10, 5};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 3);
         evejt.alinear_derecha_columna(tbltabla, 4);
@@ -287,12 +293,13 @@ public class DAO_caja_cierre_detalle {
                 + "and fk_idusuario=" + fk_idusuario;
         eveconn.SQL_execute_libre(conn, sql);
     }
-    public int getInt_idcaja_cierre_detalle_por_otro_id(Connection conn,String idcampo, int iddato){
+
+    public int getInt_idcaja_cierre_detalle_por_otro_id(Connection conn, String idcampo, int iddato) {
         String titulo = "getInt_idcaja_cierre_detalle_por_otro_id";
-        String sql="select idcaja_cierre_detalle "
+        String sql = "select idcaja_cierre_detalle "
                 + "from caja_cierre_detalle "
-                + "where "+idcampo+"="+iddato;
-        int idcaja_cierre_detalle_venta=0;
+                + "where " + idcampo + "=" + iddato;
+        int idcaja_cierre_detalle_venta = 0;
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
@@ -303,25 +310,33 @@ public class DAO_caja_cierre_detalle {
         }
         return idcaja_cierre_detalle_venta;
     }
-    public boolean getBoo_es_caja_cerrado_por_usu(Connection conn, int fk_idusuario){
+
+    public boolean getBoo_es_caja_cerrado_por_usu(Connection conn, int fk_idusuario) {
         String titulo = "getBoo_es_caja_cerrado_por_usu";
-        String sql="select count(*) as cant "
+        String sql = "select count(*) as cant "
                 + "from caja_cierre_detalle "
-                + "where es_cerrado=false and fk_idusuario="+fk_idusuario;
-        boolean es_cerrado=false;
+                + "where es_cerrado=false and fk_idusuario=" + fk_idusuario;
+        boolean es_cerrado = false;
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
                 int cant = rs.getInt("cant");
-                if(cant==0){
-                    es_cerrado=true;
-                }else{
-                    es_cerrado=false;
+                if (cant == 0) {
+                    es_cerrado = true;
+                } else {
+                    es_cerrado = false;
                 }
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
         }
         return es_cerrado;
+    }
+
+    public void update_caja_cierre_detalle_corregir(Connection conn) {
+        String sql = "update caja_cierre_detalle set es_cerrado=true from caja_cierre_item\n"
+                + "where idcaja_cierre_detalle=caja_cierre_item.fk_idcaja_cierre_detalle \n"
+                + "and es_cerrado=false;";
+        eveconn.SQL_execute_libre(conn, sql);
     }
 }

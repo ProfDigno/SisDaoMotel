@@ -351,6 +351,7 @@
                           <Component id="btncerrar_seccion" min="-2" pref="237" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lblusuario" min="-2" pref="309" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Component id="panel_acceso_rapido" min="-2" max="-2" attributes="0"/>
@@ -360,9 +361,11 @@
                               <Component id="lblhora" min="-2" max="-2" attributes="0"/>
                               <Component id="lblturno" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <EmptySpace pref="37" max="32767" attributes="0"/>
+                          <Component id="lblnube" min="-2" pref="113" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="160" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -370,7 +373,11 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="7" pref="7" max="-2" attributes="0"/>
+                          <Component id="lblnube" max="32767" attributes="0"/>
+                      </Group>
                       <Component id="panel_acceso_rapido" min="-2" max="-2" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="lblversion" min="-2" pref="23" max="-2" attributes="0"/>
@@ -603,6 +610,14 @@
               <Color blue="66" green="0" red="0" type="rgb"/>
             </Property>
             <Property name="text" type="java.lang.String" value="HORA"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblnube">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="0"/>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/motel/72_nube.png"/>
+            </Property>
           </Properties>
         </Component>
       </SubComponents>

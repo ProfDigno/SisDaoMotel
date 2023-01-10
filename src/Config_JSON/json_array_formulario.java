@@ -38,6 +38,10 @@ public class json_array_formulario {
     private static boolean boo_rasp_1;
     private static boolean boo_rasp_2;
     private static boolean boo_rasp_3;
+    private static int app_tiempo_min_exp;
+    private static String app_nom_report;
+    private static boolean app_act_exp;
+    private static boolean act_roll_usu;
     
     public void cargar_jsom_array_formulario() {
 //         MacAddress_maquina=pcinf.getMacAddress();
@@ -58,12 +62,20 @@ public class json_array_formulario {
             String  rasp_1 = (String) jsonObject_conexion.get("rasp_1");
             String  rasp_2 = (String) jsonObject_conexion.get("rasp_2");
             String  rasp_3 = (String) jsonObject_conexion.get("rasp_3");
+            String  app_tiempo_min_exp = (String) jsonObject_conexion.get("app_tiempo_min_exp");
+            String  app_nom_report = (String) jsonObject_conexion.get("app_nom_report");
+            String  app_act_exp = (String) jsonObject_conexion.get("app_act_exp");
+            String  act_roll_usu = (String) jsonObject_conexion.get("act_roll_usu");
             setBoo_frmventa_ven_aux(getBoo_si_no(frmventa_ven_aux));
             setBoo_frmventa_zona_nro(getBoo_si_no(frmventa_zona_nro));
             setBoo_frmventa_zona_nombre(getBoo_si_no(frmventa_zona_nombre));
             setBoo_rasp_1(getBoo_si_no(rasp_1));
             setBoo_rasp_2(getBoo_si_no(rasp_2));
             setBoo_rasp_3(getBoo_si_no(rasp_3));
+            setApp_tiempo_min_exp(Integer.parseInt(app_tiempo_min_exp));
+            setApp_nom_report(app_nom_report);
+            setApp_act_exp(getBoo_si_no(app_act_exp));
+            setAct_roll_usu(getBoo_si_no(act_roll_usu));
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
@@ -95,6 +107,39 @@ public class json_array_formulario {
         }
         return sino;
     }
+
+    public static boolean isApp_act_exp() {
+        return app_act_exp;
+    }
+
+    public static void setApp_act_exp(boolean app_act_exp) {
+        json_array_formulario.app_act_exp = app_act_exp;
+    }
+
+    public static boolean isAct_roll_usu() {
+        return act_roll_usu;
+    }
+
+    public static void setAct_roll_usu(boolean act_roll_usu) {
+        json_array_formulario.act_roll_usu = act_roll_usu;
+    }
+
+    public static int getApp_tiempo_min_exp() {
+        return app_tiempo_min_exp;
+    }
+
+    public static void setApp_tiempo_min_exp(int app_tiempo_min_exp) {
+        json_array_formulario.app_tiempo_min_exp = app_tiempo_min_exp;
+    }
+
+    public static String getApp_nom_report() {
+        return app_nom_report;
+    }
+
+    public static void setApp_nom_report(String app_nom_report) {
+        json_array_formulario.app_nom_report = app_nom_report;
+    }
+    
     public static boolean isBoo_frmventa_ven_aux() {
         return boo_frmventa_ven_aux;
     }

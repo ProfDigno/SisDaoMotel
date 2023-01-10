@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import Config_JSON.json_array_formulario;
 import FORMULARIO.ENTIDAD.caja_cierre;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -14,12 +15,13 @@ import javax.swing.JTable;
 
 public class DAO_caja_cierre {
 
-    EvenConexion eveconn = new EvenConexion();
-    EvenJtable evejt = new EvenJtable();
-    EvenJasperReport rep = new EvenJasperReport();
-    EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
-    EvenFecha evefec = new EvenFecha();
-    EvenRender eren = new EvenRender();
+    private EvenConexion eveconn = new EvenConexion();
+    private EvenJtable evejt = new EvenJtable();
+    private EvenJasperReport rep = new EvenJasperReport();
+    private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private EvenFecha evefec = new EvenFecha();
+    private EvenRender eren = new EvenRender();
+    private json_array_formulario jsfrm = new json_array_formulario();
     private String mensaje_insert = "CAJA_CIERRE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CAJA_CIERRE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO caja_cierre(idcaja_cierre,fecha_creado,creado_por,fecha_inicio,fecha_fin,estado,fk_idusuario) VALUES (?,?,?,?,?,?,?);";
@@ -119,6 +121,7 @@ public class DAO_caja_cierre {
                 + "case \n"
                 + "	when cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' then 'manana'\n"
                 + "	when cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' then 'tarde'\n"
+                + "	when cast(cc.fecha_inicio as time) > time '17:00:00' and cast(cc.fecha_inicio as time) < time '19:00:00' then 'tarde'\n"
                 + "	when cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' then 'noche'\n"
                 + "else to_char(cc.fecha_inicio ,'HH24:MI:ss') end as turno "
                 + "from caja_cierre cc,usuario u \n"
@@ -130,7 +133,7 @@ public class DAO_caja_cierre {
     }
 
     public void ancho_tabla_caja_cierre(JTable tbltabla) {
-        int Ancho[] = {5, 11, 13, 13, 9, 9, 9, 8,15,8};
+        int Ancho[] = {5, 11, 13, 13, 9, 9, 9, 8, 15, 8};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.alinear_derecha_columna(tbltabla, 5);
@@ -269,6 +272,77 @@ public class DAO_caja_cierre {
                 + " order by cc.idcaja_cierre desc;";
         String direccion = "src/REPORTE/APPSHEET/repCajaCerrado.jrxml";
         String titulo = "SUMA INGRESO USUARIO TODO ANO";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_caja_fecha_usu(Connection conn) {
+        int band_Height = 20;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/caja_fec_usu" + sucursal + ".xlsx";
+        String sql = "select cd1.idcaja_cierre_detalle as id,date(cd.fecha_creado) as fecha,\n"
+                + "to_char(cd1.fecha_creado,'HH24:MI:ss') as hs_inicio, \n"
+                + "case \n"
+                + "when cast(cd1.fecha_creado as time) > time '05:00:00' and cast(cd1.fecha_creado as time) < time '07:00:00' then (u.usuario||'-(M)')\n"
+                + "when cast(cd1.fecha_creado as time) > time '13:00:00' and cast(cd1.fecha_creado as time) < time '19:00:00' then (u.usuario||'-(T)')\n"
+                + "when cast(cd1.fecha_creado as time) > time '21:00:00' and cast(cd1.fecha_creado as time) < time '23:00:00' then (u.usuario||'-(N)')\n"
+                + "else (u.usuario||'-('||to_char(cd1.fecha_creado,'HH24:MI')||')') end as usu_turno,\n"
+                + "case\n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 0 then 'DOMINGO' \n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 1 then 'LUNES' \n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 2 then 'MARTES' \n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 3 then 'MIERCOLES' \n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 4 then 'JUEVES' \n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 5 then 'VIERNES' \n"
+                + "when extract(dow from date(cd1.fecha_creado)) = 6 then 'SABADO' \n"
+                + "else 'otro' end as dia,\n"
+                + "sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+\n"
+                + "cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)- \n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ingreso, \n"
+                + "sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso, \n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+\n"
+                + "cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)- \n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))- \n"
+                + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo\n"
+                + "from caja_cierre_detalle cd,caja_cierre_detalle cd1,usuario u \n"
+                + "where date(cd.fecha_creado)=date(cd1.fecha_creado) \n"
+                + "and date_part('year',cd.fecha_creado)=date_part('year',current_date)\n"
+                + "and cd1.fk_idusuario=cd.fk_idusuario \n"
+                + "and cd.fk_idusuario=u.idusuario\n"
+                + "and cd1.cerrado_por='APERTURA'  \n"
+                + "group by 1,2,3,4,5\n"
+                + "order by 2 desc,3 asc;";
+        String direccion = "src/REPORTE/APPSHEET/repCajaFechaUsu.jrxml";
+        String titulo = "CAJA FECHA USUARIO";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_estado_habitacion(Connection conn) {
+        int band_Height = 20;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/estado_habitacion" + sucursal + ".xlsx";
+        String sql = "select count(*) as cant,ht.estado as estado\n"
+                + "from habitacion_recepcion_temp ht\n"
+                + "where ht.activo=true\n"
+                + "group by 2 order by 1 desc;";
+        String direccion = "src/REPORTE/APPSHEET/repEstaHabi.jrxml";
+        String titulo = "ESTADO HABITACION";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_lista_producto(Connection conn) {
+        int band_Height = 20;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/lista_producto" + sucursal + ".xlsx";
+        String sql = "select p.codigo_barra as cod_barra,pc.nombre as categoria,pm.nombre as marca,pu.nombre as unidad, \n"
+                + "p.nombre as producto,p.stock_actual as stock_actual,p.precio_venta as pventa\n"
+                + "from producto p,producto_categoria pc,producto_marca pm,producto_unidad pu  \n"
+                + "where p.fk_idproducto_categoria=pc.idproducto_categoria \n"
+                + "and p.fk_idproducto_marca=pm.idproducto_marca \n"
+                + "and p.fk_idproducto_unidad=pu.idproducto_unidad \n"
+                + "and p.es_venta=true\n"
+                + "order by pc.nombre asc,p.nombre desc;";
+        String direccion = "src/REPORTE/APPSHEET/repListaProducto.jrxml";
+        String titulo = "LISTA PRODUCTO";
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 }

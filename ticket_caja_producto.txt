@@ -1,0 +1,196 @@
+                                        
+ =========PANKY-I=========              
+ 0993291322                             
+ San Miguel                             
+ NRO CAJA:185                           
+ FEC INI: 2022-12-16 23:04              
+ FEC FIN: 2022-12-16 23:12              
+ USUARIO:PROGRAMADOR ADMIN              
+ #=============================#        
+  Pventa       S_I  CV   CI   CC   S_A  
+ #=>DOBLE ECONOMICO                     
+  25000,       0,   0,   0,   0,   0    
+ #=>DOBLE SUIT  VIP                     
+  80000,       0,   0,   0,   0,   0    
+ #=>DOBLE NORMAL                        
+  40000,       0,   0,   0,   0,   0    
+ #=>DOBLE SUIT NORMAL                   
+  50000,       0,   0,   0,   0,   0    
+ #=>ADICIONAL                           
+  10000,       0,   0,   0,   0,   0    
+ #=>AGUA.M SIN GAS 500ML                
+  4000,        28,  0,   0,   0,   28   
+ #=>AGUA TONICA 500ML                   
+  6000,        16,  0,   0,   0,   16   
+ #=>AGUA CON GAS                        
+  5000,        13,  0,   0,   0,   13   
+ #=>SKOLL ABRE FACIL 275CM              
+  8000,        0,   0,   0,   0,   0    
+ #=>HEINEKEN                            
+  9000,        22,  -4,  -2,  10,  26   
+ #=>SKOL 269ML                          
+  5000,        17,  0,   0,   0,   17   
+ #=>BRAHMA SUBZERO                      
+  4000,        52,  0,   0,   0,   52   
+ #=>CORONA BOTELLA 355ML                
+  9000,        2,   -4,  -2,  10,  6    
+ #=>MILLER LATA                         
+  8000,        11,  -4,  -2,  10,  15   
+ #=>BUD 66 310CM                        
+  6000,        40,  -4,  -2,  10,  44   
+ #=>BELDENT MENTA                       
+  3000,        26,  0,   0,   0,   26   
+ #=>LUCKY 20                            
+  13000,       2,   0,   0,   0,   2    
+ #=>LUCKY 10                            
+  9000,        16,  0,   0,   0,   16   
+ #=>KENT 10 COMBERTIBLE                 
+  10000,       13,  0,   0,   0,   13   
+ #=>ENCENDEDOR                          
+  6000,        8,   0,   0,   0,   8    
+ #=>KENT 20                             
+  12000,       0,   0,   0,   0,   0    
+ #=>KENT 10 NORMAL                      
+  10000,       16,  0,   0,   0,   16   
+ #=>KENT 20 COMBERTIBLE                 
+  12000,       10,  0,   0,   0,   10   
+ #=>PASSATEMPO 130G                     
+  5000,        0,   0,   0,   0,   0    
+ #=>GALLETITA MAIZENA                   
+  6000,        1,   0,   0,   0,   1    
+ #=>ADES                                
+  10000,       9,   0,   0,   0,   9    
+ #=>PAPA FRITA 37G                      
+  10000,       4,   0,   0,   0,   4    
+ #=>HALLS                               
+  3000,        27,  0,   0,   0,   27   
+ #=>BONBOM  X 3                         
+  5000,        9,   0,   0,   0,   9    
+ #=>MAIZENA 170G                        
+  5000,        -1,  0,   0,   0,   -1   
+ #=>GALLETITAS                          
+  6000,        5,   0,   0,   0,   5    
+ #=>LECHE                               
+  4000,        7,   0,   0,   0,   7    
+ #=>SALADIX HORNEADO                    
+  8000,        0,   0,   0,   0,   0    
+ #=>WAFER 140G                          
+  6000,        0,   0,   0,   0,   0    
+ #=>SALADIX                             
+  6000,        5,   0,   0,   0,   5    
+ #=>GAROTO LEITE                        
+  15000,       0,   0,   0,   0,   0    
+ #=>PAPA FRITA GRANDE 114GR             
+  18000,       7,   0,   0,   0,   7    
+ #=>BIS 126G                            
+  10000,       5,   0,   0,   0,   5    
+ #=>CHOCOBARRA GAROTO 90G               
+  10000,       10,  0,   0,   0,   10   
+ #=>ENERGIZANTE REB BULL                
+  13000,       13,  0,   0,   0,   13   
+ #=>POWERADE 500ML                      
+  10000,       1,   0,   0,   0,   1    
+ #=>COCA COLA 500 ML                    
+  6000,        27,  0,   0,   0,   27   
+ #=>FANTA GUARANA                       
+  6000,        1,   0,   0,   0,   1    
+ #=>FANTA NARANJA                       
+  6000,        1,   0,   0,   0,   1    
+ #=>SPRITE 500ML                        
+  6000,        4,   0,   0,   0,   4    
+ #=>TOHALLITA INTIMA                    
+  4000,        2,   0,   0,   0,   2    
+ #=>JABON LUX                           
+  6000,        10,  0,   0,   0,   10   
+ #=>SHAMPOO SEDAL 10ML                  
+  6000,        0,   0,   0,   0,   0    
+ #=>PASTA DENTAL                        
+  6000,        6,   0,   0,   0,   6    
+ #=>CEPILLO DENTAL                      
+  6000,        5,   0,   0,   0,   5    
+ #=>PRESTOBARBA                         
+  5000,        25,  0,   0,   0,   25   
+ #=>SHANPOO Y ENJUAGE                   
+  6000,        11,  0,   0,   0,   11   
+ #=>COLGATE                             
+  5000,        -2,  0,   0,   0,   -2   
+ #=>JABON MAR                           
+  6000,        -2,  0,   0,   0,   -2   
+ #=>JABON CABALLARO UNIPERSONAL         
+  1000,        0,   0,   0,   0,   0    
+ #=>FRUGOS DURASNO 1L                   
+  10000,       5,   0,   0,   0,   5    
+ #=>CONTROL TODOS                       
+  10000,       20,  0,   0,   0,   20   
+ #=>GEL FEMENINO REDUCE                 
+  30000,       0,   0,   0,   0,   0    
+ #=>GEL PARA ORAL CHICLETE              
+  30000,       3,   0,   0,   0,   3    
+ #=>CONSOLADOR                          
+  75000,       2,   0,   0,   0,   2    
+ #=>GEL PARA ORAL MENTA                 
+  30000,       0,   0,   0,   0,   0    
+ #=>VIBRADOR                            
+  25000,       4,   0,   0,   0,   4    
+ #=>GEL EXCITANTE FEMENINO ARDENTE      
+  12000,       1,   0,   0,   0,   1    
+ #=>BIBRADOR BULLET                     
+  25000,       0,   0,   0,   0,   0    
+ #=>PANTERA CLASICO                     
+  8000,        7,   0,   0,   0,   7    
+ #=>GEL RETARD PIKA TURBO               
+  30000,       2,   0,   0,   0,   2    
+ #=>POWER SHOK MENTA                    
+  55000,       1,   0,   0,   0,   1    
+ #=>MIEL ESTIMULANTE                    
+  30000,       0,   0,   0,   0,   0    
+ #=>GEL RETARDANTE BENGALA              
+  30000,       2,   0,   0,   0,   2    
+ #=>LUBRICANTE NUETRO                   
+  10000,       56,  0,   0,   0,   56   
+ #=>ASPIRINA UNIDAD                     
+  2000,        42,  0,   0,   0,   42   
+ #=>YERON TABLETA                       
+  10000,       1,   0,   0,   0,   1    
+ #=>ASPIRINA  TABLETA                   
+  10000,       4,   0,   0,   0,   4    
+ #=>SIDRA                               
+  15000,       3,   0,   0,   0,   3    
+ #=>VINO LATA QUITA                     
+  10000,       0,   0,   0,   0,   0    
+ #=>VIÑA DE BALDO 1L                    
+  25000,       2,   0,   0,   0,   2    
+ #=>FRIZZE 1L                           
+  30000,       5,   0,   0,   0,   5    
+ #=>FREZZE                              
+  16000,       0,   0,   0,   0,   0    
+ #=>SANTA ELENA                         
+  25000,       1,   0,   0,   0,   1    
+ #=>QUINTA 1L                           
+  25000,       1,   0,   0,   0,   1    
+ #=>GRANT-S.1/4                         
+  55000,       0,   0,   0,   0,   0    
+ #=>SANDY M.1/4                         
+  50000,       0,   0,   0,   0,   0    
+ #=>JHONY R. MINI                       
+  30000,       3,   0,   0,   0,   3    
+ #=>JHONY N. MINI                       
+  35000,       3,   0,   0,   0,   3    
+ #=>CHIVAS MINI                         
+  25000,       0,   0,   0,   0,   0    
+ #=>CABALLITO BLANCO                    
+  40000,       1,   0,   0,   0,   1    
+ #=>JHONY R. 1/4                        
+  70000,       0,   0,   0,   0,   0    
+ #=>JHONY N.1/4                         
+  85000,       0,   0,   0,   0,   0    
+ #=>CHIVAS.1/4                          
+  80000,       0,   0,   0,   0,   0    
+                                        
+                                        
+ #=============================#        
+                                        
+                                        
+                                        
+                                        
+                                        

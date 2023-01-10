@@ -161,4 +161,26 @@ public class DAO_compra {
                 + "and caja_cierre_item.fk_idcaja_cierre=" + fk_idcaja_cierre;
         eveconn.SQL_execute_libre(conn, sql);
     }
+    public boolean getBoo_varificar_compra_pendiente(Connection conn, int fk_idusuario) {
+            String titulo = "getBoo_varificar_compra_pendiente";
+            String sql = "select count(*) as cant from compra "
+                    + "where estado='PENDIENTE' and fk_idusuario=" + fk_idusuario;
+            try {
+                ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+                if (rs.next()) {
+                    int cant = rs.getInt("cant");
+                    if (cant==0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }else{
+                    return false;
+                }
+            } catch (Exception e) {
+                evemen.mensaje_error(e, sql, titulo);
+                return false;
+            }
+        
+    }
 }

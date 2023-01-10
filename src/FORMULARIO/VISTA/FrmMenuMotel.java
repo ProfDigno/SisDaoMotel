@@ -16,8 +16,10 @@ import Evento.Jframe.EvenJFRAME;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Utilitario.EvenSonido;
 import FORMULARIO.BO.BO_habitacion_recepcion_temp;
+import FORMULARIO.DAO.DAO_caja_cierre;
 import FORMULARIO.ENTIDAD.habitacion_recepcion_temp;
 import FORMULARIO.ENTIDAD.usuario;
+import java.awt.Color;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,18 +37,19 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
     Connection conn = null;
     ConnPostgres conPs = new ConnPostgres();
-    EvenJFRAME evetbl = new EvenJFRAME();
-    EvenConexion eveconn = new EvenConexion();
-    EvenFecha evefec = new EvenFecha();
-    json_array_conexion jscon = new json_array_conexion();
-    json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
-    json_array_formulario jsfrm = new json_array_formulario();
-    usuario ENTusu = new usuario();
+    private EvenJFRAME evetbl = new EvenJFRAME();
+    private EvenConexion eveconn = new EvenConexion();
+    private EvenFecha evefec = new EvenFecha();
+    private json_array_conexion jscon = new json_array_conexion();
+    private json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
+    private json_array_formulario jsfrm = new json_array_formulario();
+    private usuario ENTusu = new usuario();
     private habitacion_recepcion_temp ENThrt = new habitacion_recepcion_temp();
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
-    private String version = "V.: 1.7.9";
+    private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
+    private String version = "V.: 1.8.2";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -56,6 +59,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private int sensor_puerta_cliente = 2;
     private int sensor_puerta_limpieza = 3;
     public static boolean abrir_frmventa;
+    private boolean crear_exp_app;
+    private int tiempo_exp_app;
+    private int segundo_exp_app;
 
     public static boolean isHabilitar_sonido() {
         return habilitar_sonido;
@@ -74,6 +80,10 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jsprint.cargar_jsom_imprimir_pos();
         jsfrm.cargar_jsom_array_formulario();
         creado_por = ENTusu.getGlobal_nombre();
+        tiempo_exp_app = jsfrm.getApp_tiempo_min_exp();
+        segundo_exp_app = tiempo_exp_app - 5;
+        crear_exp_app = true;
+        lblnube.setVisible(false);
         setHabilitar_sonido(false);
         setAbrir_frmventa(true);
         iniciarTiempo();
@@ -92,7 +102,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         frame.setExtendedState(MAXIMIZED_BOTH);
         String titulo = jscon.getNombre()
                 + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato() + " IP:" + pcinfo.getStringMiIP()
-                + " Version: "+version;
+                + " Version: " + version;
         frame.setTitle(titulo);
     }
 
@@ -115,51 +125,36 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        BEGIN\n"
                 //                + "         ALTER TABLE producto ADD COLUMN precio_interno NUMERIC(14,0) DEFAULT 0;\n"
                 //                + "         update producto set precio_interno=precio_venta;"
-                //                + "         ALTER TABLE caja_cierre_detalle ADD COLUMN monto_interno NUMERIC(14,0) DEFAULT 0;\n"
-                //                + "         ALTER TABLE caja_cierre_detalle ADD COLUMN fk_idventa_interno INTEGER DEFAULT 0;\n"
-                //                + "CREATE TABLE \"venta_interno\" (\n"
-                //                + "	\"idventa_interno\" INTEGER NOT NULL ,\n"
-                //                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                //                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                //                + "	\"monto_letra\" TEXT NOT NULL ,\n"
-                //                + "	\"estado\" TEXT NOT NULL ,\n"
-                //                + "	\"observacion\" TEXT NOT NULL ,\n"
-                //                + "	\"motivo_anulacion\" TEXT NOT NULL ,\n"
-                //                + "	\"monto_interno\" NUMERIC(14,0) NOT NULL ,\n"
-                //                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
-                //                + "	\"fk_idpersona\" INTEGER NOT NULL ,\n"
-                //                + "	PRIMARY KEY(\"idventa_interno\")\n"
-                //                + ");\n"
-                //                + "CREATE TABLE \"venta_item_interno\" (\n"
-                //                + "	\"idventa_item_interno\" INTEGER NOT NULL ,\n"
-                //                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                //                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                //                + "	\"tipo_item\" TEXT NOT NULL ,\n"
-                //                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                //                + "	\"cantidad\" NUMERIC(5,0) NOT NULL ,\n"
-                //                + "	\"precio_venta\" NUMERIC(10,0) NOT NULL ,\n"
-                //                + "	\"precio_compra\" NUMERIC(10,0) NOT NULL ,\n"
-                //                + "	\"fk_idventa_interno\" INTEGER NOT NULL ,\n"
-                //                + "	\"fk_idproducto\" INTEGER NOT NULL ,\n"
-                //                + "	PRIMARY KEY(\"idventa_item_interno\")\n"
-                //                + "); "
-//                + "CREATE TABLE \"garantia\" (\n"
-//                + "	\"idgarantia\" INTEGER NOT NULL ,\n"
-//                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-//                + "	\"creado_por\" TEXT NOT NULL ,\n"
-//                + "	\"fecha_inicio\" TIMESTAMP NOT NULL ,\n"
-//                + "	\"fecha_fin\" TIMESTAMP NOT NULL ,\n"
-//                + "	\"responsable\" TEXT NOT NULL ,\n"
-//                + "	\"descripcion_objeto\" TEXT NOT NULL ,\n"
-//                + "	\"monto_garantia\" NUMERIC(14,0) NOT NULL ,\n"
-//                + "	\"estado\" TEXT NOT NULL ,\n"
-//                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
-//                + "	\"fk_idventa\" INTEGER NOT NULL ,\n"
-//                + "	PRIMARY KEY(\"idgarantia\")\n"
-//                + ");"
-//                + "         ALTER TABLE caja_cierre_detalle ADD COLUMN monto_garantia NUMERIC(14,0) DEFAULT 0;\n"
-//                + "         ALTER TABLE caja_cierre_detalle ADD COLUMN fk_idgarantia INTEGER DEFAULT 0;\n"
-                + "         ALTER TABLE usuario_evento ADD COLUMN mensaje_error TEXT DEFAULT 'error';\n"
+                + "INSERT INTO public.usuario_evento(idusuario_evento, fecha_creado, creado_por, codigo, nombre, descripcion, fk_idusuario_tipo_evento, fk_idusuario_formulario, mensaje_error) \n"
+                + "values\n"
+                + "(1,'2023-01-09 15:36:21.209','PROGRAMADOR ADMIN',1001,'HABILITAR EDITAR PRODUCTO','permite editar todos los datos del producto',2,2,'TU ROLL NO PUEDE EDITAR EL PRODUCTO'),\n"
+                + "(2,'2023-01-09 19:44:33.985','PROGRAMADOR ADMIN',1002,'HABILITAR TABBED CAJA CERRADO','muestra todas las cajas cerrados anteriormente',3,3,'TU ROLL NO PUEDE VER CAJA CERRADO');\n"
+                + "\n"
+                + "INSERT INTO  public.usuario_formulario (idusuario_formulario, fecha_creado, creado_por, nombre) values\n"
+                + "(1,'2023-01-09 15:29:58.811','PROGRAMADOR ADMIN','SIN-DATO'),\n"
+                + "(2,'2023-01-09 15:30:51','PROGRAMADOR ADMIN','PRODUCTO'),\n"
+                + "(3,'2023-01-09 19:40:52.595','PROGRAMADOR ADMIN','CAJA');\n"
+                + "\n"
+                + "INSERT INTO public.usuario_item_rol (idusuario_item_rol, fecha_creado, creado_por, activo, fk_idusuario_rol, fk_idusuario_evento) VALUES\n"
+                + "('2','2023-01-09 15:36:22.506','PROGRAMADOR ADMIN','f','3','1'),\n"
+                + "('3','2023-01-09 15:36:22.514','PROGRAMADOR ADMIN','f','2','1'),\n"
+                + "('4','2023-01-09 15:36:22.519','PROGRAMADOR ADMIN','f','1','1'),\n"
+                + "('6','2023-01-09 19:44:35.164','PROGRAMADOR ADMIN','f','3','2'),\n"
+                + "('7','2023-01-09 19:44:35.17','PROGRAMADOR ADMIN','f','2','2'),\n"
+                + "('8','2023-01-09 19:44:35.174','PROGRAMADOR ADMIN','f','1','2'),\n"
+                + "('5','2023-01-09 19:44:35.159','PROGRAMADOR ADMIN','t','4','2'),\n"
+                + "('1','2023-01-09 15:36:22.499','PROGRAMADOR ADMIN','t','4','1');\n"
+                + "\n"
+                + "INSERT INTO  public.usuario_rol (idusuario_rol, fecha_creado, creado_por, nombre, descripcion) VALUES\n"
+                + "('1','2023-01-09 15:32:55.673','PROGRAMADOR ADMIN','SIN-DATO','SIN'),\n"
+                + "('2','2023-01-09 15:33:22.785','PROGRAMADOR ADMIN','CAJERO','USUARIO CAJA'),\n"
+                + "('3','2023-01-09 15:33:58.057','PROGRAMADOR ADMIN','ADMINISTRADOR','NIVEL 2 DE ACCESO'),\n"
+                + "('4','2023-01-09 15:34:22.025','PROGRAMADOR ADMIN','PROGRAMADOR','ADMINISTRA EL SISTEMA');\n"
+                + "\n"
+                + "INSERT INTO  public.usuario_tipo_evento (idusuario_tipo_evento, fecha_creado, creado_por, nombre) VALUES\n"
+                + "('1','2023-01-09 15:31:38.432','PROGRAMADOR ADMIN','SIN-DATO'),\n"
+                + "('2','2023-01-09 15:32:05.752','PROGRAMADOR ADMIN','BOTON EDITAR'),\n"
+                + "('3','2023-01-09 19:42:36.337','PROGRAMADOR ADMIN','HABILITAR jTabbedPane');  "
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
@@ -186,6 +181,22 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 lblturno.setText(evefec.getString_turno());
                 cargar_sql_habitacion_recepcion_temp();
                 actualizar_estado_puerta_cliente_limpieza();
+
+            }
+            segundo_exp_app++;
+            if (segundo_exp_app > (tiempo_exp_app)) {
+                if (crear_exp_app && jsfrm.isApp_act_exp()) {
+                    lblnube.setVisible(true);
+                    DAOcc.exportar_excel_caja_fecha_usu(conn);
+                    DAOcc.exportar_excel_estado_habitacion(conn);
+                    DAOcc.exportar_excel_lista_producto(conn);
+                    crear_exp_app = false;
+                }
+            }
+            if (segundo_exp_app > ((tiempo_exp_app) + 10)) {
+                lblnube.setVisible(false);
+                crear_exp_app = true;
+                segundo_exp_app = 0;
             }
         }
     }
@@ -324,6 +335,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         lblversion = new javax.swing.JLabel();
         lblhora = new javax.swing.JLabel();
         lblturno = new javax.swing.JLabel();
+        lblnube = new javax.swing.JLabel();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -511,12 +523,16 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         lblturno.setForeground(new java.awt.Color(0, 0, 102));
         lblturno.setText("HORA");
 
+        lblnube.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblnube.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/72_nube.png"))); // NOI18N
+
         escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblusuario, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(panel_acceso_rapido, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblversion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblhora, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblturno, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(lblnube, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
@@ -528,21 +544,27 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                     .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblhora)
-                            .addComponent(lblturno))))
-                .addContainerGap(160, Short.MAX_VALUE))
+                            .addComponent(lblturno))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                        .addComponent(lblnube, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addGap(7, 7, 7)
-                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(escritorioLayout.createSequentialGroup()
+                        .addGap(7, 7, 7)
+                        .addComponent(lblnube, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1101,6 +1123,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JLabel lblhora;
+    private javax.swing.JLabel lblnube;
     private javax.swing.JLabel lblturno;
     public static javax.swing.JLabel lblusuario;
     public static javax.swing.JLabel lblversion;

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[select date(cd.fecha_creado) as fecha,
+to_char(cd1.fecha_creado,'HH24:MI:ss') as hs_inicio, 
+(cd.creado_por||'-('||to_char(cd1.fecha_creado,'HH24:MI:ss')||')') as creado, 
+sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+
+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)- 
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ingreso, 
+sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso, 
+sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+
+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)- 
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))- 
+(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo 
+from caja_cierre_detalle cd,caja_cierre_detalle cd1 
+where date(cd.fecha_creado)=date(cd1.fecha_creado) 
+and cd1.fk_idusuario=cd.fk_idusuario 
+and cd1.cerrado_por='APERTURA'  
+group by 1,2,3 
+order by 1 desc,2 asc]]>
+	</queryString>
+	<field name="fecha" class="java.sql.Date"/>
+	<field name="hs_inicio" class="java.lang.String"/>
+	<field name="creado" class="java.lang.String"/>
+	<field name="ingreso" class="java.math.BigDecimal"/>
+	<field name="m_egreso" class="java.math.BigDecimal"/>
+	<field name="m_saldo" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="68" height="20"/>
+				<textElement/>
+				<text><![CDATA[hs_inicio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="168" y="0" width="208" height="20"/>
+				<textElement/>
+				<text><![CDATA[creado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="376" y="0" width="72" height="20"/>
+				<textElement/>
+				<text><![CDATA[ingreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="448" y="0" width="70" height="20"/>
+				<textElement/>
+				<text><![CDATA[m_egreso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="518" y="0" width="77" height="20"/>
+				<textElement/>
+				<text><![CDATA[m_saldo]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="yyyy/MM/dd">
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="68" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{hs_inicio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="0" width="208" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{creado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="376" y="0" width="72" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{ingreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="448" y="0" width="70" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{m_egreso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="518" y="0" width="77" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{m_saldo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

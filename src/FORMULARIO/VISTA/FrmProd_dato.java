@@ -228,7 +228,7 @@ public class FrmProd_dato extends javax.swing.JInternalFrame {
     }
 
     private void boton_editar() {
-        if (DAOusu.getBoo_eve_permitido(conn, 1001)) {
+        if (DAOusu.gB_boton_editar_producto()) {
             if (validar_guardar()) {
                 ENTp.setC1idproducto(Integer.parseInt(txtid.getText()));
                 cargar_dato();
