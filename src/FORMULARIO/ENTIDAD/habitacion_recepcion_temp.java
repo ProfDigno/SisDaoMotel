@@ -47,6 +47,7 @@ private int C42idhabitacion_dato;
 private boolean C43es_manual;
 private int C44orden;
 private boolean C45activo;
+private String descrip_caja_desocupa;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -54,6 +55,14 @@ private static String nom_idtabla;
 		setTb_habitacion_recepcion_temp("habitacion_recepcion_temp");
 		setId_idhabitacion_recepcion_temp("idhabitacion_recepcion_temp");
 	}
+
+    public String getDescrip_caja_desocupa() {
+        return descrip_caja_desocupa;
+    }
+
+    public void setDescrip_caja_desocupa(String descrip_caja_desocupa) {
+        this.descrip_caja_desocupa = descrip_caja_desocupa;
+    }
 
     public int getC44orden() {
         return C44orden;

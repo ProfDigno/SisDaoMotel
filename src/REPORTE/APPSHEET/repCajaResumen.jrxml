@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select date(cd.fecha_creado) as fecha,
+(case when cd.es_cerrado=false then cd.creado_por else 'TODOS' end) as usuario,
+sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as ocupa_total,
+sum(case 
+when  cd.es_cerrado=false then ((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))
+else 0 end) as ocupa_actual,
+sum(cd.monto_gasto) as gasto_total,
+sum(case when  cd.es_cerrado=false then (cd.monto_gasto)
+else 0 end) as gasto_actual,
+sum(case 
+when  cd.es_cerrado=false then ((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto+cd.monto_gasto))
+else 0 end) as saldo_actual,
+sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno)-
+(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto+cd.monto_gasto)) as saldo_total,
+sum(case when  (cd.es_cerrado=false and cd.cerrado_por='DESOCUPADO') then 1
+else 0 end) as entrada_actual,
+sum(case when  ( cd.cerrado_por='DESOCUPADO') then 1
+else 0 end) as entrada_total
+from caja_cierre_detalle cd
+where date_part('year',cd.fecha_creado)=date_part('year',current_date)
+group by 1,2
+order by 1 desc]]>
+	</queryString>
+	<field name="fecha" class="java.sql.Date"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="ocupa_total" class="java.math.BigDecimal"/>
+	<field name="ocupa_actual" class="java.math.BigDecimal"/>
+	<field name="gasto_total" class="java.math.BigDecimal"/>
+	<field name="gasto_actual" class="java.math.BigDecimal"/>
+	<field name="saldo_actual" class="java.math.BigDecimal"/>
+	<field name="saldo_total" class="java.math.BigDecimal"/>
+	<field name="entrada_actual" class="java.lang.Long"/>
+	<field name="entrada_total" class="java.lang.Long"/>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="253" y="0" width="85" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[ocupa_total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="338" y="0" width="87" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[ocupa_actual]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="425" y="0" width="67" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[gasto_total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="492" y="0" width="72" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[gasto_actual]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="564" y="0" width="72" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[saldo_actual]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="636" y="0" width="56" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[saldo_total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="692" y="0" width="71" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[entrada_actual]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="763" y="0" width="79" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[entrada_total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="153" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[usuario]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="yyyy-MM-dd">
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="253" y="0" width="85" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{ocupa_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="338" y="0" width="87" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{ocupa_actual}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="0" width="67" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{gasto_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="492" y="0" width="72" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{gasto_actual}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="564" y="0" width="72" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{saldo_actual}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="636" y="0" width="56" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{saldo_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="692" y="0" width="71" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{entrada_actual}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="763" y="0" width="79" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{entrada_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="153" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

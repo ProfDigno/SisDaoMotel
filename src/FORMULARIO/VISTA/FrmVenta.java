@@ -140,7 +140,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private double monto_por_dormir_minimo;
     private double monto_por_dormir_adicional;
     private int cant_adicional;
-    private double monto_minimo;
+    private double monto_minimo_A;//Automatico ocupar
+    private double monto_minimo_D;//Desocupar habitacion
     private double monto_adicional_total;
     private double monto_consumo;
     private double monto_insumo;
@@ -219,9 +220,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private boolean btn_reboot_rp_2;
     private boolean btn_reboot_rp_3;
     private boolean est_btn_cancelar;
-    private String observacion_venta="";
+    private String observacion_venta = "";
 //    private boolean crear_exp_app;
 //    private int tiempo_exp_app=(2*60);
+    private String descripcion_caja_desocupa;
+
     private void abrir_formulario() {
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
@@ -612,7 +615,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             eveJtab.calcular_subtotal(tblitem_producto, model_itemf, 3, 5, 8, false);
             jFtotal_consumo.setValue(eveJtab.getDouble_sumar_tabla(tblitem_producto, 8));
             descripcion_consumo_adelantado = descripcion_consumo_adelantado + "(" + Scantidad + "," + Sdescripcion + ")\n";
-            cargar_observacion_venta("Prod:"+Sdescripcion+" ("+Scantidad+")-("+Sprecio_venta1+")");
+            cargar_observacion_venta("Prod:" + Sdescripcion + " (" + Scantidad + ")-(" + Sprecio_venta1 + ")");
             reestableser_item_venta();
         }
     }
@@ -1119,7 +1122,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 //            }
 //        }
 //    }
-
     private void cargar_array_habitacion_datos() {
         String titulo = "cargar_array_habitacion_datos";
         if (panel_habitaciones.getComponentCount() > cant_de_habitacion) {
@@ -1264,7 +1266,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 String h_codigo = ((JButton) e.getSource()).getName();
                 int Ih_codigo = Integer.parseInt(h_codigo);
                 System.out.println("h_codigo:" + h_codigo);
-                
+
                 if (true) {
                     if (estado.equals(eveest.getEst_Libre())) {
                         if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
@@ -1323,15 +1325,21 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         txttiempo_transcurrido.setText(tiempo);
                         txttiempo_transcurrido_salir.setText(tiempo);
                         btncancelar.setEnabled(cancelar_habitacion);
-                        if(cancelar_habitacion){
+                        if (cancelar_habitacion) {
                             lblmensaje_cancelar.setText("...");
-                        }else{
-                            lblmensaje_cancelar.setText("CERRAR PUERTA: "+nro_habitacion);
+                        } else {
+                            lblmensaje_cancelar.setText("CERRAR PUERTA: " + nro_habitacion);
                         }
-                        
+
                         btncancelar.setText("CANCELAR-" + por_cancelar);
-                        observacion_venta="";
-                        cargar_observacion_venta("Seleccion BTN OCUPADO; fk_idventa="+fk_idventa+",nro_hab="+nro_habitacion+",tiempo="+tiempo);
+                        observacion_venta = "";
+                        cargar_observacion_venta("#==>>cargar_costos<<"
+                                + "\n1-monto_por_hora_minimo:" + monto_por_hora_minimo
+                                + "\n2-monto_por_hora_adicional:" + monto_por_hora_adicional
+                                + "\n3-monto_por_dormir_minimo:" + monto_por_dormir_minimo
+                                + "\n4-monto_por_dormir_adicional:" + monto_por_dormir_adicional
+                        );
+                        cargar_observacion_venta("Seleccion BTN OCUPADO; fk_idventa=" + fk_idventa + ",nro_hab=" + nro_habitacion + ",tiempo=" + tiempo);
                         cargar_jbar_tiempo_minimo(ocupado_inicio_seg, minuto_minimo);
                     }
                 } else {
@@ -1402,7 +1410,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                             if (eleccion == JOptionPane.YES_OPTION) {
                                 if (txtacancel.getText().trim().length() > 0) {
                                     motivo_mudar_habitacion = txtacancel.getText().toUpperCase();
-                                    cargar_observacion_venta("Motivo:"+motivo_mudar_habitacion);
+                                    cargar_observacion_venta("Motivo:" + motivo_mudar_habitacion);
                                     ejecutar_mudar_habitacion(idhabitacion_dato, nro_habitacion);
                                     cargar_observacion_venta("##==>>CONFIRMAR MUDAR");
                                     limpiar_habitacion_select();
@@ -1479,6 +1487,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     class clasetiempo extends TimerTask {
+
         public void run() {
             try {
                 segundo_tiempo++;
@@ -1649,6 +1658,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         monto_por_hora_adicional = ENThrt.getC27monto_por_hora_adicional();
         monto_por_dormir_minimo = ENThrt.getC28monto_por_dormir_minimo();
         monto_por_dormir_adicional = ENThrt.getC29monto_por_dormir_adicional();
+//        cargar_observacion_venta("#==>>cargar_costos<<"
+//                +"\n1-monto_por_hora_minimo:"+monto_por_hora_minimo
+//                +"\n2-monto_por_hora_adicional:"+monto_por_hora_adicional
+//                +"\n3-monto_por_dormir_minimo:"+monto_por_dormir_minimo
+//                +"\n4-monto_por_dormir_adicional:"+monto_por_dormir_adicional
+//                );
         monto_descuento = ENThrt.getC31monto_descuento();
         monto_consumo = ENThrt.getC30monto_consumision();
         monto_adelanto = ENThrt.getC41monto_adelanto();
@@ -1668,24 +1683,24 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             jRpor_dormir.setSelected(true);
             lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
             monto_adicional = monto_por_dormir_adicional;
-            monto_minimo = monto_por_dormir_minimo;
+            monto_minimo_A = monto_por_dormir_minimo;
         }
         if (es_por_hora && !es_por_dormir) {
             jRpor_hora.setSelected(true);
             lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_ocupa())));
             monto_adicional = monto_por_hora_adicional;
-            monto_minimo = monto_por_hora_minimo;
+            monto_minimo_A = monto_por_hora_minimo;
         }
         if (es_por_hora && es_por_dormir) {
             jRpor_hora_mas_dormir.setSelected(true);
             lbltipo_tarifa_icono.setIcon(new javax.swing.ImageIcon(getClass().getResource(eveest.getIco_dormir())));
             monto_adicional = monto_por_dormir_adicional;
-            monto_minimo = monto_por_dormir_minimo;
+            monto_minimo_A = monto_por_dormir_minimo;
         }
         monto_adicional_total = cant_adicional * (int) monto_adicional;
-        monto_tarifa_ocupacion_total = monto_adicional_total + (int) monto_minimo;
+        monto_tarifa_ocupacion_total = monto_adicional_total + (int) monto_minimo_A;
         jFmonto_tarifa_ocupacion_total.setValue(monto_tarifa_ocupacion_total);
-        jFmonto_minimo.setValue(monto_minimo);
+        jFmonto_minimo.setValue(monto_minimo_A);
         jFmonto_adicional.setValue(monto_adicional);
         txtcant_adicional.setText(String.valueOf(cant_adicional));
         jFmonto_adicional_total.setValue(monto_adicional_total);
@@ -1785,7 +1800,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion("sin");
-        ENTven.setC10monto_minimo(monto_minimo);
+        ENTven.setC10monto_minimo(monto_minimo_A);
         ENTven.setC11monto_adicional(0);
         ENTven.setC12cant_adicional(0);
         ENTven.setC13monto_consumo(0);
@@ -1814,7 +1829,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void boton_libre_a_ocupar(int nro_habitacion, int idhabitacion_dato) {
         DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
-        monto_minimo = ENThrt.getC26monto_por_hora_minimo();
+        monto_minimo_A = ENThrt.getC26monto_por_hora_minimo();
         int idhabitacion_recepcion = (eveconn.getInt_ultimoID_mas_uno(conn, ENThr.getTb_habitacion_recepcion(), ENThr.getId_idhabitacion_recepcion()));
         cargar_dato_venta_ocupar(idhabitacion_recepcion);
         cargar_dato_habitacion_recepcion_ocupar(nro_habitacion, idhabitacion_dato);
@@ -1830,11 +1845,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
         ENTven.setC4monto_letra("cero");
         ENTven.setC5estado(eveest.getEst_Desocupado());
-        ENTven.setC6observacion(ENTven.getC6observacion()+observacion_venta);
+        ENTven.setC6observacion(ENTven.getC6observacion() + observacion_venta);
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion("sin");
-        ENTven.setC10monto_minimo(monto_minimo);
+        ENTven.setC10monto_minimo(monto_minimo_D);
         ENTven.setC11monto_adicional(monto_adicional_total);
         ENTven.setC12cant_adicional(cant_adicional);
         ENTven.setC13monto_consumo(monto_consumo);
@@ -1872,14 +1887,16 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENThrt.setC12fec_sucio_inicio(evefec.getString_formato_fecha_hora());
         ENThrt.setC20es_sucio(true);
     }
-    private void cargar_observacion_venta(String evento){
-        String salto_linea="\n";
-        String fecha_hora=evefec.getString_formato_fecha_hora();
-        observacion_venta=observacion_venta+fecha_hora+"="+evento+salto_linea;
+
+    private void cargar_observacion_venta(String evento) {
+        String salto_linea = "\n";
+        String fecha_hora = evefec.getString_formato_fecha_hora();
+        observacion_venta = observacion_venta + fecha_hora + "=" + evento + salto_linea;
     }
+
     private void limpiar_variable() {
         fk_idventa = 0;
-        monto_minimo = 0;
+        monto_minimo_A = 0;
         monto_adicional_total = 0;
         cant_adicional = 0;
         monto_descuento = 0;
@@ -1897,8 +1914,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void reestableser_venta() {
         cargar_usuario_acceso();
         limpiar_variable();
-        observacion_venta="";
-        
+        observacion_venta = "";
         txtidventa.setText(null);
         eveJtab.limpiar_tabla_datos(model_itemf);
         jFtotal_consumo.setValue(0);
@@ -1918,7 +1934,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             BOven.update_venta_sin_commit1(conn, ENTven, ENThr, ENThrt, ENTccd, true, false, true);
             //#####OCUPAR-ENTRAR#######
             DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
-            monto_minimo = ENThrt.getC26monto_por_hora_minimo();
+            monto_minimo_A = ENThrt.getC26monto_por_hora_minimo();
             int idhabitacion_recepcion = (eveconn.getInt_ultimoID_mas_uno(conn, ENThr.getTb_habitacion_recepcion(), ENThr.getId_idhabitacion_recepcion()));
             int idventa = (eveconn.getInt_ultimoID_max(conn, ENTven.getTb_venta(), ENTven.getId_idventa()));
             cargar_dato_venta_ocupar_MUDAR_ENTRAR(idhabitacion_recepcion);
@@ -2028,11 +2044,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         ENTven.setC3creado_por(creado_por);
         ENTven.setC4monto_letra("cero");
         ENTven.setC5estado(eveest.getEst_Ocupado());
-        ENTven.setC6observacion(ENTven.getC6observacion()+observacion_venta);
+        ENTven.setC6observacion(ENTven.getC6observacion() + observacion_venta);
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion(motivo_mudar_habitacion);
-        ENTven.setC10monto_minimo(monto_minimo);
+        ENTven.setC10monto_minimo(monto_minimo_A);
         ENTven.setC11monto_adicional(monto_adicional_total);
         ENTven.setC12cant_adicional(cant_adicional);
         ENTven.setC13monto_consumo(monto_consumo);
@@ -2112,7 +2128,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
         ENTven.setC4monto_letra("cero");
         ENTven.setC5estado(eveest.getEst_Mudar());
-        ENTven.setC6observacion(ENTven.getC6observacion()+observacion_venta);
+        ENTven.setC6observacion(ENTven.getC6observacion() + observacion_venta);
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion(motivo_mudar_habitacion);
@@ -2131,7 +2147,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_desocupar_pagar() {
         if (validar_habitacion_select()) {
             tiempo_boton_hab = 0;
-            String Smonto_minimo = evejtf.getString_format_nro_decimal(monto_minimo);
+            String Smonto_minimo = evejtf.getString_format_nro_decimal(monto_minimo_A);
             String Smonto_adicional = evejtf.getString_format_nro_decimal(monto_adicional_total);
             String Smonto_descuento = evejtf.getString_format_nro_decimal(monto_descuento);
             String Smonto_adelanto = evejtf.getString_format_nro_decimal(monto_adelanto);
@@ -2164,10 +2180,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     + "<p style=\"color:red\"><font size=\"4\">TOTAL A PAGAR:   </font></p>"
                     + "<p><font size=\"8\">" + Smonto_total_pagar + "</font></p>"
                     + "</html>";
-            int eleccion = evemen.getIntMensaje_informacion_3btn(mensaje, "DESOCUPAR HABITACION ID:" + nro_habitacion_select,
+            int eleccion = evemen.getIntMensaje_informacion_3btn(mensaje, "DESOCUPAR HABITACION ID:" + nro_habitacion_select+",fk_idhabitacion_dato:"+fk_idhabitacion_dato_select,
                     btndesocupar_html, "IMPRIMIR", btncancelar_html);
             if (eleccion == 0 || eleccion == 1) {
-                cargar_observacion_venta("#==>>CONFIRMA SU DESOCUPACION:"+Smonto_total_pagar);
+                recargar_monto_minimo_habitacion_temp(fk_idhabitacion_dato_select);
+                cargar_observacion_venta("#==>>CONFIRMA SU DESOCUPACION:" + Smonto_total_pagar);
                 cargar_dato_venta_desocupar(fk_idhabitacion_recepcion_actual_select);
                 cargar_dato_habitacion_recepcion_desocupar(fk_idhabitacion_recepcion_actual_select);
                 cargar_dato_hab_temp_desocupar(fk_idhabitacion_dato_select);
@@ -2190,13 +2207,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void cargar_dato_caja_detalle_DESOCUPAR() {
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
-        String descripcion = fk_idhabitacion_recepcion_actual_select + "-(" + eveest.getEst_Pagado() + ")-HAB: " + nro_habitacion_select + ",T:(" + tiempo_select + ")";
+        String descripcion = descripcion_caja_desocupa+" ("+fk_idhabitacion_recepcion_actual_select+")" ;
         ENTccd.setC3creado_por(creado_por);
         ENTccd.setC4cerrado_por(eveest.getEst_Desocupado());
         ENTccd.setC5es_cerrado(false);
         ENTccd.setC6monto_apertura_caja(0);
         ENTccd.setC7monto_cierre_caja(0);
-        ENTccd.setC8monto_ocupa_minimo(monto_minimo);
+        ENTccd.setC8monto_ocupa_minimo(monto_minimo_D);
         ENTccd.setC9monto_ocupa_adicional(monto_adicional_total);
         ENTccd.setC10monto_ocupa_consumo(monto_consumo);
         ENTccd.setC11monto_ocupa_descuento(monto_descuento);
@@ -2263,12 +2280,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, "CONSUMO CARGADO CORRECTAMENTE");
             DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
             limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
-            cargar_observacion_venta("#==>>GUARDAR CONSUMO:"+monto_consumo);
+            cargar_observacion_venta("#==>>GUARDAR CONSUMO:" + monto_consumo);
             update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-            
+
             BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
             calculo_monto_pagar();
-            observacion_venta="";
+            observacion_venta = "";
             eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
         }
     }
@@ -2331,13 +2348,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void update_carga_monto_adicional(int idhabitacion_recepcion_actual, int idhabitacion_dato) {
         DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
-        ENTven.setC10monto_minimo(monto_minimo);
+        ENTven.setC10monto_minimo(monto_minimo_A);
         ENTven.setC11monto_adicional(monto_adicional_total);
         ENTven.setC12cant_adicional(cant_adicional);
         ENTven.setC13monto_consumo(monto_consumo);
         ENTven.setC15monto_descuento(monto_descuento);
         ENTven.setC16monto_adelanto(monto_adelanto);
-        ENTven.setC6observacion(ENTven.getC6observacion()+observacion_venta);
+        ENTven.setC6observacion(ENTven.getC6observacion() + observacion_venta);
         DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
         ENThr.setC1idhabitacion_recepcion(idhabitacion_recepcion_actual);
         ENThr.setC31monto_consumo(monto_consumo);
@@ -2355,24 +2372,24 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             es_por_hora = false;
             es_por_dormir = true;
             monto_adicional = monto_por_dormir_adicional;
-            monto_minimo = monto_por_dormir_minimo;
+            monto_minimo_A = monto_por_dormir_minimo;
             monto_adicional_total = cant_adicional * (int) monto_adicional;
         }
         if (jRpor_hora.isSelected()) {
             es_por_hora = true;
             es_por_dormir = false;
             monto_adicional = monto_por_hora_adicional;
-            monto_minimo = monto_por_hora_minimo;
+            monto_minimo_A = monto_por_hora_minimo;
             monto_adicional_total = cant_adicional * (int) monto_adicional;
         }
         if (jRpor_hora_mas_dormir.isSelected()) {
             es_por_hora = true;
             es_por_dormir = true;
             monto_adicional = monto_por_dormir_adicional;
-            monto_minimo = monto_por_dormir_minimo;
+            monto_minimo_A = monto_por_dormir_minimo;
             monto_adicional_total = cant_adicional * (int) monto_adicional;
         }
-        ENTven.setC10monto_minimo(monto_minimo);
+        ENTven.setC10monto_minimo(monto_minimo_A);
         ENTven.setC11monto_adicional(monto_adicional_total);
         ENTven.setC12cant_adicional(cant_adicional);
         ENTven.setC13monto_consumo(monto_consumo);
@@ -2401,7 +2418,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         jRpor_hora.setSelected(true);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "EL RANGO DE HORA NO ES PERMITIDO PARA DORMIR","FUERA HORARIO",JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "EL RANGO DE HORA NO ES PERMITIDO PARA DORMIR", "FUERA HORARIO", JOptionPane.WARNING_MESSAGE);
                     jRpor_hora.setSelected(true);
                 }
 
@@ -2417,7 +2434,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             if (jRpor_hora_mas_dormir.isSelected()) {
                 cargar_observacion_venta("Marca Por Hora mas Dormir");
                 if (permitir_dormir_select) {
-                    JOptionPane.showMessageDialog(null, "EL RANGO DE HORA ESTA PERMITIDO PARA DORMIR","FUERA HORARIO",JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "EL RANGO DE HORA ESTA PERMITIDO PARA DORMIR", "FUERA HORARIO", JOptionPane.WARNING_MESSAGE);
                     jRpor_hora.setSelected(true);
                 } else {
                     if (evemen.getBooMensaje_warning("ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION A POR HORA MAS DORMIR\n"
@@ -2442,12 +2459,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             color_panel_venta(1);
             cargar_observacion_venta("Boton Para Cargar Consumo");
             eveJtab.mostrar_JTabbedPane(jTab_principal, 2);
-            
+
         }
     }
 
     private void calculo_monto_pagar() {
-        monto_total_pagar = ((monto_adicional_total + monto_minimo + monto_consumo) - (monto_descuento + monto_adelanto));
+        monto_total_pagar = ((monto_adicional_total + monto_minimo_A + monto_consumo) - (monto_descuento + monto_adelanto));
         jFmonto_total_pagar.setValue(monto_total_pagar);
         jFmonto_total_pagar_salir.setValue(monto_total_pagar);
     }
@@ -2468,7 +2485,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private void boton_cargar_adelanto() {
         if (!evejtf.getBoo_JTextField_vacio(txtmonto_adelanto, "DEBE CARGAR EL CAMPO MONTO ADELANTO")) {
             if ((validar_habitacion_select())) {
-                monto_total_pagar = ((monto_adicional_total + monto_minimo + monto_consumo) - (monto_descuento + 0));
+                monto_total_pagar = ((monto_adicional_total + monto_minimo_A + monto_consumo) - (monto_descuento + 0));
                 tiempo_boton_hab = 0;
                 String Smonto_adelanto = evejtf.getString_format_nro_entero1(txtmonto_adelanto);
                 monto_adelanto = Double.parseDouble(Smonto_adelanto);
@@ -2481,7 +2498,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 } else {
                     if (monto_adelanto > 0) {
                         if (evemen.getBooMensaje_question("ESTAS SEGURO DE DAR UN ADELANTO A ESTA HABITACION NRO:" + nro_habitacion_select, "ADELANTO", "ACEPTAR", "CANCELAR")) {
-                            cargar_observacion_venta("#==>>BOTON CONFIRMAR ADELANTO:"+monto_total_pagar);
+                            cargar_observacion_venta("#==>>BOTON CONFIRMAR ADELANTO:" + monto_total_pagar);
                             update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                             cargar_dato_caja_detalle_ADELANTO();
                             if (es_adelanto_cargado) {
@@ -2510,15 +2527,15 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 BOveni.insertar_venta_item(ENTveni, ENTven, tblitem_producto, false, false, false);
                 DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
                 limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
-                monto_total_pagar = ((monto_adicional_total + monto_minimo + monto_consumo) - (monto_descuento + 0));
+                monto_total_pagar = ((monto_adicional_total + monto_minimo_A + monto_consumo) - (monto_descuento + 0));
                 monto_adelanto = monto_total_pagar;
-                cargar_observacion_venta("#==>>GUARDAR CONSUMO ADELANTADO:"+monto_adelanto);
+                cargar_observacion_venta("#==>>GUARDAR CONSUMO ADELANTADO:" + monto_adelanto);
                 update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
                 monto_adelanto = monto_total_pagar - monto_adelanto_1;
                 cargar_dato_caja_detalle_ADELANTO();
                 BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
                 JOptionPane.showMessageDialog(null, "CONSUMO ADELANTO CARGADO CORRECTAMENTE");
-                
+
                 limpiar_habitacion_select();
             }
         }
@@ -2585,7 +2602,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         if (cambiar_estado && est_nuevo.equals(eveest.getEst_Ocupado())) {
             cargar_observacion_venta("#==>>OCUPAR AUTOMATICO");
             boton_libre_a_ocupar(nro_habitacion, idhabitacion_dato);
-            observacion_venta="";
+            observacion_venta = "";
             boton_hab_unavez = true;
         }
     }
@@ -2617,7 +2634,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
         ENTven.setC4monto_letra("cero");
         ENTven.setC5estado(eveest.getEst_Cancelado());
-        ENTven.setC6observacion(ENTven.getC6observacion()+observacion_venta);
+        ENTven.setC6observacion(ENTven.getC6observacion() + observacion_venta);
         ENTven.setC7tipo_persona("cliente");
         ENTven.setC8motivo_anulacion(motivo_anulacion);
         ENTven.setC9motivo_mudar_habitacion("sin");
@@ -2688,7 +2705,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     if (txtacancel.getText().trim().length() > 0) {
                         motivo_anulacion = txtacancel.getText().toUpperCase();
                         ejecutar_ocupado_a_libre_CANCELAR(fk_idhabitacion_recepcion_actual_select, fk_idventa, fk_idhabitacion_dato_select);
-                        cargar_observacion_venta("#:( CANCELAR OCUPACION:"+motivo_anulacion);
+                        cargar_observacion_venta("#:( CANCELAR OCUPACION:" + motivo_anulacion);
                         limpiar_habitacion_select();
                     } else {
                         JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE CANCELAR INTENTE DE NUEVO",
@@ -2699,9 +2716,26 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             }
         }
     }
-
+    private void recargar_monto_minimo_habitacion_temp(int idhabitacion_dato){
+        DAOhrt.cargar_habitacion_recepcion_temp(conn, ENThrt, idhabitacion_dato);
+        descripcion_caja_desocupa=ENThrt.getDescrip_caja_desocupa();
+            if (jRpor_dormir.isSelected()) {
+                monto_por_dormir_minimo = ENThrt.getC28monto_por_dormir_minimo();
+                monto_minimo_D = monto_por_dormir_minimo;
+                
+            }
+            if (jRpor_hora.isSelected()) {
+                monto_por_hora_minimo = ENThrt.getC26monto_por_hora_minimo();
+                monto_minimo_D = monto_por_hora_minimo;
+            }
+            if (jRpor_hora_mas_dormir.isSelected()) {
+                monto_por_dormir_minimo = ENThrt.getC28monto_por_dormir_minimo();
+                monto_minimo_D = monto_por_dormir_minimo;
+            }
+    }
     private boolean validar_habitacion_select() {
         if (fk_idventa > 0) {
+            
             return true;
         } else {
             limpiar_habitacion_select();
@@ -3049,10 +3083,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void boton_actualizar_monto_adelanto() {
-        monto_adelanto = (monto_adicional_total + monto_minimo + monto_consumo);
-        txtmonto_adelanto.setText(evejtf.getString_format_nro_decimal(monto_adelanto));
+        double Dmonto_adelanto = (monto_adicional_total + monto_minimo_A + monto_consumo);
+        txtmonto_adelanto.setText(evejtf.getString_format_nro_decimal(Dmonto_adelanto));
         txtmonto_adelanto.setBackground(Color.yellow);
-        cargar_observacion_venta("Boton Calcular Adelanto:"+monto_adelanto);
+        cargar_observacion_venta("Boton Calcular Adelanto:" + Dmonto_adelanto);
     }
 
     private void cargar_dato_garantia() {
@@ -3158,7 +3192,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             DAOgar.cargar_garantia(conn, ENTgar, fk_idgarantia);
             monto_garantia = Math.abs(ENTgar.getC8monto_garantia());
             String estado = eveJtab.getString_select(tblgarantia, 6);
-            if (estado.equals(eveest.getEst_PENDIENTE())||estado.equals(eveest.getEst_Emitido())) {
+            if (estado.equals(eveest.getEst_PENDIENTE()) || estado.equals(eveest.getEst_Emitido())) {
                 btngar_pagar_garantia.setEnabled(true);
             } else {
                 btngar_pagar_garantia.setEnabled(false);

@@ -287,6 +287,21 @@ public class DAO_caja_cierre_detalle {
         evejt.alinear_derecha_columna(tbltabla, 8);
     }
 
+    public void update_monto_ocupa_minimo(Connection conn) {
+        String sql = "update caja_cierre_detalle set monto_ocupa_minimo= \n"
+                + "(case \n"
+                + "when hr.es_por_hora=true then hc.monto_por_hora_minimo\n"
+                + "when hr.es_por_dormir=true then hc.monto_por_dormir_minimo\n"
+                + "else 0 end )\n"
+                + "from venta v,habitacion_recepcion hr,habitacion_dato hd,habitacion_costo hc\n"
+                + "where v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
+                + "and hr.fk_idhabitacion_dato=hd.idhabitacion_dato\n"
+                + "and hd.fk_idhabitacion_costo=hc.idhabitacion_costo\n"
+                + " and caja_cierre_detalle.es_cerrado=false\n"
+                + "and v.idventa=caja_cierre_detalle.fk_idventa;";
+        eveconn.SQL_execute_libre(conn, sql);
+    }
+
     public void cerrar_todo_caja_detalle(Connection conn, int fk_idusuario) {
         String sql = "update caja_cierre_detalle set es_cerrado=true "
                 + "where es_cerrado=false "

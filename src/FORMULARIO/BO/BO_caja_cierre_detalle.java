@@ -12,7 +12,7 @@ import javax.swing.JTable;
 
 public class BO_caja_cierre_detalle {
 
-    private DAO_caja_cierre_detalle cacide_dao = new DAO_caja_cierre_detalle();
+    private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     private DAO_caja_producto_item caprit_dao = new DAO_caja_producto_item();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
@@ -23,7 +23,7 @@ public class BO_caja_cierre_detalle {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-            cacide_dao.insertar_caja_cierre_detalle(conn, cacide);
+            DAOccd.insertar_caja_cierre_detalle(conn, cacide);
 //            caprit_dao.insertar_caja_producto_item_por_select_todos(conn);
             JOptionPane.showMessageDialog(null,"APERTURA DE CAJA CORRECTAMENTE","CAJA APERTURA",JOptionPane.INFORMATION_MESSAGE);
             conn.commit();
@@ -45,7 +45,7 @@ public class BO_caja_cierre_detalle {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                cacide_dao.update_caja_cierre_detalle(conn, cacide);
+                DAOccd.update_caja_cierre_detalle(conn, cacide);
 //				cacide_dao.actualizar_tabla_caja_cierre_detalle(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
@@ -65,7 +65,8 @@ public class BO_caja_cierre_detalle {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
-                cacide_dao.update_caja_cierre_detalle_corregir(conn);
+                DAOccd.update_caja_cierre_detalle_corregir(conn);
+//                DAOccd.update_monto_ocupa_minimo(conn);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, "corregir", titulo);

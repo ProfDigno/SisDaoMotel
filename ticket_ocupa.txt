@@ -2,28 +2,28 @@
  =========PANKY-I=========              
  0993291322                             
  San Miguel                             
- COD. VENTA:1660                        
- FEC INICIO:2022-11-18 01:59            
- FEC FIN:2022-11-18 02:00               
- HABITACION:21                          
- TIEMPO OCUPA:00:00:50                  
+ COD. VENTA:33                          
+ FEC INICIO:2023-01-18 14:01            
+ FEC FIN:2023-01-18 14:41               
+ HABITACION:6                           
+ TIEMPO OCUPA:00:39:29                  
  USUARIO:PROGRAMADOR ADMIN              
  #=============================#        
  CANT-DESCRIPCION-PRECIO-TOTAL          
- MILLER LATA                            
-    5 X     8,000 =      40,000         
- CORONA BOTELLA 355ML                   
-    5 X     10,000 =     50,000         
- HEINEKEN                               
-    6 X     9,000 =      54,000         
+ AGUA.M SIN GAS 500ML                   
+    1 X     4,000 =      4,000          
+ COCA COLA 500 ML                       
+    0 X     0 =          0              
+ COCA COLA 500 ML                       
+    0 X     0 =          0              
  #=============================#        
- TIPO : DORMIR                          
- MONTO MINIMO:           80,000         
+ TIPO : POR HORA                        
+ MONTO MINIMO:           40,000         
  MONTO ADICIONAL:        0              
- MONTO CONSUMO:          144,000        
+ MONTO CONSUMO:          4,000          
  MONTO DESCUENTO:        0              
  MONTO ADELANTO:         0              
- TOTAL PAGAR:            224,000        
+ TOTAL PAGAR:            44,000         
                                         
                                         
                                         

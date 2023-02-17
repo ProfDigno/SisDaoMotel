@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[select
+	idhabitacion_dato,nro_habitacion,tipo_habitacion,
+	case
+		
+		when estado = 'LIBRE'
+		and puerta_limpieza = false
+		and puerta_cliente = false then 'MANTENIMIENTO'
+		else estado
+	end as estado_gral,
+	case
+		when estado = 'OCUPADO' then to_char((current_timestamp-fec_ocupado_inicio), 'HH24:MI:ss')
+		when estado = 'SUCIO' then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')
+		when estado = 'LIMPIANDO' then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')
+		else '.'
+	end as tiempo,
+
+	case
+		when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true
+		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_minimo * 60))  
+         then (monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto))
+		when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true
+		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))
+		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  
+         then (monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto))
+		when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true
+		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  
+         then (monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto) + 
+              (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* monto_por_hora_adicional))
+                when es_por_dormir = true and es_por_hora = false
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))
+		and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))
+		and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) 
+          then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)
+		when es_por_dormir = true and es_por_hora = false
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))
+		and (current_timestamp>(fec_ocupado_inicio))
+		and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) 
+          then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)
+		when es_por_dormir = true and es_por_hora = false
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))
+		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) 
+          then (monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional))
+		when es_por_dormir = true and es_por_hora = false
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))
+		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) 
+          then (monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional))
+		when es_por_dormir = true and es_por_hora = true
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))
+		and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))
+		and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) 
+          then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)
+		when es_por_dormir = true and es_por_hora = true
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))
+		and (current_timestamp>(fec_ocupado_inicio))
+		and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) 
+          then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)
+		when es_por_dormir = true and es_por_hora = true
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))
+		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) 
+          then (monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional))
+		when es_por_dormir = true and es_por_hora = true
+		and estado = 'OCUPADO'
+		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))
+		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))
+		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) 
+          then (monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional))
+		else 0
+	end as tarifa_gral,
+	case
+	    when estado = 'LIBRE' and puerta_limpieza = false and puerta_cliente = false then 'franco_db_hab_estado_Images/35NORMAL.nombre_imagen.053841.png'
+            when estado = 'OCUPADO' and es_por_hora = true and es_por_dormir = false then 'franco_db_hab_estado_Images/31NORMAL.nombre_imagen.052958.png'
+            when estado = 'OCUPADO' and es_por_hora = false and es_por_dormir = true then 'franco_db_hab_estado_Images/32NORMAL.nombre_imagen.053601.png'
+            when estado = 'OCUPADO' and es_por_hora = true and es_por_dormir = true then 'franco_db_hab_estado_Images/32NORMAL.nombre_imagen.053601.png'
+            when estado = 'LIMPIANDO' then 'franco_db_hab_estado_Images/33NORMAL.nombre_imagen.053652.png'
+	    when estado = 'SUCIO' then 'franco_db_hab_estado_Images/34NORMAL.nombre_imagen.053800.png'
+            when estado = 'LIBRE' then 'franco_db_hab_estado_Images/30NORMAL.nombre_imagen.050601.png'
+	    else 'SIN-IMAGEN'
+	end as nombre_imagen
+ from
+	habitacion_recepcion_temp 
+where activo=true 
+order by orden asc;]]>
+	</queryString>
+	<field name="idhabitacion_dato" class="java.lang.Integer"/>
+	<field name="nro_habitacion" class="java.lang.Integer"/>
+	<field name="tipo_habitacion" class="java.lang.String"/>
+	<field name="estado_gral" class="java.lang.String"/>
+	<field name="tiempo" class="java.lang.String"/>
+	<field name="tarifa_gral" class="java.math.BigDecimal"/>
+	<field name="nombre_imagen" class="java.lang.String"/>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="65" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[idhabitacion_dato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="65" y="0" width="89" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[nro_habitacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="154" y="0" width="81" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[tipo_habitacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="235" y="0" width="65" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[estado_gral]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="54" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[tiempo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="0" width="63" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[tarifa_gral]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="417" y="0" width="425" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[nombre_imagen]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="65" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{idhabitacion_dato}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="65" y="0" width="89" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{nro_habitacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="154" y="0" width="81" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{tipo_habitacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="0" width="65" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{estado_gral}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="54" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{tiempo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="354" y="0" width="63" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{tarifa_gral}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="417" y="0" width="425" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{nombre_imagen}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

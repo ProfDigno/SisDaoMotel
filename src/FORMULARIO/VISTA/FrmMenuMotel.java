@@ -49,7 +49,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 1.8.2";
+    private String version = "V.: 1.9.1";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -160,7 +160,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql);
+//        eveconn.SQL_execute_libre(conn, sql);
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
@@ -171,6 +171,17 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         tiempo_sonido = new Timer();
         tiempo_sonido.schedule(new FrmMenuMotel.clasetiempo(), 0, 1000 * 1);
         System.out.println("Timer INICIAR SONIDO");
+    }
+
+    private void exportar_excel() {
+        lblnube.setVisible(true);
+        DAOcc.exportar_excel_caja_fecha_usu(conn);
+        DAOcc.exportar_excel_estado_habitacion(conn);
+        DAOcc.exportar_excel_lista_producto(conn);
+        DAOcc.exportar_excel_caja_resumen(conn);
+        DAOcc.exportar_excel_habitacion_estados(conn);
+        DAOcc.exportar_excel_habitacion_estados_resumen(conn);
+        crear_exp_app = false;
     }
 
     class clasetiempo extends TimerTask {
@@ -186,11 +197,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
             segundo_exp_app++;
             if (segundo_exp_app > (tiempo_exp_app)) {
                 if (crear_exp_app && jsfrm.isApp_act_exp()) {
-                    lblnube.setVisible(true);
-                    DAOcc.exportar_excel_caja_fecha_usu(conn);
-                    DAOcc.exportar_excel_estado_habitacion(conn);
-                    DAOcc.exportar_excel_lista_producto(conn);
-                    crear_exp_app = false;
+                    exportar_excel();
                 }
             }
             if (segundo_exp_app > ((tiempo_exp_app) + 10)) {
@@ -375,6 +382,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem19 = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         jMenuItem23 = new javax.swing.JMenuItem();
+        jMenu12 = new javax.swing.JMenu();
+        jMenuItem28 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -834,6 +843,18 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
         barra_menu_principal.add(jMenu11);
 
+        jMenu12.setText("CONFIGURACION");
+
+        jMenuItem28.setText("EXPORTAR EXECL APPSHEET");
+        jMenuItem28.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem28ActionPerformed(evt);
+            }
+        });
+        jMenu12.add(jMenuItem28);
+
+        barra_menu_principal.add(jMenu12);
+
         setJMenuBar(barra_menu_principal);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1036,6 +1057,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmUsuario_roll());
     }//GEN-LAST:event_jMenuItem27ActionPerformed
 
+    private void jMenuItem28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem28ActionPerformed
+        // TODO add your handling code here:
+        exportar_excel();
+    }//GEN-LAST:event_jMenuItem28ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1087,6 +1113,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;
+    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -1115,6 +1142,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem25;
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem27;
+    private javax.swing.JMenuItem jMenuItem28;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
