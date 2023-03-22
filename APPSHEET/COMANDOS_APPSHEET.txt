@@ -1,3 +1,20 @@
 1-FECHA FORMATO
 
 TEXT([fecha],"DD-MM-YY")
+
+2- mes
+
+IFS(
+MONTH([fecha]) = 1, "ENERO", 
+MONTH([fecha]) = 2, "FEBRERO",
+MONTH([fecha]) = 3, "MARZO",
+MONTH([fecha]) = 4, "ABRIL",
+MONTH([fecha]) = 5, "MAYO",
+MONTH([fecha]) = 6, "JUNIO",
+MONTH([fecha]) = 7, "JULIO",
+MONTH([fecha]) = 8, "AGOSTO",
+MONTH([fecha]) = 9, "SEPTIEMBRE",
+MONTH([fecha]) = 10, "OCTUBRE",
+MONTH([fecha]) = 11, "NOVIEMBRE",
+MONTH([fecha]) = 12, "DICIEMBRE",
+)

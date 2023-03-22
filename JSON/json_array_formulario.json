@@ -9,7 +9,7 @@
 			"rasp_3":"SI",
 			"app_tiempo_min_exp":"60",
 			"app_nom_report":"_franco",
-			"app_act_exp":"SI",
+			"app_act_exp":"NO",
 			"act_roll_usu":"SI"
 		}
 	],

@@ -24,7 +24,12 @@ public class DAO_habitacion_costo {
     private String sql_update = "UPDATE habitacion_costo SET fecha_creado=?,creado_por=?,activo=?,nombre=?,nivel_lujo=?,monto_por_hora_minimo=?,monto_por_hora_adicional=?,monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,minuto_minimo=?,minuto_adicional=?,minuto_cancelar=?,hs_dormir_ingreso_inicio=?,hs_dormir_ingreso_final=?,hs_dormir_salida_final=? WHERE idhabitacion_costo=?;";
     private String sql_select = "SELECT idhabitacion_costo as idhc,nombre,nivel_lujo as tipo,activo "
             + "FROM habitacion_costo order by nombre desc;";
-    private String sql_cargar = "SELECT idhabitacion_costo,fecha_creado,creado_por,activo,nombre,nivel_lujo,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,minuto_minimo,minuto_adicional,minuto_cancelar,hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final FROM habitacion_costo WHERE idhabitacion_costo=";
+    private String sql_cargar = "SELECT idhabitacion_costo,fecha_creado,creado_por,"
+            + "activo,nombre,nivel_lujo,"
+            + "monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,"
+            + "minuto_minimo,minuto_adicional,minuto_cancelar,"
+            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final "
+            + "FROM habitacion_costo WHERE idhabitacion_costo=";
 
     public void insertar_habitacion_costo(Connection conn, habitacion_costo haco) {
         haco.setC1idhabitacion_costo(eveconn.getInt_ultimoID_mas_uno(conn, haco.getTb_habitacion_costo(), haco.getId_idhabitacion_costo()));

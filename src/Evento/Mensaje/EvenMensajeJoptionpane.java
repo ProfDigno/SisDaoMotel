@@ -271,4 +271,21 @@ public class EvenMensajeJoptionpane {
     public static void setCant_error(int aCant_error) {
         cant_error = aCant_error;
     }
+    //String html_1 = "<html><p style=\"color:red\"><font size=\"6\">";
+    //    String html_2 = "</font></p></html>";
+    public String getHtml_rojo(int size,String texto){
+        String html="";
+        html="<p style=\"color:red\"><font size=\""+size+"\">"+texto+"</font></p>";
+        return html;
+    }
+    public String getHtml_azul(int size,String texto){
+        String html="";
+        html="<p style=\"color:blue\"><font size=\""+size+"\">"+texto+"</font></p>";
+        return html;
+    }
+    public String getHtml_negro(int size,String texto){
+        String html="";
+        html="<p style=\"color:black\"><font size=\""+size+"\">"+texto+"</font></p>";
+        return html;
+    }
 }

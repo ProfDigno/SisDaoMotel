@@ -90,4 +90,23 @@ public class BO_habitacion_recepcion_temp {
                 }
             }
     }
+    public void update_salida_final_habitacion(habitacion_recepcion_temp ENThr) {
+        String titulo = "update_salida_final_habitacion";
+        Connection conn = ConnPostgres.getConnPosgres();
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            DAOhrt.update_habitacion_recepcion_temp(conn, ENThr);
+            
+            conn.commit();
+        } catch (SQLException e) {
+            evmen.mensaje_error(e, ENThr.toString(), titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evmen.Imprimir_serial_sql_error(e1, ENThr.toString(), titulo);
+            }
+        }
+    }
 }

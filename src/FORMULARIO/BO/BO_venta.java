@@ -56,6 +56,7 @@ public class BO_venta {
             }
             DAOhr.update_habitacion_recepcion(conn, ENThr);
             DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
+//            DAOhrt.update_habitacion_recepcion_temp_salida_final(conn,ENThrt.getC42idhabitacion_dato());
             if (es_caja) {
                 DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
             }
@@ -103,4 +104,58 @@ public class BO_venta {
                 DAOccd.update_caja_cierre_detalle(conn, ENTccd);
             }
     }
+    public void update_venta_pre_impreso(venta ve) {
+        String titulo = "update_venta_pre_impreso";
+        Connection conn = ConnPostgres.getConnPosgres();
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+             DAOven.update_venta(conn, ve);
+            conn.commit();
+        } catch (SQLException e) {
+            evmen.mensaje_error(e, ve.toString(), titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evmen.Imprimir_serial_sql_error(e1, ve.toString(), titulo);
+            }
+        }
+    }
+    public void update_venta_obs(venta ve) {
+        String titulo = "update_venta_obs";
+        Connection conn = ConnPostgres.getConnPosgres();
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            DAOven.update_venta_obs(conn, ve);
+            conn.commit();
+        } catch (SQLException e) {
+            evmen.mensaje_error(e, ve.toString(), titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evmen.Imprimir_serial_sql_error(e1, ve.toString(), titulo);
+            }
+        }
+    }
+//    public void update_salida_final_habitacion(habitacion_recepcion ENThr) {
+//        String titulo = "update_salida_final_habitacion";
+//        Connection conn = ConnPostgres.getConnPosgres();
+//        try {
+//            if (conn.getAutoCommit()) {
+//                conn.setAutoCommit(false);
+//            }
+//            DAOhr.update_habitacion_recepcion(conn, ENThr);
+//            conn.commit();
+//        } catch (SQLException e) {
+//            evmen.mensaje_error(e, ENThr.toString(), titulo);
+//            try {
+//                conn.rollback();
+//            } catch (SQLException e1) {
+//                evmen.Imprimir_serial_sql_error(e1, ENThr.toString(), titulo);
+//            }
+//        }
+//    }
 }

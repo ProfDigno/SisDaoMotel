@@ -72,6 +72,10 @@
                               <Component id="txttiempo_ahora" min="-2" pref="161" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btnventa_interna" min="-2" pref="126" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="lblentrada_actual" min="-2" pref="37" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtentrada_actual" min="-2" pref="75" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="btnrpi_1" min="-2" pref="116" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -87,23 +91,32 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="panel_puerta" alignment="1" min="-2" pref="592" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="panel_habitaciones" max="32767" attributes="0"/>
+                              <Component id="panel_habitaciones" min="-2" pref="555" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="txttiempo_ahora" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
-                                  <Component id="btnrpi_1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnrpi_2" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnrpi_3" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnventa_interna" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="2" attributes="0">
+                                          <Component id="txttiempo_ahora" alignment="2" min="-2" pref="28" max="-2" attributes="0"/>
+                                          <Component id="btnventa_interna" alignment="2" max="32767" attributes="0"/>
+                                          <Component id="btnrpi_1" alignment="2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnrpi_2" alignment="2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnrpi_3" alignment="2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="txtentrada_actual" alignment="1" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="lblentrada_actual" min="-2" pref="31" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -181,6 +194,24 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnventa_internaActionPerformed"/>
               </Events>
             </Component>
+            <Component class="javax.swing.JLabel" name="lblentrada_actual">
+              <Properties>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/iconos/motel/32_taxi.png"/>
+                </Property>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtentrada_actual">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="18" style="1"/>
+                </Property>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="50"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel_tiempo_habitacion">
@@ -213,8 +244,8 @@
                                           <Component id="txttipo_habitacion" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="jPanel8" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jPanel9" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -250,7 +281,7 @@
                                   <Component id="lbltipo_tarifa_icono" min="-2" pref="67" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Group type="102" alignment="1" attributes="0">
+                          <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="btnmudar_habitacion" min="-2" pref="121" max="-2" attributes="0"/>
@@ -260,10 +291,18 @@
                                       <Component id="btnsalir_ocupacion" min="-2" pref="173" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="btncancelar" pref="210" max="32767" attributes="0"/>
-                                          <Component id="lblmensaje_cancelar" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                  <Component id="btncancelar" pref="210" max="32767" attributes="0"/>
+                                                  <Component id="lblmensaje_cancelar" max="32767" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="btnobservacion" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          </Group>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -327,9 +366,13 @@
                                   <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="jFmonto_total_pagar" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblmensaje_cancelar" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="btnobservacion" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="lblmensaje_cancelar" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="2" attributes="0">
@@ -550,11 +593,19 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jFdormir_ingreso_inicio" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
-                              <Component id="jFdormir_ingreso_final" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
-                              <Component id="jFdormir_salida_final" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="jFdormir_ingreso_inicio" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
+                                      <Component id="jFdormir_ingreso_final" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <Component id="jFdormir_salida_final" min="-2" pref="130" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btncambiar_salida_final" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -565,7 +616,10 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jFdormir_ingreso_final" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jFdormir_salida_final" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="btncambiar_salida_final" max="32767" attributes="0"/>
+                              <Component id="jFdormir_salida_final" max="32767" attributes="0"/>
+                          </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -625,6 +679,14 @@
                       <Font name="Tahoma" size="14" style="1"/>
                     </Property>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="btncambiar_salida_final">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="CAMBIAR HS"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btncambiar_salida_finalActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -1320,6 +1382,14 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="jLabel6"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnobservacion">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="OBS"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnobservacionActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

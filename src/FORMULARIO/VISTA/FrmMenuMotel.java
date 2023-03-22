@@ -49,7 +49,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 1.9.1";
+    private String version = "V.: 1.9.5";
+    private String fec_version = "2023-03-21";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -102,7 +103,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         frame.setExtendedState(MAXIMIZED_BOTH);
         String titulo = jscon.getNombre()
                 + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato() + " IP:" + pcinfo.getStringMiIP()
-                + " Version: " + version;
+                + " Version: " + version+ " Fecha:"+fec_version;
         frame.setTitle(titulo);
     }
 

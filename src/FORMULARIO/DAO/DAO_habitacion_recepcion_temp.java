@@ -366,4 +366,13 @@ public class DAO_habitacion_recepcion_temp {
                 + "where  hd.idhabitacion_dato=hrt.idhabitacion_dato;";
         eveconn.SQL_execute_libre(conn, sql);
     }
+    public void update_habitacion_recepcion_temp_salida_final(Connection conn,int idhabitacion_dato) {
+        String sql = "update habitacion_recepcion_temp hrt \n"
+                + "set hs_dormir_salida_final=hc.hs_dormir_salida_final \n"
+                + "from habitacion_costo hc,habitacion_dato hd  \n"
+                + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo \n"
+                + "and hd.idhabitacion_dato=hrt.idhabitacion_dato \n"
+                + "and hrt.idhabitacion_dato="+idhabitacion_dato;
+        eveconn.SQL_execute_libre(conn, sql);
+    }
 }

@@ -34,6 +34,7 @@ public class DAO_venta {
             + "monto_descuento=?,monto_adelanto=?,"
             + "fk_idhabitacion_recepcion=?,fk_idpersona=?,fk_idusuario=? "
             + "WHERE fk_idhabitacion_recepcion=?;";
+    private String sql_update_obs = "UPDATE venta SET observacion=? WHERE fk_idhabitacion_recepcion=?;";
     private String sql_select = "select v.idventa as idv,\n"
             + "TRIM(to_char(hr.fec_ocupado_inicio ,'yyyy-MM-dd HH24:MI')) as fec_ini,\n"
             + "case when v.estado='OCUPADO' then 'XD' else TRIM(to_char(hr.fec_ocupado_fin,'yyyy-MM-dd HH24:MI')) end as fec_fin,\n"
@@ -145,7 +146,20 @@ public class DAO_venta {
             evemen.mensaje_error(e, sql_update + "\n" + ve.toString(), titulo);
         }
     }
-
+    public void update_venta_obs(Connection conn, venta ve) {
+        String titulo = "update_venta_obs";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_obs);
+            pst.setString(1, ve.getC6observacion());
+            pst.setInt(2, ve.getC17fk_idhabitacion_recepcion());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_obs + "\n" + ve.toString(), titulo);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_obs + "\n" + ve.toString(), titulo);
+        }
+    }
     public void cargar_venta_idhabitacion_recepcion(Connection conn, venta ve, int idhabitacion_recepcion) {
         String titulo = "cargar_venta_idhabitacion_recepcion";
         try {
