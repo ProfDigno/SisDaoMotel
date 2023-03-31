@@ -2470,7 +2470,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="panel_temp_rpi_1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="1056" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnrecepcion_temp" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="909" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2478,7 +2480,10 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="panel_temp_rpi_1" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="btnrecepcion_temp" min="-2" max="-2" attributes="0"/>
+                          <Component id="panel_temp_rpi_1" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="197" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -2517,6 +2522,14 @@
                 </DimensionLayout>
               </Layout>
             </Container>
+            <Component class="javax.swing.JButton" name="btnrecepcion_temp">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="ver sql recepcion temp"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnrecepcion_tempActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="panel_garantia_pendiente">
@@ -2743,7 +2756,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btngar_pagar_garantia" min="-2" pref="190" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="btnimprimir_garantia" min="-2" pref="127" max="-2" attributes="0"/>
+                          <Component id="btnimprimir_garantia" min="-2" pref="152" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>

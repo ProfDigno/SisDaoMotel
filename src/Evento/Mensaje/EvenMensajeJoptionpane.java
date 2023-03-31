@@ -18,6 +18,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -69,7 +71,8 @@ public class EvenMensajeJoptionpane {
         }
         return mensajeok;
     }
-    public boolean getBooMensaje_question_focus(JPanel foco,String mensaje, String titulo, String boton1, String boton2) {
+
+    public boolean getBooMensaje_question_focus(JPanel foco, String mensaje, String titulo, String boton1, String boton2) {
 
         Object[] opciones = {boton1, boton2};
         boolean mensajeok;
@@ -83,6 +86,7 @@ public class EvenMensajeJoptionpane {
         }
         return mensajeok;
     }
+
     public boolean getBooMensaje_informacion(String mensaje, String titulo, String boton1, String boton2) {
         JOptionPane jOptionPane = new JOptionPane();
         jOptionPane.setBackground(Color.RED);
@@ -185,6 +189,7 @@ public class EvenMensajeJoptionpane {
         }
 
     }
+
     public void mensaje_error_sql(SQLException e, String sql, String titulo) {
         setCant_error(getCant_error() + 1);
         String sumasql = "";
@@ -203,6 +208,7 @@ public class EvenMensajeJoptionpane {
         }
 
     }
+
     public void mensaje_error(Exception e, String titulo) {
         setCant_error(getCant_error() + 1);
         JOptionPane.showMessageDialog(null, "Error:" + e, titulo, JOptionPane.ERROR_MESSAGE);
@@ -271,21 +277,36 @@ public class EvenMensajeJoptionpane {
     public static void setCant_error(int aCant_error) {
         cant_error = aCant_error;
     }
+
     //String html_1 = "<html><p style=\"color:red\"><font size=\"6\">";
     //    String html_2 = "</font></p></html>";
-    public String getHtml_rojo(int size,String texto){
-        String html="";
-        html="<p style=\"color:red\"><font size=\""+size+"\">"+texto+"</font></p>";
+    public String getHtml_rojo(int size, String texto) {
+        String html = "";
+        html = "<p style=\"color:red\"><font size=\"" + size + "\">" + texto + "</font></p>";
         return html;
     }
-    public String getHtml_azul(int size,String texto){
-        String html="";
-        html="<p style=\"color:blue\"><font size=\""+size+"\">"+texto+"</font></p>";
+
+    public String getHtml_azul(int size, String texto) {
+        String html = "";
+        html = "<p style=\"color:blue\"><font size=\"" + size + "\">" + texto + "</font></p>";
         return html;
     }
-    public String getHtml_negro(int size,String texto){
-        String html="";
-        html="<p style=\"color:black\"><font size=\""+size+"\">"+texto+"</font></p>";
+
+    public String getHtml_negro(int size, String texto) {
+        String html = "";
+        html = "<p style=\"color:black\"><font size=\"" + size + "\">" + texto + "</font></p>";
         return html;
+    }
+
+    public void mensaje_JTextArea(String mensaje) {
+        JTextArea ta = new JTextArea(30, 50);
+        ta.setText(mensaje);
+        Object[] opciones = {"ACEPTAR", "CANCELAR"};
+        int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(ta), "MENSAJE TEXT AREA",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, opciones, "ACEPTAR");
+        if (eleccion == JOptionPane.YES_OPTION) {
+            System.out.println(mensaje);
+        }
     }
 }

@@ -30,7 +30,29 @@ public class EvenFecha {
     String formato_fechaHora = "yyyy-MM-dd HH:mm:ss";
     private String formato_hora_min_seg = "HH:mm:ss";
     private String formato_hora_min = "HH:mm";
-
+/**
+     * Obtiene la fecha del jdatechooser y combierte en String de acuerdo al
+     * formato
+     *
+     * @param dcfecha jdatechooser obtiene de esta variable la fecha
+     * @param formato_fecha el formato que va ir como un String recomendado
+     * 'yyyy-MM-dd'
+     * @throws fecha= dia=dd, mes=MM, ano=yyyy hora= hora 12= hh, hora 24=HH,
+     * con 0=hh/HH, sin 0=h/H minuto= mm, segundo=ss
+     * @return String la fecha que puede ser dias mes o anho o todo junto ver
+     * formato
+     */
+    public void setFechaDCSistema(com.toedter.calendar.JDateChooser dcfecha) {
+        java.util.Date date = new java.util.Date();
+        dcfecha.setDate(date);
+    }
+    public String getfechaDCStringFormat(com.toedter.calendar.JDateChooser dcfecha, String formato_fecha) {
+        String ifecha;
+        java.util.Date date = dcfecha.getDate();
+        SimpleDateFormat sdf = new SimpleDateFormat(formato_fecha);
+        ifecha = (sdf.format(date));
+        return ifecha;
+    }
     public String getString_validar_fecha(String fechaStr) {
         String Sfecha = "";
         try {

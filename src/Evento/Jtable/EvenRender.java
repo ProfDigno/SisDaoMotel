@@ -340,4 +340,33 @@ public class EvenRender {
             }
         });
     }
+    public void rendertabla_estado_garantia(JTable tbltabla, final int columna) {
+        System.out.println("-->rendertabla_venta");
+        tbltabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                //************************************************************
+                int columnaRender = columna;
+                Color color_fondo = Color.WHITE;
+                Color color_text = Color.BLACK;
+                Object texto1 = table.getValueAt(row, columnaRender);
+                String cpendiente = "PENDIENTE";
+                String cpagado = "PAGADO";
+                if (texto1 != null && cpendiente.equals(texto1.toString())) {
+                    color_fondo = Color.YELLOW;
+                    color_text = Color.RED;
+                }
+                if (texto1 != null && cpagado.equals(texto1.toString())) {
+                    color_fondo = Color.GREEN;
+                    color_text = Color.BLUE;
+                }
+                label.setBackground(color_fondo);
+                table.setSelectionForeground(color_text);
+
+                return label;
+            }
+        });
+    }
 }

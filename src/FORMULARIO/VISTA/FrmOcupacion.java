@@ -57,7 +57,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Digno
  */
-public class FrmVenta extends javax.swing.JInternalFrame {
+public class FrmOcupacion extends javax.swing.JInternalFrame {
 
     private EvenJButton evebtn = new EvenJButton();
     private EvenJFRAME evetbl = new EvenJFRAME();
@@ -99,7 +99,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private JSchExampleSSHConnection connRPI = new JSchExampleSSHConnection();
     private ComputerInfo pcinfo = new ComputerInfo();
     json_array_formulario jsfrm = new json_array_formulario();
-    usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
+    private usuario ENTusu = new usuario(); //creado_por = ENTusu.getGlobal_nombre();
+    private DAO_usuario DAOusu = new DAO_usuario();
     Connection conn = ConnPostgres.getConnPosgres();
     private producto ENTp = new producto();
     private DAO_producto DAOp = new DAO_producto();
@@ -183,10 +184,10 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private int segundo_act_btn;
     private double monto_adicional;
     private int cant_boton_nrohab;
-    String usu_id = "idusuario";
-    String usu_nombre = "nombre";
-    String usu_tabla = "usuario";
-    String usu_where = "where activo=true ";
+//    String usu_id = "idusuario";
+//    String usu_nombre = "nombre";
+//    String usu_tabla = "usuario";
+//    String usu_where = "where activo=true ";
     private String suma_tiempo_titulo;
     private String motivo_anulacion;
     private String btnlibre_html = "<html><p style=\"color:green\"><font size=\"4\">LIBRE</font></p></html>";
@@ -230,6 +231,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private String hs_dormir_salida_final_select;
     private boolean es_por_hora_select;
     private boolean es_por_dormir_select;
+    private String sql_ocupacion;
 
     private void abrir_formulario() {
         creado_por = ENTusu.getGlobal_nombre();
@@ -299,7 +301,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     }
 
     private void cargar_usuario() {
-        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
+//        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
+        DAOusu.cargar_usuario_combo(conn, cmbusuario);
     }
 
     public int getInt_cant_habitacion_activo(Connection conn) {
@@ -754,10 +757,12 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             evemen.mensaje_error(e, titulo);
         }
     }
-
+    private void imprimir_sql_recepcion_temp(){
+        evemen.mensaje_JTextArea(DAOhrt.getSql_ocupacion_boton());
+    }
     private void cargar_sql_habitacion_recepcion_temp() {
         String titulo = "";
-        String sql = "select\n"
+        sql_ocupacion = "select\n"
                 + "	nro_habitacion,tipo_habitacion,estado,\n"
                 + "	minuto_cancelar,\n"
                 + "	case\n"
@@ -981,9 +986,9 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "		when puerta_cliente = true then 1\n"
                 + "		else 0\n"
                 + "	end as puerta_ocu,\n"
-                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_amd() + "') as fecha_ingreso,"
-                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_hms() + "') as hora_ingreso,"
-                + "minuto_minimo,"
+                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_amd() + "') as fecha_ingreso,\n"
+                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_hms() + "') as hora_ingreso,\n"
+                + "minuto_minimo,\n"
 
                 + "     case\n"
                 + "	        when estado = '" + eveest.getEst_Ocupado() + "'  and es_por_hora=true and es_por_dormir=false\n"
@@ -997,32 +1002,32 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))"
+                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
                 + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=false and es_por_dormir=true\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))"
+                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
                 + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=true and es_por_dormir=true\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))"
+                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
                 + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=true and es_por_dormir=true\n"
                 + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
                 + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
                 + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))"
+                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
                 + "		else 0\n"
                 + "	end as cant_add_tarifa_hora,"
-                + "idhabitacion_dato,idhabitacion_recepcion_actual,monto_adelanto, "
+                + "idhabitacion_dato,idhabitacion_recepcion_actual,monto_adelanto, \n"
                 + "case when estado = '" + eveest.getEst_Ocupado() + "' and puerta_limpieza=true and puerta_cliente=true \n"
                 + "        and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_cancelar*60)) then true\n"
                 + "     else false end as cancelar_habitacion,\n"
                 + "    case when ((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))>0 \n"
                 + "         then to_char(((((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))*100)/(minuto_cancelar * 60)),'99D99%') \n"
-                + "         else '0%' end as por_cancelar,"
-                + "TRIM(to_char(monto_por_hora_minimo,'" + eveest.getForm_nro_9D() + "')) as  monto_por_hora_minimo,"
+                + "         else '0%' end as por_cancelar,\n"
+                + "TRIM(to_char(monto_por_hora_minimo,'" + eveest.getForm_nro_9D() + "')) as  monto_por_hora_minimo,\n"
                 + "case\n"
                 + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
                 + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
@@ -1042,18 +1047,19 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 + "     then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'" + eveest.getFec_hms() + "') \n"
                 + "else '00:00' \n"
                 + "end as hs_hasta_dormir, \n"
-                + "case  when (date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio)>fec_ocupado_inicio and  (date(fec_ocupado_inicio) + hs_dormir_salida_final)<fec_ocupado_inicio "
+                + "case  when (date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio)>fec_ocupado_inicio and  (date(fec_ocupado_inicio) + hs_dormir_salida_final)<fec_ocupado_inicio \n"
                 + "then false else true end as es_hora_dormir \n"
                 + "from\n"
                 + "	habitacion_recepcion_temp \n"
                 + "where activo=true \n"
                 + "order by orden asc;";
         try {
+//            String sql=sql_ocupacion;
+            String sql=DAOhrt.getSql_ocupacion_boton();
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
 //            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             int fila = 0;
             while (rs.next()) {
-//                String nro_habitacion = rs.getString("nro_habitacion");
                 int Inro_habitacion = rs.getInt("nro_habitacion");
                 String tipo_habitacion = rs.getString("tipo_habitacion");
                 String estado = rs.getString("estado");
@@ -1082,7 +1088,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 int cant_hasta_dormir = rs.getInt("cant_hasta_dormir");
                 String hs_hasta_dormir = rs.getString("hs_hasta_dormir");
                 String monto = "0";
-
                 if (!habilitar_hora && habilitar_dormir) {
                     monto = tarifa_gral_dormir;
                 }
@@ -1093,7 +1098,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                     monto = tarifa_gral_dormir;
                 }
                 String suma_estado = estado + desc_estado;
-
                 Sa_tipo_habitacion[fila] = tipo_habitacion;
                 Ia_nro_habitacion[fila] = Inro_habitacion;
                 Sa_estado[fila] = estado;
@@ -1120,31 +1124,18 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 ejecutar_limpieza_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
                 ejecutar_libre_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
                 ejecutar_ocupar_automatico(cambiar_estado, est_nuevo, idhabitacion_dato, Inro_habitacion, idhabitacion_recepcion_actual);
-//                crear_sonido(ruta_sonido, idhabitacion_dato);
+                actualizar_dato_habitacion_mostrar(idhabitacion_recepcion_actual, tiempo);
                 fila++;
             }
         } catch (SQLException e) {
-            evemen.Imprimir_serial_sql_error(e, sql, titulo);
+            evemen.Imprimir_serial_sql_error(e, sql_ocupacion, titulo);
         }
     }
-
-//    private void crear_sonido(String ruta_sonido, int idhabitacion_dato) {
-//        if (no_es_sonido_ocupado) {
-//            string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
-//            if (!ruta_sonido.equals("NO")) {
-//                if (!string_ruta_sonido[idhabitacion_dato].equals(ruta_sonido)) {
-//                    hab_ruta_sonido[idhabitacion_dato] = true;
-//                }
-//                if (hab_ruta_sonido[idhabitacion_dato]) {
-//                    EvenSonido.reproducir_vos(ruta_sonido);
-//                    string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
-//                    hab_ruta_sonido[idhabitacion_dato] = false;
-//                }
-//            } else {
-//                hab_ruta_sonido[idhabitacion_dato] = true;
-//            }
-//        }
-//    }
+    private void actualizar_dato_habitacion_mostrar(int idhabitacion_recepcion_actual,String tiempo){
+        if(fk_idhabitacion_recepcion_actual_select==idhabitacion_recepcion_actual){
+            txttiempo_transcurrido.setText(tiempo);
+        }
+    }
     private void cargar_array_habitacion_datos() {
         String titulo = "cargar_array_habitacion_datos";
         if (panel_habitaciones.getComponentCount() > cant_de_habitacion) {
@@ -1361,11 +1352,6 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                         btncancelar.setEnabled(cancelar_habitacion);
                         jRpor_dormir.setEnabled(es_hora_dormir);//es_hora_dormir
                         jRpor_hora_mas_dormir.setEnabled(!es_hora_dormir);
-//                        if(true){
-//                            DAOhd.cargar_habitacion_dato(conn, ENThd, idhabitacion_dato);
-//                            DAOhc.cargar_habitacion_costo(conn, ENThc, ENThd.getC11fk_idhabitacion_costo());
-//                            hs_dormir_salida_final_select=ENThc.getC16hs_dormir_salida_final();
-//                        }
                         if (cancelar_habitacion) {
                             lblmensaje_cancelar.setText("...");
                         } else {
@@ -1525,7 +1511,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
 
     private void iniciarTiempo() {
         tiempo_boton = new Timer();
-        tiempo_boton.schedule(new FrmVenta.clasetiempo(), 0, 1000 * 1);
+        tiempo_boton.schedule(new FrmOcupacion.clasetiempo(), 0, 1000 * 1);
         System.out.println("Timer INICIAR");
     }
 
@@ -2949,7 +2935,8 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         } else {
             habitacion = "";
         }
-        int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
+//        int idusuario = evecmb.getInt_seleccionar_COMBOBOX(conn, cmbusuario, usu_id, usu_nombre, usu_tabla);
+        int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
         if (idusuario > 0) {
             usuario = " and v.fk_idusuario=" + idusuario;
         }
@@ -3366,7 +3353,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         }
     }
 
-    public FrmVenta() {
+    public FrmOcupacion() {
         initComponents();
         abrir_formulario();
     }
@@ -3507,6 +3494,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         txttiempo_transcurrido_salir = new javax.swing.JTextField();
         jPanel16 = new javax.swing.JPanel();
         panel_temp_rpi_1 = new javax.swing.JPanel();
+        btnrecepcion_temp = new javax.swing.JButton();
         panel_garantia_pendiente = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         txtgar_responsable = new javax.swing.JTextField();
@@ -4971,6 +4959,13 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             .addGap(0, 394, Short.MAX_VALUE)
         );
 
+        btnrecepcion_temp.setText("ver sql recepcion temp");
+        btnrecepcion_temp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrecepcion_tempActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
@@ -4978,13 +4973,17 @@ public class FrmVenta extends javax.swing.JInternalFrame {
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panel_temp_rpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1056, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnrecepcion_temp)
+                .addContainerGap(909, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_temp_rpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnrecepcion_temp)
+                    .addComponent(panel_temp_rpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(197, Short.MAX_VALUE))
         );
 
@@ -5127,7 +5126,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnimprimir_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnimprimir_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -5505,6 +5504,11 @@ public class FrmVenta extends javax.swing.JInternalFrame {
         boton_ver_observacion_venta();
     }//GEN-LAST:event_btnobservacionActionPerformed
 
+    private void btnrecepcion_tempActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrecepcion_tempActionPerformed
+        // TODO add your handling code here:
+        imprimir_sql_recepcion_temp();
+    }//GEN-LAST:event_btnrecepcion_tempActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizar_total_pago_adelanto;
@@ -5533,6 +5537,7 @@ public class FrmVenta extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnimprimir_ticket_ocupado;
     private javax.swing.JButton btnmudar_habitacion;
     private javax.swing.JButton btnobservacion;
+    private javax.swing.JButton btnrecepcion_temp;
     private javax.swing.JButton btnrpi_1;
     private javax.swing.JButton btnrpi_2;
     private javax.swing.JButton btnrpi_3;

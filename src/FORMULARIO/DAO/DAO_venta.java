@@ -146,6 +146,7 @@ public class DAO_venta {
             evemen.mensaje_error(e, sql_update + "\n" + ve.toString(), titulo);
         }
     }
+
     public void update_venta_obs(Connection conn, venta ve) {
         String titulo = "update_venta_obs";
         PreparedStatement pst = null;
@@ -160,6 +161,7 @@ public class DAO_venta {
             evemen.mensaje_error(e, sql_update_obs + "\n" + ve.toString(), titulo);
         }
     }
+
     public void cargar_venta_idhabitacion_recepcion(Connection conn, venta ve, int idhabitacion_recepcion) {
         String titulo = "cargar_venta_idhabitacion_recepcion";
         try {
@@ -333,5 +335,71 @@ public class DAO_venta {
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.ocultar_columna(tbltabla, 5);
 
+    }
+
+    public void actualizar_tabla_filtro_venta(Connection conn, JTable tbltabla, String filtro) {
+        String sql = "select v.idventa as idv,\n"
+                + "TRIM(to_char(hr.fec_ocupado_inicio ,'yyyy-MM-dd HH24:MI')) as fec_ini,\n"
+                + "case when v.estado='OCUPADO' then 'XD' else TRIM(to_char(hr.fec_ocupado_fin,'yyyy-MM-dd HH24:MI')) end as fec_fin,\n"
+                + "hr.nro_habitacion as hab,hd.tipo_habitacion as tipo,\n"
+                + "TRIM(to_char((hr.fec_ocupado_fin-hr.fec_ocupado_inicio), 'HH24:MI:ss')) as tiempo,\n"
+                + "case when hr.es_por_hora=true and hr.es_por_dormir=false then 'HORA'\n"
+                + "     when hr.es_por_hora=false and hr.es_por_dormir=true then 'DORMIR'\n"
+                + "     when hr.es_por_hora=true and hr.es_por_dormir=true then 'HS+DORMIR'\n"
+                + "     else 'sin-tipo' end as ocu_por,\n"
+                + "v.estado,u.nombre as usuario,\n"
+                + "TRIM(to_char(v.monto_minimo,'999G999G999')) as minimo,\n"
+                + "TRIM(to_char(v.monto_adicional,'999G999G999')) as adicional,\n"
+                + "TRIM(to_char(v.monto_consumo,'999G999G999')) as consumo,\n"
+                + "TRIM(to_char(((v.monto_minimo+v.monto_adicional+v.monto_consumo)),'999G999G999')) as total,\n"
+                + "v.monto_minimo as iminimo,v.monto_adicional as iadicional,v.monto_consumo as iconsumo,\n"
+                + "((v.monto_minimo+v.monto_adicional+v.monto_consumo)) as itotal\n"
+                + "from venta v,habitacion_recepcion hr,usuario u,habitacion_dato hd  \n"
+                + "where v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
+                + "and hr.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
+                + "and v.fk_idusuario=u.idusuario\n"
+                + "and v.estado='TERMINADO' \n" + filtro
+                + " order by v.idventa desc";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_filtro_venta(tbltabla);
+    }
+
+    public void ancho_tabla_filtro_venta(JTable tbltabla) {
+        int Ancho[] = {5, 10, 10, 5, 6, 6, 7, 7, 11, 7, 7, 7, 7, 1, 1, 1, 1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 9);
+        evejt.alinear_derecha_columna(tbltabla, 10);
+        evejt.alinear_derecha_columna(tbltabla, 11);
+        evejt.alinear_derecha_columna(tbltabla, 12);
+        evejt.ocultar_columna(tbltabla, 13);
+        evejt.ocultar_columna(tbltabla, 14);
+        evejt.ocultar_columna(tbltabla, 15);
+        evejt.ocultar_columna(tbltabla, 16);
+
+    }
+
+    public void imprimir_filtro_venta(Connection conn, String filtro,String nom_filtro) {
+        String sql = "select v.idventa as idv,\n"
+                + "TRIM(to_char(hr.fec_ocupado_inicio ,'yyyy-MM-dd HH24:MI')) as fec_ini,\n"
+                + "case when v.estado='OCUPADO' then 'XD' else TRIM(to_char(hr.fec_ocupado_fin,'yyyy-MM-dd HH24:MI')) end as fec_fin,\n"
+                + "hr.nro_habitacion as hab,hd.tipo_habitacion as tipo,\n"
+                + "TRIM(to_char((hr.fec_ocupado_fin-hr.fec_ocupado_inicio), 'HH24:MI:ss')) as tiempo,\n"
+                + "case when hr.es_por_hora=true and hr.es_por_dormir=false then 'HORA'\n"
+                + "     when hr.es_por_hora=false and hr.es_por_dormir=true then 'DORMIR'\n"
+                + "     when hr.es_por_hora=true and hr.es_por_dormir=true then 'HS+DORMIR'\n"
+                + "     else 'sin-tipo' end as ocu_por,\n"
+                + "u.nombre as usuario,\n"
+                + "v.monto_minimo as minimo,v.monto_adicional as adicional,v.monto_consumo as consumo,\n"
+                + "((v.monto_minimo+v.monto_adicional+v.monto_consumo)) as total,('"+nom_filtro+"') as filtro\n"
+                + "from venta v,habitacion_recepcion hr,usuario u,habitacion_dato hd  \n"
+                + "where v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
+                + "and hr.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
+                + "and v.fk_idusuario=u.idusuario\n"
+                + "and v.estado='TERMINADO' \n"+filtro
+                + "\n"
+                + "order by v.idventa desc;";
+        String titulonota = "FILTRO OCUPACION";
+        String direccion = "src/REPORTE/VENTA/repFiltroOcupacion.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

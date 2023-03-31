@@ -48,6 +48,22 @@ public class EvenCombobox {
             evmen.mensaje_error(e, sql, titulo);
         }
     }  
+    public void cargarCombobox_orden(Connection conn,JComboBox combo,String id,String nombre,String tabla,String where,String orden){  
+        String titulo="cargarCombobox_orden";
+      DefaultComboBoxModel model = (DefaultComboBoxModel) combo.getModel();
+      model.removeAllElements();//eliminamos todo antes de cargar
+      String sql="select ("+nombre+"||'-('||"+id+"||')') as nombre from "+tabla+" "+where+"  "+orden+" ;";
+        try{
+            ResultSet rs=eveconn.getResulsetSQL(conn, sql, titulo);
+            combo.addItem("-SELECCIONAR-"); 
+            while (rs.next()){
+                combo.addItem(rs.getObject("nombre")); 
+            }
+//            System.out.println("---Cargade de Jcombobox sin error su sql es ---:"+sql);
+        }catch(SQLException e){
+            evmen.mensaje_error(e, sql, titulo);
+        }
+    } 
     public void setSeleccionarCombobox(Connection conn,JComboBox combo,String id,String nombre,String tabla,int idselect){  
         String titulo="setSeleccionarCombobox";
       String sql="select ("+nombre+"||'-('||"+id+"||')') as nombre from "+tabla+" where "+id+"="+idselect+" ;";

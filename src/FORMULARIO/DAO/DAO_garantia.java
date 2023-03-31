@@ -7,6 +7,7 @@ import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Fecha.EvenFecha;
+import Evento.Jtable.EvenRender;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +20,7 @@ public class DAO_garantia {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EvenRender everen = new EvenRender();
     private EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "GARANTIA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GARANTIA MODIFICADO CORECTAMENTE";
@@ -118,11 +120,13 @@ public class DAO_garantia {
     public void actualizar_tabla_garantia(Connection conn, JTable tbltabla) {
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_garantia(tbltabla);
+        everen.rendertabla_estado_garantia(tbltabla,6);
     }
 
     public void ancho_tabla_garantia(JTable tbltabla) {
         int Ancho[] = {5, 12,12, 12, 20, 9, 9,8,13};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 5);
     }
     public void terminar_garantia_en_caja(Connection conn, int fk_idcaja_cierre) {
         String sql = "update garantia set estado='" + eveest.getEst_PENDIENTE() + "' from caja_cierre_item ,caja_cierre_detalle \n"
