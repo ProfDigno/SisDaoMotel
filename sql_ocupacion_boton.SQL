@@ -55,8 +55,7 @@ end as tarifa_gral_hora,
 case
 when estado = 'OCUPADO'  and es_por_dormir = true and es_por_hora = false --HORA mas de 24hs
 	and (current_timestamp>(date(fec_ocupado_inicio)+2))
-		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +
-		((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer))* monto_por_dormir_adicional)), '999G999G999')
+		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +             ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer))* monto_por_dormir_adicional)), '999G999G999')
 when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false
 	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))
 	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))
@@ -150,10 +149,10 @@ minuto_minimo,
 case
 when estado = 'OCUPADO' and es_por_hora=true and es_por_dormir=false --HORA mas de 24hs
 	and (current_timestamp>(date(fec_ocupado_inicio)+2))
-		then (cast((((extract(epoch from(current_timestamp - fec_ocupado_inicio))))/ 3600) as integer))   
+		then (cast((((extract(epoch from(current_timestamp - fec_ocupado_inicio))))/ 3600) as integer))         
 when estado = 'OCUPADO' and es_por_hora=true and es_por_dormir=true
 	and (current_timestamp>(date(fec_ocupado_inicio)+2))
-		then (cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer))     
+		then (cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer))
 when estado = 'OCUPADO'  and es_por_hora=true and es_por_dormir=false
 	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))
 	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  

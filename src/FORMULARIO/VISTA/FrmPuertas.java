@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -136,10 +137,30 @@ public class FrmPuertas extends javax.swing.JFrame {
     }
 
     private void update_habitacion_item_sensor_gpio(boolean alto_bajo, int idhabitacion_dato, int sensor) {
-        String sql = "update habitacion_item_sensor_gpio set alto_bajo=" + alto_bajo + " "
+        String titulo = "insertar_habitacion_recepcion_temp";
+        String sql = "update habitacion_item_sensor_gpio set alto_bajo=" + alto_bajo + " \n"
                 + "where fk_idhabitacion_dato=" + idhabitacion_dato
-                + " and fk_idhabitacion_sensor=" + sensor;
-        eveconn.SQL_execute_libre(conn, sql);
+                + " and fk_idhabitacion_sensor=" + sensor+";\n"
+                + "update habitacion_recepcion_temp set \n"
+                + "puerta_limpieza=(select alto_bajo from habitacion_item_sensor_gpio \n"
+                + "where fk_idhabitacion_dato=habitacion_recepcion_temp.idhabitacion_dato and fk_idhabitacion_sensor=" + sensor_puerta_limpieza+"); \n"
+                + "update habitacion_recepcion_temp set \n"
+                + "puerta_cliente=(select alto_bajo from habitacion_item_sensor_gpio \n"
+                + "where fk_idhabitacion_dato=habitacion_recepcion_temp.idhabitacion_dato and fk_idhabitacion_sensor=" + sensor_puerta_cliente+"); \n";
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            eveconn.SQL_execute_libre(conn, sql);
+            conn.commit();
+        } catch (SQLException e) {
+            evemen.mensaje_error(e,sql, titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evemen.Imprimir_serial_sql_error(e1,sql, titulo);
+            }
+        }
     }
 
     private void agregar_label_puertas(int fila, int idhabitacion_dato, boolean cliente, boolean limpieza) {

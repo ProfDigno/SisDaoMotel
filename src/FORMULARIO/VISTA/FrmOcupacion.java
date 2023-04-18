@@ -43,6 +43,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -109,6 +110,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private java.util.List<JButton> botones_marca;
     private java.util.List<JButton> botones_nro_hab;
     private java.util.List<JButton> botones_teste;
+    private java.util.List<JTextField> botones_puerta;
     DefaultTableModel model_itemf = new DefaultTableModel();
     private int cant_boton_cate;
     private int cant_boton_unid;
@@ -180,14 +182,13 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     boolean[] Ba_puerta_limpieza;
     boolean[] Ba_es_manual;
     private int cant_de_habitacion;
-    private int segundo_tiempo;
+    private int segundo_tiempo_esten;
+    private int max_tiempo_esten = 60;
+    private int limit_tiempo_esten = 5;
+    private int segundo_tiempo_resumen;
     private int segundo_act_btn;
     private double monto_adicional;
     private int cant_boton_nrohab;
-//    String usu_id = "idusuario";
-//    String usu_nombre = "nombre";
-//    String usu_tabla = "usuario";
-//    String usu_where = "where activo=true ";
     private String suma_tiempo_titulo;
     private String motivo_anulacion;
     private String btnlibre_html = "<html><p style=\"color:green\"><font size=\"4\">LIBRE</font></p></html>";
@@ -213,7 +214,6 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private int Icant_hasta_dormir;
     private String Shs_hasta_dormir;
     private int segundo_conn_rpi;
-//    private int segundo_exp_app;
     private int cant_add_hab_boton;
     private double monto_adelanto_1;
     private String descripcion_consumo_adelantado = "";
@@ -225,13 +225,17 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private boolean btn_reboot_rp_3;
     private boolean est_btn_cancelar;
     private String observacion_venta = "";
-//    private boolean crear_exp_app;
-//    private int tiempo_exp_app=(2*60);
     private String descripcion_caja_desocupa;
     private String hs_dormir_salida_final_select;
     private boolean es_por_hora_select;
     private boolean es_por_dormir_select;
     private String sql_ocupacion;
+    private String[] Sa_ocu_nombre_boton;
+    private String[] Sa_ocu_icono;
+    private String[] Sa_ocu_color_fondo;
+    private String[] Sa_ocu_color_texto;
+    private String[] Sa_nombre_puerta;
+    boolean seg_intercalar = false;
 
     private void abrir_formulario() {
         creado_por = ENTusu.getGlobal_nombre();
@@ -246,9 +250,10 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         botones_marca = new ArrayList<>();
         botones_nro_hab = new ArrayList<>();
         botones_teste = new ArrayList<>();
+        botones_puerta = new ArrayList<>();
+        jPtiempo_hab.setMaximum(max_tiempo_esten);
         FrmMenuMotel.setHabilitar_sonido(true);
         FrmMenuMotel.setAbrir_frmventa(false);
-//        jRpor_hora_mas_dormir.setEnabled(false);
         cargar_usuario();
         cargar_boton_categoria();
         crear_item_producto();
@@ -256,7 +261,9 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         reestableser_garantia();
         boton_raspberry();
         cargar_cantidad_entrada_abierta();
-//        crear_exp_app=true;
+        cargar_boton_habitacion(true);
+        cargar_estados_puertas_gpio(true);
+        cargar_boton_habitacion_mudar();
         txtgar_idventa.setText(null);
         txtgar_monto_ocupacion.setText(null);
         btngar_guardar.setEnabled(false);
@@ -301,7 +308,6 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     }
 
     private void cargar_usuario() {
-//        evecmb.cargarCombobox(conn, cmbusuario, usu_id, usu_nombre, usu_tabla, usu_where);
         DAOusu.cargar_usuario_combo(conn, cmbusuario);
     }
 
@@ -321,7 +327,6 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     }
 
     private void cargar_array_habitacion() {
-//        cant_de_habitacion = (eveconn.getInt_ultimoID_max(conn, ENThrt.getTb_habitacion_recepcion_temp(), ENThrt.getId_idhabitacion_recepcion_temp()));
         cant_de_habitacion = getInt_cant_habitacion_activo(conn);
         Sa_tipo_habitacion = new String[cant_de_habitacion];
         Ia_nro_habitacion = new int[cant_de_habitacion];
@@ -352,7 +357,364 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         Sa_monto_por_hora_minimo = new String[cant_de_habitacion];
         Ia_cant_hasta_dormir = new int[cant_de_habitacion];
         Sa_hs_hasta_dormir = new String[cant_de_habitacion];
+
+        Sa_ocu_nombre_boton = new String[cant_de_habitacion];
+        Sa_ocu_icono = new String[cant_de_habitacion];
+        Sa_ocu_color_fondo = new String[cant_de_habitacion];
+        Sa_ocu_color_texto = new String[cant_de_habitacion];
+        Sa_nombre_puerta = new String[cant_de_habitacion];
         System.err.println("FORMULARIO.VISTA.FrmVenta.cargar_array_habitacion().cant_de_habitacion:" + cant_de_habitacion);
+    }
+
+    private void ejecutar_update_habitacion_recepcion_temp_FUERTE() {
+        String sql = DAOhrt.getSql_ocupacion_boton_FUERTE();
+        eveconn.SQL_execute_libre_sin_print(conn, sql);
+    }
+
+    private void ejecutar_update_habitacion_recepcion_temp_LIBIANO() {
+        String sql = DAOhrt.getSql_ocupacion_boton_LIBIANO();
+        eveconn.SQL_execute_libre_sin_print(conn, sql);
+    }
+
+    private void cargar_boton_habitacion(boolean es_inicio) {
+        String titulo = "cargar_boton_habitacion";
+        String sql1 = "select ('<html><p><font size=\"4\">'||nro_habitacion||'</font>-'||tipo_habitacion||"
+                + "'</p><p>'||idhabitacion_dato||':'||descrip_estado||'</p>'||\n"
+                + "'<p><font size=\"4\">'||tiempo_estado||'</font></p>'||\n"
+                + "'<p>'||TRIM(to_char(monto_gral,'999G999G999'))||'</p></html>') as nom_boton,"
+                + "idhabitacion_dato, \n"
+                + "ruta_icono as icono, \n"
+                + "color_fondo, \n"
+                + "color_texto, \n"
+                + "nro_habitacion,"
+                + "case\n"
+                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = false then true\n"
+                + "when estado = 'SUCIO'     and puerta_limpieza = false then true\n"
+                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  and puerta_cliente = true then true\n"
+                + "else false\n"
+                + "end as cambiar_estado,\n"
+                + "case\n"
+                + "when estado = 'LIBRE'     and puerta_limpieza = true and puerta_cliente = false then 'OCUPADO'\n"
+                + "when estado = 'SUCIO'     and puerta_limpieza = false then 'LIMPIANDO'\n"
+                + "when estado = 'LIMPIANDO' and puerta_limpieza = true and puerta_cliente = true then 'LIBRE'\n"
+                + "else 'sin'\n"
+                + "end as est_nuevo,\n"
+                + "idhabitacion_recepcion_actual \n"
+                + "from habitacion_recepcion_temp \n"
+                + "where activo=true \n"
+                + "order by idhabitacion_dato asc;";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql1, titulo);
+            if (es_inicio) {
+                panel_habitaciones.removeAll();
+                botones_nro_hab.clear();
+            }
+            int fila = 0;
+            while (rs.next()) {
+                String textboton = rs.getString("nom_boton");
+                String nameboton = rs.getString("idhabitacion_dato");
+                String icono = rs.getString("icono");
+                String color_fondo = rs.getString("color_fondo");
+                String color_texto = rs.getString("color_texto");
+                int Inro_habitacion = rs.getInt("nro_habitacion");//
+                boolean cambiar_estado = rs.getBoolean("cambiar_estado");//
+                String est_nuevo = rs.getString("est_nuevo");//
+                int idhabitacion_dato = rs.getInt("idhabitacion_dato");//
+                int idhabitacion_recepcion_actual = rs.getInt("idhabitacion_recepcion_actual");//
+                Sa_ocu_nombre_boton[fila] = textboton;
+                Sa_ocu_icono[fila] = icono;
+                Sa_ocu_color_fondo[fila] = color_fondo;
+                Sa_ocu_color_texto[fila] = color_texto;
+                if (es_inicio) {
+                    crear_boton_habitacion(textboton, nameboton, icono, color_fondo, color_texto);
+                }
+
+                ejecutar_limpieza_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
+                ejecutar_libre_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
+                ejecutar_ocupar_automatico(cambiar_estado, est_nuevo, idhabitacion_dato, Inro_habitacion, idhabitacion_recepcion_actual);
+                fila++;
+            }
+            if (es_inicio) {
+                panel_habitaciones.updateUI();
+            }
+        } catch (SQLException e) {
+            evemen.mensaje_error(e, sql1, titulo);
+        }
+    }
+
+    private void cargar_boton_habitacion_mudar() {
+        String titulo = "cargar_boton_habitacion_mudar";
+        String sql1 = "select ('<html><p><font size=\"4\">'||nro_habitacion||'</font>-'||tipo_habitacion||"
+                + "'</p><p>'||idhabitacion_dato||':'||descrip_estado||'</p>'||\n"
+                + "'<p><font size=\"4\">'||tiempo_estado||'</font></p>'||\n"
+                + "'<p>'||TRIM(to_char(monto_gral,'999G999G999'))||'</p></html>') as nom_boton,"
+                + "idhabitacion_dato, \n"
+                + "estado, \n"
+                + "nro_habitacion "
+                + "from habitacion_recepcion_temp \n"
+                + "where activo=true \n"
+                + "order by idhabitacion_dato asc;";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql1, titulo);
+//            if (es_inicio) {
+            panel_habitaciones_libre.removeAll();
+//                botones_nro_hab.clear();
+//            }
+            int fila = 0;
+            while (rs.next()) {
+                String textboton = rs.getString("nom_boton");
+                String nameboton = rs.getString("idhabitacion_dato");
+                int Inro_habitacion = rs.getInt("nro_habitacion");//
+                String estado = rs.getString("estado");//
+                int idhabitacion_dato = rs.getInt("idhabitacion_dato");//
+//                if (es_inicio) {
+                crear_unitario_boton_habitacion_mudar(textboton, nameboton, Inro_habitacion, estado, idhabitacion_dato);
+//                }
+                fila++;
+            }
+//            if (es_inicio) {
+            panel_habitaciones_libre.updateUI();
+//            }
+        } catch (SQLException e) {
+            evemen.mensaje_error(e, sql1, titulo);
+        }
+    }
+
+    private void crear_unitario_boton_habitacion_mudar(String textboton, String nameboton, int nro_habitacion, String estado, int idhabitacion_dato) {
+//        String nombreboton = "<html><p><font size=\"6\">" + nro_habitacion
+//                + "</font>-" + tipo_habitacion + "</p><p>" + desc_estado
+//                + "</p><p><font size=\"4\">" + tiempo
+//                + "</font></p><p>" + monto + "</p></html>";
+        JButton boton_lib;
+        if (estado.equals(eveest.getEst_Libre())) {
+            boton_lib = new JButton(textboton);
+            boton_lib.setFont(new Font("Arial", Font.BOLD, 12));
+            boton_lib.setName(nameboton);
+            boton_lib.setForeground(new java.awt.Color(0, 102, 0));
+            boton_lib.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_libre())));
+        } else {
+            boton_lib = new JButton("NO-DISPONIBLE");
+            boton_lib.setFont(new Font("Arial", Font.BOLD, 12));
+            boton_lib.setName(nameboton);
+            boton_lib.setForeground(Color.black);
+            boton_lib.setBackground(Color.orange);
+            boton_lib.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_candado())));
+        }
+//        if (boton_mudar_unavez) {
+        panel_habitaciones_libre.add(boton_lib);
+//        } else {
+//            panel_habitaciones_libre.remove(fila);
+//            panel_habitaciones_libre.add(boton_lib, fila);
+//        }
+        boton_lib.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((JButton) e.getSource()).setBackground(new java.awt.Color(153, 153, 255));
+                String getName = ((JButton) e.getSource()).getName();
+                System.out.println("getName:" + getName);
+                if (estado.equals(eveest.getEst_Libre())) {
+                    if (validar_habitacion_select()) {
+                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                                + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
+                                + "<p><font size=\"6\">--MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + "--</font></p>"
+                                + "</html>", "MUDAR HABITACION", "MUDAR", btncancelar_html)) {
+                            tiempo_boton_hab = 0;
+                            JTextArea txtacancel = new JTextArea(15, 30);
+                            int idventa = (eveconn.getInt_ultimoID_mas_uno(conn, ENTven.getTb_venta(), ENTven.getId_idventa()));
+                            String mensaje_inicio = "MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + " IDVENTA:" + idventa;
+                            txtacancel.setText(mensaje_inicio);
+                            Object[] opciones = {"MUDAR", btncancelar_html};
+                            int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(txtacancel), "MOTIVO PARA MUDAR(Obligatorio)",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE, null, opciones, "MUDAR");
+                            if (eleccion == JOptionPane.YES_OPTION) {
+                                if (txtacancel.getText().trim().length() > 0) {
+                                    motivo_mudar_habitacion = txtacancel.getText().toUpperCase();
+                                    cargar_observacion_venta("Motivo:" + motivo_mudar_habitacion, false);
+                                    ejecutar_mudar_habitacion(idhabitacion_dato, nro_habitacion);
+                                    cargar_observacion_venta("##==>>CONFIRMAR MUDAR", false);
+                                    limpiar_habitacion_select();
+                                    boton_mudar_unavez = true;
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE MUDAR INTENTE DE NUEVO",
+                                            "ERROR MUDANZA", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                            + "<p><font size=\"6\">--NO DISPONIBLE--</font></p></html>", "HABITACION LIBRE", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        boton_lib.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                evebtn.setColor_mouseMoved(((JButton) evt.getSource()));
+            }
+        });
+        boton_lib.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                evebtn.setColor_mouseExited_neutro(((JButton) evt.getSource()));
+            }
+        });
+    }
+
+    private Color getCol_Exa(String hexColor) {
+        return Color.decode(hexColor);
+    }
+
+    private void actualizar_boton_habitacion() {
+        String titulo = "actualizar_boton_habitacion";
+        for (int fila = 0; fila < cant_de_habitacion; fila++) {
+            try {
+                botones_nro_hab.get(fila).setText(Sa_ocu_nombre_boton[fila]);
+                botones_nro_hab.get(fila).setBackground(getCol_Exa(Sa_ocu_color_fondo[fila]));
+                botones_nro_hab.get(fila).setForeground(getCol_Exa(Sa_ocu_color_texto[fila]));
+                if (!Sa_ocu_icono[fila].equals("no")) {
+                    botones_nro_hab.get(fila).setIcon(new ImageIcon(this.getClass().getResource(Sa_ocu_icono[fila])));
+                }
+            } catch (Exception e) {
+                evemen.mensaje_error(e, titulo);
+            }
+        }
+    }
+
+    private void crear_boton_habitacion(String textboton, String nameboton, String icono, String color_fondo, String color_texto) {
+        JButton boton = new JButton(textboton);
+        boton.setFont(new Font("Arial", Font.BOLD, 12));
+        boton.setName(nameboton);
+        if (!icono.equals("no")) {
+            boton.setIcon(new ImageIcon(this.getClass().getResource(icono)));
+        }
+        boton.setBackground(getCol_Exa(color_fondo));
+        boton.setForeground(getCol_Exa(color_texto));
+        panel_habitaciones.add(boton);
+        botones_nro_hab.add(boton);
+        boton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String Sidhabitacion_dato = ((JButton) e.getSource()).getName();
+                System.out.println("idhabitacion_dato:" + Sidhabitacion_dato);
+                int idhabitacion_dato = Integer.parseInt(Sidhabitacion_dato);
+                cargar_habitacion_recepcion_temp(idhabitacion_dato);
+            }
+        });
+        boton.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                evebtn.setColor_mouseMoved(((JButton) evt.getSource()));
+
+            }
+        });
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                evebtn.setColor_mouseExited_neutro(((JButton) evt.getSource()));
+            }
+        });
+    }
+
+    private void cargar_habitacion_recepcion_temp(int idhabitacion_dato) {
+        String titulo = "cargar_habitacion_recepcion_temp";
+        String sql = DAOhrt.getSql_ocupacion_boton_CARGAR(idhabitacion_dato);
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                String estado = rs.getString("estado");
+                String tipo_habitacion = rs.getString("tipo_habitacion");
+                int nro_habitacion = rs.getInt("nro_habitacion");
+                int idhabitacion_recepcion_actual = rs.getInt("idhabitacion_recepcion_actual");
+                boolean habilitar_dormir = rs.getBoolean("es_por_dormir");
+                boolean habilitar_hora = rs.getBoolean("es_por_hora");
+                int cant_hasta_dormir = rs.getInt("cant_hasta_dormir");
+                String hs_hasta_dormir = rs.getString("hs_hasta_dormir");
+                int cant_hora_adicional = rs.getInt("cant_hora_adicional");
+                boolean permitir_dormir = rs.getBoolean("permitir_dormir");
+                String tiempo_estado = rs.getString("tiempo_estado");
+                String fecha_ingreso = rs.getString("fecha_ingreso");
+                String hora_ingreso = rs.getString("hora_ingreso");
+                boolean cancelar_habitacion = rs.getBoolean("cancelar_habitacion");
+                String por_cancelar = rs.getString("por_cancelar");
+                int ocupado_inicio_seg = rs.getInt("ocupado_inicio_seg");
+                int minuto_minimo = rs.getInt("minuto_minimo");
+                if (estado.equals(eveest.getEst_Libre())) {
+                    if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                            + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
+                            + "<p><font size=\"6\">--OCUPAR--</font></p>"
+                            + "<p><font size=\"6\">--MONTO MINIMO:" + monto_por_hora_minimo + " --</font></p>"
+                            + "</html>", "HABITACION LIBRE", btnocupar_html, btncancelar_html)) {
+                        cargar_observacion_venta("#==>>OCUPAR POR BOTON MANUAL", false);
+                        boton_libre_a_ocupar(nro_habitacion, idhabitacion_dato);
+                        segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
+                    }
+                }
+                if (estado.equals(eveest.getEst_Sucio())) {
+                    if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                            + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
+                            + "<p><font size=\"6\">--LIBERAR--</font></p>"
+                            + "</html>", "HABITACION SUCIO", btnlibre_html, btncancelar_html)) {
+                        boton_sucio_a_libre(idhabitacion_recepcion_actual, idhabitacion_dato);
+                        segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
+                    }
+                }
+                if (estado.equals(eveest.getEst_Limpiando())) {
+                    if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
+                            + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
+                            + "<p><font size=\"6\">--LIBERAR--</font></p>"
+                            + "</html>", "HABITACION LIMPIEZA", btnlibre_html, btncancelar_html)) {
+                        boton_limpieza_a_libre(idhabitacion_recepcion_actual, idhabitacion_dato);
+                        segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
+                    }
+                }
+                if (estado.equals(eveest.getEst_Ocupado())) {
+                    segundo_tiempo_esten = 0;
+                    Icant_hasta_dormir = cant_hasta_dormir;
+                    Shs_hasta_dormir = hs_hasta_dormir;
+                    tiempo_boton_hab = 0;
+                    boton_mudar_unavez = true;
+                    color_panel_venta(1);
+                    eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
+                    jFtotal_consumo.setValue(0);
+                    icono_tipo_habitacion(tipo_habitacion);
+                    cargar_costos(idhabitacion_dato, habilitar_dormir, habilitar_hora, cant_hora_adicional);
+                    nro_habitacion_select = nro_habitacion;
+                    fk_idhabitacion_dato_select = idhabitacion_dato;
+                    permitir_dormir_select = permitir_dormir;
+                    tiempo_select = tiempo_estado;
+                    fecha_ingreso_select = fecha_ingreso;
+                    hora_ingreso_select = hora_ingreso;
+                    fk_idhabitacion_recepcion_actual_select = idhabitacion_recepcion_actual;
+                    DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
+                    fk_idventa = ENTven.getC1idventa();
+                    DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
+                    limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
+                    txtrecepcion_actual.setText(String.valueOf(fk_idhabitacion_recepcion_actual_select));
+                    txtnro_hab_grande.setText(String.valueOf(nro_habitacion));
+                    txtnro_hab_grande_salir.setText(String.valueOf(nro_habitacion));
+                    txttipo_habitacion.setText(tipo_habitacion);
+                    txtidventa.setText(String.valueOf(fk_idventa));
+                    txtfec_ocupado_inicio.setText(fecha_ingreso);
+                    txtfec_ocupado_inicio_hora.setText(hora_ingreso);
+                    txttiempo_transcurrido.setText(tiempo_estado);
+                    txttiempo_transcurrido_salir.setText(tiempo_estado);
+                    btncancelar.setEnabled(cancelar_habitacion);
+                    jRpor_dormir.setEnabled(habilitar_dormir);//es_hora_dormir
+                    jRpor_hora_mas_dormir.setEnabled(!habilitar_dormir);
+                    if (cancelar_habitacion) {
+                        lblmensaje_cancelar.setText("...");
+                    } else {
+                        lblmensaje_cancelar.setText("CERRAR PUERTA: " + nro_habitacion);
+                    }
+
+                    btncancelar.setText("CANCELAR-" + por_cancelar);
+                    observacion_venta = "";
+                    cargar_observacion_venta("Seleccion BTN OCUPADO; fk_idventa=" + fk_idventa + ",nro_hab=" + nro_habitacion + ",tiempo=" + tiempo_estado, false);
+                    cargar_jbar_tiempo_minimo(ocupado_inicio_seg, minuto_minimo);
+                }
+            }
+        } catch (SQLException e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
     }
 
     private void cargar_boton_categoria() {
@@ -684,7 +1046,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         BOhrt.update_habitacion_recepcion_temp_puertas(sensor_puerta_cliente, sensor_puerta_limpieza);
     }
 
-    private void cargar_estados_puertas_gpio(int sensor_puerta_cliente, int sensor_puerta_limpieza) {
+    private void cargar_estados_puertas_gpio(boolean es_inicio) {
         String titulo = "cargar_estados_puertas_gpio";
         String sql = "select hd.idhabitacion_dato,hd.es_manual,\n"
                 + "(select case when hd.es_manual=true then true else ig.alto_bajo end from habitacion_item_sensor_gpio ig \n"
@@ -699,6 +1061,10 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         try {
             ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             int fila = 0;
+//            if (es_inicio) {
+            panel_puerta.removeAll();
+//                botones_puerta.clear();
+//            }
             while (rs.next()) {
                 int idhabitacion_dato = rs.getInt("idhabitacion_dato");
                 boolean cliente = rs.getBoolean("cliente");
@@ -708,26 +1074,55 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 Ba_puerta_cliente[fila] = cliente;
                 Ba_puerta_limpieza[fila] = limpieza;
                 Ba_es_manual[fila] = es_manual;
+//                System.out.println("idhabitacion_dato:"+idhabitacion_dato+"\tcliente:"+cliente+"\tlimpieza:"+limpieza);
+//                if (es_inicio) {
+                agregar_label_puertas(idhabitacion_dato, cliente, limpieza, es_manual);
+//                }
                 fila++;
             }
+//            if (es_inicio) {
+            panel_puerta.updateUI();
+//            }
         } catch (SQLException e) {
             evemen.Imprimir_serial_sql_error(e, sql, titulo);
         }
     }
 
-    private void cargar_array_habitacion_puertas() {
-        limpiar_panel(panel_puerta);
-        for (int fila = 0; fila < (cant_de_habitacion); fila++) {
-            agregar_label_puertas(fila, Ia_puerta_nro_habitacion[fila], Ba_puerta_cliente[fila], Ba_puerta_limpieza[fila], Ba_es_manual[fila]);
-        }
-        panel_puerta.updateUI();
-    }
-
-    private void agregar_label_puertas(int fila, int nro_habitacion, boolean cliente, boolean limpieza, boolean es_manual) {
-        JTextField txtpuerta_cliente = new JTextField("C:" + nro_habitacion);
-        JTextField txtpuerta_limpieza = new JTextField("L:" + nro_habitacion);
-        txtpuerta_cliente.setFont(new Font("Arial", Font.BOLD, 12));
-        txtpuerta_limpieza.setFont(new Font("Arial", Font.BOLD, 12));
+//    private void cargar_array_habitacion_puertas() {
+//        String titulo = "cargar_array_habitacion_puertas";
+//        for (int fila = 0; fila < cant_de_habitacion; fila++) {
+//            try {
+//                botones_puerta.get(fila).setText("C:" + Ia_puerta_nro_habitacion[fila]);
+//                botones_puerta.get(fila).setText("L:" + Ia_puerta_nro_habitacion[fila]);
+//                if (Ba_es_manual[fila]) {
+//                    botones_puerta.get(fila).setBackground(Color.white);
+//                    botones_puerta.get(fila).setBackground(Color.white);
+//                } else {
+//                    if (Ba_puerta_cliente[fila]) {
+//                        botones_puerta.get(fila).setBackground(Color.green);
+//                    }
+//                    if (!Ba_puerta_cliente[fila]) {
+//                        botones_puerta.get(fila).setBackground(Color.red);
+//                    }
+//                    if (Ba_puerta_limpieza[fila]) {
+//                        botones_puerta.get(fila).setBackground(Color.green);
+//                    }
+//                    if (!Ba_puerta_limpieza[fila]) {
+//                        botones_puerta.get(fila).setBackground(Color.yellow);
+//                    }
+//                }
+//            } catch (Exception e) {
+//                evemen.mensaje_error(e, titulo);
+//            }
+//        }
+//    }
+    private void agregar_label_puertas(int idhabitacion_dato, boolean cliente, boolean limpieza, boolean es_manual) {
+//        JButton boton = new JButton(textboton);
+//        boton.setFont(new Font("Arial", Font.BOLD, 10));
+        JTextField txtpuerta_cliente = new JTextField("C:" + idhabitacion_dato);
+        JTextField txtpuerta_limpieza = new JTextField("L:" + idhabitacion_dato);
+        txtpuerta_cliente.setFont(new Font("Arial", Font.BOLD, 11));
+        txtpuerta_limpieza.setFont(new Font("Arial", Font.BOLD, 11));
         if (es_manual) {
             txtpuerta_cliente.setBackground(Color.white);
             txtpuerta_limpieza.setBackground(Color.white);
@@ -747,6 +1142,8 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         }
         panel_puerta.add(txtpuerta_cliente);
         panel_puerta.add(txtpuerta_limpieza);
+//        botones_puerta.add(txtpuerta_cliente);
+//        botones_puerta.add(txtpuerta_limpieza);
     }
 
     private void limpiar_panel(JPanel panel) {
@@ -757,421 +1154,22 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             evemen.mensaje_error(e, titulo);
         }
     }
-    private void imprimir_sql_recepcion_temp(){
+
+    private void imprimir_sql_recepcion_temp() {
         evemen.mensaje_JTextArea(DAOhrt.getSql_ocupacion_boton());
     }
-    private void cargar_sql_habitacion_recepcion_temp() {
-        String titulo = "";
-        sql_ocupacion = "select\n"
-                + "	nro_habitacion,tipo_habitacion,estado,\n"
-                + "	minuto_cancelar,\n"
-                + "	case\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true then ''\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '" + eveest.getEstdes_Limpiando() + "'\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliingreso() + "'\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true\n"
-                + "		and (extract(epoch\n"
-                + "	from\n"
-                + "		(current_timestamp-fec_ocupado_inicio))>(minuto_cancelar * 60)) then ''\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true\n"
-                + "		and (extract(epoch\n"
-                + "	from\n"
-                + "		(current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) then '" + eveest.getEstdes_cancelar() + "'\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '" + eveest.getEstdes_limpAbierto() + "'\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliAbierto() + "'\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true then '" + eveest.getEstdes_sucio() + "'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '" + eveest.getEstdes_Limpiando() + "'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliAbierto() + "'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true then ''\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = true then '" + eveest.getEstdes_Limpiando() + "'\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_cliingreso() + "'\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                + "		and puerta_cliente = false then '" + eveest.getEstdes_mante() + "'\n"
-                + "		else '.'\n"
-                + "	end as desc_estado,\n"
-                + "	case\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "' then to_char((current_timestamp-fec_ocupado_inicio), '" + eveest.getFec_hms() + "')\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "' then to_char((current_timestamp-fec_ocupado_fin), '" + eveest.getFec_hms() + "')\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "' then to_char((current_timestamp-fec_ocupado_fin), '" + eveest.getFec_hms() + "')\n"
-                + "		else '.'\n"
-                + "	end as tiempo,\n"
-                + "	case\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "' then to_char((current_timestamp-fec_ocupado_inicio), '" + eveest.getFec_amd() + " " + eveest.getFec_hms() + "')\n"
-                + "		else '.'\n"
-                + "	end as fec_ingreso,\n"
-                + "	es_por_dormir as habilitar_dormir,\n"
-                + "	es_por_hora as habilitar_hora,\n" //add
-                + "	case\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "         then to_char((monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto)), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "         then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto)), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "         then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto) + \n"
-                + "              (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* monto_por_hora_adicional)), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		else '.'\n"
-                + "	end as tarifa_gral_hora,\n"
-                + "	case\n"
-                + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "		and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = false\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                //                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "		and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                //                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '" + eveest.getForm_nro_9D() + "')\n"
-                + "		when es_por_dormir = true and es_por_hora = true\n"
-                + "		and estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '" + eveest.getForm_nro_9D() + "')\n"
-                + "		else '.'\n"
-                + "	end as tarifa_gral_dormir,\n"
-                + "case\n"
-                + "		when  (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio))\n"
-                + "		and (current_timestamp<(date(current_timestamp)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "		and (current_timestamp<((date(current_timestamp)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then true\n"
-                + "		when  (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "		and (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final))\n"
-                //                + "		--and (current_timestamp>(current_timestamp))\n"
-                + "		and (current_timestamp<((date(current_timestamp)) + hs_dormir_salida_final)) \n"
-                + "          then true\n"
-                + "		when  (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio))\n"
-                + "		and (current_timestamp<(date(current_timestamp)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>((date(current_timestamp)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then true\n"
-                + "		when  (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "		and (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>((date(current_timestamp)) + hs_dormir_salida_final)) \n"
-                + "          then true\n"
-                + "		else false\n"
-                + "	end as permitir_dormir,\n"
-                + "	case\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then true\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = false then true\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = true then true\n"
-                + "		else false\n"
-                + "	end as cambiar_estado,\n"
-                + "	case\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false then '" + eveest.getEst_Ocupado() + "'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = false then '" + eveest.getEst_Limpiando() + "'\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = true then '" + eveest.getEst_Libre() + "'\n"
-                + "		else 'sin'\n"
-                + "	end as est_nuevo,\n"
-                + "	idhabitacion_recepcion_actual as ult_recepcion,\n"
-                + "	case\n"
-                + "             when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false \n"
-                + "                          then '" + eveest.getSon_pue_cli() + "'\n"
-                + "             when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = false\n"
-                //+ "		and puerta_cliente = false \n"
-                + "                          then '" + eveest.getSon_pue_limp() + "'\n"
-                + "		when estado = '" + eveest.getEst_Libre() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = false \n"
-                + "                          then '" + eveest.getSon_ocupa() + "' || nro_habitacion || '.wav'\n"
-                + "		when estado = '" + eveest.getEst_Limpiando() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true \n"
-                + "                          then '" + eveest.getSon_libre() + "' || nro_habitacion || '.wav'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = true\n"
-                + "		and puerta_cliente = true\n"
-                + "		and (extract(epoch from (current_timestamp - fec_ocupado_fin)))<20  \n"
-                + "                          then '" + eveest.getSon_desocu() + "' || nro_habitacion || '.wav'\n"
-                + "		when estado = '" + eveest.getEst_Sucio() + "'\n"
-                + "		and puerta_limpieza = false \n"
-                + "                          then '" + eveest.getSon_limpie() + "' || nro_habitacion || '.wav'\n"
-                + "		else 'NO'\n"
-                + "	end as ruta_sonido,\n"
-                + "	(extract(epoch\n"
-                + "from\n"
-                + "	(current_timestamp - fec_ocupado_inicio))) as ocupado_inicio_seg,\n"
-                + "	case\n"
-                + "		when puerta_limpieza = true then 1\n"
-                + "		else 0\n"
-                + "	end as puerta_lim,\n"
-                + "	case\n"
-                + "		when puerta_cliente = true then 1\n"
-                + "		else 0\n"
-                + "	end as puerta_ocu,\n"
-                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_amd() + "') as fecha_ingreso,\n"
-                + "to_char((fec_ocupado_inicio), '" + eveest.getFec_hms() + "') as hora_ingreso,\n"
-                + "minuto_minimo,\n"
 
-                + "     case\n"
-                + "	        when estado = '" + eveest.getEst_Ocupado() + "'  and es_por_hora=true and es_por_dormir=false\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "          then 1 \n"
-                + "		when estado = '" + eveest.getEst_Ocupado() + "'  and es_por_hora=true and es_por_dormir=false\n"
-                + "		and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "          then (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)+1)\n"
-                + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=false and es_por_dormir=true\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=false and es_por_dormir=true\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=true and es_por_dormir=true\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "             when estado = '" + eveest.getEst_Ocupado() + "' and es_por_hora=true and es_por_dormir=true\n"
-                + "		and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "		and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "		and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "          then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "		else 0\n"
-                + "	end as cant_add_tarifa_hora,"
-                + "idhabitacion_dato,idhabitacion_recepcion_actual,monto_adelanto, \n"
-                + "case when estado = '" + eveest.getEst_Ocupado() + "' and puerta_limpieza=true and puerta_cliente=true \n"
-                + "        and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_cancelar*60)) then true\n"
-                + "     else false end as cancelar_habitacion,\n"
-                + "    case when ((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))>0 \n"
-                + "         then to_char(((((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))*100)/(minuto_cancelar * 60)),'99D99%') \n"
-                + "         else '0%' end as por_cancelar,\n"
-                + "TRIM(to_char(monto_por_hora_minimo,'" + eveest.getForm_nro_9D() + "')) as  monto_por_hora_minimo,\n"
-                + "case\n"
-                + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "    then (0)\n"
-                + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "    then (1)\n"
-                + "when estado = '" + eveest.getEst_Ocupado() + "'\n"
-                + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "    then (1 + (cast(to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* 1))\n"
-                + "else 0\n"
-                + "end as cant_hasta_dormir,\n"
-                + "case \n"
-                + "when estado = '" + eveest.getEst_Ocupado() + "' \n"
-                + "and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(0)) \n"
-                + "     then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'" + eveest.getFec_hms() + "') \n"
-                + "else '00:00' \n"
-                + "end as hs_hasta_dormir, \n"
-                + "case  when (date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio)>fec_ocupado_inicio and  (date(fec_ocupado_inicio) + hs_dormir_salida_final)<fec_ocupado_inicio \n"
-                + "then false else true end as es_hora_dormir \n"
-                + "from\n"
-                + "	habitacion_recepcion_temp \n"
-                + "where activo=true \n"
-                + "order by orden asc;";
-        try {
-//            String sql=sql_ocupacion;
-            String sql=DAOhrt.getSql_ocupacion_boton();
-            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
-//            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
-            int fila = 0;
-            while (rs.next()) {
-                int Inro_habitacion = rs.getInt("nro_habitacion");
-                String tipo_habitacion = rs.getString("tipo_habitacion");
-                String estado = rs.getString("estado");
-                String desc_estado = rs.getString("desc_estado");
-                String tiempo = rs.getString("tiempo");
-                String tarifa_gral_hora = rs.getString("tarifa_gral_hora");
-                String tarifa_gral_dormir = rs.getString("tarifa_gral_dormir");
-                boolean habilitar_dormir = rs.getBoolean("habilitar_dormir");
-                boolean habilitar_hora = rs.getBoolean("habilitar_hora");
-                boolean cambiar_estado = rs.getBoolean("cambiar_estado");
-                boolean permitir_dormir = rs.getBoolean("permitir_dormir");
-                boolean es_hora_dormir = rs.getBoolean("es_hora_dormir");
-                String est_nuevo = rs.getString("est_nuevo");
-                String fecha_ingreso = rs.getString("fecha_ingreso");
-                String hora_ingreso = rs.getString("hora_ingreso");
-                int ocupado_inicio_seg = rs.getInt("ocupado_inicio_seg");
-                int minuto_minimo = rs.getInt("minuto_minimo");
-                int cant_add_tarifa_hora = rs.getInt("cant_add_tarifa_hora");
-                int idhabitacion_dato = rs.getInt("idhabitacion_dato");
-                int monto_adelanto = rs.getInt("monto_adelanto");
-                int idhabitacion_recepcion_actual = rs.getInt("idhabitacion_recepcion_actual");
-                boolean cancelar_habitacion = rs.getBoolean("cancelar_habitacion");
-                String por_cancelar = rs.getString("por_cancelar");
-                String ruta_sonido = rs.getString("ruta_sonido");
-                String monto_por_hora_minimo = rs.getString("monto_por_hora_minimo");
-                int cant_hasta_dormir = rs.getInt("cant_hasta_dormir");
-                String hs_hasta_dormir = rs.getString("hs_hasta_dormir");
-                String monto = "0";
-                if (!habilitar_hora && habilitar_dormir) {
-                    monto = tarifa_gral_dormir;
-                }
-                if (habilitar_hora && !habilitar_dormir) {
-                    monto = tarifa_gral_hora;
-                }
-                if (habilitar_hora && habilitar_dormir) {
-                    monto = tarifa_gral_dormir;
-                }
-                String suma_estado = estado + desc_estado;
-                Sa_tipo_habitacion[fila] = tipo_habitacion;
-                Ia_nro_habitacion[fila] = Inro_habitacion;
-                Sa_estado[fila] = estado;
-                Sa_desc_estado[fila] = suma_estado;
-                Sa_tiempo[fila] = tiempo;
-                Sa_monto[fila] = monto;
-                Ba_habilitar_dormir[fila] = habilitar_dormir;
-                Ba_habilitar_hora[fila] = habilitar_hora;
-                Ia_cant_add_tarifa_hora[fila] = cant_add_tarifa_hora;
-                Ia_idhabitacion_dato[fila] = idhabitacion_dato;
-                Ia_idhabitacion_recepcion_actual[fila] = idhabitacion_recepcion_actual;
-                Sa_fecha_ingreso[fila] = fecha_ingreso;
-                Sa_hora_ingreso[fila] = hora_ingreso;
-                Ia_ocupado_inicio_seg[fila] = ocupado_inicio_seg;
-                Ia_minuto_minimo[fila] = minuto_minimo;
-                Ba_permitir_dormir[fila] = permitir_dormir;
-                Ba_es_hora_dormir[fila] = es_hora_dormir;
-                Ia_monto_adelanto[fila] = monto_adelanto;
-                Ba_cancelar_habitacion[fila] = cancelar_habitacion;
-                Sa_por_cancelar[fila] = por_cancelar;
-                Sa_monto_por_hora_minimo[fila] = monto_por_hora_minimo;
-                Ia_cant_hasta_dormir[fila] = cant_hasta_dormir;
-                Sa_hs_hasta_dormir[fila] = hs_hasta_dormir;
-                ejecutar_limpieza_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
-                ejecutar_libre_automatico(cambiar_estado, est_nuevo, idhabitacion_recepcion_actual, idhabitacion_dato);
-                ejecutar_ocupar_automatico(cambiar_estado, est_nuevo, idhabitacion_dato, Inro_habitacion, idhabitacion_recepcion_actual);
-                actualizar_dato_habitacion_mostrar(idhabitacion_recepcion_actual, tiempo);
-                fila++;
-            }
-        } catch (SQLException e) {
-            evemen.Imprimir_serial_sql_error(e, sql_ocupacion, titulo);
-        }
-    }
-    private void actualizar_dato_habitacion_mostrar(int idhabitacion_recepcion_actual,String tiempo){
-        if(fk_idhabitacion_recepcion_actual_select==idhabitacion_recepcion_actual){
-            txttiempo_transcurrido.setText(tiempo);
-        }
-    }
-    private void cargar_array_habitacion_datos() {
-        String titulo = "cargar_array_habitacion_datos";
-        if (panel_habitaciones.getComponentCount() > cant_de_habitacion) {
-            boton_hab_unavez = true;
-        }
-        if (boton_hab_unavez) {
-            limpiar_panel(panel_habitaciones);
-        }
-        for (int fila = 0; fila < cant_de_habitacion; fila++) {
-            try {
-                crear_unitario_boton_habitacion(fila, Sa_tipo_habitacion[fila], Ia_nro_habitacion[fila], Sa_estado[fila],
-                        Sa_desc_estado[fila], Sa_tiempo[fila], Sa_monto[fila], Ba_habilitar_dormir[fila], Ba_es_hora_dormir[fila], Ba_habilitar_hora[fila], Ia_cant_add_tarifa_hora[fila],
-                        Ia_idhabitacion_dato[fila], Ia_idhabitacion_recepcion_actual[fila], Sa_fecha_ingreso[fila], Sa_hora_ingreso[fila],
-                        Ia_ocupado_inicio_seg[fila], Ia_minuto_minimo[fila], Ba_permitir_dormir[fila], Ia_monto_adelanto[fila],
-                        Ba_cancelar_habitacion[fila], Sa_por_cancelar[fila], Sa_monto_por_hora_minimo[fila], Ia_cant_hasta_dormir[fila], Sa_hs_hasta_dormir[fila]);
-            } catch (Exception e) {
-                evemen.mensaje_error(e, titulo);
-            }
-
-        }
-        panel_habitaciones.updateUI();
-        boton_hab_unavez = false;
-    }
-
-    private void cargar_array_habitacion_datos_mudar() {
-        if (boton_mudar_unavez) {
-            limpiar_panel(panel_habitaciones_libre);
-        }
-        for (int fila = 0; fila < cant_de_habitacion; fila++) {
-            crear_unitario_boton_habitacion_mudar(fila, Sa_tipo_habitacion[fila], Ia_nro_habitacion[fila], Sa_estado[fila],
-                    Sa_desc_estado[fila], Sa_tiempo[fila], Sa_monto[fila], Ia_idhabitacion_dato[fila]);
-        }
-        panel_habitaciones_libre.updateUI();
-        boton_mudar_unavez = false;
-    }
-
+//    private void cargar_array_habitacion_datos_mudar() {
+//        if (boton_mudar_unavez) {
+//            limpiar_panel(panel_habitaciones_libre);
+//        }
+//        for (int fila = 0; fila < cant_de_habitacion; fila++) {
+//            crear_unitario_boton_habitacion_mudar(fila, Sa_tipo_habitacion[fila], Ia_nro_habitacion[fila], Sa_estado[fila],
+//                    Sa_desc_estado[fila], Sa_tiempo[fila], Sa_monto[fila], Ia_idhabitacion_dato[fila]);
+//        }
+//        panel_habitaciones_libre.updateUI();
+//        boton_mudar_unavez = false;
+//    }
     private void cargar_jbar_tiempo_minimo(int ocupado_inicio_seg, int minuto_minimo) {
         int ocupado_inicio_min = (ocupado_inicio_seg / 60);
         if (ocupado_inicio_min <= minuto_minimo) {
@@ -1187,287 +1185,6 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             jbar_tiempo_minimo.setForeground(Color.red);
             jbar_tiempo_minimo.setString("Tiempo Agotado");
         }
-    }
-
-    private void crear_unitario_boton_habitacion(int fila, String tipo_habitacion, int nro_habitacion, String estado, String desc_estado,
-            String tiempo, String monto, boolean habilitar_dormir, boolean es_hora_dormir, boolean habilitar_hora, int cant_add_tarifa_hora,
-            int idhabitacion_dato, int idhabitacion_recepcion_actual, String fecha_ingreso, String hora_ingreso,
-            int ocupado_inicio_seg, int minuto_minimo, boolean permitir_dormir, int monto_adelanto,
-            boolean cancelar_habitacion, String por_cancelar, String monto_por_hora_minimo, int cant_hasta_dormir, String hs_hasta_dormir) {
-        String nombreboton = "<html>"
-                + "<p><font size=\"6\">" + nro_habitacion + "</font>-" + tipo_habitacion + "</p>"
-                + "<p>" + idhabitacion_dato + ":" + desc_estado + "</p>"
-                + "<p><font size=\"4\">" + tiempo + "</font></p>"
-                + "<p>" + monto + "</p>"
-                + "</html>";
-        JButton boton = new JButton(nombreboton);
-        boton.setFont(new Font("Arial", Font.BOLD, 12));
-        evebtn.setColor_mouseExited_neutro(boton);
-        boton.setName(String.valueOf(nro_habitacion));
-        if (estado.equals(eveest.getEst_Libre())) {
-            boton.setForeground(new java.awt.Color(0, 102, 0));
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_libre())));
-        }
-        if (desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_mante())) {
-            boton.setBackground(new java.awt.Color(223, 211, 195));
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_mante())));
-        }
-        if (desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_Limpiando())) {
-            boton.setBackground(new java.awt.Color(223, 211, 195));
-        }
-        if (estado.equals(eveest.getEst_Ocupado()) && !habilitar_dormir) {
-            boton.setForeground(Color.red);
-            if (monto_adelanto > 0) {
-                boton.setBackground(new java.awt.Color(255, 255, 153));
-            }
-            if (cant_add_tarifa_hora > 0) {
-                boton.setBackground(new java.awt.Color(255, 204, 255));
-            }
-            if (cancelar_habitacion) {
-                if (est_btn_cancelar) {
-                    boton.setBackground(new java.awt.Color(168, 92, 249));
-//                    est_btn_cancelar=false;
-                } else {
-                    boton.setBackground(new java.awt.Color(111, 223, 223));
-//                    est_btn_cancelar=true;
-                }
-//                txtaux.setText(String.valueOf(segundo_act_btn));
-                boton.setForeground(Color.WHITE);
-            }
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_ocupa())));
-        }
-        if (desc_estado.equals(eveest.getEst_Ocupado() + eveest.getEstdes_cliAbierto())) {
-            boton.setBackground(new java.awt.Color(223, 211, 195));
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_puerta())));
-        }
-        if (estado.equals(eveest.getEst_Ocupado()) && habilitar_dormir) {
-            boton.setForeground(Color.red);
-            if (monto_adelanto > 0) {
-                boton.setBackground(new java.awt.Color(255, 255, 153));
-            }
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_dormir())));
-        }
-        if (estado.equals(eveest.getEst_Sucio())) {
-            boton.setForeground(Color.BLACK);
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_limpie())));
-        }
-        if (estado.equals(eveest.getEst_Limpiando())) {
-            boton.setForeground(Color.BLACK);
-            boton.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_escoba())));
-        }
-        if (boton_hab_unavez) {
-            panel_habitaciones.add(boton, fila);
-            cant_add_hab_boton = 0;
-        } else {
-            if (estado.equals(eveest.getEst_Ocupado())
-                    || estado.equals(eveest.getEst_Sucio())
-                    || estado.equals(eveest.getEst_Limpiando())
-                    || desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_mante())
-                    || desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_Limpiando())
-                    || desc_estado.equals(eveest.getEst_Libre() + eveest.getEstdes_cliAbierto())
-                    || cant_add_hab_boton <= (cant_de_habitacion * 4)) {
-                panel_habitaciones.remove(fila);
-                panel_habitaciones.add(boton, fila);
-
-            }
-            cant_add_hab_boton++;
-        }
-        String nombre_tool="<html>"
-                + "<p>HABITACION: "+nro_habitacion+"</p>"
-                + "<p>CANT. ADICIONAL: "+cant_add_tarifa_hora+"</p>"
-                + "<p>ID_RECEPCION: "+idhabitacion_recepcion_actual+"</p>"
-                + "<p>FEC. HS.: "+fecha_ingreso+" "+hora_ingreso+ "</p>"
-                + "<p>ADELANTO: "+monto_adelanto+ "</p>"
-                + "</html>"
-                ;
-        if (estado.equals(eveest.getEst_Ocupado())){
-            boton.setToolTipText(nombre_tool);
-        }
-        boton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ((JButton) e.getSource()).setBackground(new java.awt.Color(153, 153, 255));
-                String h_codigo = ((JButton) e.getSource()).getName();
-                int Ih_codigo = Integer.parseInt(h_codigo);
-                System.out.println("h_codigo:" + h_codigo);
-
-                if (true) {
-                    if (estado.equals(eveest.getEst_Libre())) {
-                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
-                                + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
-                                + "<p><font size=\"6\">--OCUPAR--</font></p>"
-                                + "<p><font size=\"6\">--MONTO MINIMO:" + monto_por_hora_minimo + " --</font></p>"
-                                + "</html>", "HABITACION LIBRE", btnocupar_html, btncancelar_html)) {
-                            cargar_observacion_venta("#==>>OCUPAR POR BOTON MANUAL", false);
-                            boton_libre_a_ocupar(nro_habitacion, idhabitacion_dato);
-                        }
-                    }
-                    if (estado.equals(eveest.getEst_Sucio())) {
-                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
-                                + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
-                                + "<p><font size=\"6\">--LIBERAR--</font></p>"
-                                + "</html>", "HABITACION SUCIO", btnlibre_html, btncancelar_html)) {
-                            boton_sucio_a_libre(idhabitacion_recepcion_actual, idhabitacion_dato);
-                        }
-                    }
-                    if (estado.equals(eveest.getEst_Limpiando())) {
-                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
-                                + "<p>ESTA HABITACION ESTA EN LIMPIEZA DESEA PASAR A COMO LIBRE</p>"
-                                + "<p><font size=\"6\">--LIBERAR--</font></p>"
-                                + "</html>", "HABITACION LIMPIEZA", btnlibre_html, btncancelar_html)) {
-                            boton_limpieza_a_libre(idhabitacion_recepcion_actual, idhabitacion_dato);
-                        }
-                    }
-                    if (estado.equals(eveest.getEst_Ocupado())) {
-                        Icant_hasta_dormir = cant_hasta_dormir;
-                        Shs_hasta_dormir = hs_hasta_dormir;
-                        tiempo_boton_hab = 0;
-                        boton_mudar_unavez = true;
-                        color_panel_venta(1);
-                        eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
-                        jFtotal_consumo.setValue(0);
-                        icono_tipo_habitacion(tipo_habitacion);
-                        cargar_costos(idhabitacion_dato, habilitar_dormir, habilitar_hora, cant_add_tarifa_hora);
-                        nro_habitacion_select = nro_habitacion;
-                        fk_idhabitacion_dato_select = idhabitacion_dato;
-                        permitir_dormir_select = permitir_dormir;
-                        tiempo_select = tiempo;
-                        fecha_ingreso_select = fecha_ingreso;
-                        hora_ingreso_select = hora_ingreso;
-                        fk_idhabitacion_recepcion_actual_select = idhabitacion_recepcion_actual;
-                        DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
-                        fk_idventa = ENTven.getC1idventa();
-                        DAOveni.actualizar_tabla_venta_item(conn, tblitem_consumo_cargado, fk_idventa);
-                        limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
-                        txtrecepcion_actual.setText(String.valueOf(fk_idhabitacion_recepcion_actual_select));
-                        txtnro_hab_grande.setText(String.valueOf(nro_habitacion));
-                        txtnro_hab_grande_salir.setText(String.valueOf(nro_habitacion));
-                        txttipo_habitacion.setText(tipo_habitacion);
-                        txtidventa.setText(String.valueOf(fk_idventa));
-                        txtfec_ocupado_inicio.setText(fecha_ingreso);
-                        txtfec_ocupado_inicio_hora.setText(hora_ingreso);
-                        txttiempo_transcurrido.setText(tiempo);
-                        txttiempo_transcurrido_salir.setText(tiempo);
-                        btncancelar.setEnabled(cancelar_habitacion);
-                        jRpor_dormir.setEnabled(es_hora_dormir);//es_hora_dormir
-                        jRpor_hora_mas_dormir.setEnabled(!es_hora_dormir);
-                        if (cancelar_habitacion) {
-                            lblmensaje_cancelar.setText("...");
-                        } else {
-                            lblmensaje_cancelar.setText("CERRAR PUERTA: " + nro_habitacion);
-                        }
-
-                        btncancelar.setText("CANCELAR-" + por_cancelar);
-                        observacion_venta = "";
-//                        cargar_observacion_venta("#==>>cargar_costos<<"
-//                                + "\n1-monto_por_hora_minimo:" + monto_por_hora_minimo
-//                                + "\n2-monto_por_hora_adicional:" + monto_por_hora_adicional
-//                                + "\n3-monto_por_dormir_minimo:" + monto_por_dormir_minimo
-//                                + "\n4-monto_por_dormir_adicional:" + monto_por_dormir_adicional
-//                        );
-                        cargar_observacion_venta("Seleccion BTN OCUPADO; fk_idventa=" + fk_idventa + ",nro_hab=" + nro_habitacion + ",tiempo=" + tiempo, false);
-                        cargar_jbar_tiempo_minimo(ocupado_inicio_seg, minuto_minimo);
-                    }
-                } else {
-                    //
-                }
-            }
-        });
-        
-        boton.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                evebtn.setColor_mouseMoved(((JButton) evt.getSource()));
-                
-            }
-        });
-        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                evebtn.setColor_mouseExited_neutro(((JButton) evt.getSource()));
-            }
-        });
-    }
-
-    private void crear_unitario_boton_habitacion_mudar(int fila, String tipo_habitacion, int nro_habitacion, String estado, String desc_estado,
-            String tiempo, String monto, int idhabitacion_dato) {
-        String nombreboton = "<html><p><font size=\"6\">" + nro_habitacion
-                + "</font>-" + tipo_habitacion + "</p><p>" + desc_estado
-                + "</p><p><font size=\"4\">" + tiempo
-                + "</font></p><p>" + monto + "</p></html>";
-        JButton boton_lib;
-        if (estado.equals(eveest.getEst_Libre())) {
-            boton_lib = new JButton(nombreboton);
-            boton_lib.setFont(new Font("Arial", Font.BOLD, 12));
-            boton_lib.setName(String.valueOf(nro_habitacion));
-            boton_lib.setForeground(new java.awt.Color(0, 102, 0));
-            boton_lib.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_libre())));
-        } else {
-            boton_lib = new JButton("NO-DISPONIBLE");
-            boton_lib.setFont(new Font("Arial", Font.BOLD, 12));
-            boton_lib.setName(String.valueOf(nro_habitacion));
-            boton_lib.setForeground(Color.black);
-            boton_lib.setBackground(Color.orange);
-            boton_lib.setIcon(new ImageIcon(this.getClass().getResource(eveest.getIco_candado())));
-        }
-        if (boton_mudar_unavez) {
-            panel_habitaciones_libre.add(boton_lib, fila);
-        } else {
-            panel_habitaciones_libre.remove(fila);
-            panel_habitaciones_libre.add(boton_lib, fila);
-        }
-        boton_lib.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ((JButton) e.getSource()).setBackground(new java.awt.Color(153, 153, 255));
-                String getName = ((JButton) e.getSource()).getName();
-                System.out.println("getName:" + getName);
-                if (estado.equals(eveest.getEst_Libre())) {
-                    if (validar_habitacion_select()) {
-                        if (evemen.getBooMensaje_question("<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
-                                + "<p>ESTA HABITACION ESTA LIBRE DESEA PASAR COMO OCUPADO</p>"
-                                + "<p><font size=\"6\">--MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + "--</font></p>"
-                                + "</html>", "MUDAR HABITACION", "MUDAR", btncancelar_html)) {
-                            tiempo_boton_hab = 0;
-                            JTextArea txtacancel = new JTextArea(15, 30);
-                            int idventa = (eveconn.getInt_ultimoID_mas_uno(conn, ENTven.getTb_venta(), ENTven.getId_idventa()));
-                            String mensaje_inicio = "MUDAR DEL " + nro_habitacion_select + " AL NRO: " + nro_habitacion + " IDVENTA:" + idventa;
-                            txtacancel.setText(mensaje_inicio);
-                            Object[] opciones = {"MUDAR", btncancelar_html};
-                            int eleccion = JOptionPane.showOptionDialog(null, new JScrollPane(txtacancel), "MOTIVO PARA MUDAR(Obligatorio)",
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.QUESTION_MESSAGE, null, opciones, "MUDAR");
-                            if (eleccion == JOptionPane.YES_OPTION) {
-                                if (txtacancel.getText().trim().length() > 0) {
-                                    motivo_mudar_habitacion = txtacancel.getText().toUpperCase();
-                                    cargar_observacion_venta("Motivo:" + motivo_mudar_habitacion, false);
-                                    ejecutar_mudar_habitacion(idhabitacion_dato, nro_habitacion);
-                                    cargar_observacion_venta("##==>>CONFIRMAR MUDAR", false);
-                                    limpiar_habitacion_select();
-                                    boton_mudar_unavez = true;
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE MUDAR INTENTE DE NUEVO",
-                                            "ERROR MUDANZA", JOptionPane.ERROR_MESSAGE);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "<html><p><font size=\"6\">HABITACION NRO:   " + nro_habitacion + "</font></p>"
-                            + "<p><font size=\"6\">--NO DISPONIBLE--</font></p></html>", "HABITACION LIBRE", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        boton_lib.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                evebtn.setColor_mouseMoved(((JButton) evt.getSource()));
-            }
-        });
-        boton_lib.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                evebtn.setColor_mouseExited_neutro(((JButton) evt.getSource()));
-            }
-        });
     }
 
     public void limpiar_cargar_tabla_venta_item(Connection conn, JTable tbltabla, int fk_idventa) {
@@ -1519,34 +1236,48 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
 
         public void run() {
             try {
-                segundo_tiempo++;
+                segundo_tiempo_esten++;
+                segundo_tiempo_resumen++;
                 segundo_conn_rpi++;
                 segundo_act_btn++;
-//                segundo_exp_app++;
                 int tab_select = jTab_principal.getSelectedIndex();
                 fecha_hora_ahora = evefec.getString_formato_fecha_hora();
                 txttiempo_ahora.setText(fecha_hora_ahora);
-                if (segundo_tiempo == 1) {
-                    cargar_estados_puertas_gpio(sensor_puerta_cliente, sensor_puerta_limpieza);
-//                    actualizar_estado_puerta_cliente_limpieza();
-                    no_es_sonido_ocupado = true;
-                    cargar_sql_habitacion_recepcion_temp();
-                }
-                if (segundo_tiempo == 2) {
+                jPtiempo_hab.setValue(segundo_tiempo_esten);
+                if (segundo_tiempo_esten >= max_tiempo_esten) {
                     if (tab_select == 0) {
-                        if (est_btn_cancelar) {
-                            est_btn_cancelar = false;
-                        } else {
-                            est_btn_cancelar = true;
-                        }
-                        cargar_array_habitacion_puertas();
-                        cargar_array_habitacion_datos();
+                        ejecutar_update_habitacion_recepcion_temp_FUERTE();
                         cargar_usuario_acceso();
+                        jPanel_estado_habitacion.setBackground(new Color(255, 216, 204));
+                    }
+                    segundo_tiempo_esten = 0;
+                } else {
+
+                    no_es_sonido_ocupado = true;
+                    jPanel_estado_habitacion.setBackground(new Color(240, 240, 240));
+                    if (seg_intercalar) {
+                        ejecutar_update_habitacion_recepcion_temp_LIBIANO();
+                        cargar_boton_habitacion(false);
+                        cargar_estados_puertas_gpio(false);
+                        seg_intercalar = false;
+                    } else {
+                        actualizar_boton_habitacion();
+                        seg_intercalar = true;
+                    }
+                    if (tab_select == 0) {
+
+//                        cargar_array_habitacion_puertas();
                     }
                     if (tab_select == 4) {
-                        cargar_array_habitacion_datos_mudar();
+                        if (seg_intercalar) {
+                            cargar_boton_habitacion_mudar();
+                            seg_intercalar = false;
+                        } else {
+                            seg_intercalar = true;
+                        }
+
+//                        cargar_array_habitacion_datos_mudar();
                     }
-                    segundo_tiempo = 0;
                 }
                 if (segundo_conn_rpi > 5) {
                     boton_raspberry_ultima_conexion();
@@ -1556,18 +1287,6 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                     cant_add_hab_boton = 0;
                     segundo_act_btn = 0;
                 }
-//                if(segundo_exp_app>(tiempo_exp_app)){
-//                    if(crear_exp_app){
-//                        jPanel_estado_habitacion.setBackground(Color.red);//[240,240,240]
-//                        DAOcc.exportar_excel_monto_usuario_todo_ano(conn);
-//                        crear_exp_app=false;
-//                    }
-//                }
-//                if(segundo_exp_app>((tiempo_exp_app)+10)){
-//                    jPanel_estado_habitacion.setBackground(new java.awt.Color(240, 240, 240));
-//                    crear_exp_app=true;
-//                    segundo_exp_app=0;
-//                }
                 mostrar_boton_hab(tab_select);
             } catch (RuntimeException e) {
                 System.err.println("Uncaught Runtime Exception" + e);
@@ -1702,9 +1421,9 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         jFdormir_ingreso_inicio.setText(ENThrt.getC35hs_dormir_ingreso_inicio());
         jFdormir_ingreso_final.setText(ENThrt.getC36hs_dormir_ingreso_final());
         jFdormir_salida_final.setText(ENThrt.getC37hs_dormir_salida_final());
-        hs_dormir_salida_final_select=ENThrt.getC37hs_dormir_salida_final();
-        es_por_hora_select=ENThrt.getC24es_por_hora();
-        es_por_dormir_select=ENThrt.getC25es_por_dormir();
+        hs_dormir_salida_final_select = ENThrt.getC37hs_dormir_salida_final();
+        es_por_hora_select = ENThrt.getC24es_por_hora();
+        es_por_dormir_select = ENThrt.getC25es_por_dormir();
         String tipo_ocupa = "";
         if (!es_por_hora && es_por_dormir) {
             tipo_ocupa = "POR DORMIR";
@@ -1772,6 +1491,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     }
 
     private void limpiar_habitacion_select() {
+        segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
         cargar_usuario_acceso();
         limpiar_variable();
         boton_hab_unavez = true;
@@ -1942,7 +1662,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         ENThrt.setC11fec_ocupado_fin(evefec.getString_formato_fecha_hora());
         ENThrt.setC12fec_sucio_inicio(evefec.getString_formato_fecha_hora());
         ENThrt.setC20es_sucio(true);
-        
+
     }
 
     private void cargar_observacion_venta(String evento, boolean update_obs) {
@@ -2262,8 +1982,9 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 }
                 no_es_sonido_ocupado = false;
                 cargar_cantidad_entrada_abierta();
-                cargar_sql_habitacion_recepcion_temp();
-                cargar_array_habitacion_datos();
+//                cargar_sql_habitacion_recepcion_temp();
+//                cargar_array_habitacion_datos();
+                ejecutar_update_habitacion_recepcion_temp_FUERTE();
                 limpiar_habitacion_select();
                 reestableser_venta();
                 boton_hab_unavez = true;
@@ -2349,11 +2070,13 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             limpiar_cargar_tabla_venta_item(conn, tblitem_producto, fk_idventa);
             cargar_observacion_venta("#==>>GUARDAR CONSUMO:" + monto_consumo, false);
             update_carga_monto_adicional(fk_idhabitacion_recepcion_actual_select, fk_idhabitacion_dato_select);
-
             BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, false, false);
             calculo_monto_pagar();
             observacion_venta = "";
-            eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
+            ejecutar_update_habitacion_recepcion_temp_FUERTE();
+            limpiar_habitacion_select();
+            boton_hab_unavez = true;
+//            eveJtab.mostrar_JTabbedPane(jTab_principal, 1);
         }
     }
 
@@ -2504,15 +2227,14 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
 //                    JOptionPane.showMessageDialog(null, "EL RANGO DE HORA ESTA PERMITIDO PARA DORMIR", "FUERA HORARIO", JOptionPane.WARNING_MESSAGE);
 //                    jRpor_hora.setSelected(true);
 //                } else {
-                String mensaje="<HTML>"+
-                        evemen.getHtml_negro(4, "ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION A:")+
-                        evemen.getHtml_negro(4, "(POR HORA MAS DORMIR)")+
-                        evemen.getHtml_azul(5,"CANTIDAD ADICIONAL:")+
-                        evemen.getHtml_rojo(6, " ==>> "+String.valueOf(Icant_hasta_dormir))+
-                        evemen.getHtml_azul(5,"HORAS ADICIONAL:")+
-                        evemen.getHtml_rojo(6, " ==>> "+Shs_hasta_dormir)+
-                        "</HTML>"
-                        ;
+                String mensaje = "<HTML>"
+                        + evemen.getHtml_negro(4, "ESTAS SEGURO DE MUDAR EL TIPO DE OCUPACION A:")
+                        + evemen.getHtml_negro(4, "(POR HORA MAS DORMIR)")
+                        + evemen.getHtml_azul(5, "CANTIDAD ADICIONAL:")
+                        + evemen.getHtml_rojo(6, " ==>> " + String.valueOf(Icant_hasta_dormir))
+                        + evemen.getHtml_azul(5, "HORAS ADICIONAL:")
+                        + evemen.getHtml_rojo(6, " ==>> " + Shs_hasta_dormir)
+                        + "</HTML>";
                 if (evemen.getBooMensaje_warning(mensaje,
                         "OCUPACION POR HORA MAS DORMIR", "ACEPTAR", "CANCELAR")) {
                     cargar_observacion_venta("Acepta: Por Hora mas Dormir", false);
@@ -2584,6 +2306,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                                 JOptionPane.showMessageDialog(null, "NUEVO ADELANTO CARGADO CORRECTAMENTE");
                             }
                             calculo_monto_pagar();
+                            ejecutar_update_habitacion_recepcion_temp_FUERTE();
                             limpiar_habitacion_select();
                         }
                     }
@@ -2610,7 +2333,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 cargar_dato_caja_detalle_ADELANTO();
                 BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, true, true, false);
                 JOptionPane.showMessageDialog(null, "CONSUMO ADELANTO CARGADO CORRECTAMENTE");
-
+                ejecutar_update_habitacion_recepcion_temp_FUERTE();
                 limpiar_habitacion_select();
             }
         }
@@ -2641,6 +2364,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             cargar_dato_hab_temp_limpieza_auto(idhabitacion_dato);
             BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
             boton_hab_unavez = true;
+            segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
         }
     }
 
@@ -2670,6 +2394,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             cargar_dato_hab_temp_libre_auto(idhabitacion_dato);
             BOven.update_venta1(ENTven, ENThr, ENThrt, ENTccd, false, false, false);
             boton_hab_unavez = true;
+            segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
         }
     }
 
@@ -2679,6 +2404,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             boton_libre_a_ocupar(nro_habitacion, idhabitacion_dato);
             observacion_venta = "";
             boton_hab_unavez = true;
+            segundo_tiempo_esten = max_tiempo_esten - limit_tiempo_esten;
         }
     }
 
@@ -2781,6 +2507,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                         motivo_anulacion = txtacancel.getText().toUpperCase();
                         ejecutar_ocupado_a_libre_CANCELAR(fk_idhabitacion_recepcion_actual_select, fk_idventa, fk_idhabitacion_dato_select);
                         cargar_observacion_venta("#:( CANCELAR OCUPACION:" + motivo_anulacion, false);
+                        ejecutar_update_habitacion_recepcion_temp_FUERTE();
                         limpiar_habitacion_select();
                     } else {
                         JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN MOTIVO DE CANCELAR INTENTE DE NUEVO",
@@ -3065,6 +2792,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private void boton_mudar() {
         if (validar_habitacion_select()) {
             cargar_observacion_venta("Boton Mudar", true);
+            cargar_boton_habitacion_mudar();
             eveJtab.mostrar_JTabbedPane(jTab_principal, 4);
             boton_mudar_unavez = true;
         }
@@ -3379,6 +3107,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         btnventa_interna = new javax.swing.JButton();
         lblentrada_actual = new javax.swing.JLabel();
         txtentrada_actual = new javax.swing.JTextField();
+        jPtiempo_hab = new javax.swing.JProgressBar();
         jPanel_tiempo_habitacion = new javax.swing.JPanel();
         txtnro_hab_grande = new javax.swing.JTextField();
         lblicono_tipo = new javax.swing.JLabel();
@@ -3590,12 +3319,9 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
-                        .addComponent(panel_habitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 1085, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                         .addComponent(txttiempo_ahora, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -3604,20 +3330,24 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                         .addComponent(lblentrada_actual, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtentrada_actual, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPtiempo_hab, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnrpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnrpi_2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnrpi_3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addComponent(btnrpi_3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
+                        .addComponent(panel_habitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 1063, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(1266, 1266, 1266))
         );
         jPanel_estado_habitacionLayout.setVerticalGroup(
             jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 592, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
                         .addComponent(panel_habitaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -3632,8 +3362,11 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                                     .addComponent(txtentrada_actual, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addGap(3, 3, 3))
                             .addGroup(jPanel_estado_habitacionLayout.createSequentialGroup()
-                                .addComponent(lblentrada_actual, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addGroup(jPanel_estado_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblentrada_actual, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jPtiempo_hab, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(panel_puerta, javax.swing.GroupLayout.PREFERRED_SIZE, 592, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -4242,7 +3975,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                                     .addComponent(jFmonto_total_pagar)
                                     .addComponent(btndesocupar_pagar, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))))
                         .addGap(18, 18, 18)))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         jPanel_tiempo_habitacionLayout.setVerticalGroup(
             jPanel_tiempo_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4649,7 +4382,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         jPanel_venta_principalLayout.setVerticalGroup(
             jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_venta_principalLayout.createSequentialGroup()
-                .addContainerGap(66, Short.MAX_VALUE)
+                .addContainerGap(74, Short.MAX_VALUE)
                 .addGroup(jPanel_venta_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTab_producto_ingrediente)
                     .addComponent(jPanel_item_venta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -4663,7 +4396,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                             .addComponent(panel_referencia_unidad, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(panel_referencia_marca, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(0, 526, Short.MAX_VALUE)))
+                            .addGap(0, 534, Short.MAX_VALUE)))
                     .addContainerGap()))
         );
 
@@ -4697,7 +4430,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
         );
 
         btnimprimir_ticket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ult_print.png"))); // NOI18N
@@ -4832,7 +4565,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 .addGroup(jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(panel_nro_habitacion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 22, Short.MAX_VALUE))
+                .addGap(0, 54, Short.MAX_VALUE))
         );
         jPanel_filtro_habitacionLayout.setVerticalGroup(
             jPanel_filtro_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4920,10 +4653,10 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             .addGroup(jPanel_mudar_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(988, Short.MAX_VALUE))
+                .addContainerGap(1020, Short.MAX_VALUE))
             .addGroup(jPanel_mudar_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_mudar_habitacionLayout.createSequentialGroup()
-                    .addContainerGap(303, Short.MAX_VALUE)
+                    .addContainerGap(335, Short.MAX_VALUE)
                     .addComponent(panel_habitaciones_libre, javax.swing.GroupLayout.PREFERRED_SIZE, 953, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
@@ -4932,11 +4665,11 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             .addGroup(jPanel_mudar_habitacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(289, Short.MAX_VALUE))
+                .addContainerGap(297, Short.MAX_VALUE))
             .addGroup(jPanel_mudar_habitacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel_mudar_habitacionLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(panel_habitaciones_libre, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
+                    .addComponent(panel_habitaciones_libre, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
@@ -4975,7 +4708,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 .addComponent(panel_temp_rpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnrecepcion_temp)
-                .addContainerGap(909, Short.MAX_VALUE))
+                .addContainerGap(941, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4984,7 +4717,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnrecepcion_temp)
                     .addComponent(panel_temp_rpi_1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(197, Short.MAX_VALUE))
+                .addContainerGap(205, Short.MAX_VALUE))
         );
 
         jTab_principal.addTab("DIAGNOSTICO RASPBERRY", jPanel16);
@@ -5121,7 +4854,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 933, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 965, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btngar_pagar_garantia, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -5284,6 +5017,9 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             select_tab_principal = 1;
             limpiar_habitacion_select();
             select_tab_principal = 0;
+        }
+        if (jTab_principal.getSelectedIndex() == 4) {
+            cargar_boton_habitacion_mudar();
         }
     }//GEN-LAST:event_jTab_principalMouseReleased
 
@@ -5593,6 +5329,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel_mudar_habitacion;
     private javax.swing.JPanel jPanel_tiempo_habitacion;
     private javax.swing.JPanel jPanel_venta_principal;
+    private javax.swing.JProgressBar jPtiempo_hab;
     private javax.swing.JRadioButton jRpor_dormir;
     private javax.swing.JRadioButton jRpor_hora;
     private javax.swing.JRadioButton jRpor_hora_mas_dormir;

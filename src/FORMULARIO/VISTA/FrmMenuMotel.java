@@ -49,8 +49,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 1.9.8";
-    private String fec_version = "2023-03-30";
+    private String version = "V.: 2.0.0";
+    private String fec_version = "2023-04-04";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -126,36 +126,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        BEGIN\n"
                 //                + "         ALTER TABLE producto ADD COLUMN precio_interno NUMERIC(14,0) DEFAULT 0;\n"
                 //                + "         update producto set precio_interno=precio_venta;"
-                + "INSERT INTO public.usuario_evento(idusuario_evento, fecha_creado, creado_por, codigo, nombre, descripcion, fk_idusuario_tipo_evento, fk_idusuario_formulario, mensaje_error) \n"
-                + "values\n"
-                + "(1,'2023-01-09 15:36:21.209','PROGRAMADOR ADMIN',1001,'HABILITAR EDITAR PRODUCTO','permite editar todos los datos del producto',2,2,'TU ROLL NO PUEDE EDITAR EL PRODUCTO'),\n"
-                + "(2,'2023-01-09 19:44:33.985','PROGRAMADOR ADMIN',1002,'HABILITAR TABBED CAJA CERRADO','muestra todas las cajas cerrados anteriormente',3,3,'TU ROLL NO PUEDE VER CAJA CERRADO');\n"
-                + "\n"
-                + "INSERT INTO  public.usuario_formulario (idusuario_formulario, fecha_creado, creado_por, nombre) values\n"
-                + "(1,'2023-01-09 15:29:58.811','PROGRAMADOR ADMIN','SIN-DATO'),\n"
-                + "(2,'2023-01-09 15:30:51','PROGRAMADOR ADMIN','PRODUCTO'),\n"
-                + "(3,'2023-01-09 19:40:52.595','PROGRAMADOR ADMIN','CAJA');\n"
-                + "\n"
-                + "INSERT INTO public.usuario_item_rol (idusuario_item_rol, fecha_creado, creado_por, activo, fk_idusuario_rol, fk_idusuario_evento) VALUES\n"
-                + "('2','2023-01-09 15:36:22.506','PROGRAMADOR ADMIN','f','3','1'),\n"
-                + "('3','2023-01-09 15:36:22.514','PROGRAMADOR ADMIN','f','2','1'),\n"
-                + "('4','2023-01-09 15:36:22.519','PROGRAMADOR ADMIN','f','1','1'),\n"
-                + "('6','2023-01-09 19:44:35.164','PROGRAMADOR ADMIN','f','3','2'),\n"
-                + "('7','2023-01-09 19:44:35.17','PROGRAMADOR ADMIN','f','2','2'),\n"
-                + "('8','2023-01-09 19:44:35.174','PROGRAMADOR ADMIN','f','1','2'),\n"
-                + "('5','2023-01-09 19:44:35.159','PROGRAMADOR ADMIN','t','4','2'),\n"
-                + "('1','2023-01-09 15:36:22.499','PROGRAMADOR ADMIN','t','4','1');\n"
-                + "\n"
-                + "INSERT INTO  public.usuario_rol (idusuario_rol, fecha_creado, creado_por, nombre, descripcion) VALUES\n"
-                + "('1','2023-01-09 15:32:55.673','PROGRAMADOR ADMIN','SIN-DATO','SIN'),\n"
-                + "('2','2023-01-09 15:33:22.785','PROGRAMADOR ADMIN','CAJERO','USUARIO CAJA'),\n"
-                + "('3','2023-01-09 15:33:58.057','PROGRAMADOR ADMIN','ADMINISTRADOR','NIVEL 2 DE ACCESO'),\n"
-                + "('4','2023-01-09 15:34:22.025','PROGRAMADOR ADMIN','PROGRAMADOR','ADMINISTRA EL SISTEMA');\n"
-                + "\n"
-                + "INSERT INTO  public.usuario_tipo_evento (idusuario_tipo_evento, fecha_creado, creado_por, nombre) VALUES\n"
-                + "('1','2023-01-09 15:31:38.432','PROGRAMADOR ADMIN','SIN-DATO'),\n"
-                + "('2','2023-01-09 15:32:05.752','PROGRAMADOR ADMIN','BOTON EDITAR'),\n"
-                + "('3','2023-01-09 19:42:36.337','PROGRAMADOR ADMIN','HABILITAR jTabbedPane');  "
+                + " "
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
@@ -344,6 +315,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         lblhora = new javax.swing.JLabel();
         lblturno = new javax.swing.JLabel();
         lblnube = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -539,6 +511,13 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         lblnube.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblnube.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/72_nube.png"))); // NOI18N
 
+        jButton1.setText("OCUPA BOTON");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblusuario, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(panel_acceso_rapido, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -546,6 +525,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         escritorio.setLayer(lblhora, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblturno, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblnube, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(jButton1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
@@ -555,11 +535,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(escritorioLayout.createSequentialGroup()
-                        .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(escritorioLayout.createSequentialGroup()
                         .addComponent(panel_acceso_rapido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -567,7 +542,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                             .addComponent(lblhora)
                             .addComponent(lblturno))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
-                        .addComponent(lblnube, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lblnube, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(escritorioLayout.createSequentialGroup()
+                        .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btncerrar_seccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         escritorioLayout.setVerticalGroup(
@@ -589,7 +571,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btncerrar_seccion)
                     .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(337, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(308, Short.MAX_VALUE))
         );
 
         jMenu3.setText("HABITACION");
@@ -1087,6 +1071,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmRepOcupacion());
     }//GEN-LAST:event_jMenuItem29ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmOcupacion_boton());
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1135,6 +1124,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JButton btnventa;
     private javax.swing.JButton btnventa_interna;
     public static javax.swing.JDesktopPane escritorio;
+    private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;
