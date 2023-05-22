@@ -7,7 +7,8 @@ ALTER TABLE habitacion_recepcion_temp ADD COLUMN tiempo_estado TEXT DEFAULT '0';
 ALTER TABLE habitacion_recepcion_temp ADD COLUMN monto_gral NUMERIC(14,0) DEFAULT 0;
 ALTER TABLE habitacion_recepcion_temp ADD COLUMN ruta_icono TEXT DEFAULT '0';
 ALTER TABLE habitacion_recepcion_temp ADD COLUMN cant_hora_adicional integer DEFAULT 0;
-
+ALTER TABLE habitacion_recepcion_temp ADD COLUMN color_fondo TEXT DEFAULT '0';
+ALTER TABLE habitacion_recepcion_temp ADD COLUMN color_texto TEXT DEFAULT '0';
 
 update habitacion_recepcion_temp set descrip_estado=
 case

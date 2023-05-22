@@ -771,6 +771,7 @@ public class DAO_habitacion_recepcion_temp {
                 + "     when estado='LIMPIANDO'   then '/graficos/escoba.png'\n"
                 + "     when estado='OCUPADO'     and es_por_dormir = false and es_por_hora = true  and puerta_limpieza = true and puerta_cliente = true then '/iconos/motel/48_reloj.png'\n"
                 + "     when estado='OCUPADO'     and es_por_dormir = true  and es_por_hora = false and puerta_limpieza = true and puerta_cliente = true then '/iconos/motel/48_dormir.png'\n"
+                + "     when estado='OCUPADO'     and es_por_dormir = true  and es_por_hora = true and puerta_limpieza = true and puerta_cliente = true then '/iconos/motel/48_dormir.png'\n"
                 + "     when estado='OCUPADO'     and puerta_limpieza = true and puerta_cliente = false then '/graficos/48_puerta.png'\n"
                 + "else 'no' end,"
                 + "descrip_estado=\n"
@@ -798,7 +799,9 @@ public class DAO_habitacion_recepcion_temp {
                 + "case when estado='LIBRE'     and puerta_limpieza = false and puerta_cliente = false then '#DFD3C3'\n"
                 + "     when estado='OCUPADO'   and cant_hora_adicional>0 then '#FFCCFF'\n"
                 + "     when estado='OCUPADO'   and puerta_limpieza = true  and puerta_cliente = false then '#FF003F'\n"
-                + "     when estado='OCUPADO'   and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) \n"
+                + "     when estado='OCUPADO'   and es_por_dormir = true  and puerta_limpieza = true and puerta_cliente = true and monto_adelanto=0 then '#F0EDD4'\n"
+                + "     when estado='OCUPADO'   and es_por_dormir = true  and puerta_limpieza = true and puerta_cliente = true and monto_adelanto>0 then '#FEFF86'\n"
+                + "     when estado='OCUPADO'   and es_por_dormir = false and es_por_hora = true  and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) \n"
                 + "     then (case when MOD((cast( extract(epoch from (current_timestamp-fec_ocupado_inicio)) as integer)/5),2)=0 then '#A85CF9' else '#6FDFDF' end)" //#DFD3C3
                 + "     else '#F0F0F0' end,"
                 + "color_texto="
@@ -867,7 +870,7 @@ public class DAO_habitacion_recepcion_temp {
                 + "else '0%' \n"
                 + "end as por_cancelar, \n"
                 + "(extract(epoch from (current_timestamp - fec_ocupado_inicio))) as ocupado_inicio_seg,\n"
-                + "minuto_minimo \n"
+                + "minuto_minimo,monto_por_hora_minimo \n"
                 + "from habitacion_recepcion_temp "
                 + "where activo=true and idhabitacion_dato="+idhabitacion_dato;
     }

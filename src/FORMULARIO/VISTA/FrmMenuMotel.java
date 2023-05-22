@@ -49,8 +49,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 2.0.0";
-    private String fec_version = "2023-04-04";
+    private String version = "V.: 2.0.2";
+    private String fec_version = "2023-05-16";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -103,7 +103,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         frame.setExtendedState(MAXIMIZED_BOTH);
         String titulo = jscon.getNombre()
                 + " BD: " + jscon.getLocalhost() + " /" + jscon.getPort() + " /" + jscon.getBasedato() + " IP:" + pcinfo.getStringMiIP()
-                + " Version: " + version+ " Fecha:"+fec_version;
+                + " Version: " + version + " Fecha:" + fec_version;
         frame.setTitle(titulo);
     }
 
@@ -126,7 +126,13 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        BEGIN\n"
                 //                + "         ALTER TABLE producto ADD COLUMN precio_interno NUMERIC(14,0) DEFAULT 0;\n"
                 //                + "         update producto set precio_interno=precio_venta;"
-                + " "
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN descrip_estado TEXT DEFAULT 'NO';\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN tiempo_estado TEXT DEFAULT '0';\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN monto_gral NUMERIC(14,0) DEFAULT 0;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN ruta_icono TEXT DEFAULT '0';\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN cant_hora_adicional integer DEFAULT 0;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN color_fondo TEXT DEFAULT '0';\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN color_texto TEXT DEFAULT '0'; "
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
@@ -153,6 +159,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         DAOcc.exportar_excel_caja_resumen(conn);
         DAOcc.exportar_excel_habitacion_estados(conn);
         DAOcc.exportar_excel_habitacion_estados_resumen(conn);
+        DAOcc.exportar_excel_caja_cierre_ingreso_lista(conn);
+        DAOcc.exportar_excel_caja_cierre_gral(conn);
         crear_exp_app = false;
     }
 
@@ -315,7 +323,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         lblhora = new javax.swing.JLabel();
         lblturno = new javax.swing.JLabel();
         lblnube = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         barra_menu_principal = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -511,13 +518,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         lblnube.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblnube.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/motel/72_nube.png"))); // NOI18N
 
-        jButton1.setText("OCUPA BOTON");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         escritorio.setLayer(btncerrar_seccion, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblusuario, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(panel_acceso_rapido, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -525,7 +525,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         escritorio.setLayer(lblhora, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblturno, javax.swing.JLayeredPane.DEFAULT_LAYER);
         escritorio.setLayer(lblnube, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(jButton1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
@@ -544,9 +543,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                         .addComponent(lblnube, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(escritorioLayout.createSequentialGroup()
-                        .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btncerrar_seccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE))
+                        .addComponent(btncerrar_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -571,9 +568,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btncerrar_seccion)
                     .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addContainerGap(308, Short.MAX_VALUE))
+                .addContainerGap(315, Short.MAX_VALUE))
         );
 
         jMenu3.setText("HABITACION");
@@ -869,7 +864,10 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(escritorio)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(escritorio)
+                .addContainerGap())
         );
 
         pack();
@@ -1071,11 +1069,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmRepOcupacion());
     }//GEN-LAST:event_jMenuItem29ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmOcupacion_boton());
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -1124,7 +1117,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JButton btnventa;
     private javax.swing.JButton btnventa_interna;
     public static javax.swing.JDesktopPane escritorio;
-    private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;

@@ -2129,22 +2129,31 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jScrollPane8" alignment="0" pref="662" max="32767" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
+                              <Component id="jScrollPane8" pref="662" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="dcfecha_salida_patrimonio" min="-2" pref="137" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="btneliminar_patrimonio" min="-2" pref="156" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Component id="jFtotal_prod_hab_patrimonio" min="-2" pref="152" max="-2" attributes="0"/>
                               </Group>
+                              <Component id="txtmotivo_salida" alignment="0" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jScrollPane8" pref="321" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane8" pref="284" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="txtmotivo_salida" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="jFtotal_prod_hab_patrimonio" alignment="0" max="32767" attributes="0"/>
                                       <Component id="btneliminar_patrimonio" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="dcfecha_salida_patrimonio" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -2226,6 +2235,25 @@
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btneliminar_patrimonioActionPerformed"/>
                           </Events>
                         </Component>
+                        <Component class="com.toedter.calendar.JDateChooser" name="dcfecha_salida_patrimonio">
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="jLabel15">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Tahoma" size="12" style="1"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="FECHA SALIDA:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="txtmotivo_salida">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="MOTIVO SALIR"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel24">
@@ -2241,24 +2269,34 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="txtprod_id_patrimonio" min="-2" pref="69" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="txtprod_id_patrimonio" min="-2" pref="69" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="txtprod_descrip_patrimonio" min="-2" pref="295" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="dcfecha_ingreso_patrimonio" min="-2" pref="124" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="btnguardar_prod_hab_patrimonio" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="btnguardar_prod_hab_patrimonio" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="32767" attributes="0"/>
-                                          <Component id="btnbuscar_patrimonio" min="-2" pref="44" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="btnnuevo_patrimonio" min="-2" pref="44" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="txtprod_descrip_patrimonio" min="-2" pref="295" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
                                           <Component id="txtprod_cant_patrimonio" min="-2" pref="69" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="txtprod_precio_patrimonio" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="txtprod_subtotal_patrimonio" pref="110" max="32767" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          <Component id="btnbuscar_patrimonio" min="-2" pref="44" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="btnnuevo_patrimonio" min="-2" pref="44" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -2275,10 +2313,14 @@
                                       <Component id="txtprod_subtotal_patrimonio" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="btnbuscar_patrimonio" alignment="0" min="-2" pref="31" max="-2" attributes="0"/>
-                                      <Component id="btnnuevo_patrimonio" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="btnguardar_prod_hab_patrimonio" alignment="0" pref="0" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="btnbuscar_patrimonio" alignment="0" min="-2" pref="31" max="-2" attributes="0"/>
+                                          <Component id="btnnuevo_patrimonio" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="btnguardar_prod_hab_patrimonio" alignment="0" pref="0" max="32767" attributes="0"/>
+                                      </Group>
+                                      <Component id="dcfecha_ingreso_patrimonio" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="0" pref="8" max="32767" attributes="0"/>
                               </Group>
@@ -2410,6 +2452,16 @@
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnguardar_prod_hab_patrimonioActionPerformed"/>
                           </Events>
+                        </Component>
+                        <Component class="com.toedter.calendar.JDateChooser" name="dcfecha_ingreso_patrimonio">
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="jLabel16">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Tahoma" size="12" style="1"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="FECHA INICIO:"/>
+                          </Properties>
                         </Component>
                       </SubComponents>
                     </Container>

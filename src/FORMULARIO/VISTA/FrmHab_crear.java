@@ -279,6 +279,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         jTab_principal.setTitleAt(0, nombreTabla_pri);
         jTab_principal.setTitleAt(1, nombreTabla_sec);
         DAOhd.actualizar_tabla_habitacion_dato(conn, tbltabla_pri);
+        evefec.setFechaDCSistema(dcfecha_ingreso_patrimonio);
+        evefec.setFechaDCSistema(dcfecha_salida_patrimonio);
         color_tipo_boton(1,"");
         txtid.setText(null);
         txtubicacion.setText(null);
@@ -525,7 +527,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         ENTphp.setC5descripcion(txtprod_descrip_patrimonio.getText());
         ENTphp.setC6precio_compra(Integer.parseInt(txtprod_precio_patrimonio.getText()));
         ENTphp.setC7activo(true);
-        ENTphp.setC8fecha_ingreso(evefec.getString_formato_fecha());
+        String fecha_ingreso=evefec.getfechaDCStringFormat(dcfecha_ingreso_patrimonio, "yyyy-MM-dd");
+        ENTphp.setC8fecha_ingreso(fecha_ingreso);
         ENTphp.setC9fecha_salida(evefec.getString_formato_fecha());
         ENTphp.setC10motivo_salida("m");
         ENTphp.setC11fk_idproducto(Integer.parseInt(txtprod_id_patrimonio.getText()));
@@ -575,9 +578,14 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         DAOphp.cargar_producto_habitacion_patrimonio(conn, ENTphp, idproducto_habitacion_patrimonio);
     }
     private void boton_eliminar_prod_hab_patrimonio(){
-        if(!eveJtab.getBoolean_validar_select(tblprod_hab_patrimonio)){
+        boolean motivo=evejtf.getBoo_JTextField_vacio(txtmotivo_salida, "DEBE CARGAR UN MOTIVO DE SALIDA DEL PATRIMONIO");
+        if(!eveJtab.getBoolean_validar_select(tblprod_hab_patrimonio) && !motivo){
             seleccionar_prod_hab_patrimonio();
+            String fecha_salida=evefec.getfechaDCStringFormat(dcfecha_salida_patrimonio, "yyyy-MM-dd");
+            String motivo_salida=txtmotivo_salida.getText();
+            ENTphp.setC9fecha_salida(fecha_salida);
             ENTphp.setC7activo(false);
+            ENTphp.setC10motivo_salida(motivo_salida);
             BOphp.update_producto_habitacion_patrimonio(ENTphp);
             DAOphp.actualizar_tabla_producto_habitacion_patrimonio(conn, tblprod_hab_patrimonio,fk_idhabitacion_dato);
             suma_prod_hab_patrimonio();
@@ -730,6 +738,9 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         tblprod_hab_patrimonio = new javax.swing.JTable();
         jFtotal_prod_hab_patrimonio = new javax.swing.JFormattedTextField();
         btneliminar_patrimonio = new javax.swing.JButton();
+        dcfecha_salida_patrimonio = new com.toedter.calendar.JDateChooser();
+        jLabel15 = new javax.swing.JLabel();
+        txtmotivo_salida = new javax.swing.JTextField();
         jPanel24 = new javax.swing.JPanel();
         txtprod_id_patrimonio = new javax.swing.JTextField();
         txtprod_descrip_patrimonio = new javax.swing.JTextField();
@@ -739,6 +750,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
         btnbuscar_patrimonio = new javax.swing.JButton();
         btnnuevo_patrimonio = new javax.swing.JButton();
         btnguardar_prod_hab_patrimonio = new javax.swing.JButton();
+        dcfecha_ingreso_patrimonio = new com.toedter.calendar.JDateChooser();
+        jLabel16 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -1922,24 +1935,38 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel15.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel15.setText("FECHA SALIDA:");
+
+        txtmotivo_salida.setBorder(javax.swing.BorderFactory.createTitledBorder("MOTIVO SALIR"));
+
         javax.swing.GroupLayout jPanel23Layout = new javax.swing.GroupLayout(jPanel23);
         jPanel23.setLayout(jPanel23Layout);
         jPanel23Layout.setHorizontalGroup(
             jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
             .addGroup(jPanel23Layout.createSequentialGroup()
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dcfecha_salida_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btneliminar_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jFtotal_prod_hab_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(txtmotivo_salida)
         );
         jPanel23Layout.setVerticalGroup(
             jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel23Layout.createSequentialGroup()
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtmotivo_salida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jFtotal_prod_hab_patrimonio)
-                    .addComponent(btneliminar_patrimonio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(btneliminar_patrimonio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(dcfecha_salida_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15)))
         );
 
         jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("CARGAR PATRIMONIO"));
@@ -1996,28 +2023,38 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel16.setText("FECHA INICIO:");
+
         javax.swing.GroupLayout jPanel24Layout = new javax.swing.GroupLayout(jPanel24);
         jPanel24.setLayout(jPanel24Layout);
         jPanel24Layout.setHorizontalGroup(
             jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel24Layout.createSequentialGroup()
-                .addComponent(txtprod_id_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addComponent(txtprod_id_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtprod_descrip_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dcfecha_ingreso_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnguardar_prod_hab_patrimonio)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel24Layout.createSequentialGroup()
-                        .addComponent(btnguardar_prod_hab_patrimonio)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnbuscar_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnnuevo_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel24Layout.createSequentialGroup()
-                        .addComponent(txtprod_descrip_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtprod_cant_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtprod_precio_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtprod_subtotal_patrimonio, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))))
+                        .addComponent(txtprod_subtotal_patrimonio, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnbuscar_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnnuevo_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel24Layout.setVerticalGroup(
             jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2029,10 +2066,13 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
                     .addComponent(txtprod_precio_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtprod_subtotal_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnbuscar_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnnuevo_patrimonio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnguardar_prod_hab_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(btnbuscar_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnnuevo_patrimonio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnguardar_prod_hab_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(dcfecha_ingreso_patrimonio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel16))
                 .addGap(0, 8, Short.MAX_VALUE))
         );
 
@@ -2519,6 +2559,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cmbmini_pc;
     private javax.swing.JComboBox<String> cmbsensor_gpio;
     private javax.swing.JComboBox<String> cmbsensor_pino;
+    private com.toedter.calendar.JDateChooser dcfecha_ingreso_patrimonio;
+    private com.toedter.calendar.JDateChooser dcfecha_salida_patrimonio;
     private javax.swing.ButtonGroup gru_tipo;
     private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton20;
@@ -2541,6 +2583,8 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -2596,6 +2640,7 @@ public class FrmHab_crear extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtminumo_minimo;
     private javax.swing.JTextField txtminuto_adicional;
     private javax.swing.JTextField txtminuto_cancelar;
+    private javax.swing.JTextField txtmotivo_salida;
     private javax.swing.JTextField txtorden;
     private javax.swing.JTextField txtpino;
     public static javax.swing.JTextField txtprod_cant_frigobar;

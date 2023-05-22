@@ -38,7 +38,7 @@ public class DAO_producto_habitacion_patrimonio {
             pst.setString(5, prhapa.getC5descripcion());
             pst.setDouble(6, prhapa.getC6precio_compra());
             pst.setBoolean(7, prhapa.getC7activo());
-            pst.setDate(8, evefec.getDateSQL_sistema());
+            pst.setDate(8, evefec.getDate_fecha_cargado(prhapa.getC8fecha_ingreso()));
             pst.setDate(9, evefec.getDateSQL_sistema());
             pst.setString(10, prhapa.getC10motivo_salida());
             pst.setInt(11, prhapa.getC11fk_idproducto());
@@ -63,8 +63,8 @@ public class DAO_producto_habitacion_patrimonio {
             pst.setString(4, prhapa.getC5descripcion());
             pst.setDouble(5, prhapa.getC6precio_compra());
             pst.setBoolean(6, prhapa.getC7activo());
-            pst.setDate(7, evefec.getDateSQL_sistema());
-            pst.setDate(8, evefec.getDateSQL_sistema());
+            pst.setDate(7, evefec.getDate_fecha_cargado(prhapa.getC8fecha_ingreso()));
+            pst.setDate(8, evefec.getDate_fecha_cargado(prhapa.getC9fecha_salida()));
             pst.setString(9, prhapa.getC10motivo_salida());
             pst.setInt(10, prhapa.getC11fk_idproducto());
             pst.setInt(11, prhapa.getC12fk_idhabitacion_dato());

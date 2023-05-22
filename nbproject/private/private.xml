@@ -4,9 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmMenuMotel.java</file>
+            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/DAO/DAO_caja_cierre.java</file>
             <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/VISTA/FrmOcupacion.java</file>
-            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/ESTADOS/EvenEstado.java</file>
-            <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/Evento/Color/EvenColor.java</file>
             <file>file:/C:/Users/Digno/Documents/NetBeansProjects/SisDaoMotel/src/FORMULARIO/DAO/DAO_habitacion_recepcion_temp.java</file>
         </group>
     </open-files>

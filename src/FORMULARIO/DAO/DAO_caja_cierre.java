@@ -577,4 +577,61 @@ public class DAO_caja_cierre {
         String titulo = "HABITACION ESTADOS resumen";
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
+
+    public void exportar_excel_caja_cierre_ingreso_lista(Connection conn) {
+        int band_Height = 20;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/caja_cierre_ingreso_lista" + sucursal + ".xlsx";
+        String sql = "select cc.idcaja_cierre as idc, \n"
+                + "to_char(cc.fecha_creado,'yyyy-MM-dd HH24:MI') as fec_cierre,\n"
+                + "(select \n"
+                + "sum((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto)) as m_ingreso\n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as ingreso,\n"
+                + "(select \n"
+                + "sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion) as m_egreso\n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as egreso,\n"
+                + "(select \n"
+                + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
+                + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
+                + "(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion)) as m_saldo\n"
+                + "from caja_cierre_detalle cd,caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as saldo,\n"
+                + "u.nombre as usuario, \n"
+                + "case \n"
+                + "	when cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' then 'manana'\n"
+                + "	when cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '15:00:00' then 'tarde'\n"
+                + "	when cast(cc.fecha_inicio as time) > time '17:00:00' and cast(cc.fecha_inicio as time) < time '19:00:00' then 'tarde'\n"
+                + "	when cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' then 'noche'\n"
+                + "else to_char(cc.fecha_inicio ,'HH24:MI:ss') end as turno \n"
+                + "from caja_cierre cc,usuario u \n"
+                + "where cc.fk_idusuario=u.idusuario \n"
+                + " and date_part('year',cc.fecha_creado)=date_part('year',current_date)\n"
+                + "order by cc.idcaja_cierre desc;";
+        String direccion = "src/REPORTE/APPSHEET/repCajaCierreLista.jrxml";
+        String titulo = "CAJA CIERRE INGRESO";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_caja_cierre_gral(Connection conn) {
+        int band_Height = 20;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/caja_cierre_gral" + sucursal + ".xlsx";
+        String sql = "select \n"
+                + "to_char(cc.fecha_fin,'yyyy-MM-dd') as fec_cierre\n"
+                + "from caja_cierre cc\n"
+                + "where  date_part('year',cc.fecha_creado)=date_part('year',current_date)\n"
+                + " group by 1 order by 1 desc;";
+        String direccion = "src/REPORTE/APPSHEET/repCajaCierreGral.jrxml";
+        String titulo = "CAJA CIERRE GRAL";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
 }
