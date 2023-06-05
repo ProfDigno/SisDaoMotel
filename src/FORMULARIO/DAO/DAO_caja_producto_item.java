@@ -134,7 +134,7 @@ public class DAO_caja_producto_item {
         String sql = "select cpi.fk_idproducto as idp,pc.nombre as categoria,\n"
                 + "cpi.descripcion,"
                 + "TRIM(to_char(cpi.precio_venta,'9G999G999')) as pventa,\n"
-                + "((cpi.stock_actual+cpi.cant_cargado)-(cpi.cant_vendido+cpi.cant_interno)) as stock_ini,\n"
+                + "((cpi.stock_actual+cpi.cant_cargado)+(cpi.cant_vendido+cpi.cant_interno)) as stock_ini,\n"
                 + "cpi.cant_vendido as c_venta,cpi.cant_interno as c_interno,cpi.cant_cargado as c_carga,\n"
                 + "cpi.stock_actual as stock_act\n"
                 + "from caja_producto_item cpi,producto p,producto_categoria pc\n"

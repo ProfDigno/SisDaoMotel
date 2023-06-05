@@ -24,3 +24,4 @@ truncate compra_item;
 truncate venta_interno;
 truncate venta_item_interno;
 truncate garantia;
+truncate caja_producto_item;

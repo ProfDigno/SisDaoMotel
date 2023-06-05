@@ -13,6 +13,8 @@ private String C8tipo_persona;
 private int C9dia_libre;
 private double C10salario_base;
 private int C11fk_idpersona_cargo;
+private String C12nro_tarjeta;
+private double C13limite_vale;
 private static String nom_tabla;
 private static String nom_idtabla;
 public static int bus_idpersona;
@@ -20,11 +22,20 @@ public static String bus_tipo_persona;
 public static String bus_nombre;
 public static String bus_ruc;
 public static int bus_quien_llama;
+public static int idpersona_global;
 //---------------TABLA-ID---------------
 	public persona() {
 		setTb_persona("persona");
 		setId_idpersona("idpersona");
 	}
+
+    public static int getIdpersona_global() {
+        return idpersona_global;
+    }
+
+    public static void setIdpersona_global(int idpersona_global) {
+        persona.idpersona_global = idpersona_global;
+    }
 
     public static int getBus_idpersona() {
         return bus_idpersona;
@@ -145,6 +156,23 @@ public static int bus_quien_llama;
 	public void setC11fk_idpersona_cargo(int C11fk_idpersona_cargo){
 		this.C11fk_idpersona_cargo = C11fk_idpersona_cargo;
 	}
+
+    public String getC12nro_tarjeta() {
+        return C12nro_tarjeta;
+    }
+
+    public void setC12nro_tarjeta(String C12nro_tarjeta) {
+        this.C12nro_tarjeta = C12nro_tarjeta;
+    }
+
+    public double getC13limite_vale() {
+        return C13limite_vale;
+    }
+
+    public void setC13limite_vale(double C13limite_vale) {
+        this.C13limite_vale = C13limite_vale;
+    }
+        
 	public String toString() {
 		return "persona(" + ",idpersona=" + C1idpersona + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,nombre=" + C4nombre + " ,ruc=" + C5ruc + " ,direccion=" + C6direccion + " ,telefono=" + C7telefono + " ,tipo_persona=" + C8tipo_persona + " ,dia_libre=" + C9dia_libre + " ,salario_base=" + C10salario_base + " ,fk_idpersona_cargo=" + C11fk_idpersona_cargo + " )";
 	}

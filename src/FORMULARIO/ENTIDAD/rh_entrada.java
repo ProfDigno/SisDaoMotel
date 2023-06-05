@@ -9,9 +9,11 @@ private String C4fecha_entrada;
 private String C5fecha_salida;
 private String C6turno;
 private boolean C7es_cerrado;
-private int C8fk_idpersona;
-private int C9fk_idusuario;
-private int C10fk_idrh_turno;
+private boolean C8es_entrada;
+private boolean C9es_salida;
+private int C10fk_idpersona;
+private int C11fk_idusuario;
+private int C12fk_idrh_turno;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -74,25 +76,37 @@ private static String nom_idtabla;
 	public void setC7es_cerrado(boolean C7es_cerrado){
 		this.C7es_cerrado = C7es_cerrado;
 	}
-	public int getC8fk_idpersona(){
-		return C8fk_idpersona;
+	public boolean getC8es_entrada(){
+		return C8es_entrada;
 	}
-	public void setC8fk_idpersona(int C8fk_idpersona){
-		this.C8fk_idpersona = C8fk_idpersona;
+	public void setC8es_entrada(boolean C8es_entrada){
+		this.C8es_entrada = C8es_entrada;
 	}
-	public int getC9fk_idusuario(){
-		return C9fk_idusuario;
+	public boolean getC9es_salida(){
+		return C9es_salida;
 	}
-	public void setC9fk_idusuario(int C9fk_idusuario){
-		this.C9fk_idusuario = C9fk_idusuario;
+	public void setC9es_salida(boolean C9es_salida){
+		this.C9es_salida = C9es_salida;
 	}
-	public int getC10fk_idrh_turno(){
-		return C10fk_idrh_turno;
+	public int getC10fk_idpersona(){
+		return C10fk_idpersona;
 	}
-	public void setC10fk_idrh_turno(int C10fk_idrh_turno){
-		this.C10fk_idrh_turno = C10fk_idrh_turno;
+	public void setC10fk_idpersona(int C10fk_idpersona){
+		this.C10fk_idpersona = C10fk_idpersona;
+	}
+	public int getC11fk_idusuario(){
+		return C11fk_idusuario;
+	}
+	public void setC11fk_idusuario(int C11fk_idusuario){
+		this.C11fk_idusuario = C11fk_idusuario;
+	}
+	public int getC12fk_idrh_turno(){
+		return C12fk_idrh_turno;
+	}
+	public void setC12fk_idrh_turno(int C12fk_idrh_turno){
+		this.C12fk_idrh_turno = C12fk_idrh_turno;
 	}
 	public String toString() {
-		return "rh_entrada(" + ",idrh_entrada=" + C1idrh_entrada + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,fecha_entrada=" + C4fecha_entrada + " ,fecha_salida=" + C5fecha_salida + " ,turno=" + C6turno + " ,es_cerrado=" + C7es_cerrado + " ,fk_idpersona=" + C8fk_idpersona + " ,fk_idusuario=" + C9fk_idusuario + " ,fk_idrh_turno=" + C10fk_idrh_turno + " )";
+		return "rh_entrada(" + ",idrh_entrada=" + C1idrh_entrada + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,fecha_entrada=" + C4fecha_entrada + " ,fecha_salida=" + C5fecha_salida + " ,turno=" + C6turno + " ,es_cerrado=" + C7es_cerrado + " ,es_entrada=" + C8es_entrada + " ,es_salida=" + C9es_salida + " ,fk_idpersona=" + C10fk_idpersona + " ,fk_idusuario=" + C11fk_idusuario + " ,fk_idrh_turno=" + C12fk_idrh_turno + " )";
 	}
 }

@@ -4,12 +4,12 @@
 			"frmventa_ven_aux":"SI",
 			"frmventa_zona_nro":"SI",
 			"frmventa_zona_nombre":"SI",
-			"rasp_1":"SI",
-			"rasp_2":"SI",
-			"rasp_3":"SI",
+			"rasp_1":"NO",
+			"rasp_2":"NO",
+			"rasp_3":"NO",
 			"app_tiempo_min_exp":"60",
-			"app_nom_report":"_km8",
-			"app_act_exp":"SI",
+			"app_nom_report":"_melos1",
+			"app_act_exp":"NO",
 			"act_roll_usu":"SI"
 		}
 	],

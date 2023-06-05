@@ -2,50 +2,86 @@
  =========PANKY-I=========              
  0993291322                             
  San Miguel                             
- NRO CAJA:4                             
- FEC INI: 2023-01-18 13:43              
- FEC FIN: 2023-01-18 13:50              
- USUARIO:CARLOS                         
+ NRO CAJA:393                           
+ FEC INI: 2023-01-18 11:05              
+ FEC FIN: 2023-06-03 14:16              
+ USUARIO:PROGRAMADOR ADMIN              
  #=============================#        
  FEC-DESCRIP-OCUPA-CONSU-TOTAL          
                                         
- 2023-01-18 13:50                       
- 30-(PAGADO)-HAB: 13,T:(00:00:48)       
-     40,000          0       40,000     
- 2023-01-18 13:50                       
- 29-(PAGADO)-HAB: 12,T:(00:00:42)       
-     40,000          0       40,000     
- 2023-01-18 13:45                       
- 22-(PAGADO)-HAB: 5,T:(00:40:21)        
-     40,000          0       40,000     
- 2023-01-18 13:43                       
- 2-(GARANTIA)-2023-01-18 13:42,(LUIS)-PAGADO
-          0          0       40,000     
- 2023-01-18 13:43                       
- APERTURA DE CAJA                       
-          0          0            0     
+ 007 |14:14 |14:15 |00:00 |NORMAL (9819)
+     40,000     40,000       80,000     
+ 011 |11:43 |14:12 |02:28 |NORMAL (9816)
+     50,000     42,000       92,000     
+ 006 |12:14 |14:12 |01:57 |NORMAL (9818)
+     50,000     36,000       86,000     
+ 010 |03:14 |14:12 |10:57 |NORMAL (9799)
+    140,000     63,000      203,000     
                                         
+ #=============================#        
+ =>CANT - (V.CONSUMO) - SUBTOTAL        
+ MILLER LATA                            
+   7                         56,000     
+ LUCKY 10                               
+   3                         27,000     
+ SPRITE 500ML                           
+   3                         18,000     
+ FANTA NARANJA 500ML                    
+   3                         18,000     
+ SKOL 269ML                             
+   2                         10,000     
+ SKOLL ABRE FACIL 275CM                 
+   2                         16,000     
+ JHONY R. MINI                          
+   1                         30,000     
+ COCA COLA 500 ML                       
+   1                          6,000     
+                                        
+ #=============================#        
+ =>CANT - (V.INTERNO) - SUBTOTAL        
+ PASTA DENTAL                           
+   2                         12,000     
+ FANTA NARANJA 500ML                    
+   2                         10,000     
+ SPRITE 500ML                           
+   2                         10,000     
+ CEPILLO DENTAL                         
+   2                         12,000     
+                                        
+ #=============================#        
+ =>HORA - (GASTOS-CAJA) - TOTAL         
+ TAXI-(comision)                        
+  14:14                      15,000     
+                                        
+ #=============================#        
+ =>ESTADO - (GARANTIA-CAJA) - TOTAL     
+ DIGNO-CELULAR XIAOMI                   
+ PENDIENTE                  -80,000     
                                         
                                         
  #=============================#        
  ###-DATOS INGRESO-###                  
- TT. MINIMO:                120,000     
- TT. ADICIONAL:                   0     
- TT. CONSUMO:                     0     
+ TT. MINIMO:                160,000     
+ TT. ADICIONAL:             120,000     
+ TT. CONSUMO:               181,000     
  TT. DESCUENTO:                   0     
  TT. ADELANTO:                    0     
- TT. VEN-INTERNO:                 0     
- TT. GARANTIA:               40,000     
- ===>TOTAL INGRESO:         160,000     
+ TT. VEN-INTERNO:            44,000     
+ TT. GARANTIA:              -80,000     
+ ===>TOTAL INGRESO:         425,000     
  #=============================#        
  ###-DATOS EGRESO-###                   
  TT. COMPRA :                     0     
  TT. VALE :                       0     
  TT. LIQUIDACION :                0     
- TT. GASTO :                      0     
- ===>TOTAL EGRESO :               0     
+ TT. GASTO :                 15,000     
+ ===>TOTAL EGRESO :          15,000     
  #=============================#        
- ===>TOTAL SALDO :          160,000     
+ ===>TOTAL SALDO :          410,000     
+                                        
+                                        
+                                        
+                                        
                                         
                                         
                                         

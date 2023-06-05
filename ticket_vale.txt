@@ -1,0 +1,27 @@
+                                        
+ ####-RECIBO-####                       
+ #=============================#        
+ USUARIO:PROGRAMADOR ADMIN              
+ VALE:6                                 
+ FECHA:02-06-2023                       
+ >>-----RECIBIDO POR:                   
+ PEDRO                                  
+ >>-----RECIBIDO DE:                    
+ PANKY-I                                
+ >>-----CONCEPTO DE:                    
+ VALE ADELANTO sdfsdf                   
+ #=============================#        
+ TOTAL PAGAR:                           
+                         200,000        
+ LETRA:                                 
+ DOSCIENTOS MIL                         
+ #=============================#        
+                                        
+                                        
+ FIRMA Y ACLARACION                     
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        

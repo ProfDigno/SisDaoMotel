@@ -27,6 +27,7 @@ public class EvenEstado {
     private static String est_INGRESADO;
     private static String est_PENDIENTE;
     private static String est_CARGADOSTOCK;
+    private static String est_ABIERTO;
     private static String estdes_Limpiando;
     private static String estdes_cliingreso;
     private static String estdes_cliAbierto;
@@ -91,6 +92,7 @@ public class EvenEstado {
         setEst_INGRESADO("INGRESADO");
         setEst_PENDIENTE("PENDIENTE");
         setEst_CARGADOSTOCK("CARGADO_ST");
+        setEst_ABIERTO("ABIERTO");
         setEstdes_Limpiando("-LIMPIANDO");
         setEstdes_cliingreso("-CLI-INGRESO");
         setEstdes_cliAbierto("-CLI-ABIERTO");
@@ -137,6 +139,14 @@ public class EvenEstado {
         setIco_limpie("/graficos/limpieza.png");
         setIco_escoba("/graficos/escoba.png");
         setIco_candado("/graficos/ocupado.png");
+    }
+
+    public static String getEst_ABIERTO() {
+        return est_ABIERTO;
+    }
+
+    public static void setEst_ABIERTO(String est_ABIERTO) {
+        EvenEstado.est_ABIERTO = est_ABIERTO;
     }
 
     public static String getCaja_GARANTIA() {

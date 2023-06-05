@@ -5,6 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
+import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import ESTADOS.EvenEstado;
 import Evento.Combobox.EvenCombobox;
@@ -22,12 +23,14 @@ import java.sql.Connection;
  * @author Digno
  */
 public class FrmPersona extends javax.swing.JInternalFrame {
-
+    EvenConexion eveconn = new EvenConexion();
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
     private persona ENTper=new persona();
     private DAO_persona DAOper=new DAO_persona();
     private BO_persona BOper=new BO_persona();
+    private rh_liquidacion ENTrhli=new rh_liquidacion();
+    private DAO_rh_liquidacion DAOrhli=new DAO_rh_liquidacion();
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenCombobox evecmb = new EvenCombobox();
     private EvenEstado eveest = new EvenEstado();
@@ -52,6 +55,9 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         this.setTitle(nombreTabla_pri+" / fecha creado: "+fecha_creado+" / Creado Por: "+creado_por);
     }
     private boolean validar_guardar() {
+        if (evejtf.getBoo_JTextField_vacio(txtnro_tarjeta, "DEBE CARGAR UN NUMERO TARJETA")) {
+            return false;
+        }
         if (evejtf.getBoo_JTextField_vacio(txtnombre, "DEBE CARGAR UN NOMBRE")) {
             return false;
         }
@@ -65,6 +71,9 @@ public class FrmPersona extends javax.swing.JInternalFrame {
             return false;
         }
         if (evejtf.getBoo_JTextField_vacio(txtsalario, "DEBE CARGAR UN SALARIO")) {
+            return false;
+        }
+        if (evejtf.getBoo_JTextField_vacio(txtlimite_vale, "DEBE CARGAR UN LIMITE DE VALE")) {
             return false;
         }
         if(evecmb.getBoo_JCombobox_seleccionar(cmbpersonal_cargo,"SELECCIONE UN CARGO")){
@@ -110,15 +119,32 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         ENTper.setC7telefono(txttelefono.getText());
         ENTper.setC8tipo_persona(getTipo_persona());
         ENTper.setC9dia_libre(1);
-        double salario_base=Double.parseDouble(txtsalario.getText());
+        double salario_base=evejtf.getDouble_format_nro_entero(txtsalario);
         ENTper.setC10salario_base(salario_base);
         int fk_idpersona_cargo=evecmb.getInt_seleccionar_COMBOBOX(conn, cmbpersonal_cargo, car_id, car_nombre, car_tabla);
         ENTper.setC11fk_idpersona_cargo(fk_idpersona_cargo);
+        ENTper.setC12nro_tarjeta(txtnro_tarjeta.getText());
+        double limite_vale=evejtf.getDouble_format_nro_entero(txtlimite_vale);
+        ENTper.setC13limite_vale(limite_vale);
+    }
+    private void cargar_dato_liquidacion(){
+        int idpersona=(eveconn.getInt_ultimoID_mas_uno(conn, ENTper.getTb_persona(), ENTper.getId_idpersona()));
+        ENTrhli.setC3creado_por(creado_por);
+        ENTrhli.setC6estado(eveest.getEst_ABIERTO());
+        ENTrhli.setC7es_cerrado(false);
+        ENTrhli.setC8monto_vale(0);
+        ENTrhli.setC9monto_descuento(0);
+        ENTrhli.setC10monto_liquidacion(0);
+        double salario_base=evejtf.getDouble_format_nro_entero(txtsalario);
+        ENTrhli.setC11salario_base(salario_base);
+        ENTrhli.setC12monto_letra("cero");
+        ENTrhli.setC13fk_idpersona(idpersona);
     }
     private void boton_guardar() {
         if (validar_guardar()) {
             cargar_dato();
-            BOper.insertar_persona(ENTper, tbltabla_pri);
+            cargar_dato_liquidacion();
+            BOper.insertar_persona(ENTper,ENTrhli, tbltabla_pri);
             reestableser();
         }
     }
@@ -139,7 +165,11 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         txtruc.setText(ENTper.getC5ruc());
         txtdireccion.setText(ENTper.getC6direccion());
         txttelefono.setText(ENTper.getC7telefono());
-        txtsalario.setText(String.valueOf(ENTper.getC10salario_base()));
+        String salario=evejtf.getString_format_nro_decimal(ENTper.getC10salario_base());
+        txtsalario.setText(salario);
+        txtnro_tarjeta.setText(ENTper.getC12nro_tarjeta());
+        String limite=evejtf.getString_format_nro_decimal(ENTper.getC13limite_vale());
+        txtlimite_vale.setText(limite);
         cargar_tipo_persona(ENTper.getC8tipo_persona());
         titulo_formulario(ENTper.getC2fecha_creado(), ENTper.getC3creado_por());
         btnguardar.setEnabled(false);
@@ -154,7 +184,9 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         txtruc.setText(null);
         txtdireccion.setText(null);
         txttelefono.setText(null);
-        txtsalario.setText(null);
+        txtsalario.setText("0");
+        txtnro_tarjeta.setText(null);
+        txtlimite_vale.setText("0");
         jRtp_cliente.setSelected(true);
         cmbpersonal_cargo.setSelectedIndex(0);
         btnguardar.setEnabled(true);
@@ -199,6 +231,8 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         jRtp_usuario = new javax.swing.JRadioButton();
         txtsalario = new javax.swing.JTextField();
         cmbpersonal_cargo = new javax.swing.JComboBox<>();
+        txtnro_tarjeta = new javax.swing.JTextField();
+        txtlimite_vale = new javax.swing.JTextField();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltabla_pri = new javax.swing.JTable();
@@ -282,10 +316,25 @@ public class FrmPersona extends javax.swing.JInternalFrame {
 
         txtruc.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txtruc.setBorder(javax.swing.BorderFactory.createTitledBorder("RUC"));
+        txtruc.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtrucKeyPressed(evt);
+            }
+        });
 
         txtdireccion.setBorder(javax.swing.BorderFactory.createTitledBorder("DIRECCION"));
+        txtdireccion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtdireccionKeyPressed(evt);
+            }
+        });
 
         txttelefono.setBorder(javax.swing.BorderFactory.createTitledBorder("TELEFONO"));
+        txttelefono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txttelefonoKeyPressed(evt);
+            }
+        });
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("TIPO"));
 
@@ -325,13 +374,40 @@ public class FrmPersona extends javax.swing.JInternalFrame {
                 .addComponent(jRtp_usuario))
         );
 
-        txtsalario.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtsalario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txtsalario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtsalario.setBorder(javax.swing.BorderFactory.createTitledBorder("SALARIO"));
+        txtsalario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtsalarioKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtsalarioKeyReleased(evt);
+            }
+        });
 
         cmbpersonal_cargo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         cmbpersonal_cargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cmbpersonal_cargo.setBorder(javax.swing.BorderFactory.createTitledBorder("CARGO"));
+
+        txtnro_tarjeta.setBorder(javax.swing.BorderFactory.createTitledBorder("NUMERO TARJETA"));
+        txtnro_tarjeta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtnro_tarjetaKeyPressed(evt);
+            }
+        });
+
+        txtlimite_vale.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtlimite_vale.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtlimite_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("LIMITE VALE:"));
+        txtlimite_vale.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtlimite_valeKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtlimite_valeKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -345,7 +421,8 @@ public class FrmPersona extends javax.swing.JInternalFrame {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtnro_tarjeta))
                     .addComponent(txtdireccion, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(txtruc, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -354,6 +431,8 @@ public class FrmPersona extends javax.swing.JInternalFrame {
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(txtsalario, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtlimite_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(panel_insertarLayout.createSequentialGroup()
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -371,10 +450,13 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txtnro_tarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -386,7 +468,9 @@ public class FrmPersona extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtsalario)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtsalario, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+                    .addComponent(txtlimite_vale))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbpersonal_cargo, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -487,7 +571,7 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -545,6 +629,7 @@ public class FrmPersona extends javax.swing.JInternalFrame {
     private void txtnombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombreKeyPressed
         // TODO add your handling code here:
 //        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_venta);
+        evejtf.saltar_campo_enter(evt, txtnombre, txtruc);
     }//GEN-LAST:event_txtnombreKeyPressed
 
     private void txtbuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscarKeyReleased
@@ -556,6 +641,46 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         txtnombre.setText(txtnombre.getText().toUpperCase());
     }//GEN-LAST:event_txtnombreKeyReleased
+
+    private void txtnro_tarjetaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnro_tarjetaKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtnro_tarjeta, txtnombre);
+    }//GEN-LAST:event_txtnro_tarjetaKeyPressed
+
+    private void txtrucKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtrucKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtruc, txttelefono);
+    }//GEN-LAST:event_txtrucKeyPressed
+
+    private void txttelefonoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttelefonoKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtruc, txtdireccion);
+    }//GEN-LAST:event_txttelefonoKeyPressed
+
+    private void txtdireccionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdireccionKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtdireccion, txtsalario);
+    }//GEN-LAST:event_txtdireccionKeyPressed
+
+    private void txtsalarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsalarioKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtsalario, txtlimite_vale);
+    }//GEN-LAST:event_txtsalarioKeyPressed
+
+    private void txtsalarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsalarioKeyReleased
+        // TODO add your handling code here:
+        evejtf.getDouble_format_nro_entero(txtsalario);
+    }//GEN-LAST:event_txtsalarioKeyReleased
+
+    private void txtlimite_valeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtlimite_valeKeyPressed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_txtlimite_valeKeyPressed
+
+    private void txtlimite_valeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtlimite_valeKeyReleased
+        // TODO add your handling code here:
+        evejtf.getDouble_format_nro_entero(txtlimite_vale);
+    }//GEN-LAST:event_txtlimite_valeKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -584,7 +709,9 @@ public class FrmPersona extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtbuscar;
     private javax.swing.JTextField txtdireccion;
     private javax.swing.JTextField txtid;
+    private javax.swing.JTextField txtlimite_vale;
     private javax.swing.JTextField txtnombre;
+    private javax.swing.JTextField txtnro_tarjeta;
     private javax.swing.JTextField txtruc;
     private javax.swing.JTextField txtsalario;
     private javax.swing.JTextField txttelefono;
