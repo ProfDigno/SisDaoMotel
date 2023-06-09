@@ -60,7 +60,9 @@ public class DAO_caja_cierre_detalle {
             + "monto_garantia,fk_idgarantia "
             + "FROM caja_cierre_detalle "
             + "WHERE idcaja_cierre_detalle=";
-
+    private String sql_anu_vale = "UPDATE caja_cierre_detalle SET monto_vale=?,"
+            + "estado=? "
+            + "WHERE fk_idrh_vale=?;";
     public void insertar_caja_cierre_detalle(Connection conn, caja_cierre_detalle cacide) {
         cacide.setC1idcaja_cierre_detalle(eveconn.getInt_ultimoID_mas_uno(conn, cacide.getTb_caja_cierre_detalle(), cacide.getId_idcaja_cierre_detalle()));
         String titulo = "insertar_caja_cierre_detalle";
@@ -353,5 +355,49 @@ public class DAO_caja_cierre_detalle {
                 + "where idcaja_cierre_detalle=caja_cierre_item.fk_idcaja_cierre_detalle \n"
                 + "and es_cerrado=false;";
         eveconn.SQL_execute_libre(conn, sql);
+    }
+    public void update_caja_cierre_detalle_anular_vale(Connection conn, caja_cierre_detalle cacide) {
+        String titulo = "update_caja_cierre_detalle_anular_vale";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_anu_vale);
+            pst.setDouble(1, cacide.getC15monto_vale());
+            pst.setString(2, cacide.getC17estado());
+            pst.setInt(3, cacide.getC23fk_idrh_vale());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_anu_vale + "\n" + cacide.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, false);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_anu_vale + "\n" + cacide.toString(), titulo);
+        }
+    }
+    public void actualizar_tabla_caja_cierre_detalle_ABIERTO_VALE(Connection conn, JTable tbltabla, int fk_idusuario) {
+        String sql = "select cd.fk_idrh_vale as idrh_vale,\n"
+                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
+                + "cd.descripcion as descripcion,\n"
+                + "to_char(cd.monto_vale,'999G999G999') as monto_vale,\n"
+                + "cd.estado,cd.creado_por as usuario \n"
+                + "from caja_cierre_detalle cd\n"
+                + "where cd.es_cerrado=false \n"
+                + "and cd.fk_idrh_vale>0 \n"
+                + "and cd.fk_idusuario=" + fk_idusuario
+                + " order by cd.idcaja_cierre_detalle desc";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
+    }
+    public void actualizar_tabla_caja_cierre_detalle_ABIERTO_LIQUIDACION(Connection conn, JTable tbltabla, int fk_idusuario) {
+        String sql = "select cd.fk_idrh_liquidacion as idliquidacion,\n"
+                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha, \n"
+                + "cd.descripcion as descripcion,\n"
+                + "to_char(cd.monto_liquidacion,'999G999G999') as monto_liquidacion,\n"
+                + "cd.estado,cd.creado_por as usuario \n"
+                + "from caja_cierre_detalle cd\n"
+                + "where cd.es_cerrado=false \n"
+                + "and cd.fk_idrh_liquidacion>0 \n"
+                + "and cd.fk_idusuario=" + fk_idusuario
+                + " order by cd.idcaja_cierre_detalle desc";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tbltabla);
     }
 }

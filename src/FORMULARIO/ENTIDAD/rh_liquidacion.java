@@ -15,6 +15,7 @@ private double C10monto_liquidacion;
 private double C11salario_base;
 private String C12monto_letra;
 private int C13fk_idpersona;
+private String C14descripcion;
 private static String nom_tabla;
 private static String nom_idtabla;
 private double sum_descuento;
@@ -37,6 +38,14 @@ private double sum_vale;
 		rh_liquidacion.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public String getC14descripcion() {
+        return C14descripcion;
+    }
+
+    public void setC14descripcion(String C14descripcion) {
+        this.C14descripcion = C14descripcion;
+    }
 
     public double getSum_descuento() {
         return sum_descuento;

@@ -77,30 +77,35 @@ public class EvenRender {
                 Color color_fondo = Color.WHITE;
                 Color color_text = Color.BLACK;
                 Object texto1 = table.getValueAt(row, columnaRender);
-                String campo1 = "EMITIDO";
-                String campo2 = "TERMINADO";
-                String campo3 = "ANULADO";
-                String campo4 = "CONFIRMADO";
-                String campo5 = "ANULADO_temp";
-                if (texto1 != null && campo1.equals(texto1.toString())) {
+                String emitido = "EMITIDO";
+                String terminado = "TERMINADO";
+                String anulado = "ANULADO";
+                String confirmado = "CONFIRMADO";
+                String anuladotemp = "ANULADO_temp";
+                String cerrado = "CERRADO";
+                if (texto1 != null && emitido.equals(texto1.toString())) {
                     color_fondo = Color.WHITE;
                     color_text = Color.RED;
                 }
-                if (texto1 != null && campo2.equals(texto1.toString())) {
+                if (texto1 != null && terminado.equals(texto1.toString())) {
                     color_fondo = Color.GREEN;
                     color_text = Color.BLUE;
                 }
-                if (texto1 != null && campo3.equals(texto1.toString())) {
+                if (texto1 != null && anulado.equals(texto1.toString())) {
                     color_fondo = Color.RED;
                     color_text = Color.YELLOW;
                 }
-                if (texto1 != null && campo4.equals(texto1.toString())) {
+                if (texto1 != null && confirmado.equals(texto1.toString())) {
                     color_fondo = Color.GREEN;
                     color_text = Color.BLUE;
                 }
-                if (texto1 != null && campo5.equals(texto1.toString())) {
+                if (texto1 != null && anuladotemp.equals(texto1.toString())) {
                     color_fondo = Color.RED;
                     color_text = Color.YELLOW;
+                }
+                if (texto1 != null && cerrado.equals(texto1.toString())) {
+                    color_fondo = Color.GREEN;
+                    color_text = Color.BLUE;
                 }
                 label.setBackground(color_fondo);
                 table.setSelectionForeground(color_text);

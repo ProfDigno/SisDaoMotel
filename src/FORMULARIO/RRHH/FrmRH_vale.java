@@ -27,6 +27,7 @@ import FORMULARIO.DAO.DAO_rh_liquidacion;
 import FORMULARIO.DAO.DAO_rh_liquidacion_entrada;
 import FORMULARIO.DAO.DAO_rh_liquidacion_vale;
 import FORMULARIO.DAO.DAO_rh_vale;
+import FORMULARIO.ENTIDAD.caja_cierre_detalle;
 import FORMULARIO.ENTIDAD.gasto_tipo;
 import FORMULARIO.ENTIDAD.persona;
 import FORMULARIO.ENTIDAD.rh_entrada;
@@ -68,6 +69,7 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
     private EvenNumero_a_Letra evenrolt=new EvenNumero_a_Letra();
     private rh_liquidacion ENTrhli=new rh_liquidacion();
     private rh_liquidacion_detalle ENTrhlde = new rh_liquidacion_detalle();
+    private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
     private PosImprimir_vale posvale=new PosImprimir_vale();
     private EvenMensajeJoptionpane evemsj=new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
@@ -125,7 +127,11 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
             return false;
         }
     }
-    private void cargar_dato_vale() {
+//    private void cargar_dato_caja_detalle() {
+//        
+//        
+//    }
+    private void cargar_dato_vale(boolean caja) {
         idrh_vale=(eveconn.getInt_ultimoID_mas_uno(conn, ENTrhv.getTb_rh_vale(), ENTrhv.getId_idrh_vale()));
         double monto_vale=evejtf.getDouble_format_nro_entero(txtmonto);
         int Imonto=(int)monto_vale;
@@ -153,7 +159,39 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
         ENTrhlde.setC10fk_idrh_descuento(0);
         ENTrhlde.setC11fk_idrh_vale(idrh_vale);
         
-        BOrhv.insertar_rh_vale(ENTrhv, ENTrhlv,ENTrhlde);
+        ENTccd.setC3creado_por(creado_por);
+        ENTccd.setC4cerrado_por(eveest.getCaja_VALE());
+        ENTccd.setC5es_cerrado(false);
+        ENTccd.setC6monto_apertura_caja(0);
+        ENTccd.setC7monto_cierre_caja(0);
+        ENTccd.setC8monto_ocupa_minimo(0);
+        ENTccd.setC9monto_ocupa_adicional(0);
+        ENTccd.setC10monto_ocupa_consumo(0);
+        ENTccd.setC11monto_ocupa_descuento(0);
+        ENTccd.setC12monto_ocupa_adelanto(0);
+        ENTccd.setC13monto_gasto(0);
+        ENTccd.setC14monto_compra(0);
+        ENTccd.setC15monto_vale(monto_vale);
+        ENTccd.setC16monto_liquidacion(0);
+        ENTccd.setC17estado(eveest.getEst_Emitido());
+        ENTccd.setC18descripcion(txtdescripcion.getText());
+        ENTccd.setC19fk_idgasto(0);
+        ENTccd.setC20fk_idcompra(0);
+        ENTccd.setC21fk_idventa(0);
+        ENTccd.setC22fk_idusuario(fk_idusuario);
+        ENTccd.setC23fk_idrh_vale(idrh_vale);
+        ENTccd.setC24fk_idrh_liquidacion(0);
+        ENTccd.setC25monto_solo_adelanto(0);
+        ENTccd.setC26monto_interno(0);
+        ENTccd.setC27fk_idventa_interno(0);
+        ENTccd.setC28monto_garantia(0);
+        ENTccd.setC29fk_idgarantia(0);
+        
+        if(caja){
+            BOrhv.insertar_rh_vale_caja(ENTrhv, ENTrhlv, ENTrhlde, ENTccd);
+        }else{
+            BOrhv.insertar_rh_vale(ENTrhv, ENTrhlv,ENTrhlde);
+        }
     }
 
     private void cargar_dato_liquidacion(){
@@ -171,9 +209,9 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
 //    private void cargar_dato_liquidacion_detalle(){
 //        
 //    }
-    private void boton_guardar_vale() {
+    private void boton_guardar_vale(boolean caja) {
         if (validar_guardar()) {
-            cargar_dato_vale();
+            cargar_dato_vale(caja);
             reestableser();
             cargar_dato_liquidacion();
             int mensaje=(evemsj.getIntMensaje_informacion_3btn("DESEA IMPRIMIR VALE", "VALE", "TICKET", "A4","CANCELAR"));
@@ -215,9 +253,10 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
         txtdescripcion = new javax.swing.JTextField();
         txtmonto = new javax.swing.JTextField();
         txtmonto_letra = new javax.swing.JTextField();
-        btnguardar = new javax.swing.JButton();
+        btnpago_admin = new javax.swing.JButton();
         txtlimite_vale = new javax.swing.JTextField();
         txtsuma_vale = new javax.swing.JTextField();
+        btnpago_caja = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -266,12 +305,12 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
         txtmonto_letra.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txtmonto_letra.setBorder(javax.swing.BorderFactory.createTitledBorder("MONTO LETRA"));
 
-        btnguardar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnguardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/guardar.png"))); // NOI18N
-        btnguardar.setText("GUARDAR");
-        btnguardar.addActionListener(new java.awt.event.ActionListener() {
+        btnpago_admin.setBackground(new java.awt.Color(204, 255, 204));
+        btnpago_admin.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnpago_admin.setText("PAGO POR ADMIN");
+        btnpago_admin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnguardarActionPerformed(evt);
+                btnpago_adminActionPerformed(evt);
             }
         });
 
@@ -282,6 +321,15 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
         txtsuma_vale.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txtsuma_vale.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtsuma_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("SUMA VALE"));
+
+        btnpago_caja.setBackground(new java.awt.Color(255, 255, 153));
+        btnpago_caja.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnpago_caja.setText("PAGO POR CAJA");
+        btnpago_caja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnpago_cajaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -294,15 +342,20 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
                         .addComponent(txtpersona, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtcarga))
-                    .addComponent(txtdescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
-                    .addComponent(txtmonto_letra, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
+                    .addComponent(txtdescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+                    .addComponent(txtmonto_letra, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnguardar, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtmonto, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
-                            .addComponent(txtlimite_vale))
-                        .addGap(2, 2, 2)
-                        .addComponent(txtsuma_vale))))
+                            .addComponent(txtlimite_vale)
+                            .addComponent(btnpago_admin, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_insertarLayout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addComponent(txtsuma_vale))
+                            .addGroup(panel_insertarLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnpago_caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -321,7 +374,9 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtmonto_letra, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnguardar, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnpago_admin, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnpago_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -354,14 +409,20 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
         getBoo_validar_monto_vale(monto_vale);
     }//GEN-LAST:event_txtmontoKeyReleased
 
-    private void btnguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardarActionPerformed
+    private void btnpago_adminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpago_adminActionPerformed
         // TODO add your handling code here:
-        boton_guardar_vale();
-    }//GEN-LAST:event_btnguardarActionPerformed
+        boton_guardar_vale(false);
+    }//GEN-LAST:event_btnpago_adminActionPerformed
+
+    private void btnpago_cajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpago_cajaActionPerformed
+        // TODO add your handling code here:
+        boton_guardar_vale(true);
+    }//GEN-LAST:event_btnpago_cajaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnguardar;
+    private javax.swing.JButton btnpago_admin;
+    private javax.swing.JButton btnpago_caja;
     private javax.swing.JPanel panel_insertar;
     private javax.swing.JTextField txtcarga;
     private javax.swing.JTextField txtdescripcion;

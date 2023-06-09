@@ -95,6 +95,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_COMPRA(conn, tblcompra_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VENTA_INTERNO(conn, tblventa_interna_abierto, fk_idusuario);
         DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_GARANTIA(conn, tblgarantia_abierto, fk_idusuario);
+        DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_VALE(conn, tblvale, fk_idusuario);
+        DAOccd.actualizar_tabla_caja_cierre_detalle_ABIERTO_LIQUIDACION(conn, tblliquidacion, fk_idusuario);
         suma_total_caja_detalle_abierto(fk_idusuario);
     }
 
@@ -136,6 +138,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 + "sum(cd.monto_compra) as compra,\n"
                 + "sum(cd.monto_interno) as interno,\n"
                 + "sum(cd.monto_garantia) as garantia,\n"
+                + "sum(cd.monto_vale) as vale,\n"
+                + "sum(cd.monto_liquidacion) as liquidacion,\n"
                 + "sum((0-(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as descuento,\n"
                 + "sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))) as ingreso, \n"
@@ -159,6 +163,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 double descuento = rs.getDouble("descuento");
                 double interno = rs.getDouble("interno");
                 double garantia = rs.getDouble("garantia");
+                double vale = rs.getDouble("vale");
+                double liquidacion = rs.getDouble("liquidacion");
                 suma_ingreso = rs.getDouble("ingreso");
                 double gasto = rs.getDouble("gasto");
                 double compra = rs.getDouble("compra");
@@ -185,6 +191,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 jFtotal_venta_interno_2.setValue(interno);
                 jFtotal_garantia.setValue(garantia);
                 jFtotal_garantia_2.setValue(garantia);
+                jFtotal_vale.setValue(vale);
+                jFtotal_pago_salario.setValue(liquidacion);
             }
 
         } catch (Exception e) {
@@ -413,6 +421,16 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jScrollPane10 = new javax.swing.JScrollPane();
         tblgarantia_abierto = new javax.swing.JTable();
         jFtotal_garantia = new javax.swing.JFormattedTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel22 = new javax.swing.JPanel();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        tblvale = new javax.swing.JTable();
+        jFtotal_vale = new javax.swing.JFormattedTextField();
+        jPanel21 = new javax.swing.JPanel();
+        jPanel23 = new javax.swing.JPanel();
+        jScrollPane13 = new javax.swing.JScrollPane();
+        tblliquidacion = new javax.swing.JTable();
+        jFtotal_pago_salario = new javax.swing.JFormattedTextField();
         jPanel11 = new javax.swing.JPanel();
         jFtotal_resumen_ingreso = new javax.swing.JFormattedTextField();
         jFtotal_resumen_egreso = new javax.swing.JFormattedTextField();
@@ -855,6 +873,114 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         );
 
         jTabbedPane3.addTab("GARANTIA", jPanel18);
+
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("CAJA VALE"));
+
+        tblvale.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane12.setViewportView(tblvale);
+
+        jFtotal_vale.setBackground(new java.awt.Color(255, 255, 102));
+        jFtotal_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL VALE"));
+        jFtotal_vale.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_vale.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_vale.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
+        jPanel22.setLayout(jPanel22Layout);
+        jPanel22Layout.setHorizontalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel22Layout.createSequentialGroup()
+                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel22Layout.setVerticalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+            .addGroup(jPanel22Layout.createSequentialGroup()
+                .addComponent(jFtotal_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(0, 3, Short.MAX_VALUE)
+                .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jTabbedPane3.addTab("VALE", jPanel4);
+
+        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("CAJA PAGO SALARIO"));
+
+        tblliquidacion.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane13.setViewportView(tblliquidacion);
+
+        jFtotal_pago_salario.setBackground(new java.awt.Color(255, 255, 102));
+        jFtotal_pago_salario.setBorder(javax.swing.BorderFactory.createTitledBorder("TOTAL PAGO SALARIO"));
+        jFtotal_pago_salario.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFtotal_pago_salario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFtotal_pago_salario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        javax.swing.GroupLayout jPanel23Layout = new javax.swing.GroupLayout(jPanel23);
+        jPanel23.setLayout(jPanel23Layout);
+        jPanel23Layout.setHorizontalGroup(
+            jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel23Layout.createSequentialGroup()
+                .addComponent(jScrollPane13, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFtotal_pago_salario, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel23Layout.setVerticalGroup(
+            jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane13, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+            .addGroup(jPanel23Layout.createSequentialGroup()
+                .addComponent(jFtotal_pago_salario, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
+        jPanel21.setLayout(jPanel21Layout);
+        jPanel21Layout.setHorizontalGroup(
+            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel21Layout.setVerticalGroup(
+            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel21Layout.createSequentialGroup()
+                .addGap(0, 3, Short.MAX_VALUE)
+                .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jTabbedPane3.addTab("PAGO SALARIO", jPanel21);
 
         jPanel11.setBackground(new java.awt.Color(204, 204, 255));
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("RESUMEN SALDO"));
@@ -1405,6 +1531,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblcompra_abierto);
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblventa_interna_abierto);
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgarantia_abierto);
+        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblvale);
+        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblliquidacion);
         DAOcc.ancho_tabla_caja_cierre(tblresumen_caja_cierre);
     }//GEN-LAST:event_formInternalFrameOpened
 
@@ -1524,10 +1652,12 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFtotal_ocupa_descuento;
     private javax.swing.JFormattedTextField jFtotal_ocupa_ingreso;
     private javax.swing.JFormattedTextField jFtotal_ocupa_minimo;
+    private javax.swing.JFormattedTextField jFtotal_pago_salario;
     private javax.swing.JFormattedTextField jFtotal_resumen_egreso;
     private javax.swing.JFormattedTextField jFtotal_resumen_ingreso;
     private javax.swing.JFormattedTextField jFtotal_resumen_saldo;
     private javax.swing.JFormattedTextField jFtotal_saldo;
+    private javax.swing.JFormattedTextField jFtotal_vale;
     private javax.swing.JFormattedTextField jFtotal_venta_interno;
     private javax.swing.JFormattedTextField jFtotal_venta_interno_2;
     private javax.swing.JLabel jLabel1;
@@ -1545,7 +1675,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -1558,6 +1692,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1577,7 +1713,9 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblcompra_abierto;
     private javax.swing.JTable tblgarantia_abierto;
     private javax.swing.JTable tblgasto_abierto;
+    private javax.swing.JTable tblliquidacion;
     private javax.swing.JTable tblresumen_caja_cierre;
+    private javax.swing.JTable tblvale;
     private javax.swing.JTable tblventa;
     private javax.swing.JTable tblventa_consumo;
     private javax.swing.JTable tblventa_interna_abierto;

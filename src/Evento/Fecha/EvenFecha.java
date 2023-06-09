@@ -46,6 +46,18 @@ public class EvenFecha {
         java.util.Date date = new java.util.Date();
         dcfecha.setDate(date);
     }
+    public void setFechaDCcargado(com.toedter.calendar.JDateChooser dcfecha,String fecha) {
+//        java.util.Date date = new java.util.Date();
+//        dcfecha.setDate(date);
+        try {
+            SimpleDateFormat formato = new SimpleDateFormat(formato_fecha);
+            java.util.Date fechaDate = formato.parse(fecha);
+            dcfecha.setDate(fechaDate);
+        } catch (Exception e) {
+            String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n FORMATO: AñO-MES-DIA\n" + e;
+            JOptionPane.showMessageDialog(null, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     public String getfechaDCStringFormat(com.toedter.calendar.JDateChooser dcfecha, String formato_fecha) {
         String ifecha;
         java.util.Date date = dcfecha.getDate();

@@ -139,6 +139,7 @@ public class FrmPersona extends javax.swing.JInternalFrame {
         ENTrhli.setC11salario_base(salario_base);
         ENTrhli.setC12monto_letra("cero");
         ENTrhli.setC13fk_idpersona(idpersona);
+        ENTrhli.setC14descripcion("PAGO DE SALARIO");
     }
     private void boton_guardar() {
         if (validar_guardar()) {

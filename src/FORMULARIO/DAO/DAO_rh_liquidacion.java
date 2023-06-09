@@ -7,6 +7,7 @@ import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Fecha.EvenFecha;
+import Evento.Jtable.EvenRender;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,18 +21,25 @@ public class DAO_rh_liquidacion {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EvenRender everender=new EvenRender();
     private EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "RH_LIQUIDACION GUARDADO CORRECTAMENTE";
     private String mensaje_update = "RH_LIQUIDACION MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO rh_liquidacion(idrh_liquidacion,fecha_creado,creado_por,fecha_desde,fecha_hasta,estado,es_cerrado,monto_vale,monto_descuento,monto_liquidacion,salario_base,monto_letra,fk_idpersona) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_insert = "INSERT INTO rh_liquidacion(idrh_liquidacion,fecha_creado,creado_por,"
+            + "fecha_desde,fecha_hasta,estado,es_cerrado,"
+            + "monto_vale,monto_descuento,monto_liquidacion,salario_base,"
+            + "monto_letra,fk_idpersona,descripcion) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE rh_liquidacion SET "
             //            + "fecha_creado=?,creado_por=?,fecha_desde=?,"
             + "fecha_hasta=?,estado=?,es_cerrado=?,"
             + "monto_vale=?,monto_descuento=?,"
             + "monto_liquidacion=?,salario_base=?,"
-            + "monto_letra=?,fk_idpersona=? "
+            + "monto_letra=?,fk_idpersona=?,descripcion=? "
             + "WHERE idrh_liquidacion=?;";
-    private String sql_select = "SELECT idrh_liquidacion,fecha_creado,creado_por,fecha_desde,fecha_hasta,estado,es_cerrado,monto_vale,monto_descuento,monto_liquidacion,salario_base,monto_letra,fk_idpersona FROM rh_liquidacion order by 1 desc;";
+    private String sql_select = "SELECT idrh_liquidacion,fecha_creado,creado_por,"
+            + "fecha_desde,fecha_hasta,estado,es_cerrado,"
+            + "monto_vale,monto_descuento,monto_liquidacion,salario_base,"
+            + "monto_letra,fk_idpersona FROM rh_liquidacion order by 1 desc;";
     private String sql_cargar = "SELECT rhl.idrh_liquidacion,rhl.fecha_creado,rhl.creado_por,"
             + "rhl.fecha_desde,rhl.fecha_hasta,rhl.estado,rhl.es_cerrado,"
             + "rhl.monto_vale,rhl.monto_descuento,rhl.monto_liquidacion,rhl.salario_base,"
@@ -41,7 +49,7 @@ public class DAO_rh_liquidacion {
             + "and rhld.fk_idrh_liquidacion=rhl.idrh_liquidacion) as sum_descuento,\n"
             + "(select sum(rhv.monto_vale) as vale from rh_vale rhv, rh_liquidacion_vale rhlv\n"
             + "where rhv.idrh_vale=rhlv.fk_idrh_vale\n"
-            + "and rhlv.fk_idrh_liquidacion=rhl.idrh_liquidacion) as sum_vale "
+            + "and rhlv.fk_idrh_liquidacion=rhl.idrh_liquidacion) as sum_vale,rhl.descripcion "
             + "FROM rh_liquidacion rhl "
             + "WHERE rhl.idrh_liquidacion=";
 
@@ -64,7 +72,7 @@ public class DAO_rh_liquidacion {
             pst.setDouble(11, rl.getC11salario_base());
             pst.setString(12, rl.getC12monto_letra());
             pst.setInt(13, rl.getC13fk_idpersona());
-
+            pst.setString(14, rl.getC14descripcion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + rl.toString(), titulo);
@@ -79,9 +87,6 @@ public class DAO_rh_liquidacion {
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update);
-//            pst.setTimestamp(1, evefec.getTimestamp_sistema());
-//            pst.setString(2, rl.getC3creado_por());
-//            pst.setDate(3, evefec.getDateSQL_sistema());
             pst.setDate(1, evefec.getDate_fecha_cargado(rl.getC5fecha_hasta()));
             pst.setString(2, rl.getC6estado());
             pst.setBoolean(3, rl.getC7es_cerrado());
@@ -91,7 +96,8 @@ public class DAO_rh_liquidacion {
             pst.setDouble(7, rl.getC11salario_base());
             pst.setString(8, rl.getC12monto_letra());
             pst.setInt(9, rl.getC13fk_idpersona());
-            pst.setInt(10, rl.getC1idrh_liquidacion());
+            pst.setString(10, rl.getC14descripcion());
+            pst.setInt(11, rl.getC1idrh_liquidacion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + rl.toString(), titulo);
@@ -121,6 +127,7 @@ public class DAO_rh_liquidacion {
                 rl.setC13fk_idpersona(rs.getInt(13));
                 rl.setSum_descuento(rs.getDouble(14));
                 rl.setSum_vale(rs.getDouble(15));
+                rl.setC14descripcion(rs.getString(16));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + rl.toString(), titulo);
             }
         } catch (Exception e) {
@@ -129,13 +136,28 @@ public class DAO_rh_liquidacion {
     }
 
     public void actualizar_tabla_rh_liquidacion(Connection conn, JTable tbltabla) {
-        eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        String sql = "select l.idrh_liquidacion,l.fecha_desde,l.fecha_hasta, \n"
+                + "p.nombre,\n"
+                + "TRIM(to_char(l.salario_base,'999G999G999')) as salario,\n"
+                + "TRIM(to_char(l.monto_vale,'999G999G999')) as vale,\n"
+                + "TRIM(to_char(l.monto_descuento,'999G999G999')) as descuento,\n"
+                + "TRIM(to_char(l.monto_liquidacion,'999G999G999')) as liquidacion,\n"
+                + "l.estado\n"
+                + "from rh_liquidacion l,persona p\n"
+                + "where l.fk_idpersona=p.idpersona\n"
+                + "order by l.estado asc,l.fecha_hasta desc";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_rh_liquidacion(tbltabla);
+        everender.rendertabla_estados(tbltabla, 8);
     }
 
     public void ancho_tabla_rh_liquidacion(JTable tbltabla) {
-        int Ancho[] = {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
+        int Ancho[] = {5, 10, 10, 20, 8, 8, 8, 8, 6};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.alinear_derecha_columna(tbltabla, 5);
+        evejt.alinear_derecha_columna(tbltabla, 6);
+        evejt.alinear_derecha_columna(tbltabla, 7);
     }
 
     public int getInt_idrh_liquidacion_rh_liquidacion_abierto(Connection conn, int fk_idpersona) {
@@ -163,7 +185,6 @@ public class DAO_rh_liquidacion {
                 + "case when rhen.es_entrada=true then 'ENTRADA' when rhen.es_salida=true then 'SALIDA' else 'error' end as tipo \n"
                 + "from rh_liquidacion_entrada rhli,rh_entrada rhen\n"
                 + "where rhli.fk_idrh_entrada=rhen.idrh_entrada\n"
-                + "and rhen.es_cerrado=false\n"
                 + "and rhli.fk_idrh_liquidacion=" + idrh_liquidacion + " "
                 + "order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -180,11 +201,11 @@ public class DAO_rh_liquidacion {
                 + "rhen.descripcion,TRIM(to_char(rhen.monto_vale,'999G999G999')) as monto,rhen.estado\n"
                 + "from rh_liquidacion_vale rhli,rh_vale rhen\n"
                 + "where rhli.fk_idrh_vale=rhen.idrh_vale\n"
-                + "and rhen.es_cerrado=false\n"
                 + "and rhli.fk_idrh_liquidacion=" + idrh_liquidacion
                 + " order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_rh_liquidacion_vale(tbltabla);
+        everender.rendertabla_estados(tbltabla, 4);
     }
 
     public void ancho_tabla_rh_liquidacion_vale(JTable tbltabla) {
@@ -198,11 +219,11 @@ public class DAO_rh_liquidacion {
                 + "rhen.descripcion,TRIM(to_char(rhen.monto_descuento,'999G999G999')) as monto,rhen.estado\n"
                 + "from rh_liquidacion_descuento rhli,rh_descuento rhen\n"
                 + "where rhli.fk_idrh_descuento=rhen.idrh_descuento\n"
-                + "and rhen.es_cerrado=false\n"
                 + "and rhli.fk_idrh_liquidacion=" + idrh_liquidacion
                 + " order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_rh_liquidacion_descuento(tbltabla);
+        everender.rendertabla_estados(tbltabla, 4);
     }
 
     public void ancho_tabla_rh_liquidacion_descuento(JTable tbltabla) {
@@ -225,6 +246,7 @@ public class DAO_rh_liquidacion {
                 + "from rh_liquidacion l,rh_liquidacion_vale lv\n"
                 + "where l.idrh_liquidacion=lv.fk_idrh_liquidacion\n"
                 + "and lv.fk_idrh_vale=rh_vale.idrh_vale\n"
+                + "and rh_vale.estado='" + eveest.getEst_Emitido() + "' \n"
                 + "and l.idrh_liquidacion=" + ENTrhl.getC1idrh_liquidacion();
         eveconn.SQL_execute_libre(conn, sql);
     }
@@ -234,11 +256,32 @@ public class DAO_rh_liquidacion {
                 + "from rh_liquidacion l,rh_liquidacion_descuento ld\n"
                 + "where l.idrh_liquidacion=ld.fk_idrh_liquidacion\n"
                 + "and ld.fk_idrh_descuento=rh_descuento.idrh_descuento\n"
+                + "and rh_descuento.estado='" + eveest.getEst_Emitido() + "' \n"
                 + "and l.idrh_liquidacion=" + ENTrhl.getC1idrh_liquidacion();
         eveconn.SQL_execute_libre(conn, sql);
     }
 
-    public void imprimir_nota_rh_liquidacion(Connection conn, int idrh_liquidacion) {
+    public void imprimir_rh_liquidacion(Connection conn, int idrh_liquidacion) {
+        String titulo = "getInt_idrh_liquidacion_rh_liquidacion_abierto";
+        String sql = "select count(*) as cant\n"
+                + "from rh_liquidacion_detalle\n"
+                + "where fk_idrh_liquidacion=" + idrh_liquidacion + " ;";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                int cant = rs.getInt("cant");
+                if (cant > 0) {
+                    imprimir_nota_rh_liquidacion(conn, idrh_liquidacion);
+                } else {
+                    imprimir_nota_rh_liquidacion_sindet(conn, idrh_liquidacion);
+                }
+            }
+        } catch (SQLException e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+
+    private void imprimir_nota_rh_liquidacion(Connection conn, int idrh_liquidacion) {
         String sql = "select l.idrh_liquidacion as idl,\n"
                 + "to_char(l.fecha_desde,'yyyy-MM-dd') as fecdesde,\n"
                 + "to_char(l.fecha_hasta,'yyyy-MM-dd') as fechasta,\n"
@@ -254,11 +297,29 @@ public class DAO_rh_liquidacion {
                 + "where l.fk_idpersona=p.idpersona\n"
                 + "and p.fk_idpersona_cargo=c.idpersona_cargo\n"
                 + "and l.idrh_liquidacion=d.fk_idrh_liquidacion\n"
-                + "and d.estado='EMITIDO'\n"
-                + "and l.idrh_liquidacion="+idrh_liquidacion
-                + " order by d.tabla desc,d.fecha_creado desc";
+                + "and d.estado='" + eveest.getEst_Emitido() + "'\n"
+                + "and l.idrh_liquidacion=" + idrh_liquidacion
+                + " order by d.tabla desc,l.idrh_liquidacion desc";
         String titulonota = "NOTA LIQUIDACION";
         String direccion = "src/REPORTE/VALE/repNotaLiquidacion.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
+
+    private void imprimir_nota_rh_liquidacion_sindet(Connection conn, int idrh_liquidacion) {
+        String sql = "select l.idrh_liquidacion as idl,\n"
+                + "to_char(l.fecha_desde,'yyyy-MM-dd') as fecdesde,\n"
+                + "to_char(l.fecha_hasta,'yyyy-MM-dd') as fechasta,\n"
+                + "l.monto_liquidacion as sum_liquidacion,\n"
+                + "l.salario_base as salario,\n"
+                + "l.monto_letra as letra,\n"
+                + "p.nombre as persona,c.nombre as cargo \n"
+                + "from rh_liquidacion l,persona p,persona_cargo c\n"
+                + "where l.fk_idpersona=p.idpersona\n"
+                + "and p.fk_idpersona_cargo=c.idpersona_cargo\n"
+                + "and l.idrh_liquidacion=" + idrh_liquidacion;
+        String titulonota = "NOTA LIQUIDACION SD";
+        String direccion = "src/REPORTE/VALE/repNotaLiquidacionSD.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
 }

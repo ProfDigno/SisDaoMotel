@@ -26,6 +26,7 @@ public class DAO_rh_vale {
     private String sql_update = "UPDATE rh_vale SET fecha_creado=?,creado_por=?,descripcion=?,monto_vale=?,estado=?,es_cerrado=?,monto_letra=?,fk_idpersona=? WHERE idrh_vale=?;";
     private String sql_select = "SELECT idrh_vale,fecha_creado,creado_por,descripcion,monto_vale,estado,es_cerrado,monto_letra,fk_idpersona FROM rh_vale order by 1 desc;";
     private String sql_cargar = "SELECT idrh_vale,fecha_creado,creado_por,descripcion,monto_vale,estado,es_cerrado,monto_letra,fk_idpersona FROM rh_vale WHERE idrh_vale=";
+    private String sql_update_anular = "UPDATE rh_vale SET monto_vale=?,estado=?,monto_letra=? WHERE idrh_vale=?;";
 
     public void insertar_rh_vale(Connection conn, rh_vale rhva) {
         rhva.setC1idrh_vale(eveconn.getInt_ultimoID_mas_uno(conn, rhva.getTb_rh_vale(), rhva.getId_idrh_vale()));
@@ -110,12 +111,60 @@ public class DAO_rh_vale {
                 + "v.creado_por as usuario,\n"
                 + "v.descripcion as concepto,v.monto_letra as letra,\n"
                 + "v.monto_vale as monto,\n"
-                + "p.nombre as recibo_por,('"+jsprint.getEmp_nombre()+"') as recibo_de \n"
+                + "p.nombre as recibo_por,('" + jsprint.getEmp_nombre() + "') as recibo_de \n"
                 + "from rh_vale v,persona p\n"
                 + "where v.fk_idpersona=p.idpersona\n"
-                + "and v.idrh_vale="+idrh_vale;
+                + "and v.idrh_vale=" + idrh_vale;
         String titulonota = "NOTA VALE";
         String direccion = "src/REPORTE/VALE/repNotaVale.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
+    public void update_rh_vale_anular(Connection conn, rh_vale rhva) {
+        String titulo = "update_rh_vale_anular";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_anular);
+            pst.setDouble(1, rhva.getC5monto_vale());
+            pst.setString(2, rhva.getC6estado());
+            pst.setString(3, rhva.getC8monto_letra());
+            pst.setInt(4, rhva.getC1idrh_vale());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_anular + "\n" + rhva.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, true);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_anular + "\n" + rhva.toString(), titulo);
+        }
+    }
+
+    public void imprimir_filtro_vale(Connection conn, String filtro) {
+        String sql = "select v.idrh_vale as idv,\n"
+                + "(p.nombre||'-'||p.ruc) as persona,\n"
+                + "case \n"
+                + "when date_part('month',v.fecha_creado)=1 then 'ENERO'\n"
+                + "when date_part('month',v.fecha_creado)=2 then 'FEBRERO'\n"
+                + "when date_part('month',v.fecha_creado)=3 then 'MARZO'\n"
+                + "when date_part('month',v.fecha_creado)=4 then 'ABRIL'\n"
+                + "when date_part('month',v.fecha_creado)=5 then 'MAYO'\n"
+                + "when date_part('month',v.fecha_creado)=6 then 'JUNIO'\n"
+                + "when date_part('month',v.fecha_creado)=7 then 'JULIO'\n"
+                + "when date_part('month',v.fecha_creado)=8 then 'AGOSTO'\n"
+                + "when date_part('month',v.fecha_creado)=9 then 'SEPTIEMBRE'\n"
+                + "when date_part('month',v.fecha_creado)=10 then 'OCTUBRE'\n"
+                + "when date_part('month',v.fecha_creado)=11 then 'NOVIEMBRE'\n"
+                + "when date_part('month',v.fecha_creado)=12 then 'DICIEMBRE'\n"
+                + "else 'error' end as mes,\n"
+                + "to_char(v.fecha_creado,'yyyy-MM-dd') as fecha,\n"
+                + "v.descripcion as descripcion,\n"
+                + "v.estado as estado,\n"
+                + "v.monto_vale as monto\n"
+                + "from rh_vale v,persona p\n"
+                + "where v.fk_idpersona=p.idpersona\n"
+                + "and (v.estado='CERRADO' or v.estado='EMITIDO')\n"+filtro
+                + " order by 2 desc,3 desc,v.fecha_creado desc;";
+        String titulonota = "FILTRO VALE";
+        String direccion = "src/REPORTE/VALE/repFiltroVale.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

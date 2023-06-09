@@ -62,4 +62,26 @@ public class BO_rh_descuento {
             }
         }
     }
+    public void update_rh_descuento_anular(rh_descuento rhde,rh_liquidacion_detalle ENTrhlde) {
+        if (evmen.getBooMensaje_warning("ESTAS SEGURO DE ANULAR RH_DESCUENTO", "ANULAR DESCUENTO", "ANULAR", "CANCELAR")) {
+            String titulo = "update_rh_descuento_anular";
+            Connection conn = ConnPostgres.getConnPosgres();
+            try {
+                if (conn.getAutoCommit()) {
+                    conn.setAutoCommit(false);
+                }
+                DAOrhd.update_rh_descuento_anular(conn, rhde);
+                DAOrhlde.update_rh_liquidacion_detalle_anular_descuento(conn, ENTrhlde);
+//                DAOrhd.actualizar_tabla_rh_descuento(conn, tbltabla);
+                conn.commit();
+            } catch (SQLException e) {
+                evmen.mensaje_error(e, rhde.toString(), titulo);
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    evmen.Imprimir_serial_sql_error(e1, rhde.toString(), titulo);
+                }
+            }
+        }
+    }
 }

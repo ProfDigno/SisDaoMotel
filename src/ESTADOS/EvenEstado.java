@@ -40,6 +40,8 @@ public class EvenEstado {
     private static String caja_APERTURA;
     private static String caja_VEN_INTERNA;
     private static String caja_GARANTIA;
+    private static String caja_VALE;
+    private static String caja_LIQUIDACION;
     private static String cond_Contado;
     private static String cond_Credito;
     private static String forPago_Efectivo;
@@ -118,6 +120,8 @@ public class EvenEstado {
         setCaja_APERTURA("APERTURA");
         setCaja_VEN_INTERNA("VEN_INTERNA");
         setCaja_GARANTIA("GARANTIA");
+        setCaja_VALE("VALE");
+        setCaja_LIQUIDACION("LIQUIDACION");
         setPer_CLIENTE("CLIENTE");
         setPer_PERSONAL("PERSONAL");
         setPer_PROVEEDOR("PROVEEDOR");
@@ -139,6 +143,22 @@ public class EvenEstado {
         setIco_limpie("/graficos/limpieza.png");
         setIco_escoba("/graficos/escoba.png");
         setIco_candado("/graficos/ocupado.png");
+    }
+
+    public static String getCaja_LIQUIDACION() {
+        return caja_LIQUIDACION;
+    }
+
+    public static void setCaja_LIQUIDACION(String caja_LIQUIDACION) {
+        EvenEstado.caja_LIQUIDACION = caja_LIQUIDACION;
+    }
+
+    public static String getCaja_VALE() {
+        return caja_VALE;
+    }
+
+    public static void setCaja_VALE(String caja_VALE) {
+        EvenEstado.caja_VALE = caja_VALE;
     }
 
     public static String getEst_ABIERTO() {

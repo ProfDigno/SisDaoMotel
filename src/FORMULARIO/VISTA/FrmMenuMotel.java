@@ -52,8 +52,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 2.0.3";
-    private String fec_version = "2023-05-16";
+    private String version = "V.: 2.0.5";
+    private String fec_version = "2023-06-09";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -129,8 +129,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        BEGIN\n"
                 //                + "         ALTER TABLE producto ADD COLUMN precio_interno NUMERIC(14,0) DEFAULT 0;\n"
                 //                + "         update producto set precio_interno=precio_venta;"
-//                + "ALTER TABLE persona ADD COLUMN nro_tarjeta TEXT DEFAULT '0000';\n"
-//                + "ALTER TABLE persona ADD COLUMN limite_vale NUMERIC(14,0) DEFAULT 0;\n"
+                //                + "ALTER TABLE persona ADD COLUMN nro_tarjeta TEXT DEFAULT '0000';\n"
+                //                + "ALTER TABLE persona ADD COLUMN limite_vale NUMERIC(14,0) DEFAULT 0;\n"
                 + "CREATE TABLE \"rh_liquidacion_detalle\" (\n"
                 + "	\"idrh_liquidacion_detalle\" INTEGER NOT NULL ,\n"
                 + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
@@ -145,12 +145,47 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "	\"fk_idrh_vale\" INTEGER NOT NULL ,\n"
                 + "	PRIMARY KEY(\"idrh_liquidacion_detalle\")\n"
                 + ");"
+                + "ALTER TABLE rh_liquidacion ADD COLUMN descripcion TEXT DEFAULT 'Pago salario';\n "
+                + "CREATE TABLE \"banco\" (\n"
+                + "	\"idbanco\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idbanco\")\n"
+                + ");\n"
+                + "CREATE TABLE \"dato_banco\" (\n"
+                + "	\"iddato_banco\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"titular\" TEXT NOT NULL ,\n"
+                + "	\"documento\" TEXT NOT NULL ,\n"
+                + "	\"nro_cuenta\" TEXT NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	\"es_guarani\" BOOLEAN NOT NULL ,\n"
+                + "	\"es_dolar\" BOOLEAN NOT NULL ,\n"
+                + "	\"fk_idbanco\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"iddato_banco\")\n"
+                + ");\n"
+                + "CREATE TABLE \"transaccion_banco\" (\n"
+                + "	\"idtransaccion_banco\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"fecha_transaccion\" DATE NOT NULL ,\n"
+                + "	\"nro_transaccion\" TEXT NOT NULL ,\n"
+                + "	\"monto_guarani\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_dolar\" NUMERIC(10,0) NOT NULL ,\n"
+                + "	\"observacion\" TEXT NOT NULL ,\n"
+                + "	\"concepto\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"fk_iddato_banco\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idtransaccion_banco\")\n"
+                + ");"
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql);
+//        eveconn.SQL_execute_libre(conn, sql);
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
@@ -382,10 +417,18 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenu13 = new javax.swing.JMenu();
         jMenuItem29 = new javax.swing.JMenuItem();
+        jMenu18 = new javax.swing.JMenu();
+        jMenuItem37 = new javax.swing.JMenuItem();
+        jMenu19 = new javax.swing.JMenu();
+        jMenuItem38 = new javax.swing.JMenuItem();
         jMenu15 = new javax.swing.JMenu();
         jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem31 = new javax.swing.JMenuItem();
         jMenuItem32 = new javax.swing.JMenuItem();
+        jMenu17 = new javax.swing.JMenu();
+        jMenuItem34 = new javax.swing.JMenuItem();
+        jMenuItem35 = new javax.swing.JMenuItem();
+        jMenuItem36 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -900,6 +943,30 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
         jMenu14.add(jMenu13);
 
+        jMenu18.setText("BANCO");
+
+        jMenuItem37.setText("REP. DEPOSITO BANCO");
+        jMenuItem37.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem37ActionPerformed(evt);
+            }
+        });
+        jMenu18.add(jMenuItem37);
+
+        jMenu14.add(jMenu18);
+
+        jMenu19.setText("PERSONAL");
+
+        jMenuItem38.setText("REP. VALE");
+        jMenuItem38.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem38ActionPerformed(evt);
+            }
+        });
+        jMenu19.add(jMenuItem38);
+
+        jMenu14.add(jMenu19);
+
         barra_menu_principal.add(jMenu14);
 
         jMenu15.setText("RECURSO HUMANO");
@@ -912,7 +979,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu15.add(jMenuItem30);
 
-        jMenuItem31.setText("LIQUIDACION");
+        jMenuItem31.setText("LIQUIDACION - VALE - DESCUENT");
         jMenuItem31.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem31ActionPerformed(evt);
@@ -929,6 +996,34 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu15.add(jMenuItem32);
 
         barra_menu_principal.add(jMenu15);
+
+        jMenu17.setText("BANCO");
+
+        jMenuItem34.setText("NUEVO BANCO");
+        jMenuItem34.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem34ActionPerformed(evt);
+            }
+        });
+        jMenu17.add(jMenuItem34);
+
+        jMenuItem35.setText("DATO BANCO");
+        jMenuItem35.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem35ActionPerformed(evt);
+            }
+        });
+        jMenu17.add(jMenuItem35);
+
+        jMenuItem36.setText("DEPOSITO BANCO");
+        jMenuItem36.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem36ActionPerformed(evt);
+            }
+        });
+        jMenu17.add(jMenuItem36);
+
+        barra_menu_principal.add(jMenu17);
 
         setJMenuBar(barra_menu_principal);
 
@@ -1170,6 +1265,31 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmVenta_eliminar());
     }//GEN-LAST:event_btnventa_eliminarActionPerformed
 
+    private void jMenuItem34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem34ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmBanco());
+    }//GEN-LAST:event_jMenuItem34ActionPerformed
+
+    private void jMenuItem35ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem35ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmDato_Banco());
+    }//GEN-LAST:event_jMenuItem35ActionPerformed
+
+    private void jMenuItem36ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem36ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmTransaccion_banco());
+    }//GEN-LAST:event_jMenuItem36ActionPerformed
+
+    private void jMenuItem37ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem37ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepTransaccionBanco());
+    }//GEN-LAST:event_jMenuItem37ActionPerformed
+
+    private void jMenuItem38ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem38ActionPerformed
+        // TODO add your handling code here:
+         evetbl.abrir_TablaJinternal(new FrmRepVale());
+    }//GEN-LAST:event_jMenuItem38ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1227,6 +1347,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu15;
     private javax.swing.JMenu jMenu16;
+    private javax.swing.JMenu jMenu17;
+    private javax.swing.JMenu jMenu18;
+    private javax.swing.JMenu jMenu19;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -1262,6 +1385,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem31;
     private javax.swing.JMenuItem jMenuItem32;
     private javax.swing.JMenuItem jMenuItem33;
+    private javax.swing.JMenuItem jMenuItem34;
+    private javax.swing.JMenuItem jMenuItem35;
+    private javax.swing.JMenuItem jMenuItem36;
+    private javax.swing.JMenuItem jMenuItem37;
+    private javax.swing.JMenuItem jMenuItem38;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
