@@ -114,7 +114,16 @@ public class EvenMensajeJoptionpane {
                 jOptionPane.INFORMATION_MESSAGE, null, opciones, boton1);
         return eleccion;
     }
-
+public int getIntMensaje_informacion_4btn(String mensaje, String titulo, String boton1, String boton2, String boton3, String boton4) {
+        JOptionPane jOptionPane = new JOptionPane();
+        jOptionPane.setBackground(Color.RED);
+        jOptionPane.setOpaque(true);
+        Object[] opciones = {boton1, boton2, boton3,boton4};
+        int eleccion = jOptionPane.showOptionDialog(null, mensaje, titulo,
+                jOptionPane.YES_NO_OPTION,
+                jOptionPane.INFORMATION_MESSAGE, null, opciones, boton1);
+        return eleccion;
+    }
     public boolean getBooMensaje_warning(String mensaje, String titulo, String boton1, String boton2) {
         JOptionPane jOptionPane = new JOptionPane();
         Object[] opciones = {boton1, boton2};

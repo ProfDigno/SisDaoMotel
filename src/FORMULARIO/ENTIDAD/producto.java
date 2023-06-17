@@ -27,11 +27,38 @@ public class producto {
     private String precio_compra_mostrar;
     private static String nom_tabla;
     private static String nom_idtabla;
+    private static int idproducto_global;
+    private static int iva_global;
+    private static int quien_llama_global;
 //---------------TABLA-ID---------------
 
     public producto() {
         setTb_producto("producto");
         setId_idproducto("idproducto");
+    }
+
+    public static int getQuien_llama_global() {
+        return quien_llama_global;
+    }
+
+    public static void setQuien_llama_global(int quien_llama_global) {
+        producto.quien_llama_global = quien_llama_global;
+    }
+
+    public static int getIva_global() {
+        return iva_global;
+    }
+
+    public static void setIva_global(int iva_global) {
+        producto.iva_global = iva_global;
+    }
+
+    public static int getIdproducto_global() {
+        return idproducto_global;
+    }
+
+    public static void setIdproducto_global(int idproducto_global) {
+        producto.idproducto_global = idproducto_global;
     }
 
     public double getC20precio_interno() {

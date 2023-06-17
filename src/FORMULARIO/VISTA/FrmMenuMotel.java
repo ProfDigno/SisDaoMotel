@@ -52,7 +52,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 2.0.5";
+    private String version = "V.: 2.0.6";
     private String fec_version = "2023-06-09";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
@@ -179,6 +179,52 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "	\"estado\" TEXT NOT NULL ,\n"
                 + "	\"fk_iddato_banco\" INTEGER NOT NULL ,\n"
                 + "	PRIMARY KEY(\"idtransaccion_banco\")\n"
+                + ");"
+                + "CREATE TABLE \"factura\" (\n"
+                + "	\"idfactura\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "     \"nro_factura\" TEXT NOT NULL ,\n"
+                + "	\"fecha_nota\" DATE NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"condicion\" TEXT NOT NULL ,\n"
+                + "	\"monto_total\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_iva5\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_iva10\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_letra\" TEXT NOT NULL ,\n"
+                + "	\"fk_idtimbrado\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idpersona\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idventa\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idfactura\")\n"
+                + ");\n"
+                + "CREATE TABLE \"factura_item\" (\n"
+                + "	\"idfactura_item\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"cantidad\" NUMERIC(5,0) NOT NULL ,\n"
+                + "	\"precio_iva5\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"precio_iva10\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"precio_exenta\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"tipo_item\" TEXT NOT NULL ,\n"
+                + "	\"fk_idfactura\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idproducto\" INTEGER NOT NULL \n"
+                + ");\n"
+                + "CREATE TABLE \"timbrado\" (\n"
+                + "	\"idtimbrado\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"numero_timbrado\" INTEGER NOT NULL ,\n"
+                + "	\"ruc\" TEXT NOT NULL ,\n"
+                + "	\"fec_fin_vigente\" DATE NOT NULL ,\n"
+                + "	\"cod_establecimiento\" TEXT NOT NULL ,\n"
+                + "	\"punto_expedicion\" TEXT NOT NULL ,\n"
+                + "	\"numero_inicio\" INTEGER NOT NULL ,\n"
+                + "	\"numero_fin\" INTEGER NOT NULL ,\n"
+                + "	\"numero_actual\" INTEGER NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idtimbrado\")\n"
                 + ");"
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
@@ -421,6 +467,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem37 = new javax.swing.JMenuItem();
         jMenu19 = new javax.swing.JMenu();
         jMenuItem38 = new javax.swing.JMenuItem();
+        jMenuItem39 = new javax.swing.JMenuItem();
         jMenu15 = new javax.swing.JMenu();
         jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem31 = new javax.swing.JMenuItem();
@@ -429,6 +476,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem34 = new javax.swing.JMenuItem();
         jMenuItem35 = new javax.swing.JMenuItem();
         jMenuItem36 = new javax.swing.JMenuItem();
+        jMenu20 = new javax.swing.JMenu();
+        jMenuItem40 = new javax.swing.JMenuItem();
+        jMenuItem41 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -645,7 +695,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btncerrar_seccion)
                     .addComponent(lblusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
                 .addComponent(lblnube, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -965,6 +1015,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu19.add(jMenuItem38);
 
+        jMenuItem39.setText("REP. LIQUIDACION");
+        jMenuItem39.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem39ActionPerformed(evt);
+            }
+        });
+        jMenu19.add(jMenuItem39);
+
         jMenu14.add(jMenu19);
 
         barra_menu_principal.add(jMenu14);
@@ -979,7 +1037,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu15.add(jMenuItem30);
 
-        jMenuItem31.setText("LIQUIDACION - VALE - DESCUENT");
+        jMenuItem31.setText("LIQUIDACION - VALE - DESCUENTO");
         jMenuItem31.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem31ActionPerformed(evt);
@@ -1025,6 +1083,21 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
         barra_menu_principal.add(jMenu17);
 
+        jMenu20.setText("FACTURA");
+
+        jMenuItem40.setText("NUEVA FACTURA");
+        jMenuItem40.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem40ActionPerformed(evt);
+            }
+        });
+        jMenu20.add(jMenuItem40);
+
+        jMenuItem41.setText("TIMBRADO");
+        jMenu20.add(jMenuItem41);
+
+        barra_menu_principal.add(jMenu20);
+
         setJMenuBar(barra_menu_principal);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1035,10 +1108,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(escritorio)
-                .addContainerGap())
+            .addComponent(escritorio)
         );
 
         pack();
@@ -1287,8 +1357,18 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
     private void jMenuItem38ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem38ActionPerformed
         // TODO add your handling code here:
-         evetbl.abrir_TablaJinternal(new FrmRepVale());
+        evetbl.abrir_TablaJinternal(new FrmRepVale());
     }//GEN-LAST:event_jMenuItem38ActionPerformed
+
+    private void jMenuItem39ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem39ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepLiquidacion());
+    }//GEN-LAST:event_jMenuItem39ActionPerformed
+
+    private void jMenuItem40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem40ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmFactura());
+    }//GEN-LAST:event_jMenuItem40ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1351,6 +1431,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu18;
     private javax.swing.JMenu jMenu19;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu20;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
@@ -1390,7 +1471,10 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem36;
     private javax.swing.JMenuItem jMenuItem37;
     private javax.swing.JMenuItem jMenuItem38;
+    private javax.swing.JMenuItem jMenuItem39;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem40;
+    private javax.swing.JMenuItem jMenuItem41;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;

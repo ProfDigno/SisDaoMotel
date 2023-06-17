@@ -16,6 +16,7 @@ public class ClaVarBuscar {
     private static String nombre_tabla;
     private static String nombre_columna;
     private static String pre_busqueda;
+    private static int tipo_tabla_cliente;
     public void abrir_buscar(int tipo,String nombre,JTextField txtbuscar){
         if(txtbuscar.getText().trim().length()>=0){
             setTipo_tabla(tipo);
@@ -25,6 +26,15 @@ public class ClaVarBuscar {
             frm.setVisible(true);
         }
     }
+
+    public static int getTipo_tabla_cliente() {
+        return tipo_tabla_cliente;
+    }
+
+    public static void setTipo_tabla_cliente(int tipo_tabla_cliente) {
+        ClaVarBuscar.tipo_tabla_cliente = tipo_tabla_cliente;
+    }
+    
     public static int getTipo_tabla() {
         return tipo_tabla;
     }

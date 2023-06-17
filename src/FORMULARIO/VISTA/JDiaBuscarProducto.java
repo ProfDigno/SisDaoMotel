@@ -12,9 +12,9 @@ import Evento.Combobox.EvenCombobox;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
-import FORMULARIO.BO.BO_persona;
-import FORMULARIO.DAO.DAO_persona;
-import FORMULARIO.ENTIDAD.persona;
+import FORMULARIO.BO.BO_producto;
+import FORMULARIO.DAO.DAO_producto;
+import FORMULARIO.ENTIDAD.producto;
 import FORMULARIO.ENTIDAD.usuario;
 import java.sql.Connection;
 import javax.swing.JTable;
@@ -23,20 +23,20 @@ import javax.swing.JTable;
  *
  * @author Digno
  */
-public class JDiaBuscarPersona extends javax.swing.JDialog {
+public class JDiaBuscarProducto extends javax.swing.JDialog {
 
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
-    private persona ENTper = new persona();
-    private DAO_persona DAOper = new DAO_persona();
-    private BO_persona BOper = new BO_persona();
+    private producto ENTpro = new producto();
+    private DAO_producto DAOper = new DAO_producto();
+    private BO_producto BOper = new BO_producto();
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenCombobox evecmb = new EvenCombobox();
     private EvenEstado eveest = new EvenEstado();
     private EvenConexion eveconn = new EvenConexion();
     Connection conn = ConnPostgres.getConnPosgres();
     usuario ENTusu = new usuario();
-    private String nombreTabla_pri = "PERSONA";
+    private String nombreTabla_pri = "PRODUCTO";
     private String nombreTabla_sec = "FILTRO";
     private String creado_por = "digno";
 
@@ -44,66 +44,63 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
         this.setTitle(nombreTabla_pri);
 //        evetbl.centrar_formulario_internalframa(this);  
         creado_por = ENTusu.getGlobal_nombre();
-        actualizar_tabla_persona(0);
+        actualizar_tabla_producto(0);
     }
 
-    private void actualizar_tabla_persona(int tipo) {
+    private void actualizar_tabla_producto(int tipo) {
         String buscar = "";
         if (tipo == 1) {
             if (txtbusca_nombre.getText().trim().length() > 2) {
                 String nombre = txtbusca_nombre.getText();
-                buscar=" and p.nombre ilike'%"+nombre+"%' ";
+                buscar = " and p.nombre ilike'%" + nombre + "%' ";
             }
         }
-        if (tipo == 2) {
-            if (txtbusca_ruc.getText().trim().length() > 2) {
-                String nombre = txtbusca_ruc.getText();
-                buscar=" and p.ruc ilike'%"+nombre+"%' ";
-            }
-        }
-         String sql = "select p.idpersona as idp,p.nombre as cliente,\n"
-                + "p.direccion,p.ruc,p.telefono,c.nombre as cargo \n"
-                + "from persona p,persona_cargo c\n"
-                + "where p.fk_idpersona_cargo=c.idpersona_cargo\n"+buscar
-                + " order by p.nombre asc;";
-        
-            eveconn.Select_cargar_jtable(conn, sql, tblbuscarpersona);
-            ancho_tabla();
+        String sql = "select p.idproducto as idp,\n"
+                + "(p.nombre) as producto,u.nombre as unidad,p.iva as iva,\n"
+                + "TRIM(to_char(p.precio_interno,'999G999G999')) as pventa,\n"
+                + "p.precio_interno as oculto_venta \n"
+                + "from producto p,producto_categoria c,producto_unidad u,producto_marca pm \n"
+                + "where p.fk_idproducto_categoria=c.idproducto_categoria \n"
+                + "and p.fk_idproducto_unidad=u.idproducto_unidad \n"
+                + "and p.fk_idproducto_marca=pm.idproducto_marca \n"
+                + "and c.activo=true \n"
+                + "and p.es_venta=true \n"+buscar
+                + " order by p.idproducto  asc;";
+
+        eveconn.Select_cargar_jtable(conn, sql, tblbuscarproducto);
+        ancho_tabla();
     }
-    private void ancho_tabla(){
-        int Ancho[] = {5, 30, 30,10, 15, 10};
-        eveJtab.setAnchoColumnaJtable(tblbuscarpersona, Ancho);
+
+    private void ancho_tabla() {
+        int Ancho[] = {5, 50,15, 5, 15, 1};
+        eveJtab.setAnchoColumnaJtable(tblbuscarproducto, Ancho);
+        eveJtab.ocultar_columna(tblbuscarproducto,5);
+        eveJtab.alinear_derecha_columna(tblbuscarproducto,4);
     }
-    private void seleccionar_tabla(){
-        if(tblbuscarpersona.getSelectedRow()>=0){
-            int idpersona=eveJtab.getInt_select_id(tblbuscarpersona);
-            String nombre = eveJtab.getString_select(tblbuscarpersona,1);
-            String direccion = eveJtab.getString_select(tblbuscarpersona,2);
-            String ruc = eveJtab.getString_select(tblbuscarpersona,3);
-            String telefono = eveJtab.getString_select(tblbuscarpersona,4);
-//            ENTper.setBus_idpersona(idpersona);
-            ENTper.setIdpersona_global(idpersona);
-            if(ENTper.getBus_quien_llama()==1){
-                FrmCompra.txtproveedor_nombre.setText(nombre);
-                FrmCompra.txtproveedor_ruc.setText(ruc);
-            }
-            if(ENTper.getBus_quien_llama()==2){
-                FrmCompra_reposicion.txtproveedor_nombre.setText(nombre);
-                FrmCompra_reposicion.txtproveedor_ruc.setText(ruc);
-            }
-            if(ENTper.getBus_quien_llama()==3){
-                FrmFactura.txtcli_nombre.setText(nombre);
-                FrmFactura.txtcli_direccion.setText(direccion);
-                FrmFactura.txtcli_ruc.setText(ruc);
-                FrmFactura.txtcli_telefono.setText(telefono);
-            }
+
+    private void seleccionar_tabla() {
+        if (tblbuscarproducto.getSelectedRow() >= 0) {
+            int idproducto = eveJtab.getInt_select_id(tblbuscarproducto);
+            String producto = eveJtab.getString_select(tblbuscarproducto, 1);
+//            String direccion = eveJtab.getString_select(tblbuscarproducto, 2);
+            String iva = eveJtab.getString_select(tblbuscarproducto, 3);
+            String precio = eveJtab.getString_select(tblbuscarproducto,5);
+            ENTpro.setIdproducto_global(idproducto);
+            ENTpro.setIva_global(Integer.parseInt(iva));
+            FrmFactura.txtitem_nombre.setText(producto);
+            FrmFactura.txtitem_cantidad.setText("1");
+            String precio_format=evejtf.getString_format_nro_decimal(precio);
+            FrmFactura.txtitem_precio.setText(precio_format);
+            FrmFactura.txtitem_subtotal.setText(precio_format);
         }
     }
-    public void ancho_tabla_persona(JTable tbltabla) {
-        int Ancho[] = {5,50,15,15,15};
+
+    public void ancho_tabla_producto(JTable tbltabla) {
+        int Ancho[] = {5, 50, 15, 15, 15};
         eveJtab.setAnchoColumnaJtable(tbltabla, Ancho);
     }
-    public JDiaBuscarPersona(java.awt.Frame parent, boolean modal) {
+
+    public JDiaBuscarProducto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         abrir_formulario();
@@ -120,17 +117,16 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblbuscarpersona = new javax.swing.JTable();
+        tblbuscarproducto = new javax.swing.JTable();
         txtbusca_nombre = new javax.swing.JTextField();
-        txtbusca_ruc = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(153, 255, 153));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("BUSCAR PERSONA"));
+        jPanel1.setBackground(new java.awt.Color(255, 204, 102));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("BUSCAR PRODUCTO"));
 
-        tblbuscarpersona.setModel(new javax.swing.table.DefaultTableModel(
+        tblbuscarproducto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -141,24 +137,17 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblbuscarpersona.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblbuscarproducto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                tblbuscarpersonaMouseReleased(evt);
+                tblbuscarproductoMouseReleased(evt);
             }
         });
-        jScrollPane1.setViewportView(tblbuscarpersona);
+        jScrollPane1.setViewportView(tblbuscarproducto);
 
         txtbusca_nombre.setBorder(javax.swing.BorderFactory.createTitledBorder("NOMBRE"));
         txtbusca_nombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtbusca_nombreKeyReleased(evt);
-            }
-        });
-
-        txtbusca_ruc.setBorder(javax.swing.BorderFactory.createTitledBorder("RUC"));
-        txtbusca_ruc.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtbusca_rucKeyReleased(evt);
             }
         });
 
@@ -176,9 +165,7 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
             .addComponent(jScrollPane1)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(txtbusca_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtbusca_ruc, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(219, 219, 219)
                 .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -186,7 +173,6 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(txtbusca_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtbusca_ruc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -207,10 +193,10 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblbuscarpersonaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbuscarpersonaMouseReleased
+    private void tblbuscarproductoMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbuscarproductoMouseReleased
         // TODO add your handling code here:
         seleccionar_tabla();
-    }//GEN-LAST:event_tblbuscarpersonaMouseReleased
+    }//GEN-LAST:event_tblbuscarproductoMouseReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -220,13 +206,8 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
 
     private void txtbusca_nombreKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbusca_nombreKeyReleased
         // TODO add your handling code here:
-        actualizar_tabla_persona(1);
+        actualizar_tabla_producto(1);
     }//GEN-LAST:event_txtbusca_nombreKeyReleased
-
-    private void txtbusca_rucKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbusca_rucKeyReleased
-        // TODO add your handling code here:
-        actualizar_tabla_persona(2);
-    }//GEN-LAST:event_txtbusca_rucKeyReleased
 
     /**
      * @param args the command line arguments
@@ -245,20 +226,21 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDiaBuscarPersona.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JDiaBuscarProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDiaBuscarPersona.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JDiaBuscarProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDiaBuscarPersona.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JDiaBuscarProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDiaBuscarPersona.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JDiaBuscarProducto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                JDiaBuscarPersona dialog = new JDiaBuscarPersona(new javax.swing.JFrame(), true);
+                JDiaBuscarProducto dialog = new JDiaBuscarProducto(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -274,8 +256,7 @@ public class JDiaBuscarPersona extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblbuscarpersona;
+    private javax.swing.JTable tblbuscarproducto;
     private javax.swing.JTextField txtbusca_nombre;
-    private javax.swing.JTextField txtbusca_ruc;
     // End of variables declaration//GEN-END:variables
 }

@@ -56,6 +56,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
         tabla_grupo();
+        tabla_vale();
     }
 
     private String filtro_fecha() {
@@ -187,14 +188,13 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
     }
 
     private void reestableser() {
-        evefec.setFechaDCSistema(dcfecDesde);
+        evefec.setFechaDCcargado(dcfecDesde,evefec.getString_fecha_dia1());
         evefec.setFechaDCSistema(dcfecHasta);
     }
 
     private void boton_imprimir_vale() {
         String filtro = filtro_tb + filtro_fecha();
         DAOv.imprimir_filtro_vale(conn, filtro);
-//        DAOv.imprimir_filtro_vale(conn, filtro);
     }
 
     public FrmRepVale() {
@@ -244,7 +244,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA OCUPACION"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA VALE"));
 
         tblvale.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -314,7 +314,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
         jFmonto_guarani.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFmonto_guarani.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("FILTRO OCUPACION"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("FILTRO VALE"));
 
         btnbuscar_fecha.setText("BUSCAR");
         btnbuscar_fecha.addActionListener(new java.awt.event.ActionListener() {
@@ -335,13 +335,14 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(dcfecDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dcfecHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnbuscar_fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(368, 368, 368))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -349,11 +350,11 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(dcfecDesde, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
                     .addComponent(dcfecHasta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.CENTER, jPanel2Layout.createSequentialGroup()
-                .addGap(9, 9, 9)
+                .addGap(0, 9, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(btnbuscar_fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         btnimprimir_filtro_depo_banco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ven_imprimir.png"))); // NOI18N
@@ -386,7 +387,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -395,7 +396,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
                         .addComponent(jFmonto_guarani, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jFcantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnimprimir_filtro_depo_banco))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
@@ -405,6 +406,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 //        DAOva.ancho_tabla_venta_alquiler_rep_1(tblfiltro_venta_alquiler);
         ancho_tabla_vale_grupo(tblgrupo);
+        ancho_tabla_vale(tblvale);
 //        ancho_tabla_transaccion_banco(tbltransaccion_banco);
     }//GEN-LAST:event_formInternalFrameOpened
 

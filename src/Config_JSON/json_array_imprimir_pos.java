@@ -66,6 +66,7 @@ public class json_array_imprimir_pos {
     private static String emp_nombre;
     private static String emp_telefono;
     private static String emp_direccion;
+    private static String nombre_impresora_factura;
     public void cargar_jsom_imprimir_pos() {
 //         MacAddress_maquina=pcinf.getMacAddress();
         nombre_computador=pcinf.getNombrePC();
@@ -112,6 +113,7 @@ public class json_array_imprimir_pos {
             String emp_nombre = (String) jsonObject.get("emp_nombre");
             String emp_telefono = (String) jsonObject.get("emp_telefono");
             String emp_direccion = (String) jsonObject.get("emp_direccion");
+            String nombre_impresora_factura = (String) jsonObject.get("nombre_impresora_factura");
             setLinea_separador(linea_separador);
             setLinea_ven_detalle(linea_ven_detalle);
             setLinea_ven_categoria(linea_ven_categoria);
@@ -143,6 +145,7 @@ public class json_array_imprimir_pos {
             setEmp_nombre(emp_nombre);
             setEmp_telefono(emp_telefono);
             setEmp_direccion(emp_direccion);
+            setNombre_impresora_factura(nombre_impresora_factura);
             if (print_comanda.equals("true")) {
                 setPrint_comanda(true);
             } else {
@@ -165,6 +168,14 @@ public class json_array_imprimir_pos {
         } finally {
 
         }
+    }
+
+    public static String getNombre_impresora_factura() {
+        return nombre_impresora_factura;
+    }
+
+    public static void setNombre_impresora_factura(String nombre_impresora_factura) {
+        json_array_imprimir_pos.nombre_impresora_factura = nombre_impresora_factura;
     }
 
     public static String getEmp_nombre() {

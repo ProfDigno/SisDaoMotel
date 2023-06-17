@@ -21,7 +21,7 @@ public class DAO_rh_liquidacion {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
-    EvenRender everender=new EvenRender();
+    EvenRender everender = new EvenRender();
     private EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "RH_LIQUIDACION GUARDADO CORRECTAMENTE";
     private String mensaje_update = "RH_LIQUIDACION MODIFICADO CORECTAMENTE";
@@ -322,4 +322,37 @@ public class DAO_rh_liquidacion {
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 
+    public void imprimir_filtro_liquidacion(Connection conn, String filtro) {
+        String sql = "select v.idrh_liquidacion as idv,\n"
+                + "(p.nombre||'-'||p.ruc) as persona,\n"
+                + "case \n"
+                + "when date_part('month',v.fecha_creado)=1 then 'ENERO'\n"
+                + "when date_part('month',v.fecha_creado)=2 then 'FEBRERO'\n"
+                + "when date_part('month',v.fecha_creado)=3 then 'MARZO'\n"
+                + "when date_part('month',v.fecha_creado)=4 then 'ABRIL'\n"
+                + "when date_part('month',v.fecha_creado)=5 then 'MAYO'\n"
+                + "when date_part('month',v.fecha_creado)=6 then 'JUNIO'\n"
+                + "when date_part('month',v.fecha_creado)=7 then 'JULIO'\n"
+                + "when date_part('month',v.fecha_creado)=8 then 'AGOSTO'\n"
+                + "when date_part('month',v.fecha_creado)=9 then 'SEPTIEMBRE'\n"
+                + "when date_part('month',v.fecha_creado)=10 then 'OCTUBRE'\n"
+                + "when date_part('month',v.fecha_creado)=11 then 'NOVIEMBRE'\n"
+                + "when date_part('month',v.fecha_creado)=12 then 'DICIEMBRE'\n"
+                + "else 'error' end as mes,\n"
+                + "to_char(v.fecha_creado,'yyyy-MM-dd') as fecha,\n"
+                + "v.descripcion as descripcion,\n"
+                + "v.salario_base as salario,\n"
+                + "v.monto_vale as vale,\n"
+                + "v.monto_descuento as descuento,\n"
+                + "v.monto_liquidacion as liquidacion\n"
+                + "from rh_liquidacion v,persona p\n"
+                + "where v.fk_idpersona=p.idpersona\n"
+                + "and (v.estado='CERRADO' or v.estado='EMITIDO')\n"+filtro
+                + " order by p.nombre desc,"
+                + "date_part('month',v.fecha_creado) desc,"
+                + "v.fecha_creado desc";
+        String titulonota = "FILTRO VALE";
+        String direccion = "src/REPORTE/VALE/repFitroLiquidacion.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
 }

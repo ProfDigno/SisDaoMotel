@@ -162,7 +162,7 @@ public class DAO_rh_vale {
                 + "from rh_vale v,persona p\n"
                 + "where v.fk_idpersona=p.idpersona\n"
                 + "and (v.estado='CERRADO' or v.estado='EMITIDO')\n"+filtro
-                + " order by 2 desc,3 desc,v.fecha_creado desc;";
+                + " order by 2 desc,date_part('month',v.fecha_creado) desc,v.fecha_creado desc;";
         String titulonota = "FILTRO VALE";
         String direccion = "src/REPORTE/VALE/repFiltroVale.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);

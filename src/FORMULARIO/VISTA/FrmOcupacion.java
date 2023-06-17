@@ -20,6 +20,7 @@ import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
 import Evento.Jtable.EvenRender;
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import Evento.Utilitario.EvenNumero_a_Letra;
 import Evento.Utilitario.EvenSonido;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
@@ -105,6 +106,12 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     Connection conn = ConnPostgres.getConnPosgres();
     private producto ENTp = new producto();
     private DAO_producto DAOp = new DAO_producto();
+    private factura ENTf=new factura();
+    private DAO_factura DAOf=new DAO_factura();
+    private BO_factura BOf=new BO_factura();
+    private factura_item ENTfi=new factura_item();
+    private DAO_factura_item DAOfi=new DAO_factura_item();
+    private EvenNumero_a_Letra evenrolt=new EvenNumero_a_Letra();
     private java.util.List<JButton> botones_categoria;
     private java.util.List<JButton> botones_unidad;
     private java.util.List<JButton> botones_marca;
@@ -236,6 +243,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private String[] Sa_ocu_color_texto;
     private String[] Sa_nombre_puerta;
     boolean seg_intercalar = false;
+    private int fk_idfactura;
 
     private void abrir_formulario() {
         creado_por = ENTusu.getGlobal_nombre();
@@ -1627,7 +1635,11 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         creado_por = ENTusu.getGlobal_nombre();
         fk_idusuario = ENTusu.getGlobal_idusuario();
         DAOven.cargar_venta_idhabitacion_recepcion(conn, ENTven, idhabitacion_recepcion_actual);
-        ENTven.setC4monto_letra("cero");
+        double monto_total=((monto_minimo_D+monto_adicional_total+monto_consumo)-(monto_descuento+monto_adelanto));
+        int Imonto=(int)monto_total;
+        String Smonto=String.valueOf(Imonto);
+        String monto_letra=evenrolt.Convertir(Smonto,true);
+        ENTven.setC4monto_letra(monto_letra);
         ENTven.setC5estado(eveest.getEst_Desocupado());
         ENTven.setC6observacion(ENTven.getC6observacion() + observacion_venta);
         ENTven.setC7tipo_persona("cliente");
@@ -1641,11 +1653,43 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
         ENTven.setC15monto_descuento(monto_descuento);
         ENTven.setC16monto_adelanto(monto_adelanto);
         ENTven.setC17fk_idhabitacion_recepcion(idhabitacion_recepcion_actual);
-        ENTven.setC18fk_idpersona(0);
+        ENTven.setC18fk_idpersona(1);
         ENTven.setC19fk_idusuario(fk_idusuario);
 //        boton_teste_unavez=true;
     }
-
+    private void cargar_dato_factura(){
+        fk_idfactura=(eveconn.getInt_ultimoID_mas_uno(conn, ENTf.getTb_factura(), ENTf.getId_idfactura()));
+        double monto_total=((monto_minimo_D+monto_adicional_total+monto_consumo)-(monto_descuento+monto_adelanto));
+        int Imonto=(int)monto_total;
+        String Smonto=String.valueOf(Imonto);
+        String monto_letra=evenrolt.Convertir(Smonto,true);
+        ENTf.setC3creado_por(creado_por);
+        ENTf.setC4nro_factura("001-001-0000000");
+        ENTf.setC5fecha_nota("current_date");
+        ENTf.setC6estado(eveest.getEst_Emitido());
+        ENTf.setC7condicion(eveest.getCond_Contado());
+        ENTf.setC8monto_total(monto_total);
+        ENTf.setC9monto_iva5(0);
+        ENTf.setC10monto_iva10(monto_total/11);
+        ENTf.setC11monto_letra(monto_letra);
+        ENTf.setC12fk_idtimbrado(1);
+        ENTf.setC13fk_idpersona(1);
+        ENTf.setC14fk_idventa(fk_idventa);
+        ENTf.setC15numero(1);
+    }
+    private void cargar_dato_factura_item_ocupa(){
+        double monto_total=((monto_minimo_D+monto_adicional_total)-(monto_descuento+monto_adelanto));
+        String descripcion="HOSPEDAJE: "+descripcion_caja_desocupa;
+        ENTfi.setC3creado_por(creado_por);
+        ENTfi.setC4descripcion(descripcion);
+        ENTfi.setC5cantidad(1);
+        ENTfi.setC6precio_iva5(0);
+        ENTfi.setC7precio_iva10(monto_total);
+        ENTfi.setC8precio_exenta(0);
+        ENTfi.setC9tipo_item("OCUPACION");
+        ENTfi.setC10fk_idfactura(fk_idfactura);
+        ENTfi.setC11fk_idproducto(0);
+    }
     private void cargar_dato_habitacion_recepcion_desocupar(int idhabitacion_recepcion_actual) {
         DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
         ENThr.setC1idhabitacion_recepcion(idhabitacion_recepcion_actual);
@@ -1973,9 +2017,9 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                     + "<p style=\"color:red\"><font size=\"4\">TOTAL A PAGAR:   </font></p>"
                     + "<p><font size=\"8\">" + Smonto_total_pagar + "</font></p>"
                     + "</html>";
-            int eleccion = evemen.getIntMensaje_informacion_3btn(mensaje, "DESOCUPAR HABITACION ID:" + nro_habitacion_select + ",fk_idhabitacion_dato:" + fk_idhabitacion_dato_select,
-                    btndesocupar_html, "IMPRIMIR", btncancelar_html);
-            if (eleccion == 0 || eleccion == 1) {
+            int eleccion = evemen.getIntMensaje_informacion_4btn(mensaje, "DESOCUPAR HABITACION ID:" + nro_habitacion_select + ",fk_idhabitacion_dato:" + fk_idhabitacion_dato_select,
+                    btndesocupar_html, "IMPRIMIR TICKET","IMPRIMIR FACTURA", btncancelar_html);
+            if (eleccion == 0 || eleccion == 1 || eleccion == 2) {
                 recargar_monto_minimo_habitacion_temp(fk_idhabitacion_dato_select);
                 cargar_observacion_venta("#==>>CONFIRMA SU DESOCUPACION:" + Smonto_total_pagar, false);
                 cargar_dato_venta_desocupar(fk_idhabitacion_recepcion_actual_select);
@@ -1988,10 +2032,14 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                 if (eleccion == 1) {
                     posv.boton_imprimir_pos_VENTA(conn, fk_idventa);
                 }
+                if (eleccion == 2){
+                    cargar_dato_factura();
+                    cargar_dato_factura_item_ocupa();
+                    BOf.insertar_factura(ENTf, ENTfi, tblitem_producto);
+                    DAOf.imprimir_nota_factura(conn, fk_idfactura);
+                }
                 no_es_sonido_ocupado = false;
                 cargar_cantidad_entrada_abierta();
-//                cargar_sql_habitacion_recepcion_temp();
-//                cargar_array_habitacion_datos();
                 ejecutar_update_habitacion_recepcion_temp_FUERTE();
                 limpiar_habitacion_select();
                 reestableser_venta();

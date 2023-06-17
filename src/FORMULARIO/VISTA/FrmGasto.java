@@ -31,13 +31,6 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private EvenJFRAME evetbl = new EvenJFRAME();
     private EvenJtable eveJtab = new EvenJtable();
     private EvenConexion eveconn = new EvenConexion();
-    private gasto ENTgt = new gasto();
-    private DAO_gasto DAOgt = new DAO_gasto();
-    private BO_gasto BOgt = new BO_gasto();
-    private gasto_tipo ENTgti = new gasto_tipo();
-    private DAO_gasto_tipo DAOgti = new DAO_gasto_tipo();
-    private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
-    private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenNumero_a_Letra nroLetra = new EvenNumero_a_Letra();
     private EvenFecha evefec = new EvenFecha();
@@ -46,6 +39,15 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private ClaVarBuscar vbus = new ClaVarBuscar();
     public usuario ENTusu = new usuario();
     private EvenEstado eveest = new EvenEstado();
+    private gasto ENTgt = new gasto();
+    private DAO_gasto DAOgt = new DAO_gasto();
+    private BO_gasto BOgt = new BO_gasto();
+    private gasto_tipo ENTgti = new gasto_tipo();
+    private DAO_gasto_tipo DAOgti = new DAO_gasto_tipo();
+    private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
+    private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
+    
+    
     private String nombreTabla_pri = "GASTO";
     private String nombreTabla_sec = "CAJA GASTO";
     private String creado_por = "digno";

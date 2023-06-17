@@ -33,7 +33,8 @@
 			"tt_fila_gas":"15",
 			"tt_fila_val":"15",
 			"print_comanda":"false",
-			"print_insumo":"true"
+			"print_insumo":"true",
+			"nombre_impresora_factura":"pdf"
 		}
 	],
 	"CAJA3":[
