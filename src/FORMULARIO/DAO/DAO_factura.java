@@ -37,16 +37,16 @@ public class DAO_factura {
             + "monto_total,monto_iva5,monto_iva10,monto_letra,"
             + "fk_idtimbrado,fk_idpersona,fk_idventa FROM factura WHERE idfactura=";
 
-    public int getInt_ult_nro_factura(Connection conn){
-        String titulo="getInt_ult_nro_factura";
+    public int getInt_ult_nro_factura(Connection conn) {
+        String titulo = "getInt_ult_nro_factura";
         int getid = 1;
         String sql = "select (numero+1) nuevo_nro from factura where idfactura=(select max(idfactura) as maxid from factura ); ";
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
                 getid = rs.getInt("nuevo_nro");
-                if(getid==0){
-                    getid=1;
+                if (getid == 0) {
+                    getid = 1;
                 }
             }
         } catch (SQLException e) {
@@ -54,6 +54,7 @@ public class DAO_factura {
         }
         return getid;
     }
+
     public void insertar_factura(Connection conn, factura ENTf) {
         ENTf.setC1idfactura(eveconn.getInt_ultimoID_mas_uno(conn, ENTf.getTb_factura(), ENTf.getId_idfactura()));
         String titulo = "insertar_factura";
@@ -78,7 +79,7 @@ public class DAO_factura {
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + ENTf.toString(), titulo);
-            evemen.guardado_correcto(mensaje_insert, true);
+            evemen.guardado_correcto(mensaje_insert, false);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_insert + "\n" + ENTf.toString(), titulo);
         }
@@ -138,7 +139,7 @@ public class DAO_factura {
         }
     }
 
-    public void actualizar_tabla_factura(Connection conn, JTable tbltabla,String filtro) {
+    public void actualizar_tabla_factura(Connection conn, JTable tbltabla, String filtro) {
         String sql = "select f.idfactura,to_char(f.fecha_nota,'yyyy-MM-dd') as fecha,f.nro_factura, \n"
                 + "p.nombre,p.ruc,\n"
                 + "TRIM(to_char(f.monto_iva5,'999G999G999')) as iva5,\n"
@@ -153,7 +154,7 @@ public class DAO_factura {
     }
 
     public void ancho_tabla_factura(JTable tbltabla) {
-        int Ancho[] = {5,8,12,30,8,10, 10, 10, 10, 1, 1, 1};
+        int Ancho[] = {5, 8, 12, 30, 8, 10, 10, 10, 10, 1, 1, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 5);
         evejt.alinear_derecha_columna(tbltabla, 6);
@@ -181,5 +182,30 @@ public class DAO_factura {
         String titulo = "NOTA FACTURA";
         String direccion = "src/REPORTE/FACTURA/repNotaFactura.jrxml";
         rep.imprimirjasper_por_nombre_impresora(conn, sql, titulo, direccion, vista_previa);
+    }
+
+    public void actualizar_tabla_factura_con_venta(Connection conn, JTable tbltabla, String filtro) {
+        String sql = "select f.idfactura,to_char(f.fecha_nota,'yyyy-MM-dd') as fecha,f.nro_factura, \n"
+                + "p.nombre,p.ruc,\n"
+                + "TRIM(to_char(f.monto_iva10,'999G999G999')) as iva10,\n"
+                + "TRIM(to_char(f.monto_total,'999G999G999')) as total,\n"
+                + "f.estado,f.fk_idventa as idv,\n"
+                + "hr.nro_habitacion as hab,\n"
+                + "TRIM(to_char(hr.fec_ocupado_inicio ,'MM/dd HH24:MI')) as fec_ini,\n"
+                + "TRIM(to_char(hr.fec_ocupado_fin,'MM/dd HH24:MI')) as fec_fin,\n"
+                + "TRIM(to_char((hr.fec_ocupado_fin-hr.fec_ocupado_inicio), 'HH24:MI:ss')) as tiempo\n"
+                + "from factura f,persona p,venta v,habitacion_recepcion hr\n"
+                + "where f.fk_idpersona=p.idpersona\n"
+                + "and v.fk_idhabitacion_recepcion=hr.idhabitacion_recepcion\n"
+                + "and v.idventa=f.fk_idventa\n"+filtro
+                + " order by f.fecha_nota desc,f.nro_factura desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_factura_con_venta(tbltabla);
+    }
+
+    public void ancho_tabla_factura_con_venta(JTable tbltabla) {
+        int Ancho[] = {4,8,12,20,8,7,7,6,3,3,8,8,6};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+
     }
 }

@@ -21,7 +21,7 @@ public class DAO_producto {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenEstado eveest = new EvenEstado();
     EvenFecha evefec = new EvenFecha();
-    EvenRender render=new EvenRender();
+    EvenRender render = new EvenRender();
     private String mensaje_insert = "PRODUCTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "PRODUCTO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO producto(idproducto,fecha_creado,creado_por,"
@@ -292,10 +292,71 @@ public class DAO_producto {
                 + "from producto p,producto_categoria pc,producto_marca pm,producto_unidad pu  \n"
                 + "where p.fk_idproducto_categoria=pc.idproducto_categoria \n"
                 + "and p.fk_idproducto_marca=pm.idproducto_marca \n"
-                + "and p.fk_idproducto_unidad=pu.idproducto_unidad \n"+filtro
+                + "and p.fk_idproducto_unidad=pu.idproducto_unidad \n" + filtro
                 + "order by pc.nombre asc,pm.nombre desc,pu.nombre desc;";
         String titulonota = "INVENTARIO SIMPLE";
         String direccion = "src/REPORTE/PRODUCTO/repInventarioSimple.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
+    }
+
+    public void actualizar_tabla_producto_venta_compra(Connection conn, JTable tbltabla, String fec_desde, String fec_hasta) {
+        String sql_select = "select p.idproducto as idp,p.codigo_barra as codbarra,pc.nombre as categoria,p.nombre as producto,\n"
+                + "TRIM(to_char(p.precio_venta,'999G999G999')) as pventa,\n"
+                + "TRIM(to_char(p.precio_compra,'999G999G999')) as pcompra,\n"
+                + "p.stock_actual as stock, \n"
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v \n"
+                + "where vi.fk_idventa=v.idventa and vi.tipo_item='CARGADO' \n"
+                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + "and vi.fk_idproducto=p.idproducto),0) as c_venta, \n"
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item_interno vi,venta_interno v \n"
+                + "where vi.fk_idventa_interno=v.idventa_interno and vi.tipo_item='EMITIDO' \n"
+                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + "and vi.fk_idproducto=p.idproducto),0) as c_interna,\n"
+                + "coalesce((select sum(vi.cantidad) as cant from compra_item vi,compra v \n"
+                + "where vi.fk_idcompra=v.idcompra and vi.tipo_item='INGRESADO' \n"
+                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'   \n"
+                + "and vi.fk_idproducto=p.idproducto),0) as c_compra \n"
+                + " FROM producto p,producto_categoria pc\n"
+                + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"
+                + " and p.es_venta=true and p.es_compra=true \n"
+                + "order by 8 desc;";
+        eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        ancho_tabla_producto_venta_compra(tbltabla);
+    }
+
+    public void ancho_tabla_producto_venta_compra(JTable tbltabla) {
+        int Ancho[] = {5,10,12,25,8,8,8,8,8,8};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.alinear_derecha_columna(tbltabla, 5);
+        evejt.alinear_centro_columna(tbltabla, 6);
+        evejt.alinear_centro_columna(tbltabla, 7);
+        evejt.alinear_centro_columna(tbltabla, 8);
+        evejt.alinear_centro_columna(tbltabla, 9);
+    }
+    public void imprimir_rep_producto_movimiento(Connection conn,String fec_desde, String fec_hasta) {
+        String sql = "select p.idproducto as idp,p.codigo_barra as codbarra,pc.nombre as categoria,p.nombre as producto,\n"
+                + "p.precio_venta as pventa,\n"
+                + "p.precio_compra as pcompra,\n"
+                + "p.stock_actual as stock, \n"
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v \n"
+                + "where vi.fk_idventa=v.idventa and vi.tipo_item='CARGADO' \n"
+                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + "and vi.fk_idproducto=p.idproducto),0) as c_venta, \n"
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item_interno vi,venta_interno v \n"
+                + "where vi.fk_idventa_interno=v.idventa_interno and vi.tipo_item='EMITIDO' \n"
+                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + "and vi.fk_idproducto=p.idproducto),0) as c_interna,\n"
+                + "coalesce((select sum(vi.cantidad) as cant from compra_item vi,compra v \n"
+                + "where vi.fk_idcompra=v.idcompra and vi.tipo_item='INGRESADO' \n"
+                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'   \n"
+                + "and vi.fk_idproducto=p.idproducto),0) as c_compra \n"
+                + " FROM producto p,producto_categoria pc\n"
+                + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"
+                + " and p.es_venta=true and p.es_compra=true \n"
+                + "order by 8 desc;";
+        String titulonota = "PRODUCTO MOVIMIENTO";
+        String direccion = "src/REPORTE/PRODUCTO/repProductoMovimiento.jrxml";
         rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

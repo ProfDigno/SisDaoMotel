@@ -8,6 +8,8 @@ package IMPRESORA_POS;
 import Config_JSON.json_array_imprimir_pos;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -27,7 +29,7 @@ public class ClaImpresoraPos {
 
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
-
+    private static FileInputStream inputStream = null;
     public static FileInputStream getInputStream() {
         return inputStream;
     }
@@ -37,20 +39,31 @@ public class ClaImpresoraPos {
     }
 
     public void imprimir_ticket_Pos() {
+        String titulo="imprimir_ticket_Pos";
         try {
+//            byte[] by = inputStream.toString().getBytes();
             impresora_por_defecto(getInputStream());
         } catch (Exception e) {
-            evemen.mensaje_error(e, "imprimir_ticket_Pos");
+            evemen.mensaje_error(e,titulo);
+        }
+    }
+public void imprimir_ticket_Pos_por_nombre(String printerName) {
+         String titulo="imprimir_ticket_Pos_por_nombre";
+        try {
+//            impresora_por_defecto(getInputStream());
+            impresora_por_nombre(printerName, getInputStream());
+        } catch (Exception e) {
+            evemen.mensaje_error(e,titulo);
         }
     }
 
-private static FileInputStream inputStream = null;
 
     public static void impresora_por_defecto(FileInputStream inputStream) {
         DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
         Doc document = new SimpleDoc(inputStream, docFormat, null);
         PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
         PrintService defaultPrintService = PrintServiceLookup.lookupDefaultPrintService();
+        
         if (defaultPrintService != null) {
             DocPrintJob printJob = defaultPrintService.createPrintJob();
             try {
@@ -65,7 +78,25 @@ private static FileInputStream inputStream = null;
         }
 
     }
+    public static void impresora_por_nombre(String printerName,FileInputStream inputStream) {
+        DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
+        Doc document = new SimpleDoc(inputStream, docFormat, null);
+        PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
+          PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
+        if (services != null) {
+            DocPrintJob printJob = getServicioImpresion(services,printerName);
+            try {
+                printJob.print(document, attributeSet);
+                cortarHoja();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            System.err.println("No existen impresoras instaladas");
+            JOptionPane.showMessageDialog(null, "No existen impresoras instaladas");
+        }
 
+    }
     public static void cortarHoja() throws PrintException {
         DocPrintJob job = PrintServiceLookup.lookupDefaultPrintService().createPrintJob();
         byte[] PARTIAL_CUT_1 = {0x1B, 0x69}; // cortar el ticket
@@ -86,5 +117,24 @@ private static FileInputStream inputStream = null;
             }
         }
         return det;
+    }
+    
+
+    private  static DocPrintJob getServicioImpresion(PrintService[] services,String nombreImpresora) {
+        DocPrintJob job = null;
+        try {
+            if (services.length > 0) {
+                for (PrintService service : services) {
+                    if (service.getName().trim().toUpperCase().equals(nombreImpresora.trim().toUpperCase())) {
+                        System.err.println(service.getName().trim() + " == " + nombreImpresora.trim());
+                        job = service.createPrintJob();
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return job;
     }
 }

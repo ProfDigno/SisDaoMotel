@@ -13,15 +13,33 @@
 truncate caja_cierre_detalle;
 truncate caja_cierre;
 truncate caja_cierre_item;
+truncate caja_producto_item;
 truncate gasto;
-truncate venta;
-truncate venta_item;
+truncate gasto_tipo;
 truncate habitacion_recepcion;
 truncate inventario;
 truncate inventario_item;
 truncate compra;
 truncate compra_item;
+truncate venta;
+truncate venta_item;
 truncate venta_interno;
 truncate venta_item_interno;
+truncate venta_eliminar;
+truncate venta_item_eliminar;
 truncate garantia;
-truncate caja_producto_item;
+truncate dato_banco;
+truncate transaccion_banco;
+truncate factura;
+truncate factura_item;
+truncate rh_descuento;
+truncate rh_entrada;
+truncate rh_liquidacion;
+truncate rh_liquidacion_descuento;
+truncate rh_liquidacion_detalle;
+truncate rh_liquidacion_entrada;
+truncate rh_liquidacion_vale;
+truncate rh_vale;
+
+update habitacion_recepcion_temp set idhabitacion_recepcion_actual=0,estado='LIBRE',
+descrip_estado='LIBRE',tiempo_estado='.',monto_gral=0,cant_hora_adicional=0;

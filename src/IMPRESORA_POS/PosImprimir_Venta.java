@@ -236,7 +236,12 @@ public class PosImprimir_Venta {
             try {
                 crear_archivo_texto_impresion();
                 pos.setInputStream(inputStream);
-                pos.imprimir_ticket_Pos();
+//                pos.imprimir_ticket_Pos();
+                if (jsprint.isPrint_defauld_ticket()) {
+                    pos.imprimir_ticket_Pos();
+                } else {
+                    pos.imprimir_ticket_Pos_por_nombre(jsprint.getPrint_nombre_ticket());
+                }
             } catch (Exception e) {
                 evemen.mensaje_error(e, titulo);
             }

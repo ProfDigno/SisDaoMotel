@@ -76,6 +76,7 @@ public class PosImprimir_CierreCajaDetalle {
     private static String cd_tt_garantia = "0";
     private static String cd_tt_egreso = "0";
     private static String cd_tt_saldo = "0";
+    private static String cd_tt_monto_apertura_caja="0";
 //    private static boolean es_consumo;
     private static String cd_creado_por = "digno";
     private static int cant_char = 10;
@@ -99,6 +100,7 @@ public class PosImprimir_CierreCajaDetalle {
                 + "TRIM(to_char(sum(cd.monto_compra),'999G999G999')) as tt_compra,\n"
                 + "TRIM(to_char(sum(cd.monto_vale),'999G999G999')) as tt_vale,\n"
                 + "TRIM(to_char(sum(cd.monto_liquidacion),'999G999G999')) as tt_liquida,\n"
+                + "TRIM(to_char(sum(cd.monto_apertura_caja),'999G999G999')) as apertura_caja,\n"
                 + "TRIM(to_char(sum(cd.monto_gasto+cd.monto_compra+cd.monto_vale+cd.monto_liquidacion),'999G999G999')) as tt_egreso,\n"
                 + "TRIM(to_char(sum(((cd.monto_solo_adelanto+cd.monto_ocupa_minimo+cd.monto_ocupa_adicional+cd.monto_ocupa_consumo+cd.monto_interno+cd.monto_garantia)-\n"
                 + "(cd.monto_ocupa_descuento+cd.monto_ocupa_adelanto))-\n"
@@ -123,6 +125,7 @@ public class PosImprimir_CierreCajaDetalle {
                 cd_tt_gasto = rs.getString("tt_gasto");
                 cd_tt_compra = rs.getString("tt_compra");
                 cd_tt_vale = rs.getString("tt_vale");
+                cd_tt_monto_apertura_caja = rs.getString("apertura_caja");
                 cd_tt_liquida = rs.getString("tt_liquida");
                 cd_tt_ven_interno = rs.getString("tt_interno");
                 cd_tt_garantia = rs.getString("tt_garantia");
@@ -456,6 +459,9 @@ public class PosImprimir_CierreCajaDetalle {
         printer.printTextWrap(42 + tempfila, 42, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
         printer.printTextWrap(43 + tempfila, 43, jsprint.getSep_inicio(), totalColumna, "===>TOTAL SALDO : ");
         printer.printTextWrap(43 + tempfila, 43, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_saldo, cant_char));
+        printer.printTextWrap(44 + tempfila, 44, jsprint.getSep_inicio(), totalColumna, jsprint.getLinea_separador());
+        printer.printTextWrap(45 + tempfila, 45, jsprint.getSep_inicio(), totalColumna, "===>APERTURA CAJA : ");
+        printer.printTextWrap(45 + tempfila, 45, jsprint.getSep_total_gral(), totalColumna, pos.alinearDerecha(cd_tt_monto_apertura_caja, cant_char));
         printer.toFile(tk_ruta_archivo);
         try {
             inputStream = new FileInputStream(tk_ruta_archivo);

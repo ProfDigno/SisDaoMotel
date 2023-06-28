@@ -154,6 +154,9 @@ public class DAO_usuario {
     public boolean gB_JTabbedPane_caja_cerrado(){
         return getBoo_eve_permitido(conn, 1002);
     }
+    public boolean gB_boton_cancelar_ocupacion(){
+        return getBoo_eve_permitido(conn, 1003);
+    }
     private boolean getBoo_eve_permitido(Connection conn, int codigo) {
         boolean activar = jsfrm.isAct_roll_usu();
         if (activar) {

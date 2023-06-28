@@ -27,9 +27,9 @@ public class json_array_imprimir_pos {
 
     private String ruta_json = "JSON\\json_array_imprimir_pos.json";
     EvenFecha evefec = new EvenFecha();
-    private EvenMensajeJoptionpane evemen=new EvenMensajeJoptionpane();
-    private json_config_json jsoncf=new json_config_json();
-    ComputerInfo pcinf=new ComputerInfo();
+    private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private json_config_json jsoncf = new json_config_json();
+    ComputerInfo pcinf = new ComputerInfo();
 //    private static String MacAddress_maquina;
     private static String nombre_computador;
     private static String linea_separador;
@@ -66,10 +66,14 @@ public class json_array_imprimir_pos {
     private static String emp_nombre;
     private static String emp_telefono;
     private static String emp_direccion;
-    private static String nombre_impresora_factura;
+    private static boolean print_defauld_ticket;
+    private static boolean print_defauld_factura;
+    private static String print_nombre_ticket;
+    private static String print_nombre_factura;
+
     public void cargar_jsom_imprimir_pos() {
 //         MacAddress_maquina=pcinf.getMacAddress();
-        nombre_computador=pcinf.getNombrePC();
+        nombre_computador = pcinf.getNombrePC();
         JSONParser parser = new JSONParser();
         try {
             Object obj_maquina = parser.parse(new FileReader(ruta_json));
@@ -113,7 +117,10 @@ public class json_array_imprimir_pos {
             String emp_nombre = (String) jsonObject.get("emp_nombre");
             String emp_telefono = (String) jsonObject.get("emp_telefono");
             String emp_direccion = (String) jsonObject.get("emp_direccion");
-            String nombre_impresora_factura = (String) jsonObject.get("nombre_impresora_factura");
+            String print_defauld_ticket = (String) jsonObject.get("print_defauld_ticket");
+            String print_defauld_factura = (String) jsonObject.get("print_defauld_factura");
+            String print_nombre_ticket = (String) jsonObject.get("print_nombre_ticket");
+            String print_nombre_factura = (String) jsonObject.get("print_nombre_factura");
             setLinea_separador(linea_separador);
             setLinea_ven_detalle(linea_ven_detalle);
             setLinea_ven_categoria(linea_ven_categoria);
@@ -145,23 +152,18 @@ public class json_array_imprimir_pos {
             setEmp_nombre(emp_nombre);
             setEmp_telefono(emp_telefono);
             setEmp_direccion(emp_direccion);
-            setNombre_impresora_factura(nombre_impresora_factura);
-            if (print_comanda.equals("true")) {
-                setPrint_comanda(true);
-            } else {
-                setPrint_comanda(false);
-            }
-            if (print_insumo.equals("true")) {
-                setPrint_insumo(true);
-            } else {
-                setPrint_insumo(false);
-            }
+            setPrint_comanda(getBoo(print_comanda));
+            setPrint_insumo(getBoo(print_insumo));
+            setPrint_defauld_ticket(getBoo(print_defauld_ticket));
+            setPrint_defauld_factura(getBoo(print_defauld_factura));
+            setPrint_nombre_ticket(print_nombre_ticket);
+            setPrint_nombre_factura(print_nombre_factura);
             System.out.println("json imprimir pos:" + jsonObject);
             setError_carga_json(true);
         } catch (Exception ex) {
-            System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
-            JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
-            if(evemen.getBooMensaje_warning("DESEA ABRIR EL ARCHIVO PARA CAMBIAR EL NOMBRE PARA ESTE EQUIPO","ABRIR JSON","ABRIR","CANCELAR")){
+            System.err.println("Error: " + ex.toString() + "\nNombre Maquina:" + nombre_computador);
+            JOptionPane.showMessageDialog(null, "Error: " + ex.toString() + "\nNombre Maquina:" + nombre_computador);
+            if (evemen.getBooMensaje_warning("DESEA ABRIR EL ARCHIVO PARA CAMBIAR EL NOMBRE PARA ESTE EQUIPO", "ABRIR JSON", "ABRIR", "CANCELAR")) {
                 abrir_este_json_array_imprimir_pos();
             }
             setError_carga_json(false);
@@ -170,12 +172,51 @@ public class json_array_imprimir_pos {
         }
     }
 
-    public static String getNombre_impresora_factura() {
-        return nombre_impresora_factura;
+    private boolean getBoo(String dato) {
+        if (dato.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public static void setNombre_impresora_factura(String nombre_impresora_factura) {
-        json_array_imprimir_pos.nombre_impresora_factura = nombre_impresora_factura;
+    public static boolean isPrint_defauld_ticket() {
+        return print_defauld_ticket;
+    }
+
+    public static void setPrint_defauld_ticket(boolean print_defauld_ticket) {
+        json_array_imprimir_pos.print_defauld_ticket = print_defauld_ticket;
+    }
+
+    public static boolean isPrint_defauld_factura() {
+        return print_defauld_factura;
+    }
+
+    public static void setPrint_defauld_factura(boolean print_defauld_factura) {
+        json_array_imprimir_pos.print_defauld_factura = print_defauld_factura;
+    }
+
+    public static String getPrint_nombre_ticket() {
+        return print_nombre_ticket;
+    }
+
+    public static void setPrint_nombre_ticket(String print_nombre_ticket) {
+        json_array_imprimir_pos.print_nombre_ticket = print_nombre_ticket;
+    }
+
+    public static String getPrint_nombre_factura() {
+        return print_nombre_factura;
+    }
+
+//    public static String getNombre_impresora_factura() {
+//        return nombre_impresora_factura;
+//    }
+//
+//    public static void setNombre_impresora_factura(String nombre_impresora_factura) {
+//        json_array_imprimir_pos.nombre_impresora_factura = nombre_impresora_factura;
+//    }
+    public static void setPrint_nombre_factura(String print_nombre_factura) {
+        json_array_imprimir_pos.print_nombre_factura = print_nombre_factura;
     }
 
     public static String getEmp_nombre() {
@@ -201,8 +242,8 @@ public class json_array_imprimir_pos {
     public static void setEmp_direccion(String emp_direccion) {
         json_array_imprimir_pos.emp_direccion = emp_direccion;
     }
-    
-    public void abrir_este_json_array_imprimir_pos(){
+
+    public void abrir_este_json_array_imprimir_pos() {
         jsoncf.abrirArchivo(ruta_json);
     }
 
@@ -453,6 +494,5 @@ public class json_array_imprimir_pos {
     public static void setPrint_insumo(boolean print_insumo) {
         json_array_imprimir_pos.print_insumo = print_insumo;
     }
-    
 
 }

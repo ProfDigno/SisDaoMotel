@@ -25,6 +25,7 @@ import FORMULARIO.ENTIDAD.producto;
 import FORMULARIO.ENTIDAD.timbrado;
 import FORMULARIO.ENTIDAD.usuario;
 import FORMULARIO.VISTA.BUSCAR.ClaVarBuscar;
+import IMPRESORA_POS.PosImprimir_Factura;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import javax.swing.JOptionPane;
@@ -61,6 +62,7 @@ public class FrmFactura extends javax.swing.JInternalFrame {
     private persona ENTper = new persona();
     private factura_item ENTfi = new factura_item();
     private DefaultTableModel model_itemf = new DefaultTableModel();
+    private PosImprimir_Factura posfac=new PosImprimir_Factura();
     private double monto_total;
     private double monto_iva5;
     private double monto_iva10;
@@ -275,7 +277,8 @@ public class FrmFactura extends javax.swing.JInternalFrame {
         if (getBoovalidar_factura()) {
             cargar_factura();
             BOf.insertar_factura_de_factura(ENTf, ENTfi, tblitem_producto);
-            DAOf.imprimir_nota_factura(conn, fk_idfactura);
+//            DAOf.imprimir_nota_factura(conn, fk_idfactura);
+            posfac.boton_imprimir_pos_FACTURA(conn, fk_idfactura);
             reestableser_factura();
         }
     }
@@ -283,7 +286,8 @@ public class FrmFactura extends javax.swing.JInternalFrame {
     private void imprimir_nota_factura() {
         if (eveJtab.getBoolean_validar_select_mensaje(tblfactura, "SELECCIONE UNA FACTURA PARA IMPRIMIR")) {
             int idfactura = eveJtab.getInt_select_id(tblfactura);
-            DAOf.imprimir_nota_factura(conn, idfactura);
+//            DAOf.imprimir_nota_factura(conn, idfactura);
+            posfac.boton_imprimir_pos_FACTURA(conn, idfactura);
         }
     }
 

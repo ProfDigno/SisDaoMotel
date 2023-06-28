@@ -48,7 +48,7 @@ public class BO_factura {
                     conn.setAutoCommit(false);
                 }
                 DAOf.update_factura(conn, f);
-                DAOf.actualizar_tabla_factura(conn, tbltabla);
+//                DAOf.actualizar_tabla_factura(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, f.toString(), titulo);

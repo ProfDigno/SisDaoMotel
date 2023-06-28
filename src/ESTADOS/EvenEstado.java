@@ -11,6 +11,7 @@ package ESTADOS;
  */
 public class EvenEstado {
     private static String est_Emitido;
+    private static String est_Emitido_admin;
     private static String est_Anulado;
     private static String est_Pagado;
     private static String est_Cargado;
@@ -79,6 +80,7 @@ public class EvenEstado {
     public EvenEstado() {
         setEst_Anulado("ANULADO");
         setEst_Emitido("EMITIDO");
+        setEst_Emitido_admin("EMITIDO_ADMIN");
         setEst_Libre("LIBRE");
         setEst_Ocupado("OCUPADO");
         setEst_Sucio("SUCIO");
@@ -143,6 +145,14 @@ public class EvenEstado {
         setIco_limpie("/graficos/limpieza.png");
         setIco_escoba("/graficos/escoba.png");
         setIco_candado("/graficos/ocupado.png");
+    }
+
+    public static String getEst_Emitido_admin() {
+        return est_Emitido_admin;
+    }
+
+    public static void setEst_Emitido_admin(String est_Emitido_admin) {
+        EvenEstado.est_Emitido_admin = est_Emitido_admin;
     }
 
     public static String getCaja_LIQUIDACION() {

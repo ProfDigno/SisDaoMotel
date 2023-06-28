@@ -634,4 +634,38 @@ public class DAO_caja_cierre {
         String titulo = "CAJA CIERRE GRAL";
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
+
+    public void exportar_excel_uso_habitacion(Connection conn) {
+        int band_Height = 20;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/habitacion_mas_usado" + sucursal + ".xlsx";
+        String sql = "SELECT \n"
+                + "case \n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=1 then '1-ENERO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=2 then '2-FEBRERO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=3 then '3-MARZO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=4 then '4-ABRIL'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=5 then '5-MAYO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=6 then '6-JUNIO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=7 then '7-JULIO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=8 then '8-AGOSTO'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=9 then '9-SEPTIEMBRE'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=10 then '10-OCTUBRE'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=11 then '11-NOVIEMBRE'\n"
+                + "when EXTRACT(MONTH FROM h.fecha_creado)=12 then '12-DICIEMBRE'\n"
+                + "else 'error' end as mes,\n"
+                + "to_char(h.fec_ocupado_inicio,'yyyy-MM-dd') as fec_dia,\n"
+                + "h.nro_habitacion as nro_hab,('HAB:'||h.nro_habitacion) as habitacion,\n"
+                + "to_char(h.fec_ocupado_inicio,'HH24:MI:ss') as inicio,\n"
+                + "to_char(h.fec_ocupado_fin,'HH24:MI:ss') as fin,\n"
+                + "(h.fec_ocupado_fin-h.fec_ocupado_inicio) as tiempo,\n"
+                + "(v.monto_minimo+v.monto_adicional+v.monto_consumo) as total\n"
+                + "FROM\n"
+                + "  habitacion_recepcion h,venta v\n"
+                + "  where h.idhabitacion_recepcion=v.fk_idhabitacion_recepcion\n"
+                + "  and v.estado='TERMINADO';";
+        String direccion = "src/REPORTE/APPSHEET/repHabMasUsado.jrxml";
+        String titulo = "USO HABITACION";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
 }

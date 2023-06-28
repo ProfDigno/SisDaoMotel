@@ -146,7 +146,7 @@ public class EvenJasperReport {
 
     public void imprimirjasper_por_nombre_impresora(Connection conexion, String sql, String titulonota, String direccion, boolean vista_previa) {
         String titulo = "imprimirjasper_por_nombre_impresora";
-        String impresora = jsprint.getNombre_impresora_factura();
+        String impresora = jsprint.getPrint_nombre_factura();
         try {
             JasperDesign jasperDesign = JRXmlLoader.load(direccion);
 //            jasperDesign.setPageHeight(jasperDesign.getPageHeight() + PageHeight);

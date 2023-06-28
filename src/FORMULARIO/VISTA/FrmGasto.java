@@ -109,16 +109,25 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         return true;
     }
 
-    private void cargar_dato_gasto() {
+    private void cargar_dato_gasto(boolean caja) {
         String monto_gasto = evejtf.getString_format_nro_entero1(txtmonto_gasto);
         String monto_letra = nroLetra.Convertir(monto_gasto, true);
         Dmonto_gasto = Double.parseDouble(monto_gasto);
         txtmonto_letra.setText(monto_letra);
+        String tipo_pago="";
+        String estado="";
+        if(caja){
+            tipo_pago="\n (PAGADO POR CAJA)";
+            estado=eveest.getEst_Emitido();
+        }else{
+            tipo_pago="\n (PAGADO POR ADMINISTRACION)";
+            estado=eveest.getEst_Emitido_admin();
+        }
         ENTgt.setC3creado_por(creado_por);
         ENTgt.setC4monto_gasto(Dmonto_gasto);
         ENTgt.setC5monto_letra(monto_letra);
-        ENTgt.setC6descripcion(txtadescripcion.getText());
-        ENTgt.setC7estado(eveest.getEst_Emitido());
+        ENTgt.setC6descripcion(txtadescripcion.getText()+tipo_pago);
+        ENTgt.setC7estado(estado);
         ENTgt.setC8fk_idgasto_tipo(fk_idgasto_tipo);
         ENTgt.setC9fk_idusuario(fk_idusuario);
     }
@@ -154,11 +163,11 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         ENTccd.setC29fk_idgarantia(0);
     }
 
-    private void boton_guardar() {
+    private void boton_guardar(boolean caja) {
         if (validar_guardar()) {
-            cargar_dato_gasto();
+            cargar_dato_gasto(caja);
             cargar_dato_caja_detalle_GASTO();
-            BOgt.insertar_gasto(ENTgt, ENTccd);
+            BOgt.insertar_gasto(ENTgt, ENTccd,caja);
             reestableser();
         }
     }
@@ -192,11 +201,12 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtmonto_letra.setText(ENTgt.getC5monto_letra());
         txtadescripcion.setText(ENTgt.getC6descripcion());
         titulo_formulario(ENTgt.getC2fecha_creado(), ENTgt.getC3creado_por());
-        btnguardar.setEnabled(false);
+        btnguardar_caja.setEnabled(false);
+        btnguardar_admin.setEnabled(false);
         if ((ENTgt.getC7estado().equals(eveest.getEst_Terminar())) || (ENTgt.getC7estado().equals(eveest.getEst_Anulado()))) {
             btnanular.setEnabled(false);
         }
-        if ((ENTgt.getC7estado().equals(eveest.getEst_Emitido()))) {
+        if ((ENTgt.getC7estado().equals(eveest.getEst_Emitido()))  || (ENTgt.getC7estado().equals(eveest.getEst_Emitido_admin()))) {
             btnanular.setEnabled(true);
         }
     }
@@ -215,7 +225,8 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtmonto_gasto.setText(null);
         txtmonto_letra.setText(null);
         txtadescripcion.setText(null);
-        btnguardar.setEnabled(true);
+        btnguardar_caja.setEnabled(true);
+        btnguardar_admin.setEnabled(true);
         btnanular.setEnabled(false);
         txtgasto_tipo.grabFocus();
     }
@@ -264,7 +275,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtid = new javax.swing.JTextField();
         txtgasto_tipo = new javax.swing.JTextField();
         btnnuevo = new javax.swing.JButton();
-        btnguardar = new javax.swing.JButton();
+        btnguardar_caja = new javax.swing.JButton();
         btnanular = new javax.swing.JButton();
         btnnuevo_gtipo = new javax.swing.JButton();
         btnbuscar_gtipo = new javax.swing.JButton();
@@ -272,6 +283,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtadescripcion = new javax.swing.JTextArea();
         txtmonto_gasto = new javax.swing.JTextField();
         txtmonto_letra = new javax.swing.JTextField();
+        btnguardar_admin = new javax.swing.JButton();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltabla_pri = new javax.swing.JTable();
@@ -335,13 +347,13 @@ public class FrmGasto extends javax.swing.JInternalFrame {
             }
         });
 
-        btnguardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/guardar.png"))); // NOI18N
-        btnguardar.setText("GUARDAR");
-        btnguardar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnguardar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnguardar.addActionListener(new java.awt.event.ActionListener() {
+        btnguardar_caja.setBackground(new java.awt.Color(255, 255, 153));
+        btnguardar_caja.setText("PAGADO POR CAJA");
+        btnguardar_caja.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnguardar_caja.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnguardar_caja.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnguardarActionPerformed(evt);
+                btnguardar_cajaActionPerformed(evt);
             }
         });
 
@@ -392,6 +404,16 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtmonto_letra.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         txtmonto_letra.setBorder(javax.swing.BorderFactory.createTitledBorder("MONTO LETRA:"));
 
+        btnguardar_admin.setBackground(new java.awt.Color(204, 255, 204));
+        btnguardar_admin.setText("PAGADO POR ADMIN");
+        btnguardar_admin.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnguardar_admin.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnguardar_admin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnguardar_adminActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
         panel_insertarLayout.setHorizontalGroup(
@@ -406,21 +428,23 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                         .addComponent(btnnuevo_gtipo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnbuscar_gtipo, javax.swing.GroupLayout.PREFERRED_SIZE, 41, Short.MAX_VALUE))
+                    .addComponent(txtmonto_letra)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panel_insertarLayout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtmonto_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panel_insertarLayout.createSequentialGroup()
                                 .addComponent(btnnuevo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnguardar)
+                                .addComponent(btnanular)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnanular))
-                            .addComponent(txtmonto_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtmonto_letra))
+                                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnguardar_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnguardar_admin, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panel_insertarLayout.setVerticalGroup(
@@ -441,12 +465,17 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtmonto_letra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnnuevo)
-                    .addComponent(btnguardar)
-                    .addComponent(btnanular))
-                .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_insertarLayout.createSequentialGroup()
+                        .addComponent(btnguardar_caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(53, 53, 53))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnnuevo)
+                            .addComponent(btnanular)
+                            .addComponent(btnguardar_admin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())))
         );
 
         panel_tabla.setBackground(new java.awt.Color(51, 204, 255));
@@ -586,10 +615,10 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardarActionPerformed
+    private void btnguardar_cajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardar_cajaActionPerformed
         // TODO add your handling code here:
-        boton_guardar();
-    }//GEN-LAST:event_btnguardarActionPerformed
+        boton_guardar(true);
+    }//GEN-LAST:event_btnguardar_cajaActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
@@ -668,11 +697,17 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_txtmonto_gastoKeyPressed
 
+    private void btnguardar_adminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardar_adminActionPerformed
+        // TODO add your handling code here:
+        boton_guardar(false);
+    }//GEN-LAST:event_btnguardar_adminActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnanular;
     private javax.swing.JButton btnbuscar_gtipo;
-    private javax.swing.JButton btnguardar;
+    private javax.swing.JButton btnguardar_admin;
+    private javax.swing.JButton btnguardar_caja;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JButton btnnuevo_gtipo;
     private javax.swing.JComboBox<String> cmbfecha_caja_cierre;

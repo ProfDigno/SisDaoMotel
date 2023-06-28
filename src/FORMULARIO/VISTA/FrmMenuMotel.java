@@ -52,8 +52,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 2.0.6";
-    private String fec_version = "2023-06-09";
+    private String version = "V.: 2.1.3";
+    private String fec_version = "2023-06-26";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -192,6 +192,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "	\"monto_iva5\" NUMERIC(14,0) NOT NULL ,\n"
                 + "	\"monto_iva10\" NUMERIC(14,0) NOT NULL ,\n"
                 + "	\"monto_letra\" TEXT NOT NULL ,\n"
+                + "	\"numero\" INTEGER NOT NULL ,\n"
                 + "	\"fk_idtimbrado\" INTEGER NOT NULL ,\n"
                 + "	\"fk_idpersona\" INTEGER NOT NULL ,\n"
                 + "	\"fk_idventa\" INTEGER NOT NULL ,\n"
@@ -254,6 +255,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         DAOcc.exportar_excel_habitacion_estados_resumen(conn);
         DAOcc.exportar_excel_caja_cierre_ingreso_lista(conn);
         DAOcc.exportar_excel_caja_cierre_gral(conn);
+        DAOcc.exportar_excel_uso_habitacion(conn);
         crear_exp_app = false;
     }
 
@@ -461,6 +463,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem15 = new javax.swing.JMenuItem();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem22 = new javax.swing.JMenuItem();
+        jMenuItem42 = new javax.swing.JMenuItem();
         jMenu13 = new javax.swing.JMenu();
         jMenuItem29 = new javax.swing.JMenuItem();
         jMenu18 = new javax.swing.JMenu();
@@ -979,6 +982,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu8.add(jMenuItem22);
 
+        jMenuItem42.setText("MOVIMIENTO PRODUCTO");
+        jMenuItem42.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem42ActionPerformed(evt);
+            }
+        });
+        jMenu8.add(jMenuItem42);
+
         jMenu14.add(jMenu8);
 
         jMenu13.setText("OCUPACION");
@@ -1370,6 +1381,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmFactura());
     }//GEN-LAST:event_jMenuItem40ActionPerformed
 
+    private void jMenuItem42ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem42ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepProductoMovimiento());
+    }//GEN-LAST:event_jMenuItem42ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1475,6 +1491,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem40;
     private javax.swing.JMenuItem jMenuItem41;
+    private javax.swing.JMenuItem jMenuItem42;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
