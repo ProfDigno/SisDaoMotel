@@ -116,11 +116,14 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtmonto_letra.setText(monto_letra);
         String tipo_pago="";
         String estado="";
+        String pago="";
         if(caja){
-            tipo_pago="\n (PAGADO POR CAJA)";
+            tipo_pago=" (CAJA)";
+            pago="CAJA";
             estado=eveest.getEst_Emitido();
         }else{
-            tipo_pago="\n (PAGADO POR ADMINISTRACION)";
+            tipo_pago=" (ADMIN)";
+            pago="ADMIN";
             estado=eveest.getEst_Emitido_admin();
         }
         ENTgt.setC3creado_por(creado_por);
@@ -130,6 +133,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         ENTgt.setC7estado(estado);
         ENTgt.setC8fk_idgasto_tipo(fk_idgasto_tipo);
         ENTgt.setC9fk_idusuario(fk_idusuario);
+        ENTgt.setC10pago(pago);
     }
 
     private void cargar_dato_caja_detalle_GASTO() {
@@ -203,7 +207,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         titulo_formulario(ENTgt.getC2fecha_creado(), ENTgt.getC3creado_por());
         btnguardar_caja.setEnabled(false);
         btnguardar_admin.setEnabled(false);
-        if ((ENTgt.getC7estado().equals(eveest.getEst_Terminar())) || (ENTgt.getC7estado().equals(eveest.getEst_Anulado()))) {
+        if ((ENTgt.getC7estado().equals(eveest.getEst_Terminado())) || (ENTgt.getC7estado().equals(eveest.getEst_Anulado()))) {
             btnanular.setEnabled(false);
         }
         if ((ENTgt.getC7estado().equals(eveest.getEst_Emitido()))  || (ENTgt.getC7estado().equals(eveest.getEst_Emitido_admin()))) {

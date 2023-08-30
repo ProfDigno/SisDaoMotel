@@ -8,8 +8,8 @@
 			"rasp_2":"NO",
 			"rasp_3":"NO",
 			"app_tiempo_min_exp":"60",
-			"app_nom_report":"_melos1",
-			"app_act_exp":"NO",
+			"app_nom_report":"_melo1",
+			"app_act_exp":"SI",
 			"act_roll_usu":"SI"
 		}
 	],

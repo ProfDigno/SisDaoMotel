@@ -23,12 +23,14 @@ to_char(h.fec_ocupado_inicio,'yyyy-MM-dd') as fec_dia,
 h.nro_habitacion as nro_hab,('HAB:'||h.nro_habitacion) as habitacion,
 to_char(h.fec_ocupado_inicio,'HH24:MI:ss') as inicio,
 to_char(h.fec_ocupado_fin,'HH24:MI:ss') as fin,
-(h.fec_ocupado_fin-h.fec_ocupado_inicio) as tiempo,
-(v.monto_minimo+v.monto_adicional+v.monto_consumo) as total
+to_char((h.fec_ocupado_fin-h.fec_ocupado_inicio),'HH24:MI:ss') as tiempo,
+(v.monto_minimo+v.monto_adicional+v.monto_consumo) as total,
+hd.cant_hab as cant_hab
 FROM
-  habitacion_recepcion h,venta v
-  where h.idhabitacion_recepcion=v.fk_idhabitacion_recepcion
-  and v.estado='DESOCUPADO';]]>
+  habitacion_recepcion h,venta v,habitacion_dato hd
+ where h.idhabitacion_recepcion=v.fk_idhabitacion_recepcion
+  and h.fk_idhabitacion_dato=hd.idhabitacion_dato
+  and v.estado='TERMINADO';]]>
 	</queryString>
 	<field name="mes" class="java.lang.String"/>
 	<field name="fec_dia" class="java.lang.String"/>
@@ -38,6 +40,7 @@ FROM
 	<field name="fin" class="java.lang.String"/>
 	<field name="tiempo" class="java.lang.String"/>
 	<field name="total" class="java.math.BigDecimal"/>
+	<field name="cant_hab" class="java.lang.Integer"/>
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
@@ -89,7 +92,7 @@ FROM
 				<text><![CDATA[habitacion]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="400" y="0" width="100" height="20"/>
+				<reportElement x="400" y="0" width="70" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -101,7 +104,7 @@ FROM
 				<text><![CDATA[inicio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="500" y="0" width="100" height="20"/>
+				<reportElement x="470" y="0" width="75" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -113,7 +116,7 @@ FROM
 				<text><![CDATA[fin]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="600" y="0" width="100" height="20"/>
+				<reportElement x="545" y="0" width="74" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -125,7 +128,7 @@ FROM
 				<text><![CDATA[tiempo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="700" y="0" width="142" height="20"/>
+				<reportElement x="619" y="0" width="131" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -135,6 +138,18 @@ FROM
 				</box>
 				<textElement/>
 				<text><![CDATA[total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="750" y="0" width="92" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[cant_hab]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -189,7 +204,7 @@ FROM
 				<textFieldExpression><![CDATA[$F{habitacion}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="400" y="0" width="100" height="20"/>
+				<reportElement x="400" y="0" width="70" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -201,7 +216,7 @@ FROM
 				<textFieldExpression><![CDATA[$F{inicio}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="500" y="0" width="100" height="20"/>
+				<reportElement x="470" y="0" width="75" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -213,7 +228,7 @@ FROM
 				<textFieldExpression><![CDATA[$F{fin}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="700" y="0" width="142" height="20"/>
+				<reportElement x="619" y="0" width="131" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -225,7 +240,7 @@ FROM
 				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="600" y="0" width="100" height="20"/>
+				<reportElement x="545" y="0" width="74" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -235,6 +250,18 @@ FROM
 				</box>
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{tiempo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="750" y="0" width="92" height="20"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{cant_hab}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

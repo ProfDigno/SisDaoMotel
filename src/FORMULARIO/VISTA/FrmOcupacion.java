@@ -385,7 +385,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
 
     private void ejecutar_update_habitacion_recepcion_temp_FUERTE() {
         String sql = DAOhrt.getSql_ocupacion_boton_FUERTE();
-        eveconn.SQL_execute_libre_sin_print(conn, sql);
+        eveconn.SQL_execute_libre(conn, sql);
     }
 
     private void ejecutar_update_habitacion_recepcion_temp_LIBIANO() {
@@ -720,16 +720,14 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
                     txtfec_ocupado_inicio_hora.setText(hora_ingreso);
                     txttiempo_transcurrido.setText(tiempo_estado);
                     txttiempo_transcurrido_salir.setText(tiempo_estado);
-//                    btncancelar.setEnabled(cancelar_habitacion);
                     hab_cancelar_habitacion = cancelar_habitacion;
                     jRpor_dormir.setEnabled(permitir_dormir_select);//es_hora_dormir
-                    jRpor_hora_mas_dormir.setEnabled(!permitir_dormir_select);
+                    //jRpor_hora_mas_dormir.setEnabled(!permitir_dormir_select);
                     if (cancelar_habitacion) {
                         lblmensaje_cancelar.setText("...");
                     } else {
                         lblmensaje_cancelar.setText("CERRAR PUERTA: " + nro_habitacion);
                     }
-
                     btncancelar.setText("CANCELAR-" + por_cancelar);
                     observacion_venta = "";
                     cargar_observacion_venta("Seleccion BTN OCUPADO; fk_idventa=" + fk_idventa + ",nro_hab=" + nro_habitacion + ",tiempo=" + tiempo_estado, false);
@@ -2176,7 +2174,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private void cargar_dato_habitacion_recepcion_sucio_a_libre(int idhabitacion_recepcion_actual) {
         DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
         ENThr.setC1idhabitacion_recepcion(idhabitacion_recepcion_actual);
-        ENThr.setC4estado(eveest.getEst_Terminar());
+        ENThr.setC4estado(eveest.getEst_Terminado());
         ENThr.setC11fec_sucio_fin(evefec.getString_formato_fecha_hora());
         ENThr.setC24es_boton_actual(false);
         ENThr.setC26es_terminado(true);
@@ -2204,7 +2202,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private void cargar_dato_habitacion_recepcion_limpieza_a_libre(int idhabitacion_recepcion_actual) {
         DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
         ENThr.setC1idhabitacion_recepcion(idhabitacion_recepcion_actual);
-        ENThr.setC4estado(eveest.getEst_Terminar());
+        ENThr.setC4estado(eveest.getEst_Terminado());
         ENThr.setC13fec_limpieza_fin(evefec.getString_formato_fecha_hora());
         ENThr.setC24es_boton_actual(false);
         ENThr.setC26es_terminado(true);
@@ -2481,7 +2479,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
     private void cargar_dato_habitacion_recepcion_libre_auto(int idhabitacion_recepcion_actual) {
         DAOhr.cargar_habitacion_recepcion(conn, ENThr, idhabitacion_recepcion_actual);
         ENThr.setC1idhabitacion_recepcion(idhabitacion_recepcion_actual);
-        ENThr.setC4estado(eveest.getEst_Terminar());
+        ENThr.setC4estado(eveest.getEst_Terminado());
         ENThr.setC13fec_limpieza_fin(evefec.getString_formato_fecha_hora());
         ENThr.setC24es_boton_actual(false);
         ENThr.setC26es_terminado(true);
@@ -2858,7 +2856,7 @@ public class FrmOcupacion extends javax.swing.JInternalFrame {
             } else {
                 condi = " or";
             }
-            estado = condi + " v.estado='" + eveest.getEst_Terminar() + "' ";
+            estado = condi + " v.estado='" + eveest.getEst_Terminado() + "' ";
             sumaestado = sumaestado + estado;
         }
         if (jCest_ocupado.isSelected()) {

@@ -31,6 +31,7 @@ public class FrmTransaccion_banco extends javax.swing.JInternalFrame {
     private BO_transaccion_banco BOtb = new BO_transaccion_banco();
     private dato_banco ENTdb = new dato_banco();
     private DAO_dato_banco DAOdb = new DAO_dato_banco();
+    private DAO_caja_cierre DAOcc=new DAO_caja_cierre();
 //    private 
 //    private DAO_producto DAOp = new DAO_producto();
     private EvenJTextField evejtf = new EvenJTextField();
@@ -123,6 +124,7 @@ public class FrmTransaccion_banco extends javax.swing.JInternalFrame {
         if (validar_guardar()) {
             cargar_dato();
             BOtb.insertar_transaccion_banco(ENTtb, tbltabla_pri);
+            DAOcc.exportar_excel_deposito_banco_N3(conn);
             reestableser();
         }
     }

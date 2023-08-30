@@ -77,12 +77,12 @@ public class EvenRender {
                 Color color_fondo = Color.WHITE;
                 Color color_text = Color.BLACK;
                 Object texto1 = table.getValueAt(row, columnaRender);
-                String emitido = "EMITIDO";
-                String terminado = "TERMINADO";
-                String anulado = "ANULADO";
-                String confirmado = "CONFIRMADO";
-                String anuladotemp = "ANULADO_temp";
-                String cerrado = "CERRADO";
+                String emitido = eveest.getEst_Emitido();//"EMITIDO";
+                String terminado = eveest.getEst_Terminado(); //"TERMINADO";
+                String anulado = eveest.getEst_Anulado(); //"ANULADO";
+                String confirmado = eveest.getEst_CONFIRMADO(); //"CONFIRMADO";
+                String anuladotemp = eveest.getEst_Anulado_temp(); //"ANULADO_temp";
+                String cerrado = eveest.getEst_Cerrado(); //"CERRADO";
                 if (texto1 != null && emitido.equals(texto1.toString())) {
                     color_fondo = Color.WHITE;
                     color_text = Color.RED;
@@ -132,7 +132,7 @@ public class EvenRender {
                 Object OOcupado = table.getValueAt(row, columnaRender);
                 Object ODesocupado = table.getValueAt(row, columnaRender);
                 String SMudar = eveest.getEst_Mudar();
-                String STerminar = eveest.getEst_Terminar();
+                String STerminar = eveest.getEst_Terminado();
                 String SCancelado = eveest.getEst_Cancelado();
                 String SOcupado = eveest.getEst_Ocupado();
                 String SDesocupado = eveest.getEst_Desocupado();
@@ -273,7 +273,7 @@ public class EvenRender {
                 Object OAnulado = table.getValueAt(row, columnaRender);
 //                Object Oterminado = table.getValueAt(row, columnaRender);
                 String Semitido = eveest.getEst_Emitido();
-                String Sterminado = eveest.getEst_Terminar();
+                String Sterminado = eveest.getEst_Terminado();
                 String SAnulado = eveest.getEst_Anulado();
 //                String STerminado = eveest.getEst_Terminar();
                 if (Oemitido != null && Semitido.equals(Oemitido.toString())) {

@@ -254,7 +254,7 @@ public class DAO_venta {
     }
 
     public void terminar_venta_en_caja(Connection conn, int fk_idcaja_cierre) {
-        String sql = "update venta set estado='" + eveest.getEst_Terminar() + "' from caja_cierre_item ,caja_cierre_detalle \n"
+        String sql = "update venta set estado='" + eveest.getEst_Terminado() + "' from caja_cierre_item ,caja_cierre_detalle \n"
                 + "where caja_cierre_item.fk_idcaja_cierre_detalle=caja_cierre_detalle.idcaja_cierre_detalle \n"
                 + "and caja_cierre_detalle.fk_idventa=venta.idventa \n"
                 + "and venta.estado='" + eveest.getEst_Desocupado() + "'\n"

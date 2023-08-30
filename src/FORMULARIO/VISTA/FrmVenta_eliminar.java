@@ -673,7 +673,7 @@ public class FrmVenta_eliminar extends javax.swing.JInternalFrame {
             if (estado.equals(eveest.getEst_Anulado())) {
                 btncom_anular.setEnabled(false);
             }
-            if (estado.equals(eveest.getEst_Terminar())) {
+            if (estado.equals(eveest.getEst_Terminado())) {
                 btncom_anular.setEnabled(false);
             }
             if (estado.equals(eveest.getEst_Emitido())) {
@@ -709,7 +709,7 @@ public class FrmVenta_eliminar extends javax.swing.JInternalFrame {
             } else {
                 condi = " or";
             }
-            estado = condi + " vi.estado='" + eveest.getEst_Terminar() + "' ";
+            estado = condi + " vi.estado='" + eveest.getEst_Terminado() + "' ";
             sumaestado = sumaestado + estado;
         }
 

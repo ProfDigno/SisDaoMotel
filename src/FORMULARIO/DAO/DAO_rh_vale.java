@@ -46,7 +46,7 @@ public class DAO_rh_vale {
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + rhva.toString(), titulo);
-            evemen.guardado_correcto(mensaje_insert, true);
+            evemen.guardado_correcto(mensaje_insert, false);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_insert + "\n" + rhva.toString(), titulo);
         }

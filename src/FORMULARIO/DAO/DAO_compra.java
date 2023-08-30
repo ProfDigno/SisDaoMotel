@@ -154,7 +154,7 @@ public class DAO_compra {
         evejt.ocultar_columna(tbltabla, 7);
     }
     public void terminar_compra_en_caja(Connection conn, int fk_idcaja_cierre) {
-        String sql = "update compra set estado='" + eveest.getEst_Terminar() + "' from caja_cierre_item ,caja_cierre_detalle \n"
+        String sql = "update compra set estado='" + eveest.getEst_Terminado() + "' from caja_cierre_item ,caja_cierre_detalle \n"
                 + "where caja_cierre_item.fk_idcaja_cierre_detalle=caja_cierre_detalle.idcaja_cierre_detalle \n"
                 + "and caja_cierre_detalle.fk_idcompra=compra.idcompra \n"
                 + "and compra.estado='" + eveest.getEst_Pagado() + "'\n"

@@ -126,7 +126,7 @@ public class DAO_venta_interno {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
     public void terminar_venta_interno_en_caja(Connection conn, int fk_idcaja_cierre) {
-        String sql = "update venta_interno set estado='" + eveest.getEst_Terminar() + "' from caja_cierre_item ,caja_cierre_detalle \n"
+        String sql = "update venta_interno set estado='" + eveest.getEst_Terminado() + "' from caja_cierre_item ,caja_cierre_detalle \n"
                 + "where caja_cierre_item.fk_idcaja_cierre_detalle=caja_cierre_detalle.idcaja_cierre_detalle \n"
                 + "and caja_cierre_detalle.fk_idventa_interno=venta_interno.idventa_interno \n"
                 + "and venta_interno.estado='" + eveest.getEst_Emitido() + "'\n"

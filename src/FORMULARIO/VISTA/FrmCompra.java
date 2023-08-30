@@ -674,7 +674,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
                 btncom_pagado.setEnabled(true);
                 btncom_recargar.setEnabled(false);
             }
-            if (estado.equals(eveest.getEst_Terminar())) {
+            if (estado.equals(eveest.getEst_Terminado())) {
                 btncom_anular.setEnabled(false);
                 btncom_pagado.setEnabled(false);
                 btncom_recargar.setEnabled(false);
@@ -732,7 +732,7 @@ public class FrmCompra extends javax.swing.JInternalFrame {
             } else {
                 condi = " or";
             }
-            estado = condi + " c.estado='" + eveest.getEst_Terminar() + "' ";
+            estado = condi + " c.estado='" + eveest.getEst_Terminado() + "' ";
             sumaestado = sumaestado + estado;
         }
         return sumaestado + fin;

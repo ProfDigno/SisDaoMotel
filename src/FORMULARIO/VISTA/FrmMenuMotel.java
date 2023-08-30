@@ -52,8 +52,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 2.1.3";
-    private String fec_version = "2023-06-26";
+    private String version = "V.: 2.2.8";
+    private String fec_version = "2023-08-12";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -65,7 +65,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     public static boolean abrir_frmventa;
     private boolean crear_exp_app;
     private int tiempo_exp_app;
+    private int tiempo_exp_app_Nivel_2 = 1800;
     private int segundo_exp_app;
+    private int segundo_exp_app_Nivel_2;
 
     public static boolean isHabilitar_sonido() {
         return habilitar_sonido;
@@ -117,9 +119,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     }
 
     private void cerrar_formularios() {
-//        FrmGasto frm=new FrmGasto();
-//        FrmGasto().dispose();
-//        evetbl.cerrar_TablaJinternal(new FrmGasto());
     }
 
     private void actualizacion_version_v1() {
@@ -127,112 +126,117 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n"
-                //                + "         ALTER TABLE producto ADD COLUMN precio_interno NUMERIC(14,0) DEFAULT 0;\n"
-                //                + "         update producto set precio_interno=precio_venta;"
-                //                + "ALTER TABLE persona ADD COLUMN nro_tarjeta TEXT DEFAULT '0000';\n"
-                //                + "ALTER TABLE persona ADD COLUMN limite_vale NUMERIC(14,0) DEFAULT 0;\n"
-                + "CREATE TABLE \"rh_liquidacion_detalle\" (\n"
-                + "	\"idrh_liquidacion_detalle\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	\"monto_descuento\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"monto_vale\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"tabla\" TEXT NOT NULL ,\n"
-                + "	\"estado\" TEXT NOT NULL ,\n"
-                + "	\"fk_idrh_liquidacion\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idrh_descuento\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idrh_vale\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idrh_liquidacion_detalle\")\n"
-                + ");"
-                + "ALTER TABLE rh_liquidacion ADD COLUMN descripcion TEXT DEFAULT 'Pago salario';\n "
-                + "CREATE TABLE \"banco\" (\n"
-                + "	\"idbanco\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"nombre\" TEXT NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idbanco\")\n"
-                + ");\n"
-                + "CREATE TABLE \"dato_banco\" (\n"
-                + "	\"iddato_banco\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"titular\" TEXT NOT NULL ,\n"
-                + "	\"documento\" TEXT NOT NULL ,\n"
-                + "	\"nro_cuenta\" TEXT NOT NULL ,\n"
-                + "	\"activo\" BOOLEAN NOT NULL ,\n"
-                + "	\"es_guarani\" BOOLEAN NOT NULL ,\n"
-                + "	\"es_dolar\" BOOLEAN NOT NULL ,\n"
-                + "	\"fk_idbanco\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"iddato_banco\")\n"
-                + ");\n"
-                + "CREATE TABLE \"transaccion_banco\" (\n"
-                + "	\"idtransaccion_banco\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"fecha_transaccion\" DATE NOT NULL ,\n"
-                + "	\"nro_transaccion\" TEXT NOT NULL ,\n"
-                + "	\"monto_guarani\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"monto_dolar\" NUMERIC(10,0) NOT NULL ,\n"
-                + "	\"observacion\" TEXT NOT NULL ,\n"
-                + "	\"concepto\" TEXT NOT NULL ,\n"
-                + "	\"estado\" TEXT NOT NULL ,\n"
-                + "	\"fk_iddato_banco\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idtransaccion_banco\")\n"
-                + ");"
-                + "CREATE TABLE \"factura\" (\n"
-                + "	\"idfactura\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "     \"nro_factura\" TEXT NOT NULL ,\n"
-                + "	\"fecha_nota\" DATE NOT NULL ,\n"
-                + "	\"estado\" TEXT NOT NULL ,\n"
-                + "	\"condicion\" TEXT NOT NULL ,\n"
-                + "	\"monto_total\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"monto_iva5\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"monto_iva10\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"monto_letra\" TEXT NOT NULL ,\n"
-                + "	\"numero\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idtimbrado\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idpersona\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idventa\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idfactura\")\n"
-                + ");\n"
-                + "CREATE TABLE \"factura_item\" (\n"
-                + "	\"idfactura_item\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	\"cantidad\" NUMERIC(5,0) NOT NULL ,\n"
-                + "	\"precio_iva5\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"precio_iva10\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"precio_exenta\" NUMERIC(14,0) NOT NULL ,\n"
-                + "	\"tipo_item\" TEXT NOT NULL ,\n"
-                + "	\"fk_idfactura\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idproducto\" INTEGER NOT NULL \n"
-                + ");\n"
-                + "CREATE TABLE \"timbrado\" (\n"
-                + "	\"idtimbrado\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"nombre\" TEXT NOT NULL ,\n"
-                + "	\"numero_timbrado\" INTEGER NOT NULL ,\n"
-                + "	\"ruc\" TEXT NOT NULL ,\n"
-                + "	\"fec_fin_vigente\" DATE NOT NULL ,\n"
-                + "	\"cod_establecimiento\" TEXT NOT NULL ,\n"
-                + "	\"punto_expedicion\" TEXT NOT NULL ,\n"
-                + "	\"numero_inicio\" INTEGER NOT NULL ,\n"
-                + "	\"numero_fin\" INTEGER NOT NULL ,\n"
-                + "	\"numero_actual\" INTEGER NOT NULL ,\n"
-                + "	\"activo\" BOOLEAN NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idtimbrado\")\n"
-                + ");"
+                + "         ALTER TABLE gasto ADD COLUMN pago TEXT DEFAULT 'CAJA';\n"
+                + "         update gasto set pago='CAJA' where descripcion ilike '%(PAGADO POR CAJA)%';\n"
+                + "         update gasto set pago='ADMIN' where descripcion ilike '%(PAGADO POR ADMINISTRACION)%';\n"
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-//        eveconn.SQL_execute_libre(conn, sql);
+        eveconn.SQL_execute_libre(conn, sql);//version 2.2.4
+
+        String sql1 = "DO $$ \n"
+                + "    BEGIN\n"
+                + "        BEGIN\n"
+                + "        CREATE TABLE \"patrimonio_carga\" (\n"
+                + "	\"idpatrimonio_carga\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"observacion\" TEXT NOT NULL ,\n"
+                + "	\"monto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_carga\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_carga_item\" (\n"
+                + "	\"idpatrimonio_carga_item\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"cantidad\" INTEGER NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"referencia\" TEXT NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_carga\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_producto\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_carga_item\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_producto\" (\n"
+                + "	\"idpatrimonio_producto\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"referencia\" TEXT NOT NULL ,\n"
+                + "	\"precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"tipo\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"stock\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_ubicacion\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_categoria\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_producto\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_ubicacion\" (\n"
+                + "	\"idpatrimonio_ubicacion\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_ubicacion\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_categoria\" (\n"
+                + "	\"idpatrimonio_categoria\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_categoria\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_baja\" (\n"
+                + "	\"idpatrimonio_baja\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"observacion\" TEXT NOT NULL ,\n"
+                + "	\"monto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_baja\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_baja_item\" (\n"
+                + "	\"idpatrimonio_baja_item\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"cantidad\" INTEGER NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"precio_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"referencia\" TEXT NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_producto\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_baja\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idpatrimonio_baja_motivo\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_baja_item\")\n"
+                + ");\n"
+                + "CREATE TABLE \"patrimonio_baja_motivo\" (\n"
+                + "	\"idpatrimonio_baja_motivo\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idpatrimonio_baja_motivo\")\n"
+                + "); "
+                + "        EXCEPTION\n"
+                + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
+                + "        END;\n"
+                + "    END;\n"
+                + "$$ ";
+        eveconn.SQL_execute_libre(conn, sql1);//version 2.2.5
+        String sql2 = "DO $$ \n"
+                + "    BEGIN\n"
+                + "        BEGIN\n"
+                + "         ALTER TABLE habitacion_costo ADD COLUMN minuto_tolerancia INTEGER DEFAULT 5;\n"
+                + "         ALTER TABLE habitacion_recepcion_temp ADD COLUMN minuto_tolerancia SMALLINT DEFAULT 5;\n"
+                + "        EXCEPTION\n"
+                + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
+                + "        END;\n"
+                + "    END;\n"
+                + "$$ ";
+        eveconn.SQL_execute_libre(conn, sql2);//version 2.2.5
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
@@ -245,17 +249,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         System.out.println("Timer INICIAR SONIDO");
     }
 
-    private void exportar_excel() {
+    private void exportar_excel_nivel_1() {
         lblnube.setVisible(true);
-        DAOcc.exportar_excel_caja_fecha_usu(conn);
-        DAOcc.exportar_excel_estado_habitacion(conn);
-        DAOcc.exportar_excel_lista_producto(conn);
-        DAOcc.exportar_excel_caja_resumen(conn);
-        DAOcc.exportar_excel_habitacion_estados(conn);
-        DAOcc.exportar_excel_habitacion_estados_resumen(conn);
-        DAOcc.exportar_excel_caja_cierre_ingreso_lista(conn);
-        DAOcc.exportar_excel_caja_cierre_gral(conn);
-        DAOcc.exportar_excel_uso_habitacion(conn);
+        DAOcc.exportar_excel_estado_habitacion_N1(conn);
+        DAOcc.exportar_excel_habitacion_estados_N1(conn);
+        DAOcc.exportar_excel_habitacion_estados_resumen_N1(conn);
         crear_exp_app = false;
     }
 
@@ -270,15 +268,26 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
             }
             segundo_exp_app++;
+            segundo_exp_app_Nivel_2++;
             if (segundo_exp_app > (tiempo_exp_app)) {
                 if (crear_exp_app && jsfrm.isApp_act_exp()) {
-                    exportar_excel();
+                    exportar_excel_nivel_1();
                 }
             }
             if (segundo_exp_app > ((tiempo_exp_app) + 10)) {
                 lblnube.setVisible(false);
                 crear_exp_app = true;
                 segundo_exp_app = 0;
+            }
+            if (segundo_exp_app_Nivel_2 > (tiempo_exp_app_Nivel_2)) {
+                if (jsfrm.isApp_act_exp()) {
+//                    exportar_excel_nivel_2();
+                }
+            }
+            if (segundo_exp_app_Nivel_2 > ((tiempo_exp_app_Nivel_2) + 10)) {
+                lblnube.setVisible(false);
+//                crear_exp_app = false;
+                segundo_exp_app_Nivel_2 = 0;
             }
         }
     }
@@ -289,7 +298,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     }
 
     private void crear_sonido(String ruta_sonido, int idhabitacion_dato) {
-//        if (no_es_sonido_ocupado) {
         string_ruta_sonido[idhabitacion_dato] = ruta_sonido;
         if (!ruta_sonido.equals("NO")) {
             if (!string_ruta_sonido[idhabitacion_dato].equals(ruta_sonido)) {
@@ -303,7 +311,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         } else {
             hab_ruta_sonido[idhabitacion_dato] = true;
         }
-//        }
     }
 
     private void cargar_sql_habitacion_recepcion_temp() {
@@ -317,7 +324,6 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "                          then 'sounds/puerta_cliente.wav'\n"
                 + "             when estado = 'LIBRE'\n"
                 + "		and puerta_limpieza = false\n"
-                //+ "		and puerta_cliente = false \n"
                 + "                          then 'sounds/puerta_limpieza.wav'\n"
                 + "		when estado = 'OCUPADO'\n"
                 + "		and puerta_limpieza = true\n"
@@ -359,23 +365,8 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         }
     }
 
-//    public int getInt_cant_habitacion_activo(Connection conn) {
-//        String titulo = "getInt_ultimoID";
-//        int getid = 0;
-//        String sql = "select count(*) as cant from habitacion_recepcion_temp where activo=true;";
-//        try {
-//            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
-//            if (rs.next()) {
-//                getid = rs.getInt("cant");
-//            }
-//        } catch (SQLException e) {
-//            evemen.mensaje_error(e, sql, titulo);
-//        }
-//        return getid;
-//    }
     private void cargar_array_habitacion() {
         cant_de_habitacion = (eveconn.getInt_ultimoID_max(conn, ENThrt.getTb_habitacion_recepcion_temp(), ENThrt.getId_idhabitacion_recepcion_temp()));
-//        cant_de_habitacion = getInt_cant_habitacion_activo(conn);
         hab_ruta_sonido = new boolean[cant_de_habitacion + 1];//+1
         string_ruta_sonido = new String[cant_de_habitacion + 1];//+1
     }
@@ -466,11 +457,17 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem42 = new javax.swing.JMenuItem();
         jMenu13 = new javax.swing.JMenu();
         jMenuItem29 = new javax.swing.JMenuItem();
+        jMenuItem43 = new javax.swing.JMenuItem();
         jMenu18 = new javax.swing.JMenu();
         jMenuItem37 = new javax.swing.JMenuItem();
         jMenu19 = new javax.swing.JMenu();
         jMenuItem38 = new javax.swing.JMenuItem();
         jMenuItem39 = new javax.swing.JMenuItem();
+        jMenu21 = new javax.swing.JMenu();
+        jMenuItem44 = new javax.swing.JMenuItem();
+        jMenu26 = new javax.swing.JMenu();
+        jMenuItem51 = new javax.swing.JMenuItem();
+        jMenuItem52 = new javax.swing.JMenuItem();
         jMenu15 = new javax.swing.JMenu();
         jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem31 = new javax.swing.JMenuItem();
@@ -482,6 +479,16 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu20 = new javax.swing.JMenu();
         jMenuItem40 = new javax.swing.JMenuItem();
         jMenuItem41 = new javax.swing.JMenuItem();
+        jMenu22 = new javax.swing.JMenu();
+        jMenu23 = new javax.swing.JMenu();
+        jMenuItem45 = new javax.swing.JMenuItem();
+        jMenuItem46 = new javax.swing.JMenuItem();
+        jMenuItem47 = new javax.swing.JMenuItem();
+        jMenu24 = new javax.swing.JMenu();
+        jMenuItem50 = new javax.swing.JMenuItem();
+        jMenu25 = new javax.swing.JMenu();
+        jMenuItem48 = new javax.swing.JMenuItem();
+        jMenuItem49 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1002,6 +1009,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu13.add(jMenuItem29);
 
+        jMenuItem43.setText("HAB. MAS USADOS");
+        jMenuItem43.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem43ActionPerformed(evt);
+            }
+        });
+        jMenu13.add(jMenuItem43);
+
         jMenu14.add(jMenu13);
 
         jMenu18.setText("BANCO");
@@ -1035,6 +1050,38 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu19.add(jMenuItem39);
 
         jMenu14.add(jMenu19);
+
+        jMenu21.setText("BALANCE");
+
+        jMenuItem44.setText("RESUMEN");
+        jMenuItem44.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem44ActionPerformed(evt);
+            }
+        });
+        jMenu21.add(jMenuItem44);
+
+        jMenu14.add(jMenu21);
+
+        jMenu26.setText("PATRIMONIO");
+
+        jMenuItem51.setText("REP. CARGA");
+        jMenuItem51.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem51ActionPerformed(evt);
+            }
+        });
+        jMenu26.add(jMenuItem51);
+
+        jMenuItem52.setText("REP. DE BAJA");
+        jMenuItem52.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem52ActionPerformed(evt);
+            }
+        });
+        jMenu26.add(jMenuItem52);
+
+        jMenu14.add(jMenu26);
 
         barra_menu_principal.add(jMenu14);
 
@@ -1108,6 +1155,70 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenu20.add(jMenuItem41);
 
         barra_menu_principal.add(jMenu20);
+
+        jMenu22.setText("PATRIMONIO");
+
+        jMenu23.setText("PRODUCTO");
+
+        jMenuItem45.setText("PRODUCTO");
+        jMenuItem45.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem45ActionPerformed(evt);
+            }
+        });
+        jMenu23.add(jMenuItem45);
+
+        jMenuItem46.setText("UBICACION");
+        jMenuItem46.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem46ActionPerformed(evt);
+            }
+        });
+        jMenu23.add(jMenuItem46);
+
+        jMenuItem47.setText("CATEGORIA");
+        jMenuItem47.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem47ActionPerformed(evt);
+            }
+        });
+        jMenu23.add(jMenuItem47);
+
+        jMenu22.add(jMenu23);
+
+        jMenu24.setText("CARGAR");
+
+        jMenuItem50.setText("NUEVA CARGA");
+        jMenuItem50.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem50ActionPerformed(evt);
+            }
+        });
+        jMenu24.add(jMenuItem50);
+
+        jMenu22.add(jMenu24);
+
+        jMenu25.setText("BAJA");
+
+        jMenuItem48.setText("NUEVA BAJA");
+        jMenuItem48.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem48ActionPerformed(evt);
+            }
+        });
+        jMenu25.add(jMenuItem48);
+
+        jMenuItem49.setText("MOTIVO");
+        jMenuItem49.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem49ActionPerformed(evt);
+            }
+        });
+        jMenu25.add(jMenuItem49);
+
+        jMenu22.add(jMenu25);
+
+        barra_menu_principal.add(jMenu22);
 
         setJMenuBar(barra_menu_principal);
 
@@ -1313,7 +1424,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
 
     private void jMenuItem28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem28ActionPerformed
         // TODO add your handling code here:
-        exportar_excel();
+        exportar_excel_nivel_1();
     }//GEN-LAST:event_jMenuItem28ActionPerformed
 
     private void jMenuItem29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem29ActionPerformed
@@ -1386,6 +1497,56 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmRepProductoMovimiento());
     }//GEN-LAST:event_jMenuItem42ActionPerformed
 
+    private void jMenuItem43ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem43ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepUsoHabitacion());
+    }//GEN-LAST:event_jMenuItem43ActionPerformed
+
+    private void jMenuItem44ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem44ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepBalance());
+    }//GEN-LAST:event_jMenuItem44ActionPerformed
+
+    private void jMenuItem46ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem46ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPatrimonio_ubicacion());
+    }//GEN-LAST:event_jMenuItem46ActionPerformed
+
+    private void jMenuItem47ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem47ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPatrimonio_categoria());
+    }//GEN-LAST:event_jMenuItem47ActionPerformed
+
+    private void jMenuItem49ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem49ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPatrimonio_baja_motivo());
+    }//GEN-LAST:event_jMenuItem49ActionPerformed
+
+    private void jMenuItem45ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem45ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPatrimonio_producto());
+    }//GEN-LAST:event_jMenuItem45ActionPerformed
+
+    private void jMenuItem50ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem50ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPatrimonio_carga());
+    }//GEN-LAST:event_jMenuItem50ActionPerformed
+
+    private void jMenuItem48ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem48ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPatrimonio_baja());
+    }//GEN-LAST:event_jMenuItem48ActionPerformed
+
+    private void jMenuItem51ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem51ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepPatrimonio_carga());
+    }//GEN-LAST:event_jMenuItem51ActionPerformed
+
+    private void jMenuItem52ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem52ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepPatrimonio_baja());
+    }//GEN-LAST:event_jMenuItem52ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1448,6 +1609,12 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu19;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu20;
+    private javax.swing.JMenu jMenu21;
+    private javax.swing.JMenu jMenu22;
+    private javax.swing.JMenu jMenu23;
+    private javax.swing.JMenu jMenu24;
+    private javax.swing.JMenu jMenu25;
+    private javax.swing.JMenu jMenu26;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
@@ -1492,7 +1659,17 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem40;
     private javax.swing.JMenuItem jMenuItem41;
     private javax.swing.JMenuItem jMenuItem42;
+    private javax.swing.JMenuItem jMenuItem43;
+    private javax.swing.JMenuItem jMenuItem44;
+    private javax.swing.JMenuItem jMenuItem45;
+    private javax.swing.JMenuItem jMenuItem46;
+    private javax.swing.JMenuItem jMenuItem47;
+    private javax.swing.JMenuItem jMenuItem48;
+    private javax.swing.JMenuItem jMenuItem49;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem50;
+    private javax.swing.JMenuItem jMenuItem51;
+    private javax.swing.JMenuItem jMenuItem52;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;

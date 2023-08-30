@@ -18,6 +18,7 @@ private int C13minuto_cancelar;
 private String C14hs_dormir_ingreso_inicio;
 private String C15hs_dormir_ingreso_final;
 private String C16hs_dormir_salida_final;
+private int C17minuto_tolerancia;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -38,6 +39,15 @@ private static String nom_idtabla;
 		habitacion_costo.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public int getC17minuto_tolerancia() {
+        return C17minuto_tolerancia;
+    }
+
+    public void setC17minuto_tolerancia(int C17minuto_tolerancia) {
+        this.C17minuto_tolerancia = C17minuto_tolerancia;
+    }
+        
 	public int getC1idhabitacion_costo(){
 		return C1idhabitacion_costo;
 	}

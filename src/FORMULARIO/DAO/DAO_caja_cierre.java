@@ -275,7 +275,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_caja_fecha_usu(Connection conn) {
+    public void exportar_excel_caja_fecha_usu_N2(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/caja_fec_usu" + sucursal + ".xlsx";
@@ -316,7 +316,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_estado_habitacion(Connection conn) {
+    public void exportar_excel_estado_habitacion_N1(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/estado_habitacion" + sucursal + ".xlsx";
@@ -329,7 +329,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_lista_producto(Connection conn) {
+    public void exportar_excel_lista_producto_N2(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/lista_producto" + sucursal + ".xlsx";
@@ -346,7 +346,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_caja_resumen(Connection conn) {
+    public void exportar_excel_caja_resumen_N2(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/caja_resumen" + sucursal + ".xlsx";
@@ -380,7 +380,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_habitacion_estados(Connection conn) {
+    public void exportar_excel_habitacion_estados_N1(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/habitacion_estado" + sucursal + ".xlsx";
@@ -483,7 +483,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_habitacion_estados_resumen(Connection conn) {
+    public void exportar_excel_habitacion_estados_resumen_N1(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/habitacion_estado_resumen" + sucursal + ".xlsx";
@@ -578,7 +578,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_caja_cierre_ingreso_lista(Connection conn) {
+    public void exportar_excel_caja_cierre_ingreso_lista_N2(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/caja_cierre_ingreso_lista" + sucursal + ".xlsx";
@@ -621,7 +621,7 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_caja_cierre_gral(Connection conn) {
+    public void exportar_excel_caja_cierre_gral_N2(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/caja_cierre_gral" + sucursal + ".xlsx";
@@ -635,7 +635,15 @@ public class DAO_caja_cierre {
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 
-    public void exportar_excel_uso_habitacion(Connection conn) {
+    public void update_cantidad_habitacion_todos_N2(Connection conn) {
+        String sql = "update habitacion_dato set cant_hab=\n"
+                + "(select count(*) as cant from habitacion_recepcion \n"
+                + "where EXTRACT(YEAR FROM fecha_creado) = EXTRACT(YEAR FROM CURRENT_DATE)\n"
+                + "and fk_idhabitacion_dato=habitacion_dato.idhabitacion_dato)";
+        eveconn.SQL_execute_libre(conn, sql);
+    }
+
+    public void exportar_excel_uso_habitacion_N2(Connection conn) {
         int band_Height = 20;
         String sucursal = jsfrm.getApp_nom_report();
         String rutatemp = "APPSHEET/EXCEL/habitacion_mas_usado" + sucursal + ".xlsx";
@@ -658,14 +666,136 @@ public class DAO_caja_cierre {
                 + "h.nro_habitacion as nro_hab,('HAB:'||h.nro_habitacion) as habitacion,\n"
                 + "to_char(h.fec_ocupado_inicio,'HH24:MI:ss') as inicio,\n"
                 + "to_char(h.fec_ocupado_fin,'HH24:MI:ss') as fin,\n"
-                + "(h.fec_ocupado_fin-h.fec_ocupado_inicio) as tiempo,\n"
-                + "(v.monto_minimo+v.monto_adicional+v.monto_consumo) as total\n"
+                + "to_char((h.fec_ocupado_fin-h.fec_ocupado_inicio),'HH24:MI:ss') as tiempo,\n"
+                + "(v.monto_minimo+v.monto_adicional+v.monto_consumo) as total,\n"
+                + "hd.cant_hab as cant_hab \n"
                 + "FROM\n"
-                + "  habitacion_recepcion h,venta v\n"
-                + "  where h.idhabitacion_recepcion=v.fk_idhabitacion_recepcion\n"
+                + "  habitacion_recepcion h,venta v,habitacion_dato hd \n"
+                + "  where h.idhabitacion_recepcion=v.fk_idhabitacion_recepcion \n"
+                + " and h.fk_idhabitacion_dato=hd.idhabitacion_dato\n"
                 + "  and v.estado='TERMINADO';";
         String direccion = "src/REPORTE/APPSHEET/repHabMasUsado.jrxml";
         String titulo = "USO HABITACION";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_gastos_N2(Connection conn) {
+        int band_Height = 13;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/caja_gastos" + sucursal + ".xlsx";
+        String sql = "select g.idgasto as idg,to_char(g.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+                + "gt.nombre as tipo,g.descripcion as descripcion,\n"
+                + "g.monto_gasto as monto,g.estado as estado,g.creado_por as usuario\n"
+                + "from gasto g,gasto_tipo gt\n"
+                + "where g.fk_idgasto_tipo=gt.idgasto_tipo \n"
+                + "and g.estado!='ANULADO'\n"
+                + " order by g.idgasto desc;";
+        String direccion = "src/REPORTE/APPSHEET/repGastos.jrxml";
+        String titulo = "CAJA GASTOS";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_producto_simple_N3(Connection conn) {
+        int band_Height = 11;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/producto_simple" + sucursal + ".xlsx";
+        String sql = "select p.idproducto as idproducto,p.codigo_barra as codbarra,\n"
+                + "pc.nombre as categoria,p.nombre as producto,\n"
+                + "p.precio_venta as pventa,\n"
+                + "p.precio_interno as pinterno,\n"
+                + "p.precio_compra as pcompra,\n"
+                + "p.stock_actual as stock\n"
+                + " FROM producto p,producto_categoria pc\n"
+                + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"
+                + " and p.es_venta=true and p.es_compra=true \n"
+                + "order by p.idproducto desc;";
+        String direccion = "src/REPORTE/APPSHEET/repProductoSimple.jrxml";
+        String titulo = "PRODUCTO SIMPLE";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_venta_item_N3(Connection conn) {
+        int band_Height = 11;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/venta_item" + sucursal + ".xlsx";
+        String sql = "select idventa_item as idventa_item,to_char(fecha_creado,'yyyy-MM-dd') as fecha,\n"
+                + "cantidad as cantidad,precio_venta as pventa,fk_idproducto as fk_idproducto\n"
+                + "from venta_item\n"
+                + "where tipo_item='CARGADO'\n"
+                + "order by idventa_item asc";
+        String direccion = "src/REPORTE/APPSHEET/repVenta_Item.jrxml";
+        String titulo = "VENTA ITEM";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_patrimonio_carga_N3(Connection conn) {
+        int band_Height = 15;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/patrimonio_carga" + sucursal + ".xlsx";
+        String sql = "SELECT pp.idpatrimonio_producto as idpp,\n"
+                + "to_char(pci.fecha_creado,'yyyy-MM-dd') as fecha,\n"
+                + "pci.descripcion,ca.nombre as categoria,\n"
+                + "pu.nombre as ubicacion,\n"
+                + "pci.referencia,pci.cantidad as cant,\n"
+                + "pci.precio_compra as precio,\n"
+                + "(pci.cantidad*pci.precio_compra) as subtotal\n"
+                + "FROM patrimonio_carga_item pci,patrimonio_producto pp,\n"
+                + "patrimonio_ubicacion pu,patrimonio_carga pc,patrimonio_categoria ca\n"
+                + "where  pci.fk_idpatrimonio_producto=pp.idpatrimonio_producto\n"
+                + "and pp.fk_idpatrimonio_ubicacion=pu.idpatrimonio_ubicacion\n"
+                + "and pci.fk_idpatrimonio_carga=pc.idpatrimonio_carga\n"
+                + "and pp.fk_idpatrimonio_categoria=ca.idpatrimonio_categoria\n"
+                + "and pc.estado='CARGADO'\n"
+                + "and EXTRACT(YEAR FROM pci.fecha_creado) = EXTRACT(YEAR FROM CURRENT_DATE)\n"
+                + "order by pci.idpatrimonio_carga_item desc;";
+        String direccion = "src/REPORTE/APPSHEET/repPatrimonio_Carga.jrxml";
+        String titulo = "PATRIMONIO CARGA";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_patrimonio_baja_N3(Connection conn) {
+        int band_Height = 15;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/patrimonio_baja" + sucursal + ".xlsx";
+        String sql = "SELECT pp.idpatrimonio_producto as idpp,\n"
+                + "to_char(pci.fecha_creado,'yyyy-MM-dd HH24:MI:ss') as fecha,\n"
+                + "pci.descripcion as descripcion,pbm.nombre as motivo,\n"
+                + "pu.nombre as ubicacion,\n"
+                + "pci.referencia as referencia,pci.cantidad as cant,\n"
+                + "pci.precio_compra as precio,\n"
+                + "(pci.cantidad*pci.precio_compra) as subtotal\n"
+                + "FROM patrimonio_baja_item pci,patrimonio_producto pp,patrimonio_ubicacion pu,patrimonio_baja pc,patrimonio_baja_motivo pbm\n"
+                + "where  pci.fk_idpatrimonio_producto=pp.idpatrimonio_producto\n"
+                + "and pp.fk_idpatrimonio_ubicacion=pu.idpatrimonio_ubicacion\n"
+                + "and pci.fk_idpatrimonio_baja=pc.idpatrimonio_baja\n"
+                + "and pci.fk_idpatrimonio_baja_motivo=pbm.idpatrimonio_baja_motivo\n"
+                + "and pc.estado='DE_BAJA'  \n"
+                + "and EXTRACT(YEAR FROM pci.fecha_creado) = EXTRACT(YEAR FROM CURRENT_DATE)\n"
+                + " order by pci.idpatrimonio_baja_item desc;";
+        String direccion = "src/REPORTE/APPSHEET/repPatrimonio_Baja.jrxml";
+        String titulo = "PATRIMONIO BAJA";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_deposito_banco_N3(Connection conn) {
+        int band_Height = 15;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/deposito_banco" + sucursal + ".xlsx";
+        String sql = "select tb.idtransaccion_banco as idtb,\n"
+                + "to_char(tb.fecha_transaccion,'yyyy-MM-dd') as fecha,\n"
+                + "(b.nombre||'-'||db.nro_cuenta) as banco,\n"
+                + "tb.nro_transaccion as referencia,tb.concepto as concepto,\n"
+                + "tb.observacion as observacion,\n"
+                + "tb.monto_guarani as guarani,\n"
+                + "tb.monto_dolar as dolar\n"
+                + "from transaccion_banco tb,dato_banco db,banco b\n"
+                + "where tb.fk_iddato_banco=db.iddato_banco \n"
+                + " and db.fk_idbanco=b.idbanco\n"
+                + "and tb.estado='EMITIDO' "
+                + "and EXTRACT(YEAR FROM tb.fecha_transaccion) = EXTRACT(YEAR FROM CURRENT_DATE)\n"
+                + " order by tb.fecha_transaccion desc;";
+        String direccion = "src/REPORTE/APPSHEET/repDepositoBanco.jrxml";
+        String titulo = "DEPOSITO BANCO";
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 }

@@ -38,7 +38,7 @@ public class DAO_habitacion_recepcion {
             pst.setInt(5, hare.getC5nro_habitacion());
             pst.setTimestamp(6, evefec.getTimestamp_sistema());
             pst.setTimestamp(7, evefec.getTimestamp_sistema());
-            pst.setTimestamp(8, evefec.getTimestamp_fecha_cargado(hare.getC8fec_ocupado_inicio(),"hare.getC8fec_ocupado_inicio()"));
+            pst.setTimestamp(8, evefec.getTimestamp_fecha_cargado(hare.getC8fec_ocupado_inicio(), "hare.getC8fec_ocupado_inicio()"));
             pst.setTimestamp(9, evefec.getTimestamp_sistema());
             pst.setTimestamp(10, evefec.getTimestamp_sistema());
             pst.setTimestamp(11, evefec.getTimestamp_sistema());
@@ -80,20 +80,20 @@ public class DAO_habitacion_recepcion {
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update);
-            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(hare.getC2fecha_creado(),"hare.getC2fecha_creado()"));
+            pst.setTimestamp(1, evefec.getTimestamp_fecha_cargado(hare.getC2fecha_creado(), "hare.getC2fecha_creado()"));
             pst.setString(2, hare.getC3creado_por());
             pst.setString(3, hare.getC4estado());
             pst.setInt(4, hare.getC5nro_habitacion());
-            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(hare.getC6fec_libre_inicio(),"hare.getC6fec_libre_inicio()"));
-            pst.setTimestamp(6, evefec.getTimestamp_fecha_cargado(hare.getC7fec_libre_fin(),"hare.getC7fec_libre_fin()"));
-            pst.setTimestamp(7, evefec.getTimestamp_fecha_cargado(hare.getC8fec_ocupado_inicio(),"hare.getC8fec_ocupado_inicio()"));
-            pst.setTimestamp(8, evefec.getTimestamp_fecha_cargado(hare.getC9fec_ocupado_fin(),"hare.getC9fec_ocupado_fin()"));
-            pst.setTimestamp(9, evefec.getTimestamp_fecha_cargado(hare.getC10fec_sucio_inicio(),"hare.getC10fec_sucio_inicio()"));
-            pst.setTimestamp(10, evefec.getTimestamp_fecha_cargado(hare.getC11fec_sucio_fin(),"hare.getC11fec_sucio_fin()"));
-            pst.setTimestamp(11, evefec.getTimestamp_fecha_cargado(hare.getC12fec_limpieza_inicio(),"hare.getC12fec_limpieza_inicio()"));
-            pst.setTimestamp(12, evefec.getTimestamp_fecha_cargado(hare.getC13fec_limpieza_fin(),"hare.getC13fec_limpieza_fin()"));
-            pst.setTimestamp(13, evefec.getTimestamp_fecha_cargado(hare.getC14fec_mante_inicio(),"hare.getC14fec_mante_inicio()"));
-            pst.setTimestamp(14, evefec.getTimestamp_fecha_cargado(hare.getC15fec_mante_fin(),"hare.getC15fec_mante_fin()"));
+            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(hare.getC6fec_libre_inicio(), "hare.getC6fec_libre_inicio()"));
+            pst.setTimestamp(6, evefec.getTimestamp_fecha_cargado(hare.getC7fec_libre_fin(), "hare.getC7fec_libre_fin()"));
+            pst.setTimestamp(7, evefec.getTimestamp_fecha_cargado(hare.getC8fec_ocupado_inicio(), "hare.getC8fec_ocupado_inicio()"));
+            pst.setTimestamp(8, evefec.getTimestamp_fecha_cargado(hare.getC9fec_ocupado_fin(), "hare.getC9fec_ocupado_fin()"));
+            pst.setTimestamp(9, evefec.getTimestamp_fecha_cargado(hare.getC10fec_sucio_inicio(), "hare.getC10fec_sucio_inicio()"));
+            pst.setTimestamp(10, evefec.getTimestamp_fecha_cargado(hare.getC11fec_sucio_fin(), "hare.getC11fec_sucio_fin()"));
+            pst.setTimestamp(11, evefec.getTimestamp_fecha_cargado(hare.getC12fec_limpieza_inicio(), "hare.getC12fec_limpieza_inicio()"));
+            pst.setTimestamp(12, evefec.getTimestamp_fecha_cargado(hare.getC13fec_limpieza_fin(), "hare.getC13fec_limpieza_fin()"));
+            pst.setTimestamp(13, evefec.getTimestamp_fecha_cargado(hare.getC14fec_mante_inicio(), "hare.getC14fec_mante_inicio()"));
+            pst.setTimestamp(14, evefec.getTimestamp_fecha_cargado(hare.getC15fec_mante_fin(), "hare.getC15fec_mante_fin()"));
             pst.setBoolean(15, hare.getC16es_libre());
             pst.setBoolean(16, hare.getC17es_ocupado());
             pst.setBoolean(17, hare.getC18es_sucio());
@@ -179,5 +179,27 @@ public class DAO_habitacion_recepcion {
     public void ancho_tabla_habitacion_recepcion(JTable tbltabla) {
         int Ancho[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void imprimir_filtro_habitacion_uso(Connection conn, String filtro) {
+        String sql = "SELECT \n"
+                + "('('||d.tipo_habitacion||')-'||h.nro_habitacion) as habitacion,\n"
+                + "to_char(h.fec_ocupado_inicio,'yyyy-MM-dd') as fecha,\n"
+                + "to_char(h.fec_ocupado_inicio,'HH24:MI:ss') as inicio,\n"
+                + "to_char(h.fec_ocupado_fin,'HH24:MI:ss') as fin,\n"
+                + "to_char((h.fec_ocupado_fin-h.fec_ocupado_inicio),'dd  HH24:MI:ss') as tiempo,\n"
+                + "v.monto_minimo as minimo,\n"
+                + "v.monto_adicional as adicional,\n"
+                + "v.monto_consumo as consumo,\n"
+                + "(v.monto_minimo+v.monto_adicional+v.monto_consumo) as monto_total\n"
+                + "FROM\n"
+                + "  habitacion_recepcion h,venta v,habitacion_dato d\n"
+                + "  where h.idhabitacion_recepcion=v.fk_idhabitacion_recepcion\n"
+                + "  and h.fk_idhabitacion_dato=d.idhabitacion_dato\n"
+                + "  and v.estado='TERMINADO'\n"+filtro
+                + "  order by 1 desc,2 desc,3 desc ";
+        String titulonota = "HABITACION USO";
+        String direccion = "src/REPORTE/OCUPACION/repHabUso.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

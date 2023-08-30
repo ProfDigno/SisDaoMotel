@@ -13,6 +13,7 @@ public class EvenEstado {
     private static String est_Emitido;
     private static String est_Emitido_admin;
     private static String est_Anulado;
+    private static String est_Anulado_temp;
     private static String est_Pagado;
     private static String est_Cargado;
     private static String est_Libre;
@@ -29,6 +30,11 @@ public class EvenEstado {
     private static String est_PENDIENTE;
     private static String est_CARGADOSTOCK;
     private static String est_ABIERTO;
+    private static String est_EN_USO;
+    private static String est_DE_BAJA;
+    private static String est_INSUMO;
+    private static String est_PATRIMONIO;
+    private static String est_CONFIRMADO;
     private static String estdes_Limpiando;
     private static String estdes_cliingreso;
     private static String estdes_cliAbierto;
@@ -79,6 +85,7 @@ public class EvenEstado {
     private static String ico_candado;
     public EvenEstado() {
         setEst_Anulado("ANULADO");
+        setEst_Anulado_temp("ANULADO_temp");
         setEst_Emitido("EMITIDO");
         setEst_Emitido_admin("EMITIDO_ADMIN");
         setEst_Libre("LIBRE");
@@ -97,6 +104,11 @@ public class EvenEstado {
         setEst_PENDIENTE("PENDIENTE");
         setEst_CARGADOSTOCK("CARGADO_ST");
         setEst_ABIERTO("ABIERTO");
+        setEst_EN_USO("EN_USO");
+        setEst_DE_BAJA("DE_BAJA");
+        setEst_INSUMO("INSUMO");
+        setEst_PATRIMONIO("PATRIMONIO");
+        setEst_CONFIRMADO("CONFIRMADO");
         setEstdes_Limpiando("-LIMPIANDO");
         setEstdes_cliingreso("-CLI-INGRESO");
         setEstdes_cliAbierto("-CLI-ABIERTO");
@@ -145,6 +157,22 @@ public class EvenEstado {
         setIco_limpie("/graficos/limpieza.png");
         setIco_escoba("/graficos/escoba.png");
         setIco_candado("/graficos/ocupado.png");
+    }
+
+    public static String getEst_Anulado_temp() {
+        return est_Anulado_temp;
+    }
+
+    public static void setEst_Anulado_temp(String est_Anulado_temp) {
+        EvenEstado.est_Anulado_temp = est_Anulado_temp;
+    }
+
+    public static String getEst_CONFIRMADO() {
+        return est_CONFIRMADO;
+    }
+
+    public static void setEst_CONFIRMADO(String est_CONFIRMADO) {
+        EvenEstado.est_CONFIRMADO = est_CONFIRMADO;
     }
 
     public static String getEst_Emitido_admin() {
@@ -659,7 +687,7 @@ public class EvenEstado {
         EvenEstado.est_Limpiando = est_Limpiando;
     }
 
-    public static String getEst_Terminar() {
+    public static String getEst_Terminado() {
         return est_Terminar;
     }
 
@@ -681,6 +709,38 @@ public class EvenEstado {
 
     public static void setEst_Desocupado(String est_Desocupado) {
         EvenEstado.est_Desocupado = est_Desocupado;
+    }
+
+    public static String getEst_EN_USO() {
+        return est_EN_USO;
+    }
+
+    public static void setEst_EN_USO(String est_EN_USO) {
+        EvenEstado.est_EN_USO = est_EN_USO;
+    }
+
+    public static String getEst_DE_BAJA() {
+        return est_DE_BAJA;
+    }
+
+    public static void setEst_DE_BAJA(String est_DE_BAJA) {
+        EvenEstado.est_DE_BAJA = est_DE_BAJA;
+    }
+
+    public static String getEst_INSUMO() {
+        return est_INSUMO;
+    }
+
+    public static void setEst_INSUMO(String est_INSUMO) {
+        EvenEstado.est_INSUMO = est_INSUMO;
+    }
+
+    public static String getEst_PATRIMONIO() {
+        return est_PATRIMONIO;
+    }
+
+    public static void setEst_PATRIMONIO(String est_PATRIMONIO) {
+        EvenEstado.est_PATRIMONIO = est_PATRIMONIO;
     }
     
 }

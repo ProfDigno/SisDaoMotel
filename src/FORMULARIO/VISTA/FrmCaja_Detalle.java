@@ -20,6 +20,8 @@ import FORMULARIO.ENTIDAD.*;
 import IMPRESORA_POS.PosImprimir_Caja_Producto;
 import IMPRESORA_POS.PosImprimir_CierreCajaDetalle;
 import IMPRESORA_POS.PosImprimir_Venta;
+import java.awt.Desktop;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
@@ -209,7 +211,23 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         JDiaLogin log = new JDiaLogin(null, true);
         log.setVisible(true);
     }
-
+private void exportar_excel_nivel_2() {
+//        lblnube.setVisible(true);
+        DAOcc.update_cantidad_habitacion_todos_N2(conn);
+        DAOcc.exportar_excel_caja_fecha_usu_N2(conn);
+        DAOcc.exportar_excel_lista_producto_N2(conn);
+        DAOcc.exportar_excel_caja_resumen_N2(conn);
+        DAOcc.exportar_excel_caja_cierre_ingreso_lista_N2(conn);
+        DAOcc.exportar_excel_caja_cierre_gral_N2(conn);
+        DAOcc.exportar_excel_uso_habitacion_N2(conn);
+        DAOcc.exportar_excel_gastos_N2(conn);
+        //nivel 3
+        DAOcc.exportar_excel_producto_simple_N3(conn);
+        DAOcc.exportar_excel_venta_item_N3(conn);
+        DAOcc.exportar_excel_patrimonio_carga_N3(conn);
+        DAOcc.exportar_excel_patrimonio_baja_N3(conn);
+        DAOcc.exportar_excel_deposito_banco_N3(conn);
+    }
     private void boton_cerrar_caja() {
         if (!DAOcom.getBoo_varificar_compra_pendiente(conn, fk_idusuario)) {
             if (evemen.getBooMensaje_warning("TENES UNA CARGA EN PENDIENTE\n"
@@ -241,25 +259,36 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                     if (evemen.getBooMensaje_question("DESEA IMPRIMIR EL REPORTE DE CIERRE DE CAJA ", "IMPRIMIR CAJA", "IMPRIMIR", "CANCELAR")) {
                         select_imprimir_caja_cierre(ENTcc.getC1idcaja_cierre());
                     }
+                    exportar_excel_nivel_2();
                     this.dispose();
-                    abrir_login();
+                    abrirArchivo("DisparadorDaoMotel.jar");
+                    System.exit(0);
+//                    abrir_login();
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUNA OCUPACION", "ERROR", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+    private void abrirArchivo(String ruta) {
+        try {
+            File file = new File(ruta);
+            Desktop.getDesktop().open(file);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
+    }
     private void seleccionar_caja_cierre() {
         if (tblresumen_caja_cierre.getSelectedRow() >= 0) {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
             String filtro_gasto = "";
             String filtro_compra = "";
             if (jCsolo_terminado_gasto.isSelected()) {
-                filtro_gasto = " and g.estado='" + eveest.getEst_Terminar() + "' ";
+                filtro_gasto = " and g.estado='" + eveest.getEst_Terminado() + "' ";
             }
             if (jCsolo_terminado_comp.isSelected()) {
-                filtro_compra = " and c.estado='" + eveest.getEst_Terminar() + "' ";
+                filtro_compra = " and c.estado='" + eveest.getEst_Terminado() + "' ";
             }
             DAOven.actualizar_tabla_venta_desde_caja_cierre(conn, tblventa, idcaja_cierre);
             DAOven.actualizar_tabla_venta_item_desde_caja_cierre(conn, tblventa_consumo, idcaja_cierre);
@@ -288,11 +317,11 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 JOptionPane.QUESTION_MESSAGE, null, botones, "TICKET DETALLE");
         if (eleccion_comando == 0) {
             poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, false);
-            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
+//            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
         }
         if (eleccion_comando == 1) {
             poscd.boton_imprimir_pos_CAJA_DETALLE(conn, idcaja_cierre, true);
-            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
+//            poscp.boton_imprimir_pos_producto_item_por_caja(conn, idcaja_cierre);
         }
         if (eleccion_comando == 2) {
             DAOcc.imprimir_caja_cierre_jasper_resumen(conn, idcaja_cierre);
@@ -437,6 +466,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         jFtotal_resumen_saldo = new javax.swing.JFormattedTextField();
         jFmonto_apertura_caja = new javax.swing.JFormattedTextField();
         btnobs_venta = new javax.swing.JButton();
+        btnappsheet = new javax.swing.JButton();
         panel_caja_cerrado = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -1032,6 +1062,13 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
             }
         });
 
+        btnappsheet.setText("APPSHEET");
+        btnappsheet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnappsheetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1051,6 +1088,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                 .addComponent(jFmonto_apertura_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnobs_venta)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnappsheet)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -1071,7 +1110,9 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
                         .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnobs_venta)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnobs_venta)
+                            .addComponent(btnappsheet))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
@@ -1622,8 +1663,14 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jTab_caja_prinMouseClicked
 
+    private void btnappsheetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnappsheetActionPerformed
+        // TODO add your handling code here:
+        exportar_excel_nivel_2();
+    }//GEN-LAST:event_btnappsheetActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnappsheet;
     private javax.swing.JButton btncarrar_caja;
     private javax.swing.JButton btnimprimir_caja_cierre;
     private javax.swing.JButton btnimprimir_ticket;

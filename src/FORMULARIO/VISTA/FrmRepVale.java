@@ -358,7 +358,7 @@ public class FrmRepVale extends javax.swing.JInternalFrame {
         );
 
         btnimprimir_filtro_depo_banco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/venta/ven_imprimir.png"))); // NOI18N
-        btnimprimir_filtro_depo_banco.setText("FILTRO DEPOSITO BANCO");
+        btnimprimir_filtro_depo_banco.setText("FILTRO VALE");
         btnimprimir_filtro_depo_banco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnimprimir_filtro_depo_bancoActionPerformed(evt);

@@ -22,7 +22,8 @@ public class DAO_gasto {
     private EvenEstado eveest = new EvenEstado();
     private String mensaje_insert = "GASTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GASTO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO gasto(idgasto,fecha_creado,creado_por,monto_gasto,monto_letra,descripcion,estado,fk_idgasto_tipo,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?);";
+    private String sql_insert = "INSERT INTO gasto(idgasto,fecha_creado,creado_por,monto_gasto,monto_letra,descripcion,estado,"
+            + "fk_idgasto_tipo,fk_idusuario,pago) VALUES (?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE gasto SET fecha_creado=?,creado_por=?,monto_gasto=?,monto_letra=?,descripcion=?,estado=?,fk_idgasto_tipo=?,fk_idusuario=? WHERE idgasto=?;";
     
     private String sql_cargar = "SELECT idgasto,fecha_creado,creado_por,monto_gasto,monto_letra,descripcion,estado,fk_idgasto_tipo,fk_idusuario FROM gasto WHERE idgasto=";
@@ -42,6 +43,7 @@ public class DAO_gasto {
             pst.setString(7, ga.getC7estado());
             pst.setInt(8, ga.getC8fk_idgasto_tipo());
             pst.setInt(9, ga.getC9fk_idusuario());
+            pst.setString(10, ga.getC10pago());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + ga.toString(), titulo);
@@ -114,7 +116,7 @@ public class DAO_gasto {
     }
 
     public void terminar_gasto_en_caja(Connection conn, int fk_idcaja_cierre) {
-        String sql = "update gasto set estado='" + eveest.getEst_Terminar() + "' from caja_cierre_item ,caja_cierre_detalle \n"
+        String sql = "update gasto set estado='" + eveest.getEst_Terminado() + "' from caja_cierre_item ,caja_cierre_detalle \n"
                 + "where caja_cierre_item.fk_idcaja_cierre_detalle=caja_cierre_detalle.idcaja_cierre_detalle \n"
                 + "and caja_cierre_detalle.fk_idgasto=gasto.idgasto \n"
                 + "and gasto.estado='" + eveest.getEst_Emitido() + "'\n"

@@ -99,6 +99,9 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtminuto_cancelar, "DEBE CARGAR UN MINUTO PARA CANCELAR")) {
             return false;
         }
+        if (evejtf.getBoo_JTextField_vacio(txtminuto_tolerancia, "DEBE CARGAR UN MINUTO PARA TOLERANCIA DE DORMIDA")) {
+            return false;
+        }
         return true;
     }
     private void cargar_dato(){
@@ -116,6 +119,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         ENThc.setC14hs_dormir_ingreso_inicio(jFdormir_ingreso_inicio.getText());
         ENThc.setC15hs_dormir_ingreso_final(jFdormir_ingreso_final.getText());
         ENThc.setC16hs_dormir_salida_final(jFdormir_salida_final.getText());
+        ENThc.setC17minuto_tolerancia(Integer.parseInt(txtminuto_tolerancia.getText()));
     }
     private void boton_guardar() {
         if (validar_guardar()) {
@@ -141,6 +145,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jCactivo.setSelected(ENThc.getC4activo());
         txtnombre.setText(ENThc.getC5nombre());
         txttipo_habitacion.setText(ENThc.getC6nivel_lujo());
+        color_tipo_boton_select(ENThc.getC6nivel_lujo());
         jFmonto_hora_minimo.setValue(ENThc.getC7monto_por_hora_minimo());
         jFmonto_hora_adicional.setValue(ENThc.getC8monto_por_hora_adicional());
         jFmonto_dormir_minimo.setValue(ENThc.getC9monto_por_dormir_minimo());
@@ -151,6 +156,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jFdormir_ingreso_inicio.setText(ENThc.getC14hs_dormir_ingreso_inicio());
         jFdormir_ingreso_final.setText(ENThc.getC15hs_dormir_ingreso_final());
         jFdormir_salida_final.setText(ENThc.getC16hs_dormir_salida_final());
+        txtminuto_tolerancia.setText(String.valueOf(ENThc.getC17minuto_tolerancia()));
         DAOhc.actualizar_tabla_habitacion_costo_por_hab(conn, tbltabla_sec, idhabitacion_costo);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
@@ -173,9 +179,34 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jFdormir_ingreso_inicio.setText(null);
         jFdormir_ingreso_final.setText(null);
         jFdormir_salida_final.setText(null);
+        txtminuto_tolerancia.setText(null);
         btnguardar.setEnabled(true);
         btneditar.setEnabled(false);
         txtnombre.grabFocus();
+    }
+    private void color_tipo_boton_select(String  tipo){
+        btntipo_estandar.setBackground(Color.white);
+        btntipo_vip.setBackground(Color.white);
+        btntipo_lujo.setBackground(Color.white);
+        btntipo_penthause.setBackground(Color.white);
+        nivel_lujo="sin-tipo";
+        if(tipo.equals(eveest.getTipo_hab_estandar())){
+            btntipo_estandar.setBackground(Color.yellow);
+            nivel_lujo=eveest.getTipo_hab_estandar();
+        }
+        if(tipo.equals(eveest.getTipo_hab_vip())){
+            btntipo_vip.setBackground(Color.yellow);
+            nivel_lujo=eveest.getTipo_hab_vip();
+        }
+        if(tipo.equals(eveest.getTipo_hab_luxury())){
+            btntipo_lujo.setBackground(Color.yellow);
+            nivel_lujo=eveest.getTipo_hab_luxury();
+        }
+        if(tipo.equals(eveest.getTipo_hab_penthouse())){
+            btntipo_penthause.setBackground(Color.yellow);
+            nivel_lujo=eveest.getTipo_hab_penthouse();
+        }
+        txttipo_habitacion.setText(nivel_lujo);
     }
     private void color_tipo_boton(int tipo){
         btntipo_estandar.setBackground(Color.white);
@@ -233,6 +264,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         txtminuto_minimo = new javax.swing.JTextField();
         txtminuto_adicional = new javax.swing.JTextField();
         txtminuto_cancelar = new javax.swing.JTextField();
+        txtminuto_tolerancia = new javax.swing.JTextField();
         jPanel8 = new javax.swing.JPanel();
         jFdormir_ingreso_inicio = new javax.swing.JFormattedTextField();
         jFdormir_ingreso_final = new javax.swing.JFormattedTextField();
@@ -373,16 +405,30 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
             }
         });
 
+        txtminuto_tolerancia.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtminuto_tolerancia.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtminuto_tolerancia.setBorder(javax.swing.BorderFactory.createTitledBorder("MIN TOLERANCIA"));
+        txtminuto_tolerancia.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtminuto_toleranciaKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtminuto_toleranciaKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtminuto_adicional)
-                    .addComponent(txtminuto_minimo)
-                    .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(txtminuto_tolerancia, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtminuto_adicional)
+                        .addComponent(txtminuto_minimo)
+                        .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -393,6 +439,8 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                 .addComponent(txtminuto_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtminuto_tolerancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -634,7 +682,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                     .addComponent(btntipo_vip, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btntipo_lujo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btntipo_penthause, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addComponent(txttipo_habitacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
         );
@@ -657,19 +705,20 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCactivo))
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(btnnuevo)
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panel_insertarLayout.createSequentialGroup()
+                                .addComponent(btnnuevo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnguardar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btneditar)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnguardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btneditar)))
+                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
@@ -687,15 +736,17 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnnuevo)
-                    .addComponent(btnguardar)
-                    .addComponent(btneditar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnnuevo)
+                            .addComponent(btnguardar)
+                            .addComponent(btneditar))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         panel_tabla.setBackground(new java.awt.Color(51, 204, 255));
@@ -986,6 +1037,14 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         evejtf.soloNumero(evt);
     }//GEN-LAST:event_txtminuto_cancelarKeyTyped
 
+    private void txtminuto_toleranciaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtminuto_toleranciaKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtminuto_toleranciaKeyPressed
+
+    private void txtminuto_toleranciaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtminuto_toleranciaKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtminuto_toleranciaKeyTyped
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btneditar;
@@ -1025,6 +1084,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtminuto_adicional;
     private javax.swing.JTextField txtminuto_cancelar;
     private javax.swing.JTextField txtminuto_minimo;
+    private javax.swing.JTextField txtminuto_tolerancia;
     private javax.swing.JTextField txtnombre;
     private javax.swing.JTextField txttipo_habitacion;
     // End of variables declaration//GEN-END:variables

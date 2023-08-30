@@ -29,7 +29,6 @@ public class BO_rh_descuento {
             DAOrhd.insertar_rh_descuento(conn, ENTrhd);
             DAOrhlv.insertar_rh_liquidacion_descuento(conn, ENTrhld);
             DAOrhlde.insertar_rh_liquidacion_detalle(conn, ENTrhlde);
-//            rhde_dao.actualizar_tabla_rh_descuento(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, ENTrhd.toString(), titulo);
@@ -72,7 +71,6 @@ public class BO_rh_descuento {
                 }
                 DAOrhd.update_rh_descuento_anular(conn, rhde);
                 DAOrhlde.update_rh_liquidacion_detalle_anular_descuento(conn, ENTrhlde);
-//                DAOrhd.actualizar_tabla_rh_descuento(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, rhde.toString(), titulo);

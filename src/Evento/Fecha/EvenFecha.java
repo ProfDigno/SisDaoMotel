@@ -65,6 +65,15 @@ public class EvenFecha {
         ifecha = (sdf.format(date));
         return ifecha;
     }
+    public String getFiltroSql_desde_hasta_campo(com.toedter.calendar.JDateChooser dcdesde,com.toedter.calendar.JDateChooser dchasta, String campo_fecha) {
+        String fecDesde;
+        String fecHasta;
+        String filtro;
+        fecDesde=getfechaDCStringFormat(dcdesde, formato_fecha);
+        fecHasta=getfechaDCStringFormat(dchasta, formato_fecha);
+        filtro = "and date("+campo_fecha+")>='" + fecDesde + "' and date("+campo_fecha+")<='" + fecHasta + "' ";
+        return filtro;
+    }
     public String getString_validar_fecha(String fechaStr) {
         String Sfecha = "";
         try {
@@ -192,7 +201,13 @@ public class EvenFecha {
         Sfecha = String.valueOf(sdf.format(date));
         return Sfecha;
     }
-
+    public String getString_fecha_sistema_formato(String formato) {
+        String Sfecha;
+        java.util.Date date = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(formato);
+        Sfecha = String.valueOf(sdf.format(date));
+        return Sfecha;
+    }
     public int getInt_segundos_ahora() {
         java.util.Date utilDate = new java.util.Date(); //fecha actual
         SimpleDateFormat sdf_hora = new SimpleDateFormat("HH");
