@@ -19,6 +19,7 @@ import FORMULARIO.BO.BO_gasto_tipo;
 import FORMULARIO.BO.BO_rh_descuento;
 import FORMULARIO.BO.BO_rh_liquidacion;
 import FORMULARIO.BO.BO_rh_vale;
+import FORMULARIO.DAO.DAO_caja_cierre;
 import FORMULARIO.DAO.DAO_gasto_tipo;
 import FORMULARIO.DAO.DAO_persona;
 import FORMULARIO.DAO.DAO_rh_liquidacion;
@@ -64,6 +65,7 @@ public class FrmRH_liquidacion extends javax.swing.JInternalFrame {
     private BO_rh_descuento BOrhd = new BO_rh_descuento();
     private rh_liquidacion_detalle ENTrhlde = new rh_liquidacion_detalle();
     private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
+    private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     Connection conn = ConnPostgres.getConnPosgres();
     private usuario ENTusu = new usuario();
     private String nombreTabla = "RH LIQUIDACION";
@@ -174,6 +176,7 @@ public class FrmRH_liquidacion extends javax.swing.JInternalFrame {
             DAOrhli.actualizar_tabla_rh_liquidacion(conn, tblliquidacion);
             cargar_liquidacion_abierto();
             DAOrhli.imprimir_rh_liquidacion(conn, idrh_liquidacion);
+            DAOcc.exportar_excel_liquidacion_vale_N3(conn);
         }
     }
 

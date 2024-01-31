@@ -113,9 +113,9 @@
                                       <Component id="jFtotal_ocupacion" alignment="3" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btnimprimir_resumen_caja" max="32767" attributes="0"/>
+                                  <Component id="btnimprimir_resumen_caja" pref="67" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -220,7 +220,9 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="154" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnimprimir_gastos" min="-2" pref="136" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                           <Component id="btnimprimir_gasto_tipo" min="-2" pref="141" max="-2" attributes="0"/>
                           <EmptySpace pref="859" max="32767" attributes="0"/>
                       </Group>
@@ -230,8 +232,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="btnimprimir_gastos" min="-2" pref="136" max="-2" attributes="0"/>
-                                      <EmptySpace min="708" pref="708" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="844" max="-2" attributes="0"/>
                                       <Component id="jFtotal_gasto_caja" min="-2" pref="142" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jFtotal_gasto_admin" min="-2" pref="142" max="-2" attributes="0"/>
@@ -245,26 +246,21 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="444" max="32767" attributes="0"/>
-                          <Component id="btnimprimir_gasto_tipo" min="-2" pref="51" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace pref="447" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="btnimprimir_gasto_tipo" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
+                              <Component id="btnimprimir_gastos" alignment="3" min="-2" pref="46" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                       </Group>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jScrollPane2" min="-2" pref="427" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jFtotal_gasto_admin" alignment="3" max="32767" attributes="0"/>
-                                          <Component id="jFtotal_gasto_caja" alignment="3" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btnimprimir_gastos" max="32767" attributes="0"/>
-                                  </Group>
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jFtotal_gasto_admin" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="jFtotal_gasto_caja" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -644,7 +640,7 @@
             </Property>
             <Property name="dateFormatString" type="java.lang.String" value="yyyy-MM-dd"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Tahoma" size="14" style="0"/>
+              <Font name="Tahoma" size="12" style="1"/>
             </Property>
           </Properties>
         </Component>
@@ -657,7 +653,7 @@
             </Property>
             <Property name="dateFormatString" type="java.lang.String" value="yyyy-MM-dd"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Tahoma" size="14" style="0"/>
+              <Font name="Tahoma" size="12" style="1"/>
             </Property>
           </Properties>
         </Component>

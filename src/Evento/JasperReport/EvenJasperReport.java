@@ -130,7 +130,7 @@ public class EvenJasperReport {
         int cantidad = 0;
         String titulo = "getInt_contar_cant_fila";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            ResultSet rs = eveconn.getResulsetSQL_sinprint(conn, sql, titulo);
             while (rs.next()) {
                 cantidad++;
             }
@@ -144,7 +144,7 @@ public class EvenJasperReport {
             String direccion, String rutatemp, int PageHeight) {
         int cant_fila = getInt_contar_cant_fila(conn, sql);
         if (cant_fila > 0) {
-            if (true) {
+            if (false) {
                 System.out.println("titulonota:" + titulonota);
                 System.out.println("sql:" + sql);
                 System.out.println("direccion:" + direccion);

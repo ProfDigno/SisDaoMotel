@@ -88,8 +88,13 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="txtstock" alignment="0" min="-2" pref="98" max="-2" attributes="0"/>
+                              <Component id="txtnombre" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="jPanel5" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="txtestado" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="txtprecio_compra" alignment="0" max="32767" attributes="0"/>
                                       <Component id="txtreferencia" alignment="0" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="btnnuevo" min="-2" max="-2" attributes="0"/>
@@ -102,13 +107,6 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="txtid" min="-2" pref="77" max="-2" attributes="0"/>
                               </Group>
-                              <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="txtprecio_compra" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtestado" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jPanel5" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtstock" alignment="0" min="-2" pref="98" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="txtnombre" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
@@ -237,7 +235,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLayeredPane1" alignment="0" pref="435" max="32767" attributes="0"/>
+                          <Component id="jLayeredPane1" alignment="0" pref="439" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -300,6 +298,7 @@
                               </Properties>
                               <Events>
                                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tbltabla_categoriaMouseReleased"/>
+                                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tbltabla_categoriaKeyPressed"/>
                               </Events>
                             </Component>
                           </SubComponents>
@@ -356,6 +355,7 @@
                               </Properties>
                               <Events>
                                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tbltabla_ubicacionMouseReleased"/>
+                                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tbltabla_ubicacionKeyPressed"/>
                               </Events>
                             </Component>
                           </SubComponents>
@@ -439,6 +439,9 @@
                       </Border>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtreferenciaKeyPressed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="txtprecio_compra">
                   <Properties>
@@ -472,7 +475,7 @@
                               <Component id="jRtipo_insumo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jRtipo_patrimonio" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="10" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -530,6 +533,9 @@
                       </Border>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtstockKeyPressed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

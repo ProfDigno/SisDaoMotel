@@ -81,7 +81,7 @@ public class json_array_imprimir_pos {
             JSONArray Array_maquina = (JSONArray) jsonObject_maquina.get(nombre_computador);
             Iterator<String> iterator_maquina = Array_maquina.iterator();
             String datos_conexion = String.valueOf(iterator_maquina.next());
-            System.out.println(datos_conexion);
+            System.out.println(nombre_computador);
             Object obj_conexion = parser.parse(datos_conexion);
             JSONObject jsonObject = (JSONObject) obj_conexion;
             String linea_separador = (String) jsonObject.get("linea_separador");
@@ -158,8 +158,9 @@ public class json_array_imprimir_pos {
             setPrint_defauld_factura(getBoo(print_defauld_factura));
             setPrint_nombre_ticket(print_nombre_ticket);
             setPrint_nombre_factura(print_nombre_factura);
-            System.out.println("json imprimir pos:" + jsonObject);
+//            System.out.println("json imprimir pos:" + jsonObject);
             setError_carga_json(true);
+            jsoncf.imprimir_gson(obj_conexion);
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString() + "\nNombre Maquina:" + nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString() + "\nNombre Maquina:" + nombre_computador);

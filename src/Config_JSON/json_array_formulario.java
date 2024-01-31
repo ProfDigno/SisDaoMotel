@@ -53,7 +53,7 @@ public class json_array_formulario {
             JSONArray Array_maquina = (JSONArray) jsonObject_maquina.get(nombre_computador);
             Iterator<String> iterator_maquina = Array_maquina.iterator();
             String datos_conexion = String.valueOf(iterator_maquina.next());
-            System.out.println(datos_conexion);
+            System.out.println(nombre_computador);
             Object obj_conexion = parser.parse(datos_conexion);
             JSONObject jsonObject_conexion = (JSONObject) obj_conexion;
             String  frmventa_ven_aux = (String) jsonObject_conexion.get("frmventa_ven_aux");
@@ -76,6 +76,7 @@ public class json_array_formulario {
             setApp_nom_report(app_nom_report);
             setApp_act_exp(getBoo_si_no(app_act_exp));
             setAct_roll_usu(getBoo_si_no(act_roll_usu));
+            jsoncf.imprimir_gson(obj_conexion);
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);

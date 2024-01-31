@@ -110,7 +110,22 @@ public class DAO_venta_item {
             evemen.mensaje_error(e, sql_update + "\n" + veit.toString(), titulo);
         }
     }
-
+    public void update_venta_item_CANCELAR(Connection conn, venta_item veit) {
+        String titulo = "update_venta_item_CANCELAR";
+        String sql="UPDATE venta_item SET tipo_item=? WHERE fk_idventa=?;";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, veit.getC4tipo_item());
+            pst.setInt(2, veit.getC9fk_idventa());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql + "\n" + veit.toString(), titulo);
+//            evemen.modificado_correcto(mensaje_update, false);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql + "\n" + veit.toString(), titulo);
+        }
+    }
     public void cargar_venta_item(Connection conn, venta_item veit, int idventa_item) {
         String titulo = "Cargar_venta_item";
         try {

@@ -20,6 +20,7 @@ import Evento.Utilitario.EvenNumero_a_Letra;
 import FORMULARIO.BO.BO_gasto_tipo;
 import FORMULARIO.BO.BO_rh_entrada;
 import FORMULARIO.BO.BO_rh_vale;
+import FORMULARIO.DAO.DAO_caja_cierre;
 import FORMULARIO.DAO.DAO_gasto_tipo;
 import FORMULARIO.DAO.DAO_persona;
 import FORMULARIO.DAO.DAO_rh_entrada;
@@ -72,6 +73,7 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
     private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
     private PosImprimir_vale posvale=new PosImprimir_vale();
     private EvenMensajeJoptionpane evemsj=new EvenMensajeJoptionpane();
+    private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     Connection conn = ConnPostgres.getConnPosgres();
     EvenConexion eveconn = new EvenConexion();
     private String nombreTabla = "RH VALE";
@@ -221,6 +223,7 @@ public class FrmRH_vale extends javax.swing.JInternalFrame {
             if(mensaje==1){
                 DAOrhv.imprimir_nota_rh_vale(conn, idrh_vale);
             }
+            DAOcc.exportar_excel_liquidacion_vale_N3(conn);
             this.dispose();
         }
     }

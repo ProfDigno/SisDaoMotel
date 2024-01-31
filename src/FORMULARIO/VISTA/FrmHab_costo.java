@@ -72,6 +72,9 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         if(evejtf.getBoo_JFormatted_vacio(jFmonto_dormir_adicional, "DEBE CARGAR UN MONTO DORMIR ADICIONAL")){
              return false;
         }
+        if(evejtf.getBoo_JFormatted_vacio(jFmonto_hospedaje_minimo, "DEBE CARGAR UN MONTO HOSPEDAJE")){
+             return false;
+        }
         if(evejtf.getBoo_JFormatted_vacio(jFdormir_ingreso_inicio, "DEBE CARGAR UN HORA INGRESO DORMIR MINIMO AUTORIZADO")){
              return false;
         }
@@ -102,6 +105,9 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtminuto_tolerancia, "DEBE CARGAR UN MINUTO PARA TOLERANCIA DE DORMIDA")) {
             return false;
         }
+        if (evejtf.getBoo_JTextField_vacio(txtminuto_hospedaje, "DEBE CARGAR UN MINUTO PARA HOSPEDAJE")) {
+            return false;
+        }
         return true;
     }
     private void cargar_dato(){
@@ -120,6 +126,8 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         ENThc.setC15hs_dormir_ingreso_final(jFdormir_ingreso_final.getText());
         ENThc.setC16hs_dormir_salida_final(jFdormir_salida_final.getText());
         ENThc.setC17minuto_tolerancia(Integer.parseInt(txtminuto_tolerancia.getText()));
+        ENThc.setC18monto_por_hospedaje_minimo(evejtf.getDouble_format_nro_entero(jFmonto_hospedaje_minimo));
+        ENThc.setC19minuto_hospedaje(Integer.parseInt(txtminuto_hospedaje.getText()));
     }
     private void boton_guardar() {
         if (validar_guardar()) {
@@ -157,6 +165,8 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jFdormir_ingreso_final.setText(ENThc.getC15hs_dormir_ingreso_final());
         jFdormir_salida_final.setText(ENThc.getC16hs_dormir_salida_final());
         txtminuto_tolerancia.setText(String.valueOf(ENThc.getC17minuto_tolerancia()));
+        jFmonto_hospedaje_minimo.setValue(ENThc.getC18monto_por_hospedaje_minimo());
+        txtminuto_hospedaje.setText(String.valueOf(ENThc.getC19minuto_hospedaje()));
         DAOhc.actualizar_tabla_habitacion_costo_por_hab(conn, tbltabla_sec, idhabitacion_costo);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
@@ -180,6 +190,8 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jFdormir_ingreso_final.setText(null);
         jFdormir_salida_final.setText(null);
         txtminuto_tolerancia.setText(null);
+        jFmonto_hospedaje_minimo.setValue(null);
+        txtminuto_hospedaje.setText(null);
         btnguardar.setEnabled(true);
         btneditar.setEnabled(false);
         txtnombre.grabFocus();
@@ -252,7 +264,6 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jTab_principal = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         panel_insertar = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         txtnombre = new javax.swing.JTextField();
@@ -265,6 +276,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         txtminuto_adicional = new javax.swing.JTextField();
         txtminuto_cancelar = new javax.swing.JTextField();
         txtminuto_tolerancia = new javax.swing.JTextField();
+        txtminuto_hospedaje = new javax.swing.JTextField();
         jPanel8 = new javax.swing.JPanel();
         jFdormir_ingreso_inicio = new javax.swing.JFormattedTextField();
         jFdormir_ingreso_final = new javax.swing.JFormattedTextField();
@@ -274,6 +286,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         jFmonto_hora_adicional = new javax.swing.JFormattedTextField();
         jFmonto_dormir_minimo = new javax.swing.JFormattedTextField();
         jFmonto_dormir_adicional = new javax.swing.JFormattedTextField();
+        jFmonto_hospedaje_minimo = new javax.swing.JFormattedTextField();
         jPanel5 = new javax.swing.JPanel();
         btntipo_estandar = new javax.swing.JButton();
         btntipo_vip = new javax.swing.JButton();
@@ -312,9 +325,6 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
 
         panel_insertar.setBackground(new java.awt.Color(153, 204, 255));
         panel_insertar.setBorder(javax.swing.BorderFactory.createTitledBorder("CREAR DATO"));
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("ID:");
 
         txtid.setEditable(false);
         txtid.setBackground(new java.awt.Color(204, 204, 204));
@@ -417,6 +427,18 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
             }
         });
 
+        txtminuto_hospedaje.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtminuto_hospedaje.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtminuto_hospedaje.setBorder(javax.swing.BorderFactory.createTitledBorder("MIN HOSPEDAJE"));
+        txtminuto_hospedaje.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtminuto_hospedajeKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtminuto_hospedajeKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
@@ -424,11 +446,12 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(txtminuto_tolerancia, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
-                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(txtminuto_adicional)
-                        .addComponent(txtminuto_minimo)
-                        .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)))
+                    .addComponent(txtminuto_hospedaje, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtminuto_tolerancia, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                        .addComponent(txtminuto_adicional, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtminuto_minimo, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -441,6 +464,8 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                 .addComponent(txtminuto_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtminuto_tolerancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtminuto_hospedaje, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -575,21 +600,36 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
             }
         });
 
+        jFmonto_hospedaje_minimo.setBorder(javax.swing.BorderFactory.createTitledBorder("HOSPEDAJE MINIMO:"));
+        jFmonto_hospedaje_minimo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
+        jFmonto_hospedaje_minimo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFmonto_hospedaje_minimo.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jFmonto_hospedaje_minimo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jFmonto_hospedaje_minimoKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jFmonto_hospedaje_minimoKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+            .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(jFmonto_hora_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jFmonto_dormir_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(jFmonto_hora_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jFmonto_dormir_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel7Layout.createSequentialGroup()
+                            .addComponent(jFmonto_hora_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jFmonto_dormir_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel7Layout.createSequentialGroup()
+                            .addComponent(jFmonto_hora_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jFmonto_dormir_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jFmonto_hospedaje_minimo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -602,7 +642,9 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jFmonto_hora_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jFmonto_dormir_adicional, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFmonto_hospedaje_minimo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 6, Short.MAX_VALUE))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("TIPO"));
@@ -695,57 +737,52 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCactivo))
+                        .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnnuevo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addComponent(btnguardar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btneditar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panel_insertarLayout.createSequentialGroup()
-                                .addComponent(btnnuevo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnguardar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btneditar)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jCactivo)
+                            .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel1)
-                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1, 1, 1)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCactivo))
+                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnnuevo)
+                    .addComponent(btnguardar)
+                    .addComponent(btneditar)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jCactivo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnnuevo)
-                            .addComponent(btnguardar)
-                            .addComponent(btneditar))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(panel_insertarLayout.createSequentialGroup()
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -792,7 +829,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -814,7 +851,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(panel_tabla, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panel_insertar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panel_insertar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 488, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -1045,6 +1082,24 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtminuto_toleranciaKeyTyped
 
+    private void jFmonto_hospedaje_minimoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFmonto_hospedaje_minimoKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jFmonto_hospedaje_minimoKeyPressed
+
+    private void jFmonto_hospedaje_minimoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFmonto_hospedaje_minimoKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_jFmonto_hospedaje_minimoKeyTyped
+
+    private void txtminuto_hospedajeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtminuto_hospedajeKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtminuto_hospedajeKeyPressed
+
+    private void txtminuto_hospedajeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtminuto_hospedajeKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_txtminuto_hospedajeKeyTyped
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btneditar;
@@ -1062,7 +1117,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFmonto_dormir_minimo;
     private javax.swing.JFormattedTextField jFmonto_hora_adicional;
     private javax.swing.JFormattedTextField jFmonto_hora_minimo;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JFormattedTextField jFmonto_hospedaje_minimo;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
@@ -1083,6 +1138,7 @@ public class FrmHab_costo extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtid;
     private javax.swing.JTextField txtminuto_adicional;
     private javax.swing.JTextField txtminuto_cancelar;
+    private javax.swing.JTextField txtminuto_hospedaje;
     private javax.swing.JTextField txtminuto_minimo;
     private javax.swing.JTextField txtminuto_tolerancia;
     private javax.swing.JTextField txtnombre;

@@ -34,8 +34,9 @@ public class DAO_habitacion_recepcion_temp {
             + "monto_consumision,monto_descuento,"
             + "minuto_minimo,minuto_adicional,minuto_cancelar,"
             + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,"
-            + "puerta_cliente,puerta_limpieza,tipo_habitacion,monto_adelanto,idhabitacion_dato,es_manual,orden,activo) "
-            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            + "puerta_cliente,puerta_limpieza,tipo_habitacion,monto_adelanto,idhabitacion_dato,es_manual,orden,activo,"
+            + "monto_por_hospedaje_minimo,fec_hospedaje_inicio,fec_hospedaje_fin,es_hospedaje,minuto_hospedaje) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE habitacion_recepcion_temp "
             + "SET idhabitacion_recepcion_actual=?,fecha_creado=?,creado_por=?,"
             + "nro_habitacion=?,descripcion_habitacion=?,estado=?,"
@@ -50,7 +51,8 @@ public class DAO_habitacion_recepcion_temp {
             + "monto_consumision=?,monto_descuento=?,"
             + "minuto_minimo=?,minuto_adicional=?,minuto_cancelar=?,"
             + "hs_dormir_ingreso_inicio=?,hs_dormir_ingreso_final=?,hs_dormir_salida_final=?,"
-            + "puerta_cliente=?,puerta_limpieza=?,tipo_habitacion=?,monto_adelanto=?,idhabitacion_dato=?,es_manual=?,orden=?,activo=? "
+            + "puerta_cliente=?,puerta_limpieza=?,tipo_habitacion=?,monto_adelanto=?,idhabitacion_dato=?,es_manual=?,orden=?,activo=?,"
+            + "monto_por_hospedaje_minimo=?,fec_hospedaje_inicio=?,fec_hospedaje_fin=?,es_hospedaje=?,minuto_hospedaje=? "
             + "WHERE idhabitacion_dato=?;";
     private String sql_select = "SELECT idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,nro_habitacion,descripcion_habitacion,estado,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumision,monto_descuento,minuto_minimo,minuto_adicional,minuto_cancelar,hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final FROM habitacion_recepcion_temp order by 1 desc;";
     private String sql_cargar = "SELECT idhabitacion_recepcion_temp,idhabitacion_recepcion_actual,fecha_creado,creado_por,"
@@ -71,7 +73,8 @@ public class DAO_habitacion_recepcion_temp {
             + "to_char(fec_ocupado_inicio,'HH24:MI')||' |'||\n"
             + "to_char(current_timestamp,'HH24:MI')||' |'||\n"
             + "to_char((current_timestamp-fec_ocupado_inicio),'HH24:MI')||' |'||\n"
-            + "tipo_habitacion) as descrip_caja_desocupa "
+            + "tipo_habitacion) as descrip_caja_desocupa,"
+            + "monto_por_hospedaje_minimo,fec_hospedaje_inicio,fec_hospedaje_fin,es_hospedaje,minuto_hospedaje "
             + "FROM habitacion_recepcion_temp WHERE idhabitacion_dato=";
     private String sql_update_dato = "UPDATE habitacion_recepcion_temp "
             + "SET "
@@ -96,7 +99,105 @@ public class DAO_habitacion_recepcion_temp {
     private String sql_ocupacion_boton_FUERTE = "";
     private String sql_ocupacion_boton_LIBIANO = "";
     private String sql_ocupacion_boton_CARGAR = "";
-
+    private String Est_Ocu_POR_HORA =   "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n";
+    private String Est_Ocu_POR_DORMIR = "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n";
+    private String Est_Ocu_POR_HORA_MAS_DORMIR = "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n";
+    private String Est_Ocu_HOSPEDAJE = "when estado = 'OCUPADO' and es_hospedaje = true\n";
+    private String fec_inicio_menor_que_23hs = "    and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n";
+    private String fec_actual_mayor_Inicio_00hs = "    and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n";
+    private String fec_inicio_mayor_Inicio_00hs = "    and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n";
+    private String fec_inicio_menor_Dormir_Salida = "    and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n";
+    private String fec_inicio_mayor_Dormir_Inicio=  "    and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n";
+    private String seg_transcurrido_desde_inicio="(extract(epoch from(current_timestamp-fec_ocupado_inicio)))";
+    private String seg_minimo="(minuto_minimo*60)";
+    private String seg_transcurrido_menor_seg_minimo = "    and ("+seg_transcurrido_desde_inicio+"<"+seg_minimo+")\n";
+    private String seg_transcurrido_mayor_seg_minimo = "    and ("+seg_transcurrido_desde_inicio+">"+seg_minimo+")\n";
+    private String fec_actual_menor_Dormir_Salida="    and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final))\n";
+    private String fec_actual_mayor_Inicio="    and (current_timestamp>(fec_ocupado_inicio))\n";
+    private String fec_actual_menos_Inicio="(current_timestamp-fec_ocupado_inicio)";
+    private String fec_actual_menos_Fin="(current_timestamp-fec_ocupado_fin)";
+    private String fec_actual_mayor_Dormir_final_mas1="    and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final))\n ";
+    private String fec_actual_mayor_Dormir_final="    and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final))\n";
+    private String fec_actual_menor_Dormir_final_mas1="    and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final))\n";
+    private String monto_dormir_minimo_Double=" monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) ";
+    private String monto_porhora_minimo_Double=" monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto) ";
+    private String monto_hospedaje_minimo_Double=" monto_por_hospedaje_minimo + monto_consumision-(monto_descuento+monto_adelanto) ";
+    private String fec_actual_mayor_Inicio_mas2="    and (current_timestamp>(date(fec_ocupado_inicio)+2))\n";
+    private String fec_actual_mayor_00hs=" (current_timestamp>(date(current_timestamp) + time '00:00:01')) ";
+    private String fec_actual_menor_23hs=" (current_timestamp<((date(current_timestamp))+ time '23:59:59')) ";
+    private String fec_actual_mayor_Dormir_inicio=" (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio)) ";
+    private String fec_actual_menor_Dormir_final=" (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final)) ";
+    private String seg_inicio_a_Dormir_inicio=" (extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio))) ";
+    private String hora_actual_Dormir_final_mas1="cast((((extract(epoch from(current_timestamp-((date(fec_ocupado_inicio)+1)+hs_dormir_salida_final)))))/3600) as integer)";
+         private String hora_actual_Dormir_final="cast((((extract(epoch from(current_timestamp-((date(fec_ocupado_inicio))+hs_dormir_salida_final)))))/3600) as integer)";
+    private String seg_minimo_mas_adicional=" ((minuto_minimo * 60)+(minuto_adicional * 60)) ";
+    private String seg_cancelar="(minuto_cancelar*60)";
+    private String seg_hospedaje="(minuto_hospedaje*60)";
+    private String seg_transcurrido_Dormir_Final_mas1=" FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional) ";
+    private String seg_transcurrido_Dormir_Final=" FLOOR((((extract(epoch from(current_timestamp-((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/60)/minuto_adicional) ";
+    private String fec_actual_Dormir_final=" ((date(current_timestamp))+hs_dormir_salida_final) ";
+    private String fec_actual_Dormir_final_mas1=" ((date(current_timestamp)+1)+hs_dormir_salida_final) ";
+    private String Est_Ocupado=" when estado = 'OCUPADO' ";
+    private String Est_Libre=" when estado = 'LIBRE' ";
+    private String Est_Sucio=" when estado = 'SUCIO' ";
+    private String Est_Limpiando=" when estado = 'LIMPIANDO' ";
+    private String Text_Limpiando="-LIMPIANDO";
+    private String Text_Mante="-MANTE";
+    private String Text_CliIngreso="-CLI-INGRESO";
+    private String Text_CliAbierto="-CLI-ABIERTO";
+    private String Text_LimAbierto="-LIMP-ABIERTO";
+    private String Text_Sucio="-SUCIO";
+    private String Text_Cancelar="-(CANCELAR)";
+    private String Puerta_1_1=" and puerta_limpieza = true and puerta_cliente = true ";
+    private String Puerta_1_0=" and puerta_limpieza = true  and puerta_cliente = false ";
+    private String Puerta_0_1=" and puerta_limpieza = false  and puerta_cliente = true ";
+    private String Puerta_0_0=" and puerta_limpieza = false  and puerta_cliente = false ";
+    private String fec_actual_mayor_Dormir_Salida_Tolerancia="(current_timestamp>((date(fec_ocupado_inicio)) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval)))";
+    private String fec_actual_mayor_Dormir_Salida_Tolerancia_mas1="(current_timestamp>((date(fec_ocupado_inicio)+ 1) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval)))";
+    private String hora_transcurrido_desde_inicio_minimo=          "((extract(epoch from(current_timestamp-(fec_ocupado_inicio+((minuto_minimo)    * INTERVAL '1 minute')))))/60)/minuto_adicional)";
+    private String hora_transcurrido_desde_inicio_hospedaje=" FLOOR(((extract(epoch from(current_timestamp-(fec_ocupado_inicio+((minuto_hospedaje) * INTERVAL '1 minute')))))/60)/minuto_adicional)";
+    private String format_hora="HH24:MI:ss";
+    private String hora_Dormir_minimo="(1 + (FLOOR(extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio)-(fec_ocupado_inicio+(minuto_minimo || ' minutes')::interval)))/3600) * 1))";
+    private String Por_Hora_1=Est_Ocu_POR_HORA+fec_actual_mayor_Inicio_mas2;
+    private String Por_Hora_2=Est_Ocu_POR_HORA+seg_transcurrido_menor_seg_minimo;
+    private String Por_Hora_3=Est_Ocu_POR_HORA+seg_transcurrido_mayor_seg_minimo+" and ("+seg_transcurrido_desde_inicio+"<"+seg_minimo_mas_adicional+")\n";
+    private String Por_Hora_4=Est_Ocu_POR_HORA+" and ("+seg_transcurrido_desde_inicio+">"+seg_minimo_mas_adicional+")\n";
+    private String Por_Dormir_1=Est_Ocu_POR_DORMIR+fec_actual_mayor_Inicio_mas2;
+    private String Por_Dormir_2=Est_Ocu_POR_DORMIR+fec_inicio_mayor_Dormir_Inicio+fec_inicio_menor_que_23hs+fec_actual_mayor_Inicio_00hs+fec_actual_menor_Dormir_final_mas1;
+    private String Por_Dormir_3=Est_Ocu_POR_DORMIR+fec_inicio_mayor_Inicio_00hs+fec_inicio_menor_Dormir_Salida+fec_actual_mayor_Inicio+fec_actual_menor_Dormir_Salida;
+    private String Por_Dormir_4=Est_Ocu_POR_DORMIR+fec_inicio_mayor_Dormir_Inicio+fec_inicio_menor_que_23hs+" and "+fec_actual_mayor_Dormir_Salida_Tolerancia_mas1+"\n";
+    private String Por_Dormir_5=Est_Ocu_POR_DORMIR+fec_inicio_mayor_Inicio_00hs+fec_inicio_menor_Dormir_Salida+" and "+fec_actual_mayor_Dormir_Salida_Tolerancia+"\n";
+    private String Por_Dormir_6=Est_Ocu_POR_DORMIR+fec_inicio_mayor_Dormir_Inicio+fec_inicio_menor_que_23hs+fec_actual_mayor_Dormir_final_mas1;
+    private String Por_Dormir_7=Est_Ocu_POR_DORMIR+fec_inicio_mayor_Inicio_00hs+fec_inicio_menor_Dormir_Salida+fec_actual_mayor_Dormir_final;
+    private String Por_Hora_Dormir_1=Est_Ocu_POR_HORA_MAS_DORMIR+fec_inicio_menor_que_23hs+fec_actual_mayor_Inicio_00hs+fec_actual_menor_Dormir_final_mas1;
+    private String Por_Hora_Dormir_2=Est_Ocu_POR_HORA_MAS_DORMIR+fec_inicio_mayor_Inicio_00hs+fec_inicio_menor_Dormir_Salida+fec_actual_mayor_Inicio+fec_actual_menor_Dormir_Salida;
+    private String Por_Hora_Dormir_3=Est_Ocu_POR_HORA_MAS_DORMIR+fec_inicio_menor_que_23hs+" and "+fec_actual_mayor_Dormir_Salida_Tolerancia_mas1+"\n";
+    private String Por_Hora_Dormir_4=Est_Ocu_POR_HORA_MAS_DORMIR+fec_inicio_mayor_Inicio_00hs+fec_inicio_menor_Dormir_Salida+fec_actual_mayor_Dormir_final;
+    private String Por_Hora_Dormir_5=Est_Ocu_POR_HORA_MAS_DORMIR+fec_inicio_mayor_Dormir_Inicio+fec_inicio_menor_que_23hs+fec_actual_mayor_Dormir_final_mas1;
+    private String Por_Hora_Dormir_6=Est_Ocu_POR_HORA_MAS_DORMIR+fec_actual_mayor_Inicio_mas2;
+    private String Por_Hora_Dormir_7=Est_Ocu_POR_HORA_MAS_DORMIR+fec_inicio_menor_que_23hs+fec_actual_mayor_Dormir_final_mas1;
+    private String Por_hospedaje_1=Est_Ocu_HOSPEDAJE+" and ("+seg_transcurrido_desde_inicio+"<"+seg_hospedaje+")\n";
+    private String Por_hospedaje_2=Est_Ocu_HOSPEDAJE+" and ("+seg_transcurrido_desde_inicio+">"+seg_hospedaje+")\n";
+    private String es_Por_Hora_1="when descripcion_habitacion = 'Por_Hora_1' ";
+    private String es_Por_Hora_2="when descripcion_habitacion = 'Por_Hora_2' ";
+    private String es_Por_Hora_3="when descripcion_habitacion = 'Por_Hora_3' ";
+    private String es_Por_Hora_4="when descripcion_habitacion = 'Por_Hora_4' ";
+    private String es_Por_Dormir_1="when descripcion_habitacion = 'Por_Dormir_1' ";
+    private String es_Por_Dormir_2="when descripcion_habitacion = 'Por_Dormir_2' ";
+    private String es_Por_Dormir_3="when descripcion_habitacion = 'Por_Dormir_3' ";
+    private String es_Por_Dormir_4="when descripcion_habitacion = 'Por_Dormir_4' ";
+    private String es_Por_Dormir_5="when descripcion_habitacion = 'Por_Dormir_5' ";
+    private String es_Por_Dormir_6="when descripcion_habitacion = 'Por_Dormir_6' ";
+    private String es_Por_Dormir_7="when descripcion_habitacion = 'Por_Dormir_7' ";
+    private String es_Por_Hora_Dormir_1="when descripcion_habitacion = 'Por_Hora_Dormir_1' ";
+    private String es_Por_Hora_Dormir_2="when descripcion_habitacion = 'Por_Hora_Dormir_2' ";
+    private String es_Por_Hora_Dormir_3="when descripcion_habitacion = 'Por_Hora_Dormir_3' ";
+    private String es_Por_Hora_Dormir_4="when descripcion_habitacion = 'Por_Hora_Dormir_4' ";
+    private String es_Por_Hora_Dormir_5="when descripcion_habitacion = 'Por_Hora_Dormir_5' ";
+    private String es_Por_Hora_Dormir_6="when descripcion_habitacion = 'Por_Hora_Dormir_6' ";
+    private String es_Por_Hora_Dormir_7="when descripcion_habitacion = 'Por_Hora_Dormir_7' ";
+    private String es_Por_hospedaje_1="when descripcion_habitacion = 'Por_hospedaje_1' ";
+    private String es_Por_hospedaje_2="when descripcion_habitacion = 'Por_hospedaje_2' ";
     public void insertar_habitacion_recepcion_temp(Connection conn, habitacion_recepcion_temp harete) {
         harete.setC1idhabitacion_recepcion_temp(eveconn.getInt_ultimoID_mas_uno(conn, harete.getTb_habitacion_recepcion_temp(), harete.getId_idhabitacion_recepcion_temp()));
         String titulo = "insertar_habitacion_recepcion_temp";
@@ -148,6 +249,11 @@ public class DAO_habitacion_recepcion_temp {
             pst.setBoolean(43, harete.getC43es_manual());
             pst.setInt(44, harete.getC44orden());
             pst.setBoolean(45, harete.getC45activo());
+            pst.setDouble(46, harete.getC46monto_por_hospedaje_minimo());
+            pst.setTimestamp(47, evefec.getTimestamp_fecha_cargado(harete.getC47fec_hospedaje_inicio(), "getC47fec_hospedaje_inicio"));
+            pst.setTimestamp(48, evefec.getTimestamp_fecha_cargado(harete.getC48fec_hospedaje_fin(), "getC48fec_hospedaje_fin"));
+            pst.setBoolean(49, harete.getC49es_hospedaje());
+            pst.setInt(50, harete.getC50minuto_hospedaje());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + harete.toString(), titulo);
@@ -206,7 +312,12 @@ public class DAO_habitacion_recepcion_temp {
             pst.setBoolean(42, harete.getC43es_manual());
             pst.setInt(43, harete.getC44orden());
             pst.setBoolean(44, harete.getC45activo());
-            pst.setInt(45, harete.getC42idhabitacion_dato());
+            pst.setDouble(45, harete.getC46monto_por_hospedaje_minimo());
+            pst.setTimestamp(46, evefec.getTimestamp_fecha_cargado(harete.getC47fec_hospedaje_inicio(), "getC47fec_hospedaje_inicio"));
+            pst.setTimestamp(47, evefec.getTimestamp_fecha_cargado(harete.getC48fec_hospedaje_fin(), "getC48fec_hospedaje_fin"));
+            pst.setBoolean(48, harete.getC49es_hospedaje());
+            pst.setInt(49, harete.getC50minuto_hospedaje());
+            pst.setInt(50, harete.getC42idhabitacion_dato());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + harete.toString(), titulo);
@@ -299,6 +410,11 @@ public class DAO_habitacion_recepcion_temp {
                 harete.setC44orden(rs.getInt(44));
                 harete.setC45activo(rs.getBoolean(45));
                 harete.setDescrip_caja_desocupa(rs.getString(46));
+                harete.setC46monto_por_hospedaje_minimo(rs.getDouble(47));
+                harete.setC47fec_hospedaje_inicio(rs.getString(48));
+                harete.setC48fec_hospedaje_fin(rs.getString(49));
+                harete.setC49es_hospedaje(rs.getBoolean(50));
+                harete.setC50minuto_hospedaje(rs.getInt(51));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + harete.toString(), titulo);
             }
         } catch (Exception e) {
@@ -317,7 +433,6 @@ public class DAO_habitacion_recepcion_temp {
     }
 
     public void actualizar_estado_puerta_cliente_limpieza(Connection conn, int sensor_puerta_cliente, int sensor_puerta_limpieza) {
-        //case when hd.es_manual=true then false else ig.alto_bajo end
         String sql = "update habitacion_recepcion_temp  set "
                 + "puerta_cliente=(select case when hd.es_manual=true then true else ig.alto_bajo end  \n"
                 + "from habitacion_item_sensor_gpio ig,habitacion_dato hd  \n"
@@ -329,7 +444,6 @@ public class DAO_habitacion_recepcion_temp {
                 + "where ig.fk_idhabitacion_sensor=?\n"
                 + "and ig.fk_idhabitacion_dato=hd.idhabitacion_dato \n"
                 + "and hd.idhabitacion_dato=habitacion_recepcion_temp.idhabitacion_dato);";
-//        eveconn.SQL_execute_libre_sin_print(conn, sql);
         String titulo = "actualizar_estado_puerta_cliente_limpieza";
         PreparedStatement pst = null;
         try {
@@ -338,8 +452,6 @@ public class DAO_habitacion_recepcion_temp {
             pst.setInt(2, sensor_puerta_limpieza);
             pst.execute();
             pst.close();
-//            evemen.Imprimir_serial_sql(sql + "\n", titulo);
-//            evemen.modificado_correcto(mensaje_update, false);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql + "\n", titulo);
         }
@@ -357,7 +469,9 @@ public class DAO_habitacion_recepcion_temp {
                 + "hs_dormir_ingreso_inicio=hc.hs_dormir_ingreso_inicio,\n"
                 + "hs_dormir_ingreso_final=hc.hs_dormir_ingreso_final,\n"
                 + "hs_dormir_salida_final=hc.hs_dormir_salida_final, \n"
-                + "minuto_tolerancia=hc.minuto_tolerancia \n"
+                + "minuto_tolerancia=hc.minuto_tolerancia, \n"
+                + "monto_por_hospedaje_minimo=hc.monto_por_hospedaje_minimo, \n"
+                + "minuto_hospedaje=hc.minuto_hospedaje "
                 + "from habitacion_costo hc,habitacion_dato hd  \n"
                 + "where hd.fk_idhabitacion_costo=hc.idhabitacion_costo \n"
                 + "and hd.idhabitacion_dato=hrt.idhabitacion_dato;";
@@ -383,43 +497,42 @@ public class DAO_habitacion_recepcion_temp {
     }
 
     public String getSql_ocupacion_boton_resumen() {
-        //cambiar_estado, est_nuevo, idhabitacion_dato, Inro_habitacion, idhabitacion_recepcion_actual
         String sql = "select "
                 + "case \n"
-                + "when estado = 'OCUPADO' and puerta_limpieza=true and puerta_cliente=true \n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_cancelar*60)) then true\n"
+                + Est_Ocupado+" "+Puerta_1_1+" \n"
+                + "	and ("+seg_transcurrido_desde_inicio+"<"+seg_cancelar+") then true\n"
                 + "else false \n"
                 + "end as cancelar_habitacion,\n"
                 + "es_por_dormir as habilitar_dormir,\n"
                 + "estado,\n"
                 + "tipo_habitacion,\n"
                 + "case\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = false then true\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false then true\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  then true\n"
+                + Est_Libre+"     "+Puerta_1_0+" then true\n"
+                + Est_Sucio+"     and puerta_limpieza = false then true\n"
+                + Est_Limpiando+" and puerta_limpieza = true  then true\n"
                 + "else false\n"
                 + "end as cambiar_estado,\n"
                 + "case\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true and puerta_cliente = false then 'OCUPADO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false then 'LIMPIANDO'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true then 'LIBRE'\n"
+                + Est_Libre+"     "+Puerta_1_0+" then 'OCUPADO'\n"
+                + Est_Sucio+"     and puerta_limpieza = false then 'LIMPIANDO'\n"
+                + Est_Limpiando+" and puerta_limpieza = true then 'LIBRE'\n"
                 + "else 'sin'\n"
                 + "end as est_nuevo,\n"
                 + "nro_habitacion,\n"
                 + "idhabitacion_dato,\n"
                 + "idhabitacion_recepcion_actual,\n"
                 + "case\n"
-                + "when estado = 'OCUPADO'   and (current_timestamp>(date(fec_ocupado_inicio)+2)) then to_char((current_timestamp-fec_ocupado_inicio), 'dd HH24:MI:ss')\n"
-                + "when estado = 'OCUPADO'   then to_char((current_timestamp-fec_ocupado_inicio), 'HH24:MI:ss')\n"
-                + "when estado = 'SUCIO'     then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')\n"
-                + "when estado = 'LIMPIANDO' then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')\n"
+                + Est_Ocupado+"   and (current_timestamp>(date(fec_ocupado_inicio)+2)) "
+                + " then to_char("+fec_actual_menos_Inicio+", 'dd "+format_hora+"')\n"
+                + Est_Ocupado+"   then to_char("+fec_actual_menos_Inicio+", '"+format_hora+"')\n"
+                + Est_Sucio+"     then to_char("+fec_actual_menos_Fin+", '"+format_hora+"')\n"
+                + Est_Limpiando+" then to_char("+fec_actual_menos_Fin+", '"+format_hora+"')\n"
                 + "else '.'\n"
                 + "end as tiempo \n"
                 + "from\n"
                 + "habitacion_recepcion_temp \n"
                 + "where activo=true \n"
                 + "order by orden asc;";
-
         return sql;
     }
 
@@ -430,139 +543,97 @@ public class DAO_habitacion_recepcion_temp {
                 + "estado,\n"
                 + "minuto_cancelar,\n"
                 + "case\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = true  then ''\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = false and puerta_cliente = true  then '-LIMPIANDO'\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = false then '-CLI-INGRESO'\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = false and puerta_cliente = false then '-MANTE'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))>(minuto_cancelar * 60)) then ''\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) then '-(CANCELAR)'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = false and puerta_cliente = true  then '-LIMP-ABIERTO'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = true  and puerta_cliente = false then '-CLI-ABIERTO'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = false and puerta_cliente = false then '-MANTE'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = true  and puerta_cliente = true  then '-SUCIO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false and puerta_cliente = true  then '-LIMPIANDO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = true  and puerta_cliente = false then '-CLI-ABIERTO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false and puerta_cliente = false then '-MANTE'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  and puerta_cliente = true  then ''\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = false and puerta_cliente = true  then '-LIMPIANDO'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  and puerta_cliente = false then '-CLI-INGRESO'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = false and puerta_cliente = false then '-MANTE'\n"
+                + Est_Libre+"     "+Puerta_1_1+" then ''\n"
+                + Est_Libre+"     "+Puerta_0_1+" then '"+Text_Limpiando+"'\n"
+                + Est_Libre+"     "+Puerta_1_0+" then '"+Text_CliIngreso+"'\n"
+                + Est_Libre+"     "+Puerta_0_0+" then '"+Text_Mante+"'\n"
+                + Est_Ocupado+"   "+Puerta_1_1+"  and ("+seg_transcurrido_desde_inicio+">"+seg_cancelar+") then ''\n"
+                + Est_Ocupado+"   "+Puerta_1_1+"  and ("+seg_transcurrido_desde_inicio+"<"+seg_cancelar+") then '"+Text_Cancelar+"'\n"
+                + Est_Ocupado+"   "+Puerta_0_1+" then '"+Text_LimAbierto+"'\n"
+                + Est_Ocupado+"   "+Puerta_1_0+" then '"+Text_CliAbierto+"'\n"
+                + Est_Ocupado+"   "+Puerta_0_0+" then '"+Text_Mante+"'\n"
+                + Est_Sucio+"     "+Puerta_1_1+" then '"+Text_Sucio+"'\n"
+                + Est_Sucio+"     "+Puerta_0_1+" then '"+Text_Limpiando+"'\n"
+                + Est_Sucio+"     "+Puerta_1_0+" then '"+Text_CliAbierto+"'\n"
+                + Est_Sucio+"     "+Puerta_0_0+" then '"+Text_Mante+"'\n"
+                + Est_Limpiando+" "+Puerta_1_1+" then ''\n"
+                + Est_Limpiando+" "+Puerta_0_1+" then '"+Text_Limpiando+"'\n"
+                + Est_Limpiando+" "+Puerta_1_0+" then '"+Text_CliIngreso+"'\n"
+                + Est_Limpiando+" "+Puerta_0_0+" then '"+Text_Mante+"'\n"
                 + "else '.'\n"
                 + "end as desc_estado,\n"
                 + "case\n"
-                + "when estado = 'OCUPADO'   and (current_timestamp>(date(fec_ocupado_inicio)+2)) then to_char((current_timestamp-fec_ocupado_inicio), 'dd HH24:MI:ss')\n"
-                + "when estado = 'OCUPADO'   then to_char((current_timestamp-fec_ocupado_inicio), 'HH24:MI:ss')\n"
-                + "when estado = 'SUCIO'     then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')\n"
-                + "when estado = 'LIMPIANDO' then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')\n"
+                + Est_Ocupado+"   and (current_timestamp>(date(fec_ocupado_inicio)+2))  then to_char("+fec_actual_menos_Inicio+", 'dd "+format_hora+"')\n"
+                + Est_Ocupado+"   then to_char("+fec_actual_menos_Inicio+", '"+format_hora+"')\n"
+                + Est_Sucio+"     then to_char("+fec_actual_menos_Fin+", '"+format_hora+"')\n"
+                + Est_Limpiando+" then to_char("+fec_actual_menos_Fin+", '"+format_hora+"')\n"
                 + "else '.'\n"
                 + "end as tiempo,\n"
                 + "case\n"
-                + "when estado = 'LIBRE' then to_char((current_timestamp-fec_ocupado_inicio), 'yyyy-MM-dd HH24:MI:ss')\n"
+                + Est_Libre+" then to_char("+fec_actual_menos_Inicio+", 'yyyy-MM-dd "+format_hora+"')\n"
                 + "else '.'\n"
                 + "end as fec_ingreso,\n"
                 + "es_por_dormir as habilitar_dormir,\n"
                 + "es_por_hora as habilitar_hora,\n"
                 + "case\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true --HORA mas de 24hs\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "		then to_char((monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto) +"
-                + "                 ((cast((((extract(epoch from(current_timestamp - (fec_ocupado_inicio)))))/ 3600) as integer))* monto_por_hora_adicional)), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "		then to_char((monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto)), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "		then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto)), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "		then to_char((monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto) + (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* monto_por_hora_adicional)), '999G999G999')\n"
+                + es_Por_Hora_1
+                + "  then to_char(("+monto_porhora_minimo_Double+" + ((cast((("+seg_transcurrido_desde_inicio+")/3600) as integer))* monto_por_hora_adicional)), '999G999G999')\n"
+                + es_Por_Hora_2
+                + "  then to_char(("+monto_porhora_minimo_Double+"), '999G999G999')\n"
+                + es_Por_Hora_3
+                + "  then to_char((monto_por_hora_adicional + "+monto_porhora_minimo_Double+"), '999G999G999')\n"
+                + es_Por_Hora_4
+                + "  then to_char((monto_por_hora_adicional + "+monto_porhora_minimo_Double+" + "
+                + "     (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* monto_por_hora_adicional)), '999G999G999')\n"
                 + "else '.'\n"
                 + "end as tarifa_gral_hora,\n"
                 + "case\n"
-                + "when estado = 'OCUPADO'  and es_por_dormir = true and es_por_hora = false --HORA mas de 24hs\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +"
-                + "             ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer))* monto_por_dormir_adicional)), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		then to_char(monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto), '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+ 1)+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)) , '999G999G999')\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		then to_char((monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +(cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)* monto_por_dormir_adicional)), '999G999G999')\n"
+                + es_Por_Dormir_1
+                + "  then to_char(("+monto_dormir_minimo_Double+" + (("+hora_actual_Dormir_final_mas1+")* monto_por_dormir_adicional)), '999G999G999')\n"
+                + es_Por_Dormir_2
+                + "  then to_char("+monto_dormir_minimo_Double+", '999G999G999')\n"
+                + es_Por_Dormir_3
+                + "  then to_char("+monto_dormir_minimo_Double+", '999G999G999')\n"
+                + es_Por_Dormir_6
+                + "  then to_char(("+monto_dormir_minimo_Double+" + ("+hora_actual_Dormir_final_mas1+" * monto_por_dormir_adicional)) , '999G999G999')\n"
+                + es_Por_Dormir_7
+                + "  then to_char(("+monto_dormir_minimo_Double+" + ("+hora_actual_Dormir_final+" * monto_por_dormir_adicional)), '999G999G999')\n"
+                + es_Por_Hora_Dormir_1
+                + "  then to_char("+monto_dormir_minimo_Double+", '999G999G999')\n"
+                + es_Por_Hora_Dormir_2
+                + "  then to_char("+monto_dormir_minimo_Double+", '999G999G999')\n"
+                + es_Por_Hora_Dormir_7
+                + "  then to_char(("+monto_dormir_minimo_Double+" + ("+hora_actual_Dormir_final_mas1+" * monto_por_dormir_adicional)) , '999G999G999')\n"
+                + es_Por_Hora_Dormir_4
+                + "  then to_char(("+monto_dormir_minimo_Double+" + ("+hora_actual_Dormir_final+" * monto_por_dormir_adicional)), '999G999G999')\n"
                 + "else '.'\n"
                 + "end as tarifa_gral_dormir,\n"
                 + "case\n"
-                + "when (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio))\n"
-                + "	and (current_timestamp<(date(current_timestamp)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(current_timestamp)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
-                + "when  (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "	and (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp<((date(current_timestamp)) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
-                + "when  (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio))\n"
-                + "	and (current_timestamp<(date(current_timestamp)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(current_timestamp)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
-                + "when  (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "	and (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(current_timestamp)) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
+                + "when "+fec_actual_mayor_Dormir_inicio + " and "+fec_actual_menor_23hs+ " and "+fec_actual_mayor_00hs+ " and (current_timestamp<"+fec_actual_Dormir_final_mas1+")\n"
+                + "  then true\n"
+                + "when "+fec_actual_mayor_00hs + " and "+fec_actual_menor_Dormir_final+ " and (current_timestamp<"+fec_actual_Dormir_final+")\n"
+                + "  then true\n"
+                + "when "+fec_actual_mayor_Dormir_inicio + " and "+fec_actual_menor_23hs+ " and (current_timestamp>"+fec_actual_Dormir_final_mas1+")\n"
+                + "  then true\n"
+                + "when "+fec_actual_mayor_00hs + " and "+fec_actual_menor_Dormir_final + " and (current_timestamp>"+fec_actual_Dormir_final+")\n"
+                + "  then true\n"
                 + "else false\n"
                 + "end as permitir_dormir,\n"
                 + "case\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = false then true\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false then true\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  then true\n"
+                + Est_Libre+"     "+Puerta_1_0+" then true\n"
+                + Est_Sucio+"     and puerta_limpieza = false then true\n"
+                + Est_Limpiando+" and puerta_limpieza = true  then true\n"
                 + "else false\n"
                 + "end as cambiar_estado,\n"
                 + "case\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true and puerta_cliente = false then 'OCUPADO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false then 'LIMPIANDO'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true then 'LIBRE'\n"
+                + Est_Libre+"     "+Puerta_1_0+" then 'OCUPADO'\n"
+                + Est_Sucio+"     and puerta_limpieza = false then 'LIMPIANDO'\n"
+                + Est_Limpiando+" and puerta_limpieza = true then 'LIBRE'\n"
                 + "else 'sin'\n"
                 + "end as est_nuevo,\n"
                 + "idhabitacion_recepcion_actual as ult_recepcion,\n"
                 + "('NO') as ruta_sonido,\n"
-                + "(extract(epoch from (current_timestamp - fec_ocupado_inicio))) as ocupado_inicio_seg,\n"
+                + ""+seg_transcurrido_desde_inicio+" as ocupado_inicio_seg,\n"
                 + "case\n"
                 + "when puerta_limpieza = true then 1\n"
                 + "else 0\n"
@@ -572,82 +643,57 @@ public class DAO_habitacion_recepcion_temp {
                 + "else 0\n"
                 + "end as puerta_ocu,\n"
                 + "to_char((fec_ocupado_inicio), 'yyyy-MM-dd') as fecha_ingreso,\n"
-                + "to_char((fec_ocupado_inicio), 'HH24:MI:ss') as hora_ingreso,\n"
+                + "to_char((fec_ocupado_inicio), '"+format_hora+"') as hora_ingreso,\n"
                 + "minuto_minimo,\n"
                 + "case\n"
-                + "when estado = 'OCUPADO' and es_por_hora=true and es_por_dormir=false --HORA mas de 24hs\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "		then (cast((((extract(epoch from(current_timestamp - fec_ocupado_inicio))))/ 3600) as integer))         \n"
-                + "when estado = 'OCUPADO' and es_por_hora=true and es_por_dormir=true\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "		then (cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer))\n"
-                + "when estado = 'OCUPADO'  and es_por_hora=true and es_por_dormir=false\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "		then 1 \n"
-                + "when estado = 'OCUPADO'  and es_por_hora=true and es_por_dormir=false\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                //                + "		then (cast(to_char((current_timestamp)-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)+1)\n"
-                + "             then FLOOR((((extract(epoch from(current_timestamp - (fec_ocupado_inicio + ((minuto_minimo) * INTERVAL '1 minute')))))/60)/minuto_adicional)+1) \n"
-                + "when estado = 'OCUPADO' and es_por_hora=false and es_por_dormir=true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "when estado = 'OCUPADO' and es_por_hora=false and es_por_dormir=true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "when estado = 'OCUPADO' and es_por_hora=true and es_por_dormir=true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
-                + "when estado = 'OCUPADO' and es_por_hora=true and es_por_dormir=true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		then ((cast((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/ 3600) as integer)))\n"
+                + es_Por_Hora_1
+                + "  then (cast((("+seg_transcurrido_desde_inicio+")/ 3600) as integer))         \n"
+                + es_Por_Hora_Dormir_6
+                + "  then ("+hora_actual_Dormir_final_mas1+")\n"
+                + es_Por_Hora_3
+                + "  then 1 \n"
+                + es_Por_Hora_4
+                + "  then FLOOR(("+hora_transcurrido_desde_inicio_minimo+"+1)\n"
+                + es_Por_Dormir_6
+                + "  then ("+hora_actual_Dormir_final_mas1+")\n"
+                + es_Por_Dormir_7
+                + "  then ("+hora_actual_Dormir_final+")\n"
+                + es_Por_Hora_Dormir_5
+                + "  then ("+hora_actual_Dormir_final_mas1+")\n"
+                + es_Por_Hora_Dormir_4
+                + "  then ("+hora_actual_Dormir_final+")\n"
                 + "else 0\n"
                 + "end as cant_add_tarifa_hora,\n"
                 + "idhabitacion_dato,\n"
                 + "idhabitacion_recepcion_actual,\n"
                 + "monto_adelanto, \n"
                 + "case \n"
-                + "when estado = 'OCUPADO' and puerta_limpieza=true and puerta_cliente=true \n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_cancelar*60)) then true\n"
-                + "else false \n"
+                + Est_Ocupado+" "+Puerta_1_1+ "	and ("+seg_transcurrido_desde_inicio+"<"+seg_cancelar+") then true\n"
+                + "  else false \n"
                 + "end as cancelar_habitacion,\n"
                 + "case \n"
-                + "when ((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))>0 \n"
-                + "		then to_char(((((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))*100)/(minuto_cancelar * 60)),'99D99%') \n"
+                + "when ("+seg_cancelar+"-"+seg_transcurrido_desde_inicio+")>0\n"
+                + "  then to_char(((("+seg_cancelar+"-"+seg_transcurrido_desde_inicio+")*100)/"+seg_cancelar+"),'99D99%')\n"
                 + "else '0%' \n"
                 + "end as por_cancelar,\n"
                 + "TRIM(to_char(monto_por_hora_minimo,'999G999G999')) as  monto_por_hora_minimo,\n"
                 + "case\n"
-                + "when estado = 'OCUPADO'\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "		then (0)\n"
-                + "when estado = 'OCUPADO'\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "		then (1)\n"
-                + "when estado = 'OCUPADO'\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "		then (1 + (cast(to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* 1))\n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+"<"+seg_minimo+")\n"
+                + "  then (0)\n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+">"+seg_minimo+") and ("+seg_inicio_a_Dormir_inicio+"<"+seg_minimo_mas_adicional+")\n"
+                + "  then (1)\n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+">"+seg_minimo_mas_adicional+")\n"
+                + "  then "+hora_Dormir_minimo+"\n"
                 + "else 0\n"
                 + "end as cant_hasta_dormir,\n"
                 + "case \n"
-                + "when estado = 'OCUPADO' \n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(0)) \n"
-                + "		then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'HH24:MI:ss') \n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+">(0)) \n"
+                + "  then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'"+format_hora+"')\n"
                 + "else '00:00' \n"
                 + "end as hs_hasta_dormir, \n"
                 + "case  \n"
-                + "when (date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio)>fec_ocupado_inicio \n"
-                + "	and  (date(fec_ocupado_inicio) + hs_dormir_salida_final)<fec_ocupado_inicio \n"
-                + "		then false else true \n"
+                + "when (date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio)>fec_ocupado_inicio and (date(fec_ocupado_inicio) + hs_dormir_salida_final)<fec_ocupado_inicio\n"
+                + "  then false else true \n"
                 + "end as es_hora_dormir \n"
                 + "from\n"
                 + "habitacion_recepcion_temp \n"
@@ -657,281 +703,256 @@ public class DAO_habitacion_recepcion_temp {
     }
 
     public String getSql_ocupacion_boton_FUERTE() {
+        
         sql_ocupacion_boton_FUERTE = "update  habitacion_recepcion_temp set monto_gral=\n"
                 + "case\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "		then (monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto) +\n"
-                + "                  (FLOOR(((((extract(epoch from(current_timestamp - (fec_ocupado_inicio)))))/60)/minuto_adicional))* monto_por_hora_adicional))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "		then (monto_por_hora_minimo + monto_consumision-(monto_descuento+monto_adelanto))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "		then (monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "		then (monto_por_hora_minimo + monto_por_hora_adicional + monto_consumision-(monto_descuento+monto_adelanto) + \n"
-                + "                 (FLOOR(((extract(epoch from(current_timestamp - (fec_ocupado_inicio + ((minuto_minimo) * INTERVAL '1 minute')))))/60)/minuto_adicional)* monto_por_hora_adicional))\n"
-                + "when estado = 'OCUPADO'  and es_por_dormir = true and es_por_hora = false --HORA mas de 24hs\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "		--then 1\n"
-                + "		then (monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +\n"
-                + "                  (FLOOR(((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional))* monto_por_hora_adicional))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		--then 2\n"
-                + "		then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		--then 3\n"
-                + "		then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-//                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n" //(hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval)
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval))) \n" //
-                + "		--then 4\n"
-                + "		then (monto_por_dormir_adicional+monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +\n"
-                + "                   (FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional)* monto_por_dormir_adicional))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval))) \n"
-                + "		--then 5\n"
-                + "		then (monto_por_dormir_adicional+monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +\n"
-                + "                (FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/60)/minuto_adicional)* monto_por_dormir_adicional))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "		--then 6\n"
-                + "		then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		--then 7\n"
-                + "		then monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto)\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval))) \n"
-                + "		--then 8\n"
-                + "		then (monto_por_dormir_adicional+monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +\n"
-                + "                   (FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional)* monto_por_dormir_adicional)) \n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "		--then 9\n"
-                + "		then (monto_por_dormir_adicional+monto_por_dormir_minimo + monto_consumision-(monto_descuento+monto_adelanto) +\n"
-                + "                  (FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/60)/minuto_adicional)* monto_por_dormir_adicional))\n"
+                + es_Por_Hora_1
+                + "  then ("+monto_porhora_minimo_Double+" +  (FLOOR((((("+seg_transcurrido_desde_inicio+"))/60)/minuto_adicional)) * monto_por_hora_adicional))\n"
+                + es_Por_Hora_2
+                + "  then ("+monto_porhora_minimo_Double+")\n"
+                + es_Por_Hora_3
+                + "  then (monto_por_hora_adicional + "+monto_porhora_minimo_Double+")\n"
+                + es_Por_Hora_4
+                + "  then (monto_por_hora_adicional + "+monto_porhora_minimo_Double+" + (FLOOR("+hora_transcurrido_desde_inicio_minimo+" * monto_por_hora_adicional))\n"
+                + es_Por_Dormir_1
+                + "  then ("+monto_dormir_minimo_Double+" +  ("+seg_transcurrido_Dormir_Final_mas1+" * monto_por_hora_adicional))\n"
+                + es_Por_Dormir_2
+                + "  then "+monto_dormir_minimo_Double+"\n"
+                + es_Por_Dormir_3
+                + "  then "+monto_dormir_minimo_Double+"\n"
+                + es_Por_Dormir_4 //
+                + "  then (monto_por_dormir_adicional+"+monto_dormir_minimo_Double+" +  ("+seg_transcurrido_Dormir_Final_mas1+"* monto_por_dormir_adicional))\n"
+                + es_Por_Dormir_5
+                + "  then (monto_por_dormir_adicional+"+monto_dormir_minimo_Double+" +  ("+seg_transcurrido_Dormir_Final+"* monto_por_dormir_adicional))\n"
+                + es_Por_Dormir_6
+                + "  then "+monto_dormir_minimo_Double+"\n"
+                + es_Por_Dormir_7
+                + "  then "+monto_dormir_minimo_Double+"\n"
+                + es_Por_Hora_Dormir_1
+                + "  then "+monto_dormir_minimo_Double+"\n"
+                + es_Por_Hora_Dormir_2
+                + "  then "+monto_dormir_minimo_Double+"\n"
+                + es_Por_Hora_Dormir_3
+                + "  then (monto_por_dormir_adicional+"+monto_dormir_minimo_Double+" +  ("+seg_transcurrido_Dormir_Final_mas1+" * monto_por_dormir_adicional)) \n"
+                + es_Por_Hora_Dormir_4
+                + "  then (monto_por_dormir_adicional+"+monto_dormir_minimo_Double+" +  ("+seg_transcurrido_Dormir_Final+" * monto_por_dormir_adicional))\n"
+                + es_Por_Hora_Dormir_7
+                + "  then ("+monto_dormir_minimo_Double+" + ("+hora_actual_Dormir_final_mas1+" * monto_por_dormir_adicional))\n"
+                + es_Por_hospedaje_1
+                + "  then ("+monto_hospedaje_minimo_Double+")\n"
+                + es_Por_hospedaje_2
+                + "  then (monto_por_hora_adicional + "+monto_hospedaje_minimo_Double+" + ("+hora_transcurrido_desde_inicio_hospedaje+" * monto_por_hora_adicional))\n"
                 + "else 0\n"
                 + "end,"
                 + "cant_hora_adicional=\n"
                 + "case\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true --1\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "	--then 1\n"
-                + "	then FLOOR(((((extract(epoch from(current_timestamp - (fec_ocupado_inicio)))))/60)/minuto_adicional))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true --2\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "	--then 2\n"
-                + "	then 0\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true --3\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "	--then 3\n"
-                + "	then 1\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = false and es_por_hora = true --4\n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "	--then 4\n"
-                + "	then FLOOR(((extract(epoch from(current_timestamp - (fec_ocupado_inicio + ((minuto_minimo) * INTERVAL '1 minute')))))/60)/minuto_adicional)+1\n"
-                + "when estado = 'OCUPADO'  and es_por_dormir = true and es_por_hora = false --5 \n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio)+2))\n"
-                + "	--then 5\n"
-                + "	then FLOOR(((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional))\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "	--then 6\n"
-                + "	then 0\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "	--then 7\n"
-                + "	then 0\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-//                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval))) \n" //
-                + "	--then 8\n"
-                + "	then FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional)+1\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = false\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval))) \n"
-                + "	--then 9\n"
-                + "	then FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/60)/minuto_adicional)+1\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)+ 1) + hs_dormir_salida_final)) \n"
-                + "	--then 10\n"
-                + "	then 0\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>(fec_ocupado_inicio))\n"
-                + "	and (current_timestamp<((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "	--then 11\n"
-                + "	then 0\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)+ 1) + (hs_dormir_salida_final + (minuto_tolerancia || ' minutes')::interval))) \n"
-                + "	--then 12\n"
-                + "	then FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio)+1)+ hs_dormir_salida_final)))))/60)/minuto_adicional)+1\n"
-                + "when estado = 'OCUPADO' and es_por_dormir = true and es_por_hora = true\n"
-                + "	and (fec_ocupado_inicio>(date(fec_ocupado_inicio) + time '00:00:01'))\n"
-                + "	and (fec_ocupado_inicio<(date(fec_ocupado_inicio) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(fec_ocupado_inicio)) + hs_dormir_salida_final)) \n"
-                + "	--then 13\n"
-                + "	then FLOOR((((extract(epoch from(current_timestamp - ((date(fec_ocupado_inicio))+ hs_dormir_salida_final)))))/60)/minuto_adicional)+1\n"
+                + es_Por_Hora_1
+                + "  then FLOOR(((("+seg_transcurrido_desde_inicio+")/60)/minuto_adicional))\n"
+                + es_Por_Hora_2
+                + "  then 0\n"
+                + es_Por_Hora_3
+                + "  then 1\n"
+                + es_Por_Hora_4
+                + "  then FLOOR("+hora_transcurrido_desde_inicio_minimo+" + 1\n"
+                + es_Por_Dormir_1
+                + "  then "+seg_transcurrido_Dormir_Final_mas1+"\n"
+                + es_Por_Dormir_2
+                + "  then 0\n"
+                + es_Por_Dormir_3
+                + "  then 0\n"
+                + es_Por_Dormir_4 
+                + "  then "+seg_transcurrido_Dormir_Final_mas1+"+1\n"
+                + es_Por_Dormir_5
+                + "  then "+seg_transcurrido_Dormir_Final+"+1\n"
+                + es_Por_Dormir_6
+                + "  then 0\n"
+                + es_Por_Dormir_7
+                + "  then 0\n"
+                + es_Por_Hora_Dormir_1
+                + "  then 0\n"
+                + es_Por_Hora_Dormir_2
+                + "  then 0\n"
+                + es_Por_Hora_Dormir_3
+                + "  then "+seg_transcurrido_Dormir_Final_mas1+"+1\n"
+                + es_Por_Hora_Dormir_4
+                + "  then "+seg_transcurrido_Dormir_Final+"+1\n"
+                + es_Por_hospedaje_1
+                + "  then 0\n"
+                + es_Por_hospedaje_2
+                + "  then (1+("+hora_transcurrido_desde_inicio_hospedaje+"))\n"
                 + "else 0\n"
+                + "end,"
+                + "descripcion_habitacion=\n"
+                + "case\n"
+                + Por_Hora_1
+                + "  then 'Por_Hora_1'\n"
+                + Por_Hora_2
+                + "  then 'Por_Hora_2'\n"
+                + Por_Hora_3
+                + "  then 'Por_Hora_3'\n"
+                + Por_Hora_4
+                + "  then 'Por_Hora_4'\n"
+                + Por_Dormir_1
+                + "  then 'Por_Dormir_1'\n"
+                + Por_Dormir_2
+                + "  then 'Por_Dormir_2'\n"
+                + Por_Dormir_3
+                + "  then 'Por_Dormir_3'\n"
+                + Por_Dormir_4 //
+                + "  then 'Por_Dormir_4'\n"
+                + Por_Dormir_5
+                + "  then 'Por_Dormir_5'\n"
+                + Por_Dormir_6
+                + "  then 'Por_Dormir_6'\n"
+                + Por_Dormir_7
+                + "  then 'Por_Dormir_7'\n"
+                + Por_Hora_Dormir_1
+                + "  then 'Por_Hora_Dormir_1'\n"
+                + Por_Hora_Dormir_2
+                + "  then 'Por_Hora_Dormir_2'\n"
+                + Por_Hora_Dormir_3
+                + "  then 'Por_Hora_Dormir_3'\n"
+                + Por_Hora_Dormir_4
+                + "  then 'Por_Hora_Dormir_4'\n"
+                + Por_Hora_Dormir_5
+                + "  then 'Por_Hora_Dormir_5'\n"
+                + Por_Hora_Dormir_6
+                + "  then 'Por_Hora_Dormir_6'\n"
+                + Por_Hora_Dormir_7
+                + "  then 'Por_Hora_Dormir_7'\n"
+                + Por_hospedaje_1
+                + "  then 'Por_hospedaje_1'\n"
+                + Por_hospedaje_2
+                + "  then 'Por_hospedaje_2'\n"
+                + "else 'ninguno'\n"
                 + "end;";
         return sql_ocupacion_boton_FUERTE;
     }
 
     public String getSql_ocupacion_boton_LIBIANO() {
-        sql_ocupacion_boton_LIBIANO = "update  habitacion_recepcion_temp set tiempo_estado=case\n"
-                + "when estado = 'OCUPADO'   and (current_timestamp>(date(fec_ocupado_inicio)+2)) then to_char((current_timestamp-fec_ocupado_inicio), 'dd HH24:MI:ss')\n"
-                + "when estado = 'OCUPADO'   then to_char((current_timestamp-fec_ocupado_inicio), 'HH24:MI:ss')\n"
-                + "when estado = 'SUCIO'     then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')\n"
-                + "when estado = 'LIMPIANDO' then to_char((current_timestamp-fec_ocupado_fin), 'HH24:MI:ss')\n"
+        sql_ocupacion_boton_LIBIANO = "update  habitacion_recepcion_temp "
+                + "set tiempo_estado="
+                + "case\n"
+                + Est_Ocupado+"   and (("+seg_transcurrido_desde_inicio+"/60)>1440)  then to_char("+fec_actual_menos_Inicio+", 'dd "+format_hora+"')\n"
+                + Est_Ocupado+"   then to_char("+fec_actual_menos_Inicio+", '"+format_hora+"')\n"
+                + Est_Sucio+"     then to_char("+fec_actual_menos_Fin+", '"+format_hora+"')\n"
+                + Est_Limpiando+" then to_char("+fec_actual_menos_Fin+", '"+format_hora+"')\n"
                 + "else '.'\n"
                 + "end,"
                 + "ruta_icono=\n"
-                + "case when estado='LIBRE'       and puerta_limpieza = true and puerta_cliente = true then '/graficos/libre.png'\n"
-                + "     when estado='LIBRE'       and puerta_limpieza = false and puerta_cliente = false then '/graficos/48_mante.png'\n"
-                + "     when estado='SUCIO'       then '/graficos/limpieza.png'\n"
-                + "     when estado='LIMPIANDO'   then '/graficos/escoba.png'\n"
-                + "     when estado='OCUPADO'     and es_por_dormir = false and es_por_hora = true  and puerta_limpieza = true and puerta_cliente = true then '/iconos/motel/48_reloj.png'\n"
-                + "     when estado='OCUPADO'     and es_por_dormir = true  and es_por_hora = false and puerta_limpieza = true and puerta_cliente = true then '/iconos/motel/48_dormir.png'\n"
-                + "     when estado='OCUPADO'     and es_por_dormir = true  and es_por_hora = true and puerta_limpieza = true and puerta_cliente = true then '/iconos/motel/48_dormir.png'\n"
-                + "     when estado='OCUPADO'     and puerta_limpieza = true and puerta_cliente = false then '/graficos/48_puerta.png'\n"
+                + "case "
+                + Est_Libre+"       "+Puerta_1_1+" then '/graficos/libre.png'\n"
+                + Est_Libre+"       "+Puerta_0_0+" then '/graficos/48_mante.png'\n"
+                + Est_Sucio+"       then '/graficos/limpieza.png'\n"
+                + Est_Limpiando+"   then '/graficos/escoba.png'\n"
+                + Est_Ocu_POR_HORA+"            "+Puerta_1_1+" then '/iconos/motel/48_reloj.png'\n"
+                + Est_Ocu_POR_DORMIR+"          "+Puerta_1_1+" then '/iconos/motel/48_dormir.png'\n"
+                + Est_Ocu_POR_HORA_MAS_DORMIR+" "+Puerta_1_1+" then '/iconos/motel/48_dormir.png'\n"
+                + Est_Ocupado+"     and es_hospedaje = true  "+Puerta_1_1+" then '/graficos/48_maleta.png'\n"
+                + Est_Ocupado+"     and puerta_limpieza = true and puerta_cliente = false then '/graficos/48_puerta.png'\n"
                 + "else 'no' end,"
                 + "descrip_estado=\n"
                 + "case\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = true  then estado||''\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = false and puerta_cliente = true  then estado||'-LIMPIANDO'\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = true  and puerta_cliente = false then estado||'-CLI-INGRESO'\n"
-                + "when estado = 'LIBRE'     and puerta_limpieza = false and puerta_cliente = false then estado||'-MANTE'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))>(minuto_cancelar * 60)) then estado||''\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) then estado||'-(CANCELAR)'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = false and puerta_cliente = true  then estado||'-LIMP-ABIERTO'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = true  and puerta_cliente = false then estado||'-CLI-ABIERTO'\n"
-                + "when estado = 'OCUPADO'   and puerta_limpieza = false and puerta_cliente = false then estado||'-MANTE'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = true  and puerta_cliente = true  then estado||'-SUCIO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false and puerta_cliente = true  then estado||'-LIMPIANDO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = true  and puerta_cliente = false then estado||'-CLI-ABIERTO'\n"
-                + "when estado = 'SUCIO'     and puerta_limpieza = false and puerta_cliente = false then estado||'-MANTE'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  and puerta_cliente = true  then estado||''\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = false and puerta_cliente = true  then estado||'-LIMPIANDO'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = true  and puerta_cliente = false then estado||'-CLI-INGRESO'\n"
-                + "when estado = 'LIMPIANDO' and puerta_limpieza = false and puerta_cliente = false then estado||'-MANTE'\n"
+                + Est_Libre+"     "+Puerta_1_1+" then estado||''\n"
+                + Est_Libre+"     "+Puerta_0_1+" then estado||'"+Text_Limpiando+"'\n"
+                + Est_Libre+"     "+Puerta_1_0+" then estado||'"+Text_CliIngreso+"'\n"
+                + Est_Libre+"     "+Puerta_0_0+" then estado||'"+Text_Mante+"'\n"
+                + Est_Ocupado+"   "+Puerta_1_1+"  and ("+seg_transcurrido_desde_inicio+">"+seg_cancelar+") then estado||''\n"
+                + Est_Ocupado+"   "+Puerta_1_1+"  and ("+seg_transcurrido_desde_inicio+"<"+seg_cancelar+") then estado||'"+Text_Cancelar+"'\n"
+                + Est_Ocupado+"   "+Puerta_0_1+" then estado||'"+Text_LimAbierto+"'\n"
+                + Est_Ocupado+"   "+Puerta_1_0+" then estado||'"+Text_CliAbierto+"'\n"
+                + Est_Ocupado+"   "+Puerta_0_0+" then estado||'"+Text_Mante+"'\n"
+                + Est_Sucio+"     "+Puerta_1_1+" then estado||'"+Text_Sucio+"'\n"
+                + Est_Sucio+"     "+Puerta_0_1+" then estado||'"+Text_Limpiando+"'\n"
+                + Est_Sucio+"     "+Puerta_1_0+" then estado||'"+Text_CliAbierto+"'\n"
+                + Est_Sucio+"     "+Puerta_0_0+" then estado||'"+Text_Mante+"'\n"
+                + Est_Limpiando+" "+Puerta_1_1+" then estado||''\n"
+                + Est_Limpiando+" "+Puerta_0_1+" then estado||'"+Text_Limpiando+"'\n"
+                + Est_Limpiando+" "+Puerta_1_0+" then estado||'"+Text_CliIngreso+"'\n"
+                + Est_Limpiando+" "+Puerta_0_0+" then estado||'"+Text_Mante+"'\n"
                 + "else '.'\n"
                 + "end,"
                 + "color_fondo="
-                + "case when estado='LIBRE'     and puerta_limpieza = false and puerta_cliente = false then '#DFD3C3'\n"
-                + "     when estado='OCUPADO'   and cant_hora_adicional>0 then '#FFCCFF'\n"
-                + "     when estado='OCUPADO'   and puerta_limpieza = true  and puerta_cliente = false then '#FF003F'\n"
-                + "     when estado='OCUPADO'   and es_por_dormir = true  and puerta_limpieza = true and puerta_cliente = true and monto_adelanto=0 then '#F0EDD4'\n"
-                + "     when estado='OCUPADO'   and es_por_dormir = true  and puerta_limpieza = true and puerta_cliente = true and monto_adelanto>0 then '#FEFF86'\n"
-                + "     when estado='OCUPADO'   and es_por_dormir = false and es_por_hora = true  and puerta_limpieza = true  and puerta_cliente = true  and (extract(epoch from (current_timestamp-fec_ocupado_inicio))<(minuto_cancelar * 60)) \n"
-                + "     then (case when MOD((cast( extract(epoch from (current_timestamp-fec_ocupado_inicio)) as integer)/5),2)=0 then '#A85CF9' else '#6FDFDF' end)" //#DFD3C3
+                + "case "
+                + Est_Libre+"     "+Puerta_0_0+" then '#DFD3C3'\n"
+                + "when (descripcion_habitacion='Por_Dormir_6' or descripcion_habitacion='Por_Dormir_7' or descripcion_habitacion='Por_Hora_Dormir_7') "//'Por_Hora_Dormir_7'
+                + "     then (case when MOD((cast( "+seg_transcurrido_desde_inicio+" as integer)/5),2)=0 then '#F11A7B' else '#FCF5ED' end)"//#DFD3C3
+                + Est_Ocupado+"   and cant_hora_adicional>0 then '#FFCCFF'\n"
+                + Est_Ocupado+"   "+Puerta_1_0+" then '#FF003F'\n"
+                + Est_Ocupado+"   and es_por_dormir = true  "+Puerta_1_1+" and monto_adelanto=0 then '#F0EDD4'\n"
+                + Est_Ocupado+"   and es_por_dormir = true  "+Puerta_1_1+" and monto_adelanto>0 then '#FEFF86'\n"
+                + Est_Ocupado+"   and es_por_dormir = false and es_por_hora = true  "+Puerta_1_1+"  and ("+seg_transcurrido_desde_inicio+"<"+seg_cancelar+")\n"
+                + "     then (case when MOD((cast("+seg_transcurrido_desde_inicio+" as integer)/5),2)=0 then '#A85CF9' else '#6FDFDF' end)"
+                + Est_Ocupado+"   and es_hospedaje = true  "+Puerta_1_1+" and ("+seg_transcurrido_desde_inicio+">("+seg_hospedaje+"-(minuto_tolerancia*60)))\n"
+                + "     then (case when MOD((cast( "+seg_transcurrido_desde_inicio+" as integer)/5),2)=0 then '#F11A7B' else '#FCF5ED' end)"//#DFD3C3
+                + Est_Libre+" and es_manual=true then '#B9F3FC' \n"
                 + "     else '#F0F0F0' end,"
                 + "color_texto="
-                + "case when estado='LIBRE' then '#006532' \n"
-                + "     when estado='OCUPADO' and puerta_limpieza = true  and puerta_cliente = false then '#000000' \n"
-                + "     when estado='OCUPADO' and puerta_limpieza = true  and puerta_cliente = true then '#FF0000' \n"
-                + "     when estado='SUCIO' then '#CB9800' \n"
+                + "case "
+                + Est_Libre+" then '#006532' \n"
+                + Est_Ocupado+" "+Puerta_1_0+" then '#000000' \n"
+                + Est_Ocupado+" "+Puerta_1_1+" then '#FF0000' \n"
+                + Est_Sucio+" then '#CB9800' \n"
                 + "     else '#000000' end;";
         return sql_ocupacion_boton_LIBIANO;
     }
 
     public String getSql_ocupacion_boton_CARGAR(int idhabitacion_dato) {
         return sql_ocupacion_boton_CARGAR = "select estado,nro_habitacion,idhabitacion_recepcion_actual,tipo_habitacion,"
-                + "es_por_dormir,es_por_hora, "
+                + "es_por_dormir,es_por_hora,es_hospedaje, "
                 + "case\n"
-                + "when estado = 'OCUPADO'\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(minuto_minimo * 60))  \n"
-                + "		then (0)\n"
-                + "when estado = 'OCUPADO'\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(minuto_minimo * 60))\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))<(((minuto_minimo)* 60)+(minuto_adicional * 60)))  \n"
-                + "		then (1)\n"
-                + "when estado = 'OCUPADO'\n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>((minuto_minimo * 60)+(minuto_adicional * 60)))  \n"
-                + "		then (1 + (cast(to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio))-(fec_ocupado_inicio + (minuto_minimo || ' minutes')::interval), 'HH24') as integer)* 1))\n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+"<"+seg_minimo+")\n"
+                + "  then (0)\n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+">"+seg_minimo+") and ("+seg_inicio_a_Dormir_inicio+"<"+seg_minimo_mas_adicional+")\n"
+                + "  then (1)\n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+">"+seg_minimo_mas_adicional+")\n"
+                + "  then "+hora_Dormir_minimo+"\n"
                 + "else 0\n"
                 + "end as cant_hasta_dormir, \n"
                 + "case \n"
-                + "when estado = 'OCUPADO' \n"
-                + "	and ((extract(epoch from((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio)))>(0)) \n"
-                + "		then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'HH24:MI:ss') \n"
+                + Est_Ocupado + " and ("+seg_inicio_a_Dormir_inicio+">(0))\n"
+                + "  then to_char(((date(fec_ocupado_inicio) + hs_dormir_ingreso_inicio) - fec_ocupado_inicio),'"+format_hora+"') \n"
                 + "else '00:00' \n"
-                + "end as hs_hasta_dormir, \n"
-                + "cant_hora_adicional, "
+                + "end as hs_hasta_dormir,\n"
+                + "cant_hora_adicional,"
                 + "case\n"
-                + "when (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio))\n"
-                + "	and (current_timestamp<(date(current_timestamp)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "	and (current_timestamp<((date(current_timestamp)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
-                + "when  (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "	and (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp<((date(current_timestamp)) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
-                + "when  (current_timestamp>(date(current_timestamp) + hs_dormir_ingreso_inicio))\n"
-                + "	and (current_timestamp<(date(current_timestamp)+ time '23:59:59'))\n"
-                + "	and (current_timestamp>((date(current_timestamp)+ 1) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
-                + "when  (current_timestamp>(date(current_timestamp) + time '00:00:01'))\n"
-                + "	and (current_timestamp<(date(current_timestamp) + hs_dormir_salida_final))\n"
-                + "	and (current_timestamp>((date(current_timestamp)) + hs_dormir_salida_final)) \n"
-                + "		then true\n"
+                + "when "+fec_actual_mayor_Dormir_inicio + " and "+fec_actual_menor_23hs+ " and "+fec_actual_mayor_00hs+ " and (current_timestamp<"+fec_actual_Dormir_final_mas1+")\n"
+                + "  then true\n"
+                + "when "+fec_actual_mayor_00hs+ " and "+fec_actual_menor_Dormir_final+ " and (current_timestamp<"+fec_actual_Dormir_final+")\n"
+                + "  then true\n"
+                + "when "+fec_actual_mayor_Dormir_inicio+ " and "+fec_actual_menor_23hs+ " and (current_timestamp>"+fec_actual_Dormir_final_mas1+")\n"
+                + "  then true\n"
+                + "when "+fec_actual_mayor_00hs+ " and "+fec_actual_menor_Dormir_final+ " and (current_timestamp>"+fec_actual_Dormir_final+")\n"
+                + "  then true\n"
                 + "else false\n"
                 + "end as permitir_dormir, \n"
                 + "tiempo_estado,\n "
                 + "to_char((fec_ocupado_inicio), 'yyyy-MM-dd') as fecha_ingreso,\n"
-                + "to_char((fec_ocupado_inicio), 'HH24:MI:ss') as hora_ingreso, \n"
+                + "to_char((fec_ocupado_inicio), '"+format_hora+"') as hora_ingreso, \n"
                 + "case \n"
-                + "when estado = 'OCUPADO' and puerta_limpieza=true and puerta_cliente=true \n"
-                + "	and ((extract(epoch from(current_timestamp - fec_ocupado_inicio)))<(minuto_cancelar*60)) then true\n"
+                + Est_Ocupado+" "+Puerta_1_1+ " and ("+seg_transcurrido_desde_inicio+"<"+seg_cancelar+")\n"
+                + "  then true\n"
                 + "else false \n"
                 + "end as cancelar_habitacion, \n"
                 + "case \n"
-                + "when ((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))>0 \n"
-                + "		then to_char(((((minuto_cancelar*60)-(extract(epoch from(current_timestamp - fec_ocupado_inicio))))*100)/(minuto_cancelar * 60)),'99D99%') \n"
+                + "when ("+seg_cancelar+"-"+seg_transcurrido_desde_inicio+")>0 \n"
+                + "  then to_char(((("+seg_cancelar+"-"+seg_transcurrido_desde_inicio+")*100)/"+seg_cancelar+"),'99D99%') \n"
                 + "else '0%' \n"
                 + "end as por_cancelar, \n"
-                + "(extract(epoch from (current_timestamp - fec_ocupado_inicio))) as ocupado_inicio_seg,\n"
+                + "("+seg_transcurrido_desde_inicio+") as ocupado_inicio_seg,\n"
                 + "minuto_minimo,monto_por_hora_minimo \n"
                 + "from habitacion_recepcion_temp "
                 + "where activo=true and idhabitacion_dato=" + idhabitacion_dato;
     }
 
+    public void update_habitacion_recepcion_temp_es_manual(Connection conn, boolean manual, int idhabitacion_dato) {
+        String sql = "update habitacion_dato \n"
+                + "set es_manual=" + manual
+                + " where  idhabitacion_dato=" + idhabitacion_dato + ";";
+        eveconn.SQL_execute_libre(conn, sql);
+        String sql1 = "update habitacion_recepcion_temp \n"
+                + "set es_manual=" + manual
+                + " where  idhabitacion_dato=" + idhabitacion_dato + ";";
+        eveconn.SQL_execute_libre(conn, sql1);
+    }
 }

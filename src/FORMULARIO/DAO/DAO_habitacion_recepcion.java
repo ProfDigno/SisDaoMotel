@@ -20,10 +20,34 @@ public class DAO_habitacion_recepcion {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "HABITACION_RECEPCION GUARDADO CORRECTAMENTE";
     private String mensaje_update = "HABITACION_RECEPCION MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO habitacion_recepcion(idhabitacion_recepcion,fecha_creado,creado_por,estado,nro_habitacion,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,es_boton_actual,es_pagado,es_terminado,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumo,monto_descuento,monto_adelanto,cant_adicional,fk_idhabitacion_dato) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE habitacion_recepcion SET fecha_creado=?,creado_por=?,estado=?,nro_habitacion=?,fec_libre_inicio=?,fec_libre_fin=?,fec_ocupado_inicio=?,fec_ocupado_fin=?,fec_sucio_inicio=?,fec_sucio_fin=?,fec_limpieza_inicio=?,fec_limpieza_fin=?,fec_mante_inicio=?,fec_mante_fin=?,es_libre=?,es_ocupado=?,es_sucio=?,es_limpieza=?,es_mante=?,es_cancelado=?,es_por_hora=?,es_por_dormir=?,es_boton_actual=?,es_pagado=?,es_terminado=?,monto_por_hora_minimo=?,monto_por_hora_adicional=?,monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,monto_consumo=?,monto_descuento=?,monto_adelanto=?,cant_adicional=?,fk_idhabitacion_dato=? WHERE idhabitacion_recepcion=?;";
+    private String sql_insert = "INSERT INTO habitacion_recepcion(idhabitacion_recepcion,fecha_creado,creado_por,"
+            + "estado,nro_habitacion,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,"
+            + "fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,"
+            + "es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,"
+            + "es_boton_actual,es_pagado,es_terminado,"
+            + "monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,"
+            + "monto_consumo,monto_descuento,monto_adelanto,cant_adicional,fk_idhabitacion_dato,"
+            + "monto_por_hospedaje_minimo,fec_hospedaje_inicio,fec_hospedaje_fin,es_hospedaje) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE habitacion_recepcion SET fecha_creado=?,creado_por=?,"
+            + "estado=?,nro_habitacion=?,fec_libre_inicio=?,fec_libre_fin=?,fec_ocupado_inicio=?,fec_ocupado_fin=?,"
+            + "fec_sucio_inicio=?,fec_sucio_fin=?,fec_limpieza_inicio=?,fec_limpieza_fin=?,fec_mante_inicio=?,fec_mante_fin=?,"
+            + "es_libre=?,es_ocupado=?,es_sucio=?,es_limpieza=?,es_mante=?,es_cancelado=?,es_por_hora=?,es_por_dormir=?,"
+            + "es_boton_actual=?,es_pagado=?,es_terminado=?,"
+            + "monto_por_hora_minimo=?,monto_por_hora_adicional=?,monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,"
+            + "monto_consumo=?,monto_descuento=?,monto_adelanto=?,cant_adicional=?,fk_idhabitacion_dato=?,"
+            + "monto_por_hospedaje_minimo=?,fec_hospedaje_inicio=?,fec_hospedaje_fin=?,es_hospedaje=? "
+            + "WHERE idhabitacion_recepcion=?;";
     private String sql_select = "SELECT idhabitacion_recepcion,fecha_creado,creado_por,estado,nro_habitacion,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,es_boton_actual,es_pagado,es_terminado,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumo,monto_descuento,monto_adelanto,cant_adicional,fk_idhabitacion_dato FROM habitacion_recepcion order by 1 desc;";
-    private String sql_cargar = "SELECT idhabitacion_recepcion,fecha_creado,creado_por,estado,nro_habitacion,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,es_boton_actual,es_pagado,es_terminado,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,monto_consumo,monto_descuento,monto_adelanto,cant_adicional,fk_idhabitacion_dato FROM habitacion_recepcion WHERE idhabitacion_recepcion=";
+    private String sql_cargar = "SELECT idhabitacion_recepcion,fecha_creado,creado_por,"
+            + "estado,nro_habitacion,fec_libre_inicio,fec_libre_fin,fec_ocupado_inicio,fec_ocupado_fin,"
+            + "fec_sucio_inicio,fec_sucio_fin,fec_limpieza_inicio,fec_limpieza_fin,fec_mante_inicio,fec_mante_fin,"
+            + "es_libre,es_ocupado,es_sucio,es_limpieza,es_mante,es_cancelado,es_por_hora,es_por_dormir,"
+            + "es_boton_actual,es_pagado,es_terminado,"
+            + "monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,"
+            + "monto_consumo,monto_descuento,monto_adelanto,cant_adicional,fk_idhabitacion_dato,"
+            + "monto_por_hospedaje_minimo,fec_hospedaje_inicio,fec_hospedaje_fin,es_hospedaje "
+            + "FROM habitacion_recepcion WHERE idhabitacion_recepcion=";
 
     public void insertar_habitacion_recepcion(Connection conn, habitacion_recepcion hare) {
         hare.setC1idhabitacion_recepcion(eveconn.getInt_ultimoID_mas_uno(conn, hare.getTb_habitacion_recepcion(), hare.getId_idhabitacion_recepcion()));
@@ -66,6 +90,10 @@ public class DAO_habitacion_recepcion {
             pst.setDouble(33, hare.getC33monto_adelanto());
             pst.setDouble(34, hare.getC34cant_adicional());
             pst.setInt(35, hare.getC35fk_idhabitacion_dato());
+            pst.setDouble(36, hare.getC36monto_por_hospedaje_minimo());
+            pst.setTimestamp(37, evefec.getTimestamp_sistema());
+            pst.setTimestamp(38, evefec.getTimestamp_sistema());
+            pst.setBoolean(39, hare.getC39es_hospedaje());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + hare.toString(), titulo);
@@ -114,7 +142,11 @@ public class DAO_habitacion_recepcion {
             pst.setDouble(32, hare.getC33monto_adelanto());
             pst.setDouble(33, hare.getC34cant_adicional());
             pst.setInt(34, hare.getC35fk_idhabitacion_dato());
-            pst.setInt(35, hare.getC1idhabitacion_recepcion());
+            pst.setDouble(35, hare.getC36monto_por_hospedaje_minimo());
+            pst.setTimestamp(36, evefec.getTimestamp_sistema());
+            pst.setTimestamp(37, evefec.getTimestamp_sistema());
+            pst.setBoolean(38, hare.getC39es_hospedaje());
+            pst.setInt(39, hare.getC1idhabitacion_recepcion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + hare.toString(), titulo);
@@ -164,6 +196,11 @@ public class DAO_habitacion_recepcion {
                 hare.setC33monto_adelanto(rs.getDouble(33));
                 hare.setC34cant_adicional(rs.getDouble(34));
                 hare.setC35fk_idhabitacion_dato(rs.getInt(35));
+                hare.setC36monto_por_hospedaje_minimo(rs.getDouble(36));
+                hare.setC37fec_hospedaje_inicio(rs.getString(37));
+                hare.setC38fec_hospedaje_fin(rs.getString(38));
+                hare.setC39es_hospedaje(rs.getBoolean(39));
+                
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + hare.toString(), titulo);
             }
         } catch (Exception e) {

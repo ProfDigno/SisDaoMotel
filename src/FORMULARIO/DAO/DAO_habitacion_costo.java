@@ -20,22 +20,26 @@ public class DAO_habitacion_costo {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "HABITACION_COSTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "HABITACION_COSTO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO habitacion_costo(idhabitacion_costo,fecha_creado,creado_por,"
-            + "activo,nombre,nivel_lujo,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,"
-            + "minuto_minimo,minuto_adicional,minuto_cancelar,"
-            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,minuto_tolerancia"
-            + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE habitacion_costo SET fecha_creado=?,creado_por=?,"
-            + "activo=?,nombre=?,nivel_lujo=?,monto_por_hora_minimo=?,monto_por_hora_adicional=?,monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,"
-            + "minuto_minimo=?,minuto_adicional=?,minuto_cancelar=?,"
-            + "hs_dormir_ingreso_inicio=?,hs_dormir_ingreso_final=?,hs_dormir_salida_final=?,minuto_tolerancia=? WHERE idhabitacion_costo=?;";
-    private String sql_select = "SELECT idhabitacion_costo as idhc,nombre,nivel_lujo as tipo,activo "
+    private String sql_insert = "INSERT INTO habitacion_costo(idhabitacion_costo,fecha_creado,creado_por,\n"
+            + "activo,nombre,nivel_lujo,monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,\n"
+            + "minuto_minimo,minuto_adicional,minuto_cancelar,\n"
+            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,minuto_tolerancia,\n"
+            + "monto_por_hospedaje_minimo,minuto_hospedaje\n"
+            + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE habitacion_costo SET fecha_creado=?,creado_por=?,\n"
+            + "activo=?,nombre=?,nivel_lujo=?,monto_por_hora_minimo=?,monto_por_hora_adicional=?,monto_por_dormir_minimo=?,monto_por_dormir_adicional=?,\n"
+            + "minuto_minimo=?,minuto_adicional=?,minuto_cancelar=?,\n"
+            + "hs_dormir_ingreso_inicio=?,hs_dormir_ingreso_final=?,hs_dormir_salida_final=?,minuto_tolerancia=?,\n"
+            + "monto_por_hospedaje_minimo=?,minuto_hospedaje=? \n"
+            + "WHERE idhabitacion_costo=?;";
+    private String sql_select = "SELECT idhabitacion_costo as idhc,nombre,nivel_lujo as tipo,activo \n"
             + "FROM habitacion_costo order by nombre desc;";
-    private String sql_cargar = "SELECT idhabitacion_costo,fecha_creado,creado_por,"
-            + "activo,nombre,nivel_lujo,"
-            + "monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,"
-            + "minuto_minimo,minuto_adicional,minuto_cancelar,"
-            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,minuto_tolerancia "
+    private String sql_cargar = "SELECT idhabitacion_costo,fecha_creado,creado_por,\n"
+            + "activo,nombre,nivel_lujo,\n"
+            + "monto_por_hora_minimo,monto_por_hora_adicional,monto_por_dormir_minimo,monto_por_dormir_adicional,\n"
+            + "minuto_minimo,minuto_adicional,minuto_cancelar,\n"
+            + "hs_dormir_ingreso_inicio,hs_dormir_ingreso_final,hs_dormir_salida_final,minuto_tolerancia,\n"
+            + "monto_por_hospedaje_minimo,minuto_hospedaje \n"
             + "FROM habitacion_costo WHERE idhabitacion_costo=";
 
     public void insertar_habitacion_costo(Connection conn, habitacion_costo haco) {
@@ -61,6 +65,8 @@ public class DAO_habitacion_costo {
             pst.setTime(15, evefec.getTime_sistema_cargado(haco.getC15hs_dormir_ingreso_final()));
             pst.setTime(16, evefec.getTime_sistema_cargado(haco.getC16hs_dormir_salida_final()));
             pst.setInt(17, haco.getC17minuto_tolerancia());
+            pst.setDouble(18, haco.getC18monto_por_hospedaje_minimo());
+            pst.setInt(19, haco.getC19minuto_hospedaje());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + haco.toString(), titulo);
@@ -91,7 +97,9 @@ public class DAO_habitacion_costo {
             pst.setTime(14, evefec.getTime_sistema_cargado(haco.getC15hs_dormir_ingreso_final()));
             pst.setTime(15, evefec.getTime_sistema_cargado(haco.getC16hs_dormir_salida_final()));
             pst.setInt(16, haco.getC17minuto_tolerancia());
-            pst.setInt(17, haco.getC1idhabitacion_costo());
+            pst.setDouble(17, haco.getC18monto_por_hospedaje_minimo());
+            pst.setInt(18, haco.getC19minuto_hospedaje());
+            pst.setInt(19, haco.getC1idhabitacion_costo());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + haco.toString(), titulo);
@@ -123,6 +131,8 @@ public class DAO_habitacion_costo {
                 haco.setC15hs_dormir_ingreso_final(rs.getString(15));
                 haco.setC16hs_dormir_salida_final(rs.getString(16));
                 haco.setC17minuto_tolerancia(rs.getInt(17));
+                haco.setC18monto_por_hospedaje_minimo(rs.getDouble(18));
+                haco.setC19minuto_hospedaje(rs.getInt(19));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + haco.toString(), titulo);
             }
         } catch (Exception e) {

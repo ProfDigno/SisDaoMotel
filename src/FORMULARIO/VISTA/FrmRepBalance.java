@@ -7,6 +7,9 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
+import CONFIGURACION.ComputerInfo;
+import CREAR_CSV.Crear_csv;
+import Config_JSON.json_array_csv;
 import Evento.Combobox.EvenCombobox;
 import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
@@ -17,11 +20,13 @@ import FILTRO.ClaAuxFiltroVenta;
 import FORMULARIO.DAO.DAO_balance;
 import FORMULARIO.DAO.DAO_usuario;
 import FORMULARIO.DAO.DAO_venta;
+import FORMULARIO.ENTIDAD.habitacion_recepcion_temp;
 //import FORMULARIO.DAO.DAO_cliente;
 //import FORMULARIO.DAO.DAO_venta_alquiler;
 //import FORMULARIO.ENTIDAD.cliente;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
@@ -43,24 +48,46 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
     private DAO_venta DAOven = new DAO_venta();
     private EvenCombobox evecmb = new EvenCombobox();
     private DAO_usuario DAOusu = new DAO_usuario();
-    private DAO_balance DAObal=new DAO_balance();
-
+    private DAO_balance DAObal = new DAO_balance();
+    private Crear_csv ccsv = new Crear_csv();
+    private json_array_csv jscsv = new json_array_csv();
+    private ComputerInfo pcinf = new ComputerInfo();
+    private habitacion_recepcion_temp ENThrt = new habitacion_recepcion_temp();
     private void abrir_formulario() {
         this.setTitle(nombre_formulario);
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
-//        actualizar_tabla();
     }
 
-    private void actualizar_tabla() {
+//    private void boton_crear_csv() {
+//        String carpeta_raiz = jscsv.getCarpeta_raiz();
+//        String carpeta_local = jscsv.getCarpeta_local();
+//        String carpeta_dropbox = jscsv.getCarpeta_dropbox();
+//        int dias_filtro=45;
+//        ccsv.limpiar_campo_tabla(conn, "caja_cierre_detalle", "fecha_creado", "descripcion", dias_filtro);
+//        ccsv.CSV_eliminar_crear_copiar(conn, "caja_cierre_detalle", "fecha_creado", dias_filtro, carpeta_local, carpeta_raiz, carpeta_dropbox);
+//        ccsv.CSV_eliminar_crear_copiar(conn, "caja_cierre_item", "fecha_creado", dias_filtro, carpeta_local, carpeta_raiz, carpeta_dropbox);
+//        ccsv.CSV_eliminar_crear_copiar(conn, "caja_cierre", "fecha_creado", dias_filtro, carpeta_local, carpeta_raiz, carpeta_dropbox);
+//    }
+//
+//    private void boton_progressbar() {
+//        ENThrt.setHab_tiempo_menu(false);
+//        String carpeta_local = jscsv.getCarpeta_local();
+//        String nombre_computador = pcinf.getComputerName();
+//        ccsv.leer_csv_insert_destino_timer_progressbar(conn, "caja_cierre_detalle", "admin_caja_cierre_detalle", "idadmin_caja_cierre_detalle",nombre_computador, carpeta_local);
+//        ccsv.leer_csv_insert_destino_timer_progressbar(conn, "caja_cierre_item", "admin_caja_cierre_item", "idadmin_caja_cierre_item",nombre_computador, carpeta_local);
+//        ccsv.leer_csv_insert_destino_timer_progressbar(conn, "caja_cierre", "admin_caja_cierre", "idadmin_caja_cierre",nombre_computador, carpeta_local);
+//        JOptionPane.showMessageDialog(null,"INSERT DE TABLAS TERMINADO");
+//        
+//    }
 
-    }
-    private void boton_buscar(){
+    private void boton_buscar() {
         actualizar_tabla_caja_resumen();
         actualizar_tabla_gasto();
         actualizar_tabla_compra_carga();
         actualizar_tabla_producto_venta();
     }
+
     private void actualizar_tabla_caja_resumen() {
         String fec_caja = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "cc.fecha_inicio");
         DAObal.actualizar_tabla_caja_resumen(conn, tblresumen_caja, fec_caja);
@@ -73,10 +100,12 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
         double monto_saldo = evejt.getDouble_sumar_tabla(tblresumen_caja, 12);
         jFtotal_saldo.setValue(monto_saldo);
     }
+
     private void imprimir_tabla_caja_resumen() {
         String fec_caja = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "cc.fecha_inicio");
         DAObal.imprimir_caja_resumen(conn, fec_caja);
     }
+
     private void actualizar_tabla_gasto() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "g.fecha_creado");
         DAObal.actualizar_tabla_gasto(conn, tblgastos, filtro_fecha);
@@ -85,28 +114,34 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
         double monto_admin = evejt.getDouble_sumar_tabla(tblgastos, 9);
         jFtotal_gasto_admin.setValue(monto_admin);
     }
+
     private void actualizar_tabla_compra_carga() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "c.fecha_creado");
         DAObal.actualizar_tabla_compra(conn, tblcompra_carga_st, filtro_fecha);
         double monto_subtotal = evejt.getDouble_sumar_tabla(tblcompra_carga_st, 8);
         jFtotal_compra_subtotal.setValue(monto_subtotal);
     }
+
     private void imprimir_tabla_gasto_dia() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "g.fecha_creado");
         DAObal.imprimir_gasto_dia(conn, filtro_fecha);
     }
+
     private void imprimir_tabla_gasto_tipo() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "g.fecha_creado");
         DAObal.imprimir_gasto_tipo(conn, filtro_fecha);
     }
+
     private void imprimir_tabla_compra_dia() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "c.fecha_creado");
         DAObal.imprimir_compra_dia(conn, filtro_fecha);
     }
+
     private void imprimir_tabla_compra_prod() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "c.fecha_creado");
         DAObal.imprimir_compra_prod(conn, filtro_fecha);
     }
+
     private void actualizar_tabla_producto_venta() {
         String fec_caja = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "cc.fecha_inicio");
         DAObal.actualizar_tabla_producto_venta(conn, tblproducto_venta, fec_caja);
@@ -117,13 +152,15 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
         double monto_ganancia = evejt.getDouble_sumar_tabla(tblproducto_venta, 10);
         jFtotal_prod_ganancia.setValue(monto_ganancia);
     }
+
     private void imprimir_tabla_producto_venta() {
         String filtro_fecha = evefec.getFiltroSql_desde_hasta_campo(dcfecDesde, dcfecHasta, "cc.fecha_inicio");
-        String fecha_desde=evefec.getfechaDCStringFormat(dcfecDesde, "yyyy-MM-dd");
-        String fecha_hasta=evefec.getfechaDCStringFormat(dcfecHasta, "yyyy-MM-dd");
-        String fecha="Fecha Desde: "+fecha_desde+" Hasta: "+fecha_hasta;
+        String fecha_desde = evefec.getfechaDCStringFormat(dcfecDesde, "yyyy-MM-dd");
+        String fecha_hasta = evefec.getfechaDCStringFormat(dcfecHasta, "yyyy-MM-dd");
+        String fecha = "Fecha Desde: " + fecha_desde + " Hasta: " + fecha_hasta;
         DAObal.imprimir_producto_venta(conn, fecha, filtro_fecha);
     }
+
     private void reestableser() {
         evefec.setFechaDCSistema(dcfecDesde);
         evefec.setFechaDCSistema(dcfecHasta);
@@ -270,7 +307,7 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
                             .addComponent(jFtotal_ocupacion)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnimprimir_resumen_caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(btnimprimir_resumen_caja, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -316,7 +353,9 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(154, 154, 154)
+                .addContainerGap()
+                .addComponent(btnimprimir_gastos, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
                 .addComponent(btnimprimir_gasto_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(859, Short.MAX_VALUE))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -325,8 +364,7 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jScrollPane2)
                         .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addComponent(btnimprimir_gastos, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(708, 708, 708)
+                            .addGap(844, 844, 844)
                             .addComponent(jFtotal_gasto_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jFtotal_gasto_admin, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -335,22 +373,19 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(444, Short.MAX_VALUE)
-                .addComponent(btnimprimir_gasto_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(447, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnimprimir_gasto_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnimprimir_gastos, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21))
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 427, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addGap(10, 10, 10)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jFtotal_gasto_admin)
-                                .addComponent(jFtotal_gasto_caja)))
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnimprimir_gastos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGap(10, 10, 10)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jFtotal_gasto_admin)
+                        .addComponent(jFtotal_gasto_caja))
                     .addContainerGap()))
         );
 
@@ -524,11 +559,11 @@ public class FrmRepBalance extends javax.swing.JInternalFrame {
 
         dcfecDesde.setBorder(javax.swing.BorderFactory.createTitledBorder("DESDE:"));
         dcfecDesde.setDateFormatString("yyyy-MM-dd");
-        dcfecDesde.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        dcfecDesde.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
 
         dcfecHasta.setBorder(javax.swing.BorderFactory.createTitledBorder("HASTA:"));
         dcfecHasta.setDateFormatString("yyyy-MM-dd");
-        dcfecHasta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        dcfecHasta.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);

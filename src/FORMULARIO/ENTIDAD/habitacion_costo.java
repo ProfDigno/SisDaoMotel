@@ -19,6 +19,8 @@ private String C14hs_dormir_ingreso_inicio;
 private String C15hs_dormir_ingreso_final;
 private String C16hs_dormir_salida_final;
 private int C17minuto_tolerancia;
+private double C18monto_por_hospedaje_minimo;
+private int C19minuto_hospedaje;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -39,6 +41,22 @@ private static String nom_idtabla;
 		habitacion_costo.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public double getC18monto_por_hospedaje_minimo() {
+        return C18monto_por_hospedaje_minimo;
+    }
+
+    public void setC18monto_por_hospedaje_minimo(double C18monto_por_hospedaje_minimo) {
+        this.C18monto_por_hospedaje_minimo = C18monto_por_hospedaje_minimo;
+    }
+
+    public int getC19minuto_hospedaje() {
+        return C19minuto_hospedaje;
+    }
+
+    public void setC19minuto_hospedaje(int C19minuto_hospedaje) {
+        this.C19minuto_hospedaje = C19minuto_hospedaje;
+    }
 
     public int getC17minuto_tolerancia() {
         return C17minuto_tolerancia;

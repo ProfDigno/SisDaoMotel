@@ -7,6 +7,7 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
+import CREAR_CSV.Crear_csv;
 import ESTADOS.EvenEstado;
 import Evento.Combobox.EvenCombobox;
 import Evento.Fecha.EvenFecha;
@@ -59,6 +60,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     private PosImprimir_Venta posv = new PosImprimir_Venta();
     private PosImprimir_CierreCajaDetalle poscd = new PosImprimir_CierreCajaDetalle();
     private PosImprimir_Caja_Producto poscp = new PosImprimir_Caja_Producto();
+    private Crear_csv ccsv = new Crear_csv();
     usuario ENTusu = new usuario();
     private DAO_usuario DAOusu = new DAO_usuario();
     Connection conn = ConnPostgres.getConnPosgres();
@@ -78,7 +80,7 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
         idcaja_cierre = (eveconn.getInt_ultimoID_mas_uno(conn, ENTcc.getTb_caja_cierre(), ENTcc.getId_idcaja_cierre()));
         fk_idusuario = ENTusu.getGlobal_idusuario();
-        jTab_caja_prin.setEnabledAt(1,false);
+        jTab_caja_prin.setEnabledAt(1, false);
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_caja_cierre);
         DAOusu.cargar_usuario_combo(conn, cmbusuario);
         BOccd.update_caja_cierre_detalle_corregir();
@@ -103,29 +105,31 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
     }
 
     private void actualizar_tabla_caja_cierre() {
-        String filtro = "";
-        int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
-        String filtro_fec = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "cc.fecha_creado");
-        String filtro_usu = "";
-        if (idusuario > 0) {
-            filtro = " and cc.fk_idusuario=" + idusuario;
+        if (jTab_caja_prin.getSelectedIndex() == 1) {
+            String filtro = "";
+            int idusuario = DAOusu.getInt_idusuario_combo(conn, cmbusuario);
+            String filtro_fec = evefec.getIntervalo_fecha_combobox(cmbfecha_caja_cierre, "cc.fecha_creado");
+            String filtro_usu = "";
+            if (idusuario > 0) {
+                filtro = " and cc.fk_idusuario=" + idusuario;
+            }
+            String filtro_truno = "";
+            if (jRturno_todo.isSelected()) {
+                filtro_truno = "";
+            }
+            if (jRturno_manana.isSelected()) {
+                filtro_truno = " and cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' ";
+            }
+            if (jRturno_tarde.isSelected()) {
+                filtro_truno = " and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '19:00:00' ";
+            }
+            if (jRturno_noche.isSelected()) {
+                filtro_truno = " and cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' ";
+            }
+            filtro = filtro_fec + filtro_usu + filtro_truno;
+            DAOcc.actualizar_tabla_caja_cierre(conn, tblresumen_caja_cierre, filtro);
+            suma_total_caja_detalle_cerrado(filtro);
         }
-        String filtro_truno = "";
-        if (jRturno_todo.isSelected()) {
-            filtro_truno = "";
-        }
-        if (jRturno_manana.isSelected()) {
-            filtro_truno = " and cast(cc.fecha_inicio as time) > time '05:00:00' and cast(cc.fecha_inicio as time) < time '07:00:00' ";
-        }
-        if (jRturno_tarde.isSelected()) {
-            filtro_truno = " and cast(cc.fecha_inicio as time) > time '13:00:00' and cast(cc.fecha_inicio as time) < time '19:00:00' ";
-        }
-        if (jRturno_noche.isSelected()) {
-            filtro_truno = " and cast(cc.fecha_inicio as time) > time '21:00:00' and cast(cc.fecha_inicio as time) < time '23:00:00' ";
-        }
-        filtro = filtro_fec + filtro_usu + filtro_truno;
-        DAOcc.actualizar_tabla_caja_cierre(conn, tblresumen_caja_cierre, filtro);
-        suma_total_caja_detalle_cerrado(filtro);
     }
 
     private void suma_total_caja_detalle_abierto(int idusuario) {
@@ -211,7 +215,8 @@ public class FrmCaja_Detalle extends javax.swing.JInternalFrame {
         JDiaLogin log = new JDiaLogin(null, true);
         log.setVisible(true);
     }
-private void exportar_excel_nivel_2() {
+
+    private void exportar_excel_nivel_2() {
 //        lblnube.setVisible(true);
         DAOcc.update_cantidad_habitacion_todos_N2(conn);
         DAOcc.exportar_excel_caja_fecha_usu_N2(conn);
@@ -220,14 +225,17 @@ private void exportar_excel_nivel_2() {
         DAOcc.exportar_excel_caja_cierre_ingreso_lista_N2(conn);
         DAOcc.exportar_excel_caja_cierre_gral_N2(conn);
         DAOcc.exportar_excel_uso_habitacion_N2(conn);
-        DAOcc.exportar_excel_gastos_N2(conn);
+//        DAOcc.exportar_excel_gastos_N2(conn);
         //nivel 3
         DAOcc.exportar_excel_producto_simple_N3(conn);
         DAOcc.exportar_excel_venta_item_N3(conn);
-        DAOcc.exportar_excel_patrimonio_carga_N3(conn);
-        DAOcc.exportar_excel_patrimonio_baja_N3(conn);
-        DAOcc.exportar_excel_deposito_banco_N3(conn);
+//        DAOcc.exportar_excel_patrimonio_carga_N3(conn);
+//        DAOcc.exportar_excel_patrimonio_baja_N3(conn);
+//        DAOcc.exportar_excel_deposito_banco_N3(conn);
+//        DAOcc.exportar_excel_liquidacion_vale_N3(conn);
+//        ccsv.crear_csv_local_caja_cierre(conn);
     }
+
     private void boton_cerrar_caja() {
         if (!DAOcom.getBoo_varificar_compra_pendiente(conn, fk_idusuario)) {
             if (evemen.getBooMensaje_warning("TENES UNA CARGA EN PENDIENTE\n"
@@ -263,13 +271,13 @@ private void exportar_excel_nivel_2() {
                     this.dispose();
                     abrirArchivo("DisparadorDaoMotel.jar");
                     System.exit(0);
-//                    abrir_login();
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUNA OCUPACION", "ERROR", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+
     private void abrirArchivo(String ruta) {
         try {
             File file = new File(ruta);
@@ -279,6 +287,7 @@ private void exportar_excel_nivel_2() {
         }
 
     }
+
     private void seleccionar_caja_cierre() {
         if (tblresumen_caja_cierre.getSelectedRow() >= 0) {
             int idcaja_cierre = eveJtab.getInt_select_id(tblresumen_caja_cierre);
@@ -1568,13 +1577,13 @@ private void exportar_excel_nivel_2() {
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
         DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO(tblcaja_abierto);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgasto_abierto);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblcompra_abierto);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblventa_interna_abierto);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgarantia_abierto);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblvale);
-        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblliquidacion);
-        DAOcc.ancho_tabla_caja_cierre(tblresumen_caja_cierre);
+//        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgasto_abierto);
+//        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblcompra_abierto);
+//        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblventa_interna_abierto);
+//        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblgarantia_abierto);
+//        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblvale);
+//        DAOccd.ancho_tabla_caja_cierre_detalle_ABIERTO_EGRESO(tblliquidacion);
+//        DAOcc.ancho_tabla_caja_cierre(tblresumen_caja_cierre);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void btncarrar_cajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncarrar_cajaActionPerformed
@@ -1656,10 +1665,11 @@ private void exportar_excel_nivel_2() {
 
     private void jTab_caja_prinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTab_caja_prinMouseClicked
         // TODO add your handling code here:
-        if(DAOusu.gB_JTabbedPane_caja_cerrado()){
-            jTab_caja_prin.setEnabledAt(1,true);
-        }else{
-            jTab_caja_prin.setEnabledAt(1,false);
+        if (DAOusu.gB_JTabbedPane_caja_cerrado()) {
+            jTab_caja_prin.setEnabledAt(1, true);
+            actualizar_tabla_caja_cierre();
+        } else {
+            jTab_caja_prin.setEnabledAt(1, false);
         }
     }//GEN-LAST:event_jTab_caja_prinMouseClicked
 

@@ -14,6 +14,7 @@ import Evento.Jtable.EvenJtable;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import javax.swing.JOptionPane;
 
@@ -141,14 +142,15 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
     }
     private void reestableser(){
         this.setTitle(nombreTabla_pri);
+        jRtipo_patrimonio.setSelected(true);
         jTab_principal.setTitleAt(0, nombreTabla_pri);
         jTab_principal.setTitleAt(1, nombreTabla_sec);
         jScategoria.setVisible(false);
         jSubicacion.setVisible(false);
         txtid.setText(null);
         txtnombre.setText(null);
-        txtreferencia.setText("sin-ref");
-        txtprecio_compra.setText(null);
+        txtreferencia.setText(null);
+        txtprecio_compra.setText("0");
         txtestado.setText(null);
         txtstock.setText("0");
         txtpatrimonio_categoria.setText(null);
@@ -330,6 +332,11 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
                 tbltabla_categoriaMouseReleased(evt);
             }
         });
+        tbltabla_categoria.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tbltabla_categoriaKeyPressed(evt);
+            }
+        });
         jScategoria.setViewportView(tbltabla_categoria);
 
         jLayeredPane1.add(jScategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 190, 280));
@@ -348,6 +355,11 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
         tbltabla_ubicacion.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 tbltabla_ubicacionMouseReleased(evt);
+            }
+        });
+        tbltabla_ubicacion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tbltabla_ubicacionKeyPressed(evt);
             }
         });
         jSubicacion.setViewportView(tbltabla_ubicacion);
@@ -394,11 +406,16 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLayeredPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+            .addComponent(jLayeredPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
         );
 
         txtreferencia.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtreferencia.setBorder(javax.swing.BorderFactory.createTitledBorder("REFERENCIA:"));
+        txtreferencia.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtreferenciaKeyPressed(evt);
+            }
+        });
 
         txtprecio_compra.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         txtprecio_compra.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -426,7 +443,7 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
                 .addComponent(jRtipo_insumo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRtipo_patrimonio)
-                .addGap(0, 10, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -442,6 +459,11 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
         txtstock.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         txtstock.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtstock.setBorder(javax.swing.BorderFactory.createTitledBorder("STOCK:"));
+        txtstock.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtstockKeyPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -449,8 +471,13 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtstock, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtnombre)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtestado, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtprecio_compra, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtreferencia, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_insertarLayout.createSequentialGroup()
                                 .addComponent(btnnuevo)
@@ -459,13 +486,7 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btneditar)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(txtprecio_compra, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtestado, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtstock, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(txtnombre))
+                        .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(134, 134, 134))
@@ -636,7 +657,7 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
 
     private void txtnombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombreKeyPressed
         // TODO add your handling code here:
-//        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_venta);
+        evejtf.saltar_campo_enter(evt, txtnombre, txtreferencia);
     }//GEN-LAST:event_txtnombreKeyPressed
 
     private void txtbuscar_productoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_productoKeyReleased
@@ -667,16 +688,20 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
     private void txtprecio_compraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtprecio_compraKeyReleased
         // TODO add your handling code here:
         evejtf.getDouble_format_nro_entero(txtprecio_compra);
+//        evejtf.saltar_campo_enter(evt, txtprecio_compra, txtstock);
     }//GEN-LAST:event_txtprecio_compraKeyReleased
 
     private void txtpatrimonio_categoriaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpatrimonio_categoriaKeyReleased
         // TODO add your handling code here:
         buscar_categoria();
+        eveJtab.seleccionar_tabla_flecha_abajo(evt, tbltabla_categoria);
+//        evejtf.saltar_campo_enter(evt, txtstock, txtpatrimonio_categoria);
     }//GEN-LAST:event_txtpatrimonio_categoriaKeyReleased
 
     private void txtpatrimonio_ubicacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpatrimonio_ubicacionKeyReleased
         // TODO add your handling code here:
         buscar_ubicacion();
+         eveJtab.seleccionar_tabla_flecha_abajo(evt, tbltabla_ubicacion);
     }//GEN-LAST:event_txtpatrimonio_ubicacionKeyReleased
 
     private void btnnuevo_categoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnuevo_categoriaActionPerformed
@@ -688,6 +713,31 @@ public class FrmPatrimonio_producto extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmPatrimonio_ubicacion());
     }//GEN-LAST:event_btnnuevo_ubicacionActionPerformed
+
+    private void txtreferenciaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtreferenciaKeyPressed
+        // TODO add your handling code here:
+        evejtf.saltar_campo_enter(evt, txtreferencia, txtpatrimonio_categoria);
+    }//GEN-LAST:event_txtreferenciaKeyPressed
+
+    private void txtstockKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtstockKeyPressed
+        // TODO add your handling code here:
+//        evejtf.saltar_campo_enter(evt, txtstock, txtpatrimonio_categoria);
+    }//GEN-LAST:event_txtstockKeyPressed
+
+    private void tbltabla_categoriaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbltabla_categoriaKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            seleccionar_categoria();
+        }
+    }//GEN-LAST:event_tbltabla_categoriaKeyPressed
+
+    private void tbltabla_ubicacionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbltabla_ubicacionKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            seleccionar_ubicacion();
+            boton_guardar();
+        }
+    }//GEN-LAST:event_tbltabla_ubicacionKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

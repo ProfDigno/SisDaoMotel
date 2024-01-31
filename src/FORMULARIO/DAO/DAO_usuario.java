@@ -157,6 +157,9 @@ public class DAO_usuario {
     public boolean gB_boton_cancelar_ocupacion(){
         return getBoo_eve_permitido(conn, 1003);
     }
+    public boolean gB_boton_es_manual(){
+        return getBoo_eve_permitido(conn, 1004);
+    }
     private boolean getBoo_eve_permitido(Connection conn, int codigo) {
         boolean activar = jsfrm.isAct_roll_usu();
         if (activar) {
@@ -176,11 +179,11 @@ public class DAO_usuario {
                     if (activo) {
                         return true;
                     } else {
-                        JOptionPane.showMessageDialog(null, mensaje_error, "ERROR", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, mensaje_error, "ERROR CODIGO: "+codigo, JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "NO SE ENCONTRO EVENTO PARA EL CODIGO:" + codigo, "ERROR", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "NO SE ENCONTRO EVENTO PARA EL CODIGO: " + codigo, "ERROR", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             } catch (Exception e) {

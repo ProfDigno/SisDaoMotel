@@ -39,7 +39,7 @@ public class JDiaLogin extends javax.swing.JDialog {
     private EvenConexion eveconn = new EvenConexion();
     private VariablesBD var = new VariablesBD();
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
-    json_array_conexion jscon = new json_array_conexion();
+    private json_array_conexion jscon = new json_array_conexion();
 
     private void abrir_formulario() {
         this.setTitle("INGRESAR USUARIO");

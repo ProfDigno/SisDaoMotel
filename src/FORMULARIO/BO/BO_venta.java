@@ -6,10 +6,12 @@ import FORMULARIO.DAO.DAO_caja_cierre_detalle;
 import FORMULARIO.DAO.DAO_habitacion_recepcion;
 import FORMULARIO.DAO.DAO_habitacion_recepcion_temp;
 import FORMULARIO.DAO.DAO_venta;
+import FORMULARIO.DAO.DAO_venta_item;
 import FORMULARIO.ENTIDAD.caja_cierre_detalle;
 import FORMULARIO.ENTIDAD.habitacion_recepcion;
 import FORMULARIO.ENTIDAD.habitacion_recepcion_temp;
 import FORMULARIO.ENTIDAD.venta;
+import FORMULARIO.ENTIDAD.venta_item;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.swing.JTable;
@@ -17,6 +19,7 @@ import javax.swing.JTable;
 public class BO_venta {
 
     private DAO_venta DAOven = new DAO_venta();
+    private DAO_venta_item DAOvi = new DAO_venta_item();
     private DAO_habitacion_recepcion_temp DAOhrt = new DAO_habitacion_recepcion_temp();
     private DAO_habitacion_recepcion DAOhr = new DAO_habitacion_recepcion();
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
@@ -56,7 +59,6 @@ public class BO_venta {
             }
             DAOhr.update_habitacion_recepcion(conn, ENThr);
             DAOhrt.update_habitacion_recepcion_temp(conn, ENThrt);
-//            DAOhrt.update_habitacion_recepcion_temp_salida_final(conn,ENThrt.getC42idhabitacion_dato());
             if (es_caja) {
                 DAOccd.insertar_caja_cierre_detalle(conn, ENTccd);
             }

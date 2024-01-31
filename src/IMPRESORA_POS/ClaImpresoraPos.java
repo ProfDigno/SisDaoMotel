@@ -41,7 +41,6 @@ public class ClaImpresoraPos {
     public void imprimir_ticket_Pos() {
         String titulo="imprimir_ticket_Pos";
         try {
-//            byte[] by = inputStream.toString().getBytes();
             impresora_por_defecto(getInputStream());
         } catch (Exception e) {
             evemen.mensaje_error(e,titulo);
@@ -50,7 +49,6 @@ public class ClaImpresoraPos {
 public void imprimir_ticket_Pos_por_nombre(String printerName) {
          String titulo="imprimir_ticket_Pos_por_nombre";
         try {
-//            impresora_por_defecto(getInputStream());
             impresora_por_nombre(printerName, getInputStream());
         } catch (Exception e) {
             evemen.mensaje_error(e,titulo);

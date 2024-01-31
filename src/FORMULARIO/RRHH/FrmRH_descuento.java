@@ -19,6 +19,7 @@ import Evento.Utilitario.EvenNumero_a_Letra;
 import FORMULARIO.BO.BO_gasto_tipo;
 import FORMULARIO.BO.BO_rh_entrada;
 import FORMULARIO.BO.BO_rh_descuento;
+import FORMULARIO.DAO.DAO_caja_cierre;
 import FORMULARIO.DAO.DAO_gasto_tipo;
 import FORMULARIO.DAO.DAO_persona;
 import FORMULARIO.DAO.DAO_rh_entrada;
@@ -65,6 +66,7 @@ public class FrmRH_descuento extends javax.swing.JInternalFrame {
     private rh_liquidacion_descuento ENTrhld = new rh_liquidacion_descuento();
     private rh_liquidacion_detalle ENTrhlde = new rh_liquidacion_detalle();
     private EvenNumero_a_Letra evenrolt = new EvenNumero_a_Letra();
+    private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     Connection conn = ConnPostgres.getConnPosgres();
     EvenConexion eveconn = new EvenConexion();
     private String nombreTabla = "RH DESCUENTO";
@@ -149,6 +151,7 @@ public class FrmRH_descuento extends javax.swing.JInternalFrame {
             cargar_dato_descuento();
             reestableser();
             cargar_dato_liquidacion();
+            DAOcc.exportar_excel_liquidacion_vale_N3(conn);
             this.dispose();
         }
     }

@@ -1,0 +1,25 @@
+///imagen 
+1-RASPBERRY PI OS FULL(32-BIT)
+///actualizar paquetes de raspberry
+2-sudo apt-get update
+3-sudo apt-get install postgresql
+4-sudo apt-get install pgadmin3
+5-pip install -U pip ==> 64bit
+6-pip install psycopg2-binary ==> 64bit
+5-sudo apt install libpq5 ==> 64bit
+6-sudo apt install python3-psycopg2 ==> 64bit
+//7-pip3 install psycopg2
+8-sudo apt update
+9-sudo apt install default-jdk 
+/// sudo apt install openjdk-8-jdk
+10-java -version
+//ip estatica
+11-ifconfig
+22-sudo nano /etc/dhcpcd.conf
+interface eth0
+static ip_address=192.168.0.201
+static routers=192.168.0.1
+static domain_name_servers=192.168.0.1
+control x
+sudo shutdown now
+

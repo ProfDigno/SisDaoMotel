@@ -46,7 +46,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private DAO_gasto_tipo DAOgti = new DAO_gasto_tipo();
     private caja_cierre_detalle ENTccd = new caja_cierre_detalle();
     private DAO_caja_cierre_detalle DAOccd = new DAO_caja_cierre_detalle();
-    
+    private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
     
     private String nombreTabla_pri = "GASTO";
     private String nombreTabla_sec = "CAJA GASTO";
@@ -172,6 +172,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
             cargar_dato_gasto(caja);
             cargar_dato_caja_detalle_GASTO();
             BOgt.insertar_gasto(ENTgt, ENTccd,caja);
+            DAOcc.exportar_excel_gastos_N2(conn);
             reestableser();
         }
     }

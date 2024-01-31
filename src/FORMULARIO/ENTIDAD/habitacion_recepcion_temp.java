@@ -47,14 +47,68 @@ private int C42idhabitacion_dato;
 private boolean C43es_manual;
 private int C44orden;
 private boolean C45activo;
+private double  C46monto_por_hospedaje_minimo;
+private String C47fec_hospedaje_inicio;
+private String C48fec_hospedaje_fin;
+private boolean C49es_hospedaje;
+private int C50minuto_hospedaje;
 private String descrip_caja_desocupa;
 private static String nom_tabla;
 private static String nom_idtabla;
+private static boolean hab_tiempo_menu; 
 //---------------TABLA-ID---------------
 	public habitacion_recepcion_temp() {
 		setTb_habitacion_recepcion_temp("habitacion_recepcion_temp");
 		setId_idhabitacion_recepcion_temp("idhabitacion_recepcion_temp");
 	}
+
+    public double getC46monto_por_hospedaje_minimo() {
+        return C46monto_por_hospedaje_minimo;
+    }
+
+    public void setC46monto_por_hospedaje_minimo(double C46monto_por_hospedaje_minimo) {
+        this.C46monto_por_hospedaje_minimo = C46monto_por_hospedaje_minimo;
+    }
+
+    public String getC47fec_hospedaje_inicio() {
+        return C47fec_hospedaje_inicio;
+    }
+
+    public void setC47fec_hospedaje_inicio(String C47fec_hospedaje_inicio) {
+        this.C47fec_hospedaje_inicio = C47fec_hospedaje_inicio;
+    }
+
+    public String getC48fec_hospedaje_fin() {
+        return C48fec_hospedaje_fin;
+    }
+
+    public void setC48fec_hospedaje_fin(String C48fec_hospedaje_fin) {
+        this.C48fec_hospedaje_fin = C48fec_hospedaje_fin;
+    }
+
+    public boolean getC49es_hospedaje() {
+        return C49es_hospedaje;
+    }
+
+    public void setC49es_hospedaje(boolean C49es_hospedaje) {
+        this.C49es_hospedaje = C49es_hospedaje;
+    }
+
+    public int getC50minuto_hospedaje() {
+        return C50minuto_hospedaje;
+    }
+
+    public void setC50minuto_hospedaje(int C50minuto_hospedaje) {
+        this.C50minuto_hospedaje = C50minuto_hospedaje;
+    }
+
+    public static boolean isHab_tiempo_menu() {
+        return hab_tiempo_menu;
+    }
+
+    public static void setHab_tiempo_menu(boolean hab_tiempo_menu) {
+        habitacion_recepcion_temp.hab_tiempo_menu = hab_tiempo_menu;
+    }
 
     public String getDescrip_caja_desocupa() {
         return descrip_caja_desocupa;

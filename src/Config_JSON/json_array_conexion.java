@@ -53,7 +53,7 @@ public class json_array_conexion {
             JSONArray Array_maquina = (JSONArray) jsonObject_maquina.get(nombre_computador);
             Iterator<String> iterator_maquina = Array_maquina.iterator();
             String datos_conexion = String.valueOf(iterator_maquina.next());
-            System.out.println(datos_conexion);
+            System.out.println(nombre_computador);
             Object obj_conexion = parser.parse(datos_conexion);
             JSONObject jsonObject_conexion = (JSONObject) obj_conexion;
              nombre = (String) jsonObject_conexion.get("nombre");
@@ -67,18 +67,7 @@ public class json_array_conexion {
              nombre_backup = (String) jsonObject_conexion.get("nombre_backup");
              limite_dia_eliminar = (String) jsonObject_conexion.get("limite_dia_eliminar");
              crear_backup = (String) jsonObject_conexion.get("crear_backup");
-            System.out.println(nombre_computador);
-            System.out.println(nombre);
-            System.out.println(localhost);
-            System.out.println(port);
-            System.out.println(basedato);
-            System.out.println(usuario);
-            System.out.println(password);
-            System.out.println(direc_dump);
-            System.out.println(direc_backup);
-            System.out.println(nombre_backup);
-            System.out.println(limite_dia_eliminar);
-            System.out.println(crear_backup);
+            jsoncf.imprimir_gson(obj_conexion);
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);
             JOptionPane.showMessageDialog(null, "Error: " + ex.toString()+"\nNombre Maquina:"+nombre_computador);

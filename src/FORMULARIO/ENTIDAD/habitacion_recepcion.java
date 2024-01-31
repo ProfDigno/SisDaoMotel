@@ -37,6 +37,10 @@ private double C32monto_descuento;
 private double C33monto_adelanto;
 private double C34cant_adicional;
 private int C35fk_idhabitacion_dato;
+private double  C36monto_por_hospedaje_minimo;
+private String C37fec_hospedaje_inicio;
+private String C38fec_hospedaje_fin;
+private boolean C39es_hospedaje;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -57,6 +61,39 @@ private static String nom_idtabla;
 		habitacion_recepcion.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public boolean getC39es_hospedaje() {
+        return C39es_hospedaje;
+    }
+
+    public void setC39es_hospedaje(boolean C39es_hospedaje) {
+        this.C39es_hospedaje = C39es_hospedaje;
+    }
+
+    public double getC36monto_por_hospedaje_minimo() {
+        return C36monto_por_hospedaje_minimo;
+    }
+
+    public void setC36monto_por_hospedaje_minimo(double C36monto_por_hospedaje_minimo) {
+        this.C36monto_por_hospedaje_minimo = C36monto_por_hospedaje_minimo;
+    }
+
+    public String getC37fec_hospedaje_inicio() {
+        return C37fec_hospedaje_inicio;
+    }
+
+    public void setC37fec_hospedaje_inicio(String C37fec_hospedaje_inicio) {
+        this.C37fec_hospedaje_inicio = C37fec_hospedaje_inicio;
+    }
+
+    public String getC38fec_hospedaje_fin() {
+        return C38fec_hospedaje_fin;
+    }
+
+    public void setC38fec_hospedaje_fin(String C38fec_hospedaje_fin) {
+        this.C38fec_hospedaje_fin = C38fec_hospedaje_fin;
+    }
+        
 	public int getC1idhabitacion_recepcion(){
 		return C1idhabitacion_recepcion;
 	}

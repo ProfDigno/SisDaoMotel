@@ -39,7 +39,7 @@ public class DAO_caja_cierre {
             pst.setTimestamp(2, evefec.getTimestamp_sistema());
             pst.setString(3, caci.getC3creado_por());
             pst.setTimestamp(4, evefec.getTimestamp_fecha_cargado(caci.getC4fecha_inicio(), "caci.getC4fecha_inicio()"));
-            pst.setTimestamp(5, evefec.getTimestamp_fecha_cargado(caci.getC5fecha_fin(), "caci.getC5fecha_fin()"));
+            pst.setTimestamp(5, evefec.getTimestamp_sistema());
             pst.setString(6, caci.getC6estado());
             pst.setInt(7, caci.getC7fk_idusuario());
             pst.execute();
@@ -746,7 +746,7 @@ public class DAO_caja_cierre {
                 + "and pci.fk_idpatrimonio_carga=pc.idpatrimonio_carga\n"
                 + "and pp.fk_idpatrimonio_categoria=ca.idpatrimonio_categoria\n"
                 + "and pc.estado='CARGADO'\n"
-                + "and EXTRACT(YEAR FROM pci.fecha_creado) = EXTRACT(YEAR FROM CURRENT_DATE)\n"
+                //                + "and EXTRACT(YEAR FROM pci.fecha_creado) = EXTRACT(YEAR FROM CURRENT_DATE)\n"
                 + "order by pci.idpatrimonio_carga_item desc;";
         String direccion = "src/REPORTE/APPSHEET/repPatrimonio_Carga.jrxml";
         String titulo = "PATRIMONIO CARGA";
@@ -796,6 +796,27 @@ public class DAO_caja_cierre {
                 + " order by tb.fecha_transaccion desc;";
         String direccion = "src/REPORTE/APPSHEET/repDepositoBanco.jrxml";
         String titulo = "DEPOSITO BANCO";
+        rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
+    }
+
+    public void exportar_excel_liquidacion_vale_N3(Connection conn) {
+        int band_Height = 15;
+        String sucursal = jsfrm.getApp_nom_report();
+        String rutatemp = "APPSHEET/EXCEL/liquidacion_vale" + sucursal + ".xlsx";
+        String sql = "select l.idrh_liquidacion as idliq,\n"
+                + "to_char(l.fecha_desde,'yyyy-MM-dd') as fec_desde,\n"
+                + "to_char(l.fecha_hasta,'yyyy-MM-dd') as fec_hasta, \n"
+                + "p.nombre as persona,\n"
+                + "l.salario_base as salario,\n"
+                + "l.monto_vale as vale,\n"
+                + "l.monto_descuento as descuento,\n"
+                + "l.monto_liquidacion as liquidacion,\n"
+                + "l.estado as estado\n"
+                + "from rh_liquidacion l,persona p\n"
+                + "where l.fk_idpersona=p.idpersona\n"
+                + "order by l.estado asc,l.fecha_hasta desc;";
+        String direccion = "src/REPORTE/APPSHEET/repLiquidacionVale.jrxml";
+        String titulo = "LIQUIDACION VALE";
         rep.imprimirExcel_exportar_appsheet_incremental(conn, sql, titulo, direccion, rutatemp, band_Height);
     }
 }

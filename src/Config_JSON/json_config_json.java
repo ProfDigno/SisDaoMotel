@@ -6,6 +6,8 @@
 package Config_JSON;
 
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.awt.Desktop;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -58,5 +60,17 @@ private EvenMensajeJoptionpane evemen=new EvenMensajeJoptionpane();
             }
         }
         return ejecutar;
+    }
+    public void imprimir_gson(Object obj_csv) {
+        String json = String.valueOf(obj_csv);
+        // Crear un objeto Gson con formato bonito
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        // Parsear el JSON
+        Object jsonObject = gson.fromJson(json, Object.class);
+        // Convertir el JSON formateado a una cadena
+        String formattedJson = gson.toJson(jsonObject);
+        // Imprimir el JSON formateado
+        System.out.println(formattedJson);
+//            System.out.println(jsonObject_csv);
     }
 }

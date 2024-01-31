@@ -275,7 +275,7 @@ public class DAO_balance {
     }
 
     public void imprimir_producto_venta(Connection conn, String fecha, String filtro_fecha) {
-        String sql = "select  ('"+fecha+"') as fecha,\n"
+        String sql = "select  ('" + fecha + "') as fecha,\n"
                 + "p.idproducto as idpro,pc.nombre as categoria,\n"
                 + "vi.descripcion as descripcion,\n"
                 + "vi.precio_venta as precio_v,\n"
@@ -299,5 +299,43 @@ public class DAO_balance {
         String direccion = "src/REPORTE/BALANCE/repBal_producto_venta.jrxml";
         String rutatemp = "repBal_producto_venta";
         rep.imprimir_jasper_pdf(conn, sql, titulonota, direccion, rutatemp);
+    }
+
+    public void actualizar_tabla_caja_resumen_admin(Connection conn, JTable tbltabla, String fec_caja, String maquina) {
+        String sql = "select cc.idcaja_cierre as nro_cierre,\n"
+                + "to_char(cc.fecha_inicio,'yy-MM-dd HH24:MI') as fec_inicio,\n"
+                + "to_char(cc.fecha_fin,'yy-MM-dd HH24:MI') as fec_fin,\n"
+                + "cc.creado_por as usuario, \n"
+                + "(select count(*) as m_egreso\n"
+                + "from admin_caja_cierre_detalle cd,admin_caja_cierre_item cci \n"
+                + "where cci.fk_idcaja_cierre_detalle=cd.idcaja_cierre_detalle \n"
+                + "and cd.es_cerrado=true \n"
+                + "and cd.fk_idventa>0\n"
+                + "and cci.fk_idcaja_cierre=cc.idcaja_cierre) as cant_ocupa,\n"
+                + "to_char(sum((ccd.monto_solo_adelanto+ccd.monto_ocupa_minimo+ccd.monto_ocupa_adicional+ccd.monto_interno+ccd.monto_garantia)-\n"
+                + "(ccd.monto_ocupa_descuento+ccd.monto_ocupa_adelanto)),'999G999G999') as ocupacion,\n"
+                + "to_char(sum(ccd.monto_ocupa_consumo),'999G999G999') as consumo,\n"
+                + "to_char(sum(ccd.monto_gasto+ccd.monto_compra+ccd.monto_vale+ccd.monto_liquidacion),'999G999G999') as egreso,\n"
+                + "to_char(sum(((ccd.monto_solo_adelanto+ccd.monto_ocupa_minimo+ccd.monto_ocupa_adicional+ccd.monto_ocupa_consumo+ccd.monto_interno+ccd.monto_garantia)-\n"
+                + "(ccd.monto_ocupa_descuento+ccd.monto_ocupa_adelanto))-\n"
+                + "(ccd.monto_gasto+ccd.monto_compra+ccd.monto_vale+ccd.monto_liquidacion)),'999G999G999') as saldo,\n"
+                + "sum((ccd.monto_solo_adelanto+ccd.monto_ocupa_minimo+ccd.monto_ocupa_adicional+ccd.monto_interno+ccd.monto_garantia)-\n"
+                + "(ccd.monto_ocupa_descuento+ccd.monto_ocupa_adelanto)) as o_ocupacion,\n"
+                + "sum(ccd.monto_ocupa_consumo) as o_consumo,\n"
+                + "sum(ccd.monto_gasto+ccd.monto_compra+ccd.monto_vale+ccd.monto_liquidacion) as o_egreso,\n"
+                + "sum(((ccd.monto_solo_adelanto+ccd.monto_ocupa_minimo+ccd.monto_ocupa_adicional+ccd.monto_ocupa_consumo+ccd.monto_interno+ccd.monto_garantia)-\n"
+                + "(ccd.monto_ocupa_descuento+ccd.monto_ocupa_adelanto))-\n"
+                + "(ccd.monto_gasto+ccd.monto_compra+ccd.monto_vale+ccd.monto_liquidacion)) as o_saldo\n"
+                + "from admin_caja_cierre cc,admin_caja_cierre_item cci,admin_caja_cierre_detalle ccd\n"
+                + "where cc.idcaja_cierre=cci.fk_idcaja_cierre\n"
+                + "and cci.fk_idcaja_cierre_detalle=ccd.idcaja_cierre_detalle \n"
+                + "and cc.maquina='"+maquina+"'\n"
+                + "and cci.maquina='"+maquina+"'\n"
+                + "and ccd.maquina='"+maquina+"'\n"
+                + "  "+fec_caja
+                + " \ngroup by 1,2,3,4 \n"
+                + " order by 1 asc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_caja_resumen(tbltabla);
     }
 }

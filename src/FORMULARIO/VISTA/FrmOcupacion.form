@@ -248,7 +248,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
@@ -273,8 +273,27 @@
                                   <Component id="txttiempo_transcurrido" alignment="0" pref="293" max="32767" attributes="0"/>
                                   <Component id="jPanel6" alignment="0" max="32767" attributes="0"/>
                               </Group>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="jPanel11" alignment="0" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="btncancelar" alignment="1" min="-2" pref="210" max="-2" attributes="0"/>
+                                          <Component id="lblmensaje_cancelar" alignment="1" min="-2" pref="210" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="jFmonto_total_pagar" max="32767" attributes="0"/>
+                                          <Component id="btndesocupar_pagar" pref="218" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="jPanel10" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="12" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="txtmonto_descontar" min="-2" pref="177" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                               <Component id="btndescontar" min="-2" max="-2" attributes="0"/>
@@ -283,53 +302,18 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btnactualizar_total_pago_adelanto" min="-2" pref="48" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnadelanto" pref="198" max="32767" attributes="0"/>
+                              <Component id="btnadelanto" pref="257" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="btnmudar_habitacion" min="-2" pref="121" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnimprimir_ticket_ocupado" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lbltipo_tarifa_icono" min="-2" pref="67" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="btnsalir_ocupacion" min="-2" pref="173" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" attributes="0">
-                                  <Component id="jPanel10" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="lbltipo_tarifa_icono" min="-2" pref="67" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="btnmudar_habitacion" min="-2" pref="121" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btnimprimir_ticket_ocupado" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="btnsalir_ocupacion" min="-2" pref="173" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                  <Component id="btncancelar" pref="210" max="32767" attributes="0"/>
-                                                  <Component id="lblmensaje_cancelar" max="32767" attributes="0"/>
-                                              </Group>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="btnobservacion" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="jFmonto_total_pagar" max="32767" attributes="0"/>
-                                          <Component id="btndesocupar_pagar" pref="218" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                              </Group>
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace pref="36" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -338,80 +322,64 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                      <Component id="txtnro_hab_grande" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" attributes="0">
-                                      <Component id="txttipo_habitacion" max="32767" attributes="0"/>
+                                      <Component id="txttipo_habitacion" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lblicono_tipo" min="-2" pref="142" max="-2" attributes="0"/>
+                                      <Component id="lblicono_tipo" min="-2" max="-2" attributes="0"/>
                                   </Group>
+                                  <Component id="txtnro_hab_grande" pref="0" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="jPanel7" max="32767" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="jPanel8" max="32767" attributes="0"/>
-                                          <Component id="jPanel9" max="32767" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="jPanel6" max="32767" attributes="0"/>
-                              </Group>
+                              <Component id="jPanel7" min="-2" pref="174" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jPanel8" max="32767" attributes="0"/>
+                                  <Component id="jPanel9" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
+                              <Component id="txttiempo_transcurrido" min="-2" pref="56" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jPanel6" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="txtfec_ocupado_inicio" pref="56" max="32767" attributes="0"/>
                                   <Component id="jPanel10" max="32767" attributes="0"/>
-                                  <Component id="lbltipo_tarifa_icono" alignment="1" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="txtfec_ocupado_inicio_hora" min="-2" pref="56" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                                      <Component id="txttiempo_transcurrido" min="-2" pref="56" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
+                                  <Component id="txtfec_ocupado_inicio_hora" min="-2" pref="56" max="-2" attributes="0"/>
+                                  <Component id="jPanel11" min="-2" pref="322" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jFmonto_total_pagar" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="btnobservacion" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="lblmensaje_cancelar" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jFmonto_total_pagar" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblmensaje_cancelar" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="2" attributes="0">
-                                  <Component id="btncancelar" alignment="2" max="32767" attributes="0"/>
-                                  <Component id="btndesocupar_pagar" alignment="2" min="-2" pref="57" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="btndesocupar_pagar" alignment="3" min="-2" pref="57" max="-2" attributes="0"/>
+                                  <Component id="btncancelar" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="txtmonto_descontar" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="btndescontar" alignment="2" min="-2" pref="38" max="-2" attributes="0"/>
-                          <Component id="txtmonto_adelanto" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnadelanto" alignment="2" min="-2" pref="38" max="-2" attributes="0"/>
-                          <Component id="btnmudar_habitacion" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnimprimir_ticket_ocupado" alignment="2" min="-2" pref="41" max="-2" attributes="0"/>
-                          <Component id="btnactualizar_total_pago_adelanto" alignment="2" min="-2" pref="35" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="btnsalir_ocupacion" alignment="0" min="-2" pref="49" max="-2" attributes="0"/>
+                          <Component id="btnimprimir_ticket_ocupado" alignment="0" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Component id="lbltipo_tarifa_icono" alignment="0" max="32767" attributes="0"/>
+                          <Component id="btnmudar_habitacion" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnadelanto" alignment="0" min="-2" pref="38" max="-2" attributes="0"/>
+                          <Component id="btnactualizar_total_pago_adelanto" alignment="0" min="-2" pref="35" max="-2" attributes="0"/>
+                          <Component id="txtmonto_adelanto" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="btndescontar" alignment="0" min="-2" pref="38" max="-2" attributes="0"/>
+                          <Component id="txtmonto_descontar" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnsalir_ocupacion" min="-2" pref="49" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -424,7 +392,7 @@
                   <Color blue="ff" green="cc" red="cc" type="rgb"/>
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Stencil" size="150" style="0"/>
+                  <Font name="Stencil" size="130" style="0"/>
                 </Property>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="33" green="33" red="ff" type="rgb"/>
@@ -484,14 +452,20 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jFmonto_hora_adicional" pref="182" max="32767" attributes="0"/>
-                              <Component id="jFmonto_hora_minimo" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jFmonto_hora_adicional" pref="182" max="32767" attributes="0"/>
+                                  <Component id="jFmonto_hora_minimo" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="txtdescripcion_habitacion" alignment="0" min="-2" pref="159" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jFmonto_dormir_minimo" pref="199" max="32767" attributes="0"/>
-                              <Component id="jFmonto_dormir_adicional" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jFmonto_hospedaje" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jFmonto_dormir_minimo" pref="199" max="32767" attributes="0"/>
+                                  <Component id="jFmonto_dormir_adicional" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -500,17 +474,26 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jFmonto_hora_minimo" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jFmonto_dormir_minimo" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jFmonto_hora_adicional" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jFmonto_dormir_adicional" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jFmonto_hora_adicional" min="-2" max="-2" attributes="0"/>
+                              <Component id="jFmonto_dormir_adicional" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="txtdescripcion_habitacion" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="jFmonto_hospedaje" min="-2" pref="47" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -588,6 +571,29 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JTextField" name="txtdescripcion_habitacion">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="jTextField3"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JFormattedTextField" name="jFmonto_hospedaje">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="HOSPEDAJE MINIMO"/>
+                      </Border>
+                    </Property>
+                    <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
+                      <Format format="#,##0 Gs" subtype="-1" type="0"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="4"/>
+                    <Property name="text" type="java.lang.String" value="1"/>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="18" style="1"/>
+                    </Property>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel8">
@@ -635,7 +641,6 @@
                               <Component id="btncambiar_salida_final" max="32767" attributes="0"/>
                               <Component id="jFdormir_salida_final" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -739,7 +744,6 @@
                           <Component id="txtminuto_adicional" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="txtminuto_cancelar" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -871,6 +875,8 @@
                               <Component id="jFmonto_tarifa_ocupacion_total" alignment="0" pref="261" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="txtrecepcion_actual" min="-2" pref="175" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btnobservacion" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -895,8 +901,10 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jFmonto_tarifa_ocupacion_total" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtrecepcion_actual" pref="0" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="txtrecepcion_actual" alignment="3" max="32767" attributes="0"/>
+                              <Component id="btnobservacion" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1027,6 +1035,14 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JButton" name="btnobservacion">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="OBS"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnobservacionActionPerformed"/>
+                  </Events>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel10">
@@ -1048,6 +1064,8 @@
                           <Component id="jRpor_dormir" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jRpor_hora_mas_dormir" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="jRpor_hospedaje" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -1059,6 +1077,7 @@
                               <Component id="jRpor_hora" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jRpor_dormir" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jRpor_hora_mas_dormir" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jRpor_hospedaje" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
@@ -1100,6 +1119,17 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRpor_hora_mas_dormirActionPerformed"/>
                   </Events>
                 </Component>
+                <Component class="javax.swing.JRadioButton" name="jRpor_hospedaje">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="gru_tarifa"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="HOSPEDAJE"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRpor_hospedajeActionPerformed"/>
+                  </Events>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel11">
@@ -1133,13 +1163,14 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jScrollPane3" min="-2" pref="266" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jScrollPane3" min="-2" pref="236" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jFmonto_consumo" pref="49" max="32767" attributes="0"/>
+                              <Component id="jFmonto_consumo" pref="0" max="32767" attributes="0"/>
                               <Component id="btnconsumo" max="32767" attributes="0"/>
                               <Component id="btneliminar_item" alignment="0" max="32767" attributes="0"/>
                           </Group>
+                          <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1397,14 +1428,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="jLabel6"/>
               </Properties>
-            </Component>
-            <Component class="javax.swing.JButton" name="btnobservacion">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="OBS"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnobservacionActionPerformed"/>
-              </Events>
             </Component>
           </SubComponents>
         </Container>

@@ -1,0 +1,27 @@
+                                        
+ =========PANKY-I=========              
+ 0993291322                             
+ San Miguel                             
+ COD. VENTA:7042                        
+ FEC INICIO:2023-11-21 15:07            
+ FEC FIN:2023-11-21 15:28               
+ HABITACION:7                           
+ TIEMPO OCUPA:00:20:49                  
+ USUARIO:PROGRAMADOR ADMIN              
+ #=============================#        
+ CANT-DESCRIPCION-PRECIO-TOTAL          
+ #=============================#        
+ TIPO : HOSPEDAJE                       
+ MONTO MINIMO:           120,000        
+ MONTO ADICIONAL:        480,000        
+ MONTO CONSUMO:          0              
+ MONTO DESCUENTO:        0              
+ MONTO ADELANTO:         0              
+ TOTAL PAGAR:            600,000        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        

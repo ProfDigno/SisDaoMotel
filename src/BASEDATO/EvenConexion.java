@@ -253,4 +253,20 @@ public class EvenConexion {
             evmen.Imprimir_serial_sql_error(e, sql, titulo);
         }
     }
+    public void SQL_execute_commit(Connection conn) {
+        String titulo = "SQL_execute_commit";
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            evmen.mensaje_error(e, "commit", titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evmen.Imprimir_serial_sql_error(e1, "commit", titulo);
+            }
+        }
+    }
 }

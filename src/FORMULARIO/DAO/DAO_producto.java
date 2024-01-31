@@ -157,10 +157,14 @@ public class DAO_producto {
                 + "TRIM(to_char(p.precio_venta,'999G999G999')) as pventa,\n"
                 + "TRIM(to_char(p.precio_compra,'999G999G999')) as pcompra,\n"
                 + "p.stock_actual as stock, \n"
-                + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v "
-                + "where vi.fk_idventa=v.idventa "
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v \n"
+                + "where vi.fk_idventa=v.idventa \n"
                 + "and vi.tipo_item='" + eveest.getEst_Cargado() + "' " + filtro_item
-                + " and vi.fk_idproducto=p.idproducto),0) as cv, "
+                + " and vi.fk_idproducto=p.idproducto),0) as cv, \n"
+                + "coalesce((select sum(vi.cantidad) as cant from venta_item_interno vi,venta_interno v \n"
+                + "where vi.fk_idventa_interno=v.idventa_interno \n"
+                + "and vi.tipo_item='" + eveest.getEst_Emitido() + "' " + filtro_item
+                + " and vi.fk_idproducto=p.idproducto),0) as cvi, \n"
                 + "coalesce((select sum(vi.cantidad) as cant from compra_item vi,compra v "
                 + "where vi.fk_idcompra=v.idcompra "
                 + "and vi.tipo_item='" + eveest.getEst_INGRESADO() + "' " + filtro_item
@@ -176,7 +180,7 @@ public class DAO_producto {
     }
 
     public void ancho_tabla_producto(JTable tbltabla) {
-        int Ancho[] = {5, 12, 24, 3, 10, 10, 10, 8, 8, 5, 4, 4};
+        int Ancho[] = {5, 12, 23, 3, 9, 9, 9, 8, 8, 5, 4, 4,4};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 7);
         evejt.alinear_derecha_columna(tbltabla, 8);
@@ -306,15 +310,15 @@ public class DAO_producto {
                 + "p.stock_actual as stock, \n"
                 + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v \n"
                 + "where vi.fk_idventa=v.idventa and vi.tipo_item='CARGADO' \n"
-                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + " and date(vi.fecha_creado)>='" + fec_desde + "' and date(vi.fecha_creado)<='" + fec_hasta + "'  \n"
                 + "and vi.fk_idproducto=p.idproducto),0) as c_venta, \n"
                 + "coalesce((select sum(vi.cantidad) as cant from venta_item_interno vi,venta_interno v \n"
                 + "where vi.fk_idventa_interno=v.idventa_interno and vi.tipo_item='EMITIDO' \n"
-                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + " and date(vi.fecha_creado)>='" + fec_desde + "' and date(vi.fecha_creado)<='" + fec_hasta + "'  \n"
                 + "and vi.fk_idproducto=p.idproducto),0) as c_interna,\n"
                 + "coalesce((select sum(vi.cantidad) as cant from compra_item vi,compra v \n"
                 + "where vi.fk_idcompra=v.idcompra and vi.tipo_item='INGRESADO' \n"
-                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'   \n"
+                + " and date(vi.fecha_creado)>='" + fec_desde + "' and date(vi.fecha_creado)<='" + fec_hasta + "'   \n"
                 + "and vi.fk_idproducto=p.idproducto),0) as c_compra \n"
                 + " FROM producto p,producto_categoria pc\n"
                 + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"
@@ -325,7 +329,7 @@ public class DAO_producto {
     }
 
     public void ancho_tabla_producto_venta_compra(JTable tbltabla) {
-        int Ancho[] = {5,10,12,25,8,8,8,8,8,8};
+        int Ancho[] = {5, 10, 12, 25, 8, 8, 8, 8, 8, 8};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
         evejt.alinear_derecha_columna(tbltabla, 4);
         evejt.alinear_derecha_columna(tbltabla, 5);
@@ -334,22 +338,23 @@ public class DAO_producto {
         evejt.alinear_centro_columna(tbltabla, 8);
         evejt.alinear_centro_columna(tbltabla, 9);
     }
-    public void imprimir_rep_producto_movimiento(Connection conn,String fec_desde, String fec_hasta) {
+
+    public void imprimir_rep_producto_movimiento(Connection conn, String fec_desde, String fec_hasta) {
         String sql = "select p.idproducto as idp,p.codigo_barra as codbarra,pc.nombre as categoria,p.nombre as producto,\n"
                 + "p.precio_venta as pventa,\n"
                 + "p.precio_compra as pcompra,\n"
                 + "p.stock_actual as stock, \n"
                 + "coalesce((select sum(vi.cantidad) as cant from venta_item vi,venta v \n"
                 + "where vi.fk_idventa=v.idventa and vi.tipo_item='CARGADO' \n"
-                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + " and date(vi.fecha_creado)>='" + fec_desde + "' and date(vi.fecha_creado)<='" + fec_hasta + "'  \n"
                 + "and vi.fk_idproducto=p.idproducto),0) as c_venta, \n"
                 + "coalesce((select sum(vi.cantidad) as cant from venta_item_interno vi,venta_interno v \n"
                 + "where vi.fk_idventa_interno=v.idventa_interno and vi.tipo_item='EMITIDO' \n"
-                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'  \n"
+                + " and date(vi.fecha_creado)>='" + fec_desde + "' and date(vi.fecha_creado)<='" + fec_hasta + "'  \n"
                 + "and vi.fk_idproducto=p.idproducto),0) as c_interna,\n"
                 + "coalesce((select sum(vi.cantidad) as cant from compra_item vi,compra v \n"
                 + "where vi.fk_idcompra=v.idcompra and vi.tipo_item='INGRESADO' \n"
-                + " and date(vi.fecha_creado)>='"+fec_desde+"' and date(vi.fecha_creado)<='"+fec_hasta+"'   \n"
+                + " and date(vi.fecha_creado)>='" + fec_desde + "' and date(vi.fecha_creado)<='" + fec_hasta + "'   \n"
                 + "and vi.fk_idproducto=p.idproducto),0) as c_compra \n"
                 + " FROM producto p,producto_categoria pc\n"
                 + "where p.fk_idproducto_categoria=pc.idproducto_categoria\n"

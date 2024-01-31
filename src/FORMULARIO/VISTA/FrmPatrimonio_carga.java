@@ -203,7 +203,7 @@ public class FrmPatrimonio_carga extends javax.swing.JInternalFrame {
         ubicacion_item = "-";
         referencia_item = "-";
         idpatrimonio_producto = 0;
-        txtpro_nombre.grabFocus();
+        txtpro_referencia.grabFocus();
     }
 
     private void suma_total() {
@@ -709,6 +709,7 @@ public class FrmPatrimonio_carga extends javax.swing.JInternalFrame {
 
     private void txtpro_referenciaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpro_referenciaKeyPressed
         // TODO add your handling code here:
+        eveJtab.seleccionar_tabla_flecha_abajo(evt, tblbusca_producto);
     }//GEN-LAST:event_txtpro_referenciaKeyPressed
 
     private void txtpro_referenciaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpro_referenciaKeyReleased

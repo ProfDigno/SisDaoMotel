@@ -9,6 +9,7 @@ import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import CONFIGURACION.ComputerInfo;
 import Config_JSON.json_array_conexion;
+import Config_JSON.json_array_csv;
 import Config_JSON.json_array_formulario;
 import Config_JSON.json_array_imprimir_pos;
 import Evento.Fecha.EvenFecha;
@@ -46,14 +47,16 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private json_array_conexion jscon = new json_array_conexion();
     private json_array_imprimir_pos jsprint = new json_array_imprimir_pos();
     private json_array_formulario jsfrm = new json_array_formulario();
+    private json_array_csv jscsv = new json_array_csv();
     private usuario ENTusu = new usuario();
     private habitacion_recepcion_temp ENThrt = new habitacion_recepcion_temp();
     private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private ComputerInfo pcinfo = new ComputerInfo();
     private BO_habitacion_recepcion_temp BOhrt = new BO_habitacion_recepcion_temp();
     private DAO_caja_cierre DAOcc = new DAO_caja_cierre();
-    private String version = "V.: 2.2.8";
-    private String fec_version = "2023-08-12";
+//    private json_array_conexion jscon = new json_array_conexion();
+    private String version = "V.: 2.3.4";
+    private String fec_version = "2024-01-12";
     private String creado_por = "digno";
     public static boolean habilitar_sonido;
     private boolean no_es_sonido_ocupado;
@@ -85,10 +88,12 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         conn = conPs.getConnPosgres();
         jsprint.cargar_jsom_imprimir_pos();
         jsfrm.cargar_jsom_array_formulario();
+        jscsv.cargar_jsom_array_csv();
         creado_por = ENTusu.getGlobal_nombre();
         tiempo_exp_app = jsfrm.getApp_tiempo_min_exp();
         segundo_exp_app = tiempo_exp_app - 5;
         crear_exp_app = true;
+        ENThrt.setHab_tiempo_menu(true);
         lblnube.setVisible(false);
         setHabilitar_sonido(false);
         setAbrir_frmventa(true);
@@ -134,7 +139,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql);//version 2.2.4
+//        eveconn.SQL_execute_libre(conn, sql);//version 2.2.4
 
         String sql1 = "DO $$ \n"
                 + "    BEGIN\n"
@@ -225,7 +230,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql1);//version 2.2.5
+//        eveconn.SQL_execute_libre(conn, sql1);//version 2.2.5
         String sql2 = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n"
@@ -236,7 +241,183 @@ public class FrmMenuMotel extends javax.swing.JFrame {
                 + "        END;\n"
                 + "    END;\n"
                 + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql2);//version 2.2.5
+//        eveconn.SQL_execute_libre(conn, sql2);//version 2.2.5
+        String sql3 = "CREATE TABLE \"admin_caja_cierre_detalle\" (\n"
+                + "	\"idadmin_caja_cierre_detalle\" SERIAL NOT NULL ,\n"
+                + "	\"idcaja_cierre_detalle\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"cerrado_por\" TEXT NOT NULL ,\n"
+                + "	\"es_cerrado\" BOOLEAN NOT NULL ,\n"
+                + "	\"monto_apertura_caja\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_cierre_caja\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_minimo\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_adicional\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_consumo\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_descuento\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_adelanto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_gasto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_vale\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_liquidacion\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_interno\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_solo_adelanto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_garantia\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "     \"id_maquina\" TEXT NOT NULL ,\n"
+                + "	\"fk_idgasto\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idcompra\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idventa\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idrh_vale\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idrh_liquidacion\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idventa_interno\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idgarantia\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idadmin_caja_cierre_detalle\")\n"
+                + ");";
+//        eveconn.SQL_execute_libre(conn, sql3);
+        String sql4 = "CREATE TABLE \"admin_caja_cierre_item\" (\n"
+                + "	\"idadmin_caja_cierre_item\" SERIAL NOT NULL ,\n"
+                + "	\"idcaja_cierre_item\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	\"id_maquina\" TEXT NOT NULL ,\n"
+                + "	\"fk_idcaja_cierre\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idcaja_cierre_detalle\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idadmin_caja_cierre_item\")\n"
+                + ");\n"
+                + "CREATE TABLE \"admin_caja_cierre\" (\n"
+                + "	\"idadmin_caja_cierre\" SERIAL NOT NULL ,\n"
+                + "	\"idcaja_cierre\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"fecha_inicio\" TIMESTAMP NOT NULL ,\n"
+                + "	\"fecha_fin\" TIMESTAMP NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	\"id_maquina\" TEXT NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idadmin_caja_cierre\")\n"
+                + ");";
+//        eveconn.SQL_execute_libre(conn, sql4);
+        String sql5 = "CREATE TABLE \"caja_cierre_temp\" (\n"
+                + "	\"idcaja_cierre\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"fecha_inicio\" TIMESTAMP NOT NULL ,\n"
+                + "	\"fecha_fin\" TIMESTAMP NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idcaja_cierre\")\n"
+                + ");\n"
+                + "CREATE TABLE \"caja_cierre_item_temp\" (\n"
+                + "	\"idcaja_cierre_item\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"fk_idcaja_cierre\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idcaja_cierre_detalle\" INTEGER NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idcaja_cierre_item\")\n"
+                + ");\n"
+                + "CREATE TABLE \"caja_cierre_detalle_temp\" (\n"
+                + "	\"idcaja_cierre_detalle\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"cerrado_por\" TEXT NOT NULL ,\n"
+                + "	\"es_cerrado\" BOOLEAN NOT NULL ,\n"
+                + "	\"monto_apertura_caja\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_cierre_caja\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_minimo\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_adicional\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_consumo\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_descuento\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_ocupa_adelanto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_gasto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_compra\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_vale\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_liquidacion\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_interno\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_solo_adelanto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_garantia\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"fk_idgasto\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idcompra\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idventa\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idrh_vale\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idrh_liquidacion\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idventa_interno\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idgarantia\" INTEGER NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idcaja_cierre_detalle\")\n"
+                + ");";
+//        eveconn.SQL_execute_libre(conn, sql5);
+        String sql6 = "CREATE TABLE \"admin_gasto_tipo\" (\n"
+                + "	\"idadmin_gasto_tipo\" SERIAL NOT NULL ,\n"
+                + "	\"idgasto_tipo\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idadmin_gasto_tipo\")\n"
+                + ");\n"
+                + "CREATE TABLE \"admin_gasto\" (\n"
+                + "	\"idadmin_gasto\" SERIAL NOT NULL ,\n"
+                + "	\"idgasto\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"monto_gasto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_letra\" TEXT NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idgasto_tipo\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idadmin_gasto\")\n"
+                + ");"
+                + "CREATE TABLE \"gasto_temp\" (\n"
+                + "	\"idgasto\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"monto_gasto\" NUMERIC(14,0) NOT NULL ,\n"
+                + "	\"monto_letra\" TEXT NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"estado\" TEXT NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	\"fk_idgasto_tipo\" INTEGER NOT NULL ,\n"
+                + "	\"fk_idusuario\" INTEGER NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idgasto\")\n"
+                + ");\n"
+                + "CREATE TABLE \"gasto_tipo_temp\" (\n"
+                + "	\"idgasto_tipo\" INTEGER NOT NULL ,\n"
+                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
+                + "	\"creado_por\" TEXT NOT NULL ,\n"
+                + "	\"nombre\" TEXT NOT NULL ,\n"
+                + "	\"activo\" BOOLEAN NOT NULL ,\n"
+                + "	\"maquina\" TEXT NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idgasto_tipo\")\n"
+                + ");";
+//        eveconn.SQL_execute_libre(conn, sql6);
+        String sql7 = ""//habitacion_recepcion_temp
+                + "ALTER TABLE habitacion_costo ADD COLUMN monto_por_hospedaje_minimo NUMERIC(14,0) DEFAULT 0;\n"
+                + "ALTER TABLE habitacion_costo ADD COLUMN minuto_hospedaje INTEGER DEFAULT 0;\n"
+                + "ALTER TABLE habitacion_recepcion ADD COLUMN monto_por_hospedaje_minimo NUMERIC(14,0) DEFAULT 0;\n"
+                + "ALTER TABLE habitacion_recepcion ADD COLUMN fec_hospedaje_inicio TIMESTAMP DEFAULT current_timestamp;\n"
+                + "ALTER TABLE habitacion_recepcion ADD COLUMN fec_hospedaje_fin TIMESTAMP DEFAULT current_timestamp;\n"
+                + "ALTER TABLE habitacion_recepcion ADD COLUMN es_hospedaje BOOLEAN DEFAULT false;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN monto_por_hospedaje_minimo NUMERIC(14,0) DEFAULT 0;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN fec_hospedaje_inicio TIMESTAMP DEFAULT current_timestamp;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN fec_hospedaje_fin TIMESTAMP DEFAULT current_timestamp;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN es_hospedaje BOOLEAN DEFAULT false;\n"
+                + "ALTER TABLE habitacion_recepcion_temp ADD COLUMN minuto_hospedaje INTEGER DEFAULT 0;\n"
+                + " ";
+        eveconn.SQL_execute_libre(conn, sql7);
     }
 
     private void actualizar_estado_puerta_cliente_limpieza() {
@@ -244,9 +425,9 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     }
 
     private void iniciarTiempo() {
-        tiempo_sonido = new Timer();
-        tiempo_sonido.schedule(new FrmMenuMotel.clasetiempo(), 0, 1000 * 1);
-        System.out.println("Timer INICIAR SONIDO");
+            tiempo_sonido = new Timer();
+            tiempo_sonido.schedule(new FrmMenuMotel.clasetiempo(), 0, 1000 * 1);
+            System.out.println("Timer INICIAR SONIDO");
     }
 
     private void exportar_excel_nivel_1() {
@@ -260,34 +441,36 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     class clasetiempo extends TimerTask {
 
         public void run() {
-            if (isHabilitar_sonido()) {
-                lblhora.setText(evefec.getString_formato_hora_min_seg());
-                lblturno.setText(evefec.getString_turno());
-                cargar_sql_habitacion_recepcion_temp();
-                actualizar_estado_puerta_cliente_limpieza();
 
-            }
-            segundo_exp_app++;
-            segundo_exp_app_Nivel_2++;
-            if (segundo_exp_app > (tiempo_exp_app)) {
-                if (crear_exp_app && jsfrm.isApp_act_exp()) {
-                    exportar_excel_nivel_1();
+            if (ENThrt.isHab_tiempo_menu()) {
+                if (isHabilitar_sonido()) {
+                    lblhora.setText(evefec.getString_formato_hora_min_seg());
+                    lblturno.setText(evefec.getString_turno());
+                    cargar_sql_habitacion_recepcion_temp();
+                    actualizar_estado_puerta_cliente_limpieza();
+
                 }
-            }
-            if (segundo_exp_app > ((tiempo_exp_app) + 10)) {
-                lblnube.setVisible(false);
-                crear_exp_app = true;
-                segundo_exp_app = 0;
-            }
-            if (segundo_exp_app_Nivel_2 > (tiempo_exp_app_Nivel_2)) {
-                if (jsfrm.isApp_act_exp()) {
-//                    exportar_excel_nivel_2();
+                segundo_exp_app++;
+                segundo_exp_app_Nivel_2++;
+                if (segundo_exp_app > (tiempo_exp_app)) {
+                    if (crear_exp_app && jsfrm.isApp_act_exp()) {
+                        exportar_excel_nivel_1();
+                    }
                 }
-            }
-            if (segundo_exp_app_Nivel_2 > ((tiempo_exp_app_Nivel_2) + 10)) {
-                lblnube.setVisible(false);
-//                crear_exp_app = false;
-                segundo_exp_app_Nivel_2 = 0;
+                if (segundo_exp_app > ((tiempo_exp_app) + 10)) {
+                    lblnube.setVisible(false);
+                    crear_exp_app = true;
+                    segundo_exp_app = 0;
+                }
+                if (segundo_exp_app_Nivel_2 > (tiempo_exp_app_Nivel_2)) {
+                    if (jsfrm.isApp_act_exp()) {
+
+                    }
+                }
+                if (segundo_exp_app_Nivel_2 > ((tiempo_exp_app_Nivel_2) + 10)) {
+                    lblnube.setVisible(false);
+                    segundo_exp_app_Nivel_2 = 0;
+                }
             }
         }
     }
@@ -465,6 +648,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenu21 = new javax.swing.JMenu();
         jMenuItem44 = new javax.swing.JMenuItem();
+        jMenuItem53 = new javax.swing.JMenuItem();
         jMenu26 = new javax.swing.JMenu();
         jMenuItem51 = new javax.swing.JMenuItem();
         jMenuItem52 = new javax.swing.JMenuItem();
@@ -1061,6 +1245,14 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         });
         jMenu21.add(jMenuItem44);
 
+        jMenuItem53.setText("RESUMEN ADMIN");
+        jMenuItem53.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem53ActionPerformed(evt);
+            }
+        });
+        jMenu21.add(jMenuItem53);
+
         jMenu14.add(jMenu21);
 
         jMenu26.setText("PATRIMONIO");
@@ -1547,6 +1739,11 @@ public class FrmMenuMotel extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmRepPatrimonio_baja());
     }//GEN-LAST:event_jMenuItem52ActionPerformed
 
+    private void jMenuItem53ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem53ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmRepBalance_Admin());
+    }//GEN-LAST:event_jMenuItem53ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1670,6 +1867,7 @@ public class FrmMenuMotel extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem50;
     private javax.swing.JMenuItem jMenuItem51;
     private javax.swing.JMenuItem jMenuItem52;
+    private javax.swing.JMenuItem jMenuItem53;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
